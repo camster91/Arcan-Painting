@@ -210,6 +210,32 @@ export default function AdaptiveContentArea({
   );
 }
 
+// Tailwind class lookup maps (classes must be complete strings for purge to work)
+const gapClasses = {
+  0: "gap-0", 1: "gap-1", 2: "gap-2", 3: "gap-3", 4: "gap-4",
+  5: "gap-5", 6: "gap-6", 8: "gap-8", 10: "gap-10", 12: "gap-12",
+};
+
+const gridColClasses = {
+  1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4",
+  5: "grid-cols-5", 6: "grid-cols-6",
+};
+
+const mdGridColClasses = {
+  1: "md:grid-cols-1", 2: "md:grid-cols-2", 3: "md:grid-cols-3", 4: "md:grid-cols-4",
+  5: "md:grid-cols-5", 6: "md:grid-cols-6",
+};
+
+const lgGridColClasses = {
+  1: "lg:grid-cols-1", 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5", 6: "lg:grid-cols-6",
+};
+
+const xlGridColClasses = {
+  1: "xl:grid-cols-1", 2: "xl:grid-cols-2", 3: "xl:grid-cols-3", 4: "xl:grid-cols-4",
+  5: "xl:grid-cols-5", 6: "xl:grid-cols-6",
+};
+
 // Helper components for responsive layouts
 export function ResponsiveGrid({
   children,
@@ -219,7 +245,7 @@ export function ResponsiveGrid({
 }) {
   return (
     <div
-      className={`grid gap-${gap} ${`grid-cols-${cols.sm} md:grid-cols-${cols.md} lg:grid-cols-${cols.lg} xl:grid-cols-${cols.xl}`} ${className}`}
+      className={`grid ${gapClasses[gap] || "gap-6"} ${gridColClasses[cols.sm] || ""} ${cols.md ? mdGridColClasses[cols.md] || "" : ""} ${cols.lg ? lgGridColClasses[cols.lg] || "" : ""} ${cols.xl ? xlGridColClasses[cols.xl] || "" : ""} ${className}`}
     >
       {children}
     </div>
@@ -232,18 +258,12 @@ export function ResponsiveStack({
   gap = 4,
   className = "",
 }) {
-  const directionClasses = {
-    vertical: "flex-col",
-    horizontal: "flex-row",
-  };
+  const smDirection = direction.sm === "vertical" ? "flex-col" : "flex-row";
+  const lgDirection = direction.lg === "horizontal" ? "lg:flex-row" : direction.lg === "vertical" ? "lg:flex-col" : "";
 
   return (
     <div
-      className={`flex gap-${gap} ${
-        direction.sm === "vertical"
-          ? `${directionClasses.vertical} ${direction.lg === "horizontal" ? `lg:${directionClasses.horizontal}` : ""}`
-          : `${directionClasses.horizontal} ${direction.lg === "vertical" ? `lg:${directionClasses.vertical}` : ""}`
-      } ${className}`}
+      className={`flex ${gapClasses[gap] || "gap-4"} ${smDirection} ${lgDirection} ${className}`}
     >
       {children}
     </div>
