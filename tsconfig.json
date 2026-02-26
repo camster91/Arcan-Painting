@@ -1,15 +1,10 @@
 {
 	"include": [
-		"**/*.{ts,tsx}",
+		"**/*.{ts,tsx,js,jsx}",
 		"**/.server/**/*",
 		"**/.client/**/*",
 		".react-router/types/**/*",
 		"./src/global.d.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"**/*.jsx",
-		"**/*.js"
 	],
 	"compilerOptions": {
 		"lib": ["DOM", "DOM.Iterable", "ES2022"],
@@ -27,7 +22,6 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"allowJs": true,
-		"checkJs": false,
 		"paths": {
 			"@/*": ["./src/*"]
 		}
