@@ -53,6 +53,14 @@ echo 'Contents of current directory:'
 ls -la
 echo 'Contents of build directory:'
 ls -la build/
+echo 'Checking bun installation:'
+which bun || echo 'bun not found in PATH'
+ls -la /usr/local/bin/bun || echo 'bun not found at /usr/local/bin'
+echo 'Package.json content:'
+cat package.json | head -20
 echo '--- Starting application ---'
-bun run start
+/usr/local/bin/bun run start || {
+  echo 'Failed to start with /usr/local/bin/bun, trying bun from PATH'
+  bun run start
+}
 "
