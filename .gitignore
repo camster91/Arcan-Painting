@@ -7,3 +7,11 @@
 
 # Vitest
 /.vitest/
+
+# Environment
+.env
+
+# Log files
+*.log
+dev-server*.log
+
