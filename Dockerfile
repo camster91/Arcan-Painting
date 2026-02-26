@@ -41,5 +41,18 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Start the application
-CMD ["bun", "run", "start"]
+# Start the application with debugging
+CMD sh -c "
+echo '=== Arcan Painting Startup Debug ==='
+echo 'NODE_ENV: $NODE_ENV'
+echo 'DATABASE_URL: $DATABASE_URL'
+echo 'SESSION_SECRET: [hidden]'
+echo 'NEXTAUTH_URL: $NEXTAUTH_URL'
+echo 'Current directory: $(pwd)'
+echo 'Contents of current directory:'
+ls -la
+echo 'Contents of build directory:'
+ls -la build/
+echo '--- Starting application ---'
+bun run start
+"
