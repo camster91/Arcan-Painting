@@ -15,7 +15,7 @@ COPY . .
 # Build the application
 RUN bun run build
 
-# Production stage
+# Production stage  
 FROM oven/bun:1.2-alpine AS runner
 
 WORKDIR /app
@@ -25,11 +25,7 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 
-# Create non-root user
-RUN addgroup -g 1001 -S bun && \
-    adduser -u 1001 -S bun -G bun
-
-# Set permissions
+# Set permissions for existing bun user (already in base image)
 RUN chown -R bun:bun /app
 USER bun
 
