@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies
-RUN bun install --frozen-lockfile
+# Install dependencies (no --frozen-lockfile since we may update deps)
+RUN bun install
 
 # Copy ALL source code including configs
 COPY . .
@@ -27,7 +27,6 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
 
 # Create wrapper to prevent Bun auto-serve double-bind
-# Dynamic import prevents Bun from using the default export as a server config
 RUN echo 'import("./build/server/index.js").catch(e => { console.error(e); process.exit(1); });' > /app/start.mjs
 
 # Set permissions for existing bun user (already in base image)
@@ -44,4 +43,3 @@ ENV HOST=0.0.0.0
 
 # Run via wrapper to avoid Bun auto-serve double-bind issue
 CMD ["/usr/local/bin/bun", "run", "/app/start.mjs"]
-
