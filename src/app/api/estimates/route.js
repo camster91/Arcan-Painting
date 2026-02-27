@@ -223,7 +223,7 @@ export async function POST(request) {
         'draft',
         ${valid_until || null},
         ${notes || null},
-        ${created_by || user.username},
+        ${created_by || user.id},
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
       )
