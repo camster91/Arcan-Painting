@@ -29,10 +29,14 @@ COPY --from=builder /app/public ./public
 # Copy tsconfig so Bun resolves @/ path aliases at runtime
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Copy src/ to /app/src/ (for @/ alias resolution at runtime via tsconfig)
-# Also symlink build/server/src -> /app/src so route-builder scanner finds the files
+# Copy src/ to /app/src/ and symlink build/server/src -> src
+# (route-builder scans build/server/src/app/api at runtime)
 COPY --from=builder /app/src ./src
 RUN ln -sf /app/src /app/build/server/src
+
+# Install @auth/create shim so routes that import it work correctly
+# This replaces the proprietary create.xyz internal package with our local auth shim
+COPY --from=builder /app/shims/@auth/create /app/node_modules/@auth/create
 
 # Create wrapper to prevent Bun auto-serve double-bind
 RUN echo 'import("./build/server/index.js").catch(e => { console.error(e); process.exit(1); });' > /app/start.mjs
