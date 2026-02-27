@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies (no --frozen-lockfile since we update deps)
+# Install dependencies
 RUN bun install
 
 # Copy ALL source code including configs
@@ -26,8 +26,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
 
-# CRITICAL: Copy src/app/api so __create/route-builder can scan it at runtime
-COPY --from=builder /app/src ./src
+# CRITICAL: Copy src/ into build/server/src/ so __create/route-builder can find
+# API routes at runtime (bundle resolves import.meta.url as build/server/index.js,
+# then joins "../src/app/api" => build/server/src/app/api)
+COPY --from=builder /app/src ./build/server/src
 
 # Create wrapper to prevent Bun auto-serve double-bind
 RUN echo 'import("./build/server/index.js").catch(e => { console.error(e); process.exit(1); });' > /app/start.mjs
