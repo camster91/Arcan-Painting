@@ -41,26 +41,6 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Start the application with debugging
-CMD sh -c "
-echo '=== Arcan Painting Startup Debug ==='
-echo 'NODE_ENV: $NODE_ENV'
-echo 'DATABASE_URL: $DATABASE_URL'
-echo 'SESSION_SECRET: [hidden]'
-echo 'NEXTAUTH_URL: $NEXTAUTH_URL'
-echo 'Current directory: $(pwd)'
-echo 'Contents of current directory:'
-ls -la
-echo 'Contents of build directory:'
-ls -la build/
-echo 'Checking bun installation:'
-which bun || echo 'bun not found in PATH'
-ls -la /usr/local/bin/bun || echo 'bun not found at /usr/local/bin'
-echo 'Package.json content:'
-cat package.json | head -20
-echo '--- Starting application ---'
-/usr/local/bin/bun run start || {
-  echo 'Failed to start with /usr/local/bin/bun, trying bun from PATH'
-  bun run start
-}
-"
+# Start the application
+CMD ["/usr/local/bin/bun", "run", "start"]
+
