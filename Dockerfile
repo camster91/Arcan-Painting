@@ -26,10 +26,13 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
 
-# CRITICAL: Copy src/ into build/server/src/ so __create/route-builder can find
-# API routes at runtime (bundle resolves import.meta.url as build/server/index.js,
-# then joins "../src/app/api" => build/server/src/app/api)
-COPY --from=builder /app/src ./build/server/src
+# Copy tsconfig so Bun resolves @/ path aliases at runtime
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+
+# Copy src/ to /app/src/ (for @/ alias resolution at runtime via tsconfig)
+# Also symlink build/server/src -> /app/src so route-builder scanner finds the files
+COPY --from=builder /app/src ./src
+RUN ln -sf /app/src /app/build/server/src
 
 # Create wrapper to prevent Bun auto-serve double-bind
 RUN echo 'import("./build/server/index.js").catch(e => { console.error(e); process.exit(1); });' > /app/start.mjs
