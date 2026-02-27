@@ -26,6 +26,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
 
+# Create wrapper to prevent Bun auto-serve double-bind
+# Dynamic import prevents Bun from using the default export as a server config
+RUN echo 'import("./build/server/index.js").catch(e => { console.error(e); process.exit(1); });' > /app/start.mjs
+
 # Set permissions for existing bun user (already in base image)
 RUN chown -R bun:bun /app
 USER bun
@@ -38,6 +42,6 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Run the built Hono server directly (react-router-hono-server output)
-CMD ["/usr/local/bin/bun", "./build/server/index.js"]
+# Run via wrapper to avoid Bun auto-serve double-bind issue
+CMD ["/usr/local/bin/bun", "run", "/app/start.mjs"]
 
