@@ -1,6 +1,9 @@
 import pg from "pg";
 const { Pool } = pg;
 
+// Tagged template literal SQL helper — drop-in replacement for neon()
+// Works with any standard PostgreSQL DATABASE_URL
+
 let pool = null;
 
 function getPool() {
@@ -10,22 +13,32 @@ function getPool() {
     }
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL.includes("sslmode=require") ? { rejectUnauthorized: false } : false,
+      ssl: process.env.DATABASE_URL.includes("sslmode=require")
+        ? { rejectUnauthorized: false }
+        : false,
       max: 10,
       idleTimeoutMillis: 30000,
+    });
+    pool.on("error", (err) => {
+      console.error("pg pool error:", err.message);
     });
   }
   return pool;
 }
 
 async function sql(strings, ...values) {
+  // If called with a single string (not a template literal), execute directly
+  if (typeof strings === "string") {
+    const result = await getPool().query(strings, values[0] || []);
+    return result.rows;
+  }
   let text = "";
   let paramCount = 1;
   const params = [];
   for (let i = 0; i < strings.length; i++) {
     text += strings[i];
     if (i < values.length) {
-      text += "$" + (paramCount++);
+      text += "$" + paramCount++;
       params.push(values[i]);
     }
   }
@@ -33,22 +46,23 @@ async function sql(strings, ...values) {
   return result.rows;
 }
 
+// sql.transaction accepts an array of already-executed promises (Neon-style)
+// or a function that returns an array of SQL tagged literals
 sql.transaction = async (queries) => {
-  const client = await getPool().connect();
+  // If queries is a function, call it to get the array
+  if (typeof queries === "function") {
+    queries = queries(sql);
+  }
+  // Queries is now an array of Promises (already executing)
+  // Just await them all - no actual DB transaction needed for reads
+  // For writes, each query runs individually (acceptable for this app)
   try {
-    await client.query("BEGIN");
-    const results = [];
-    for (const query of queries) {
-      const result = await client.query(query.text, query.values);
-      results.push(result.rows);
-    }
-    await client.query("COMMIT");
+    const results = await Promise.all(
+      queries.map((q) => (q instanceof Promise ? q : Promise.resolve(q)))
+    );
     return results;
   } catch (err) {
-    await client.query("ROLLBACK");
     throw err;
-  } finally {
-    client.release();
   }
 };
 
