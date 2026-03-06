@@ -37,7 +37,10 @@ export const calculateContractStats = (contracts) => {
   const awaitingSignature = contracts.filter((c) => c.status === "sent").length;
   const signed = contracts.filter((c) => c.status === "signed").length;
   const totalValue = contracts.reduce(
-    (sum, c) => sum + parseFloat(c.total_amount || 0),
+    (sum, c) => {
+      const amount = parseFloat(c.total_amount);
+      return sum + (isNaN(amount) ? 0 : amount);
+    },
     0,
   );
 

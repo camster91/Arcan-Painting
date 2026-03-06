@@ -84,7 +84,7 @@ export async function POST(request) {
         if (leadResponse.ok) {
           const leadData = await leadResponse.json();
           leadId = leadData.lead?.id;
-          console.log("Lead saved successfully:", leadData.lead);
+
           leadSaved = true;
         } else {
           const leadError = await leadResponse.json();

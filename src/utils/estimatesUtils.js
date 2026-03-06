@@ -34,16 +34,19 @@ export const getStatusInfo = (status) => {
 
 // Format currency
 export const formatCurrency = (amount) => {
+  const num = parseFloat(amount);
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(amount || 0);
+  }).format(isNaN(num) ? 0 : num);
 };
 
 // Format date
 export const formatDate = (dateString) => {
   if (!dateString) return "N/A";
-  return new Date(dateString).toLocaleDateString("en-US", {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "N/A";
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -53,7 +56,9 @@ export const formatDate = (dateString) => {
 // Format date with full details
 export const formatDateLong = (dateString) => {
   if (!dateString) return "N/A";
-  return new Date(dateString).toLocaleDateString("en-US", {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "N/A";
+  return date.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",

@@ -1,9 +1,13 @@
 import sql from "@/app/api/utils/sql";
+import { getCurrentUser, unauthorizedResponse } from "@/app/api/utils/auth";
 
 export async function GET(request) {
   try {
-    // Skip auth check for now since admin layout already handles it
-    // TODO: Add proper server-side auth check later
+    // Auth check
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return unauthorizedResponse();
+    }
 
     // Get query parameters for date range
     const url = new URL(request.url);
@@ -14,10 +18,7 @@ export async function GET(request) {
     startDate.setDate(startDate.getDate() - daysAgo);
     const startDateString = startDate.toISOString();
 
-    console.log(
-      "Dashboard API: Fetching data for date range:",
-      startDateString,
-    );
+
 
     // Aggregate metrics from multiple tables
     const [
@@ -108,7 +109,7 @@ export async function GET(request) {
       `,
     ]);
 
-    console.log("Dashboard API: Data fetched successfully");
+
 
     // Calculate simple trends (comparing to previous period)
     const calculateTrend = (current, mockPrevious) => {
@@ -162,10 +163,7 @@ export async function GET(request) {
       })),
     };
 
-    console.log("Dashboard API: Response prepared:", {
-      statsCount: Object.keys(response.stats).length,
-      activityCount: response.recentActivity.length,
-    });
+
 
     return Response.json(response);
   } catch (error) {

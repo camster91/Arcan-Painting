@@ -227,9 +227,7 @@ export async function triggerWorkflow(eventType, data) {
         } else {
           // For delayed emails, you would typically schedule them using a job queue
           // For now, we'll just log them
-          console.log(
-            `Scheduled email workflow ${workflow.name} for ${workflow.delay_hours} hours`,
-          );
+
           results.push({
             workflow_id: workflow.id,
             template: workflow.template_name,
