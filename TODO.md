@@ -6,11 +6,11 @@ This file tracks identified improvements and technical debt in the codebase.
 
 | Metric | Current State | Target |
 |--------|---------------|--------|
-| Test Coverage | 1 test file (0.38%) | 80%+ |
-| TypeScript Usage | 12 files (4%) | 100% |
-| Security Issues | 4 critical | 0 |
+| Test Coverage | 4 test files (1.5%) | 80%+ |
+| TypeScript Usage | 12 files (4.6%) | 100% |
+| Security Issues | 1 critical remaining | 0 |
 | Large Components (500+ lines) | 9 | 0 |
-| Console Statements in APIs | 120+ | 0 |
+| Console Statements in APIs | 112 (error logs only) | 0 |
 
 ---
 
@@ -18,31 +18,39 @@ This file tracks identified improvements and technical debt in the codebase.
 
 ### Security Fixes
 
-- [ ] **Add Auth Check to Dashboard API**
+- [x] **Add Auth Check to Dashboard API**
   - File: `src/app/api/admin/dashboard/route.js:6`
   - Issue: Missing server-side auth check (TODO comment exists)
+  - Fix: Added auth check using `getCurrentUser` from auth utils
 
-- [ ] **Fix Unsafe PostMessage Origins**
+- [x] **Fix Unsafe PostMessage Origins**
   - File: `src/app/__create/not-found.tsx:47-51, 80-87`
   - Issue: 11 instances using wildcard `'*'` origin
-  - Fix: Specify trusted origins explicitly
+  - Fix: Replaced with `window.location.origin` for same-origin only
 
-- [ ] **Fix Regex Injection in Email Templates**
+- [x] **Fix Regex Injection in Email Templates**
   - File: `src/app/api/utils/send-email.js:135-138`
   - Issue: `new RegExp()` with user-controlled template variable names
-  - Fix: Use `escapeRegExp` utility or literal string replacement
+  - Fix: Replaced with `split().join()` pattern to avoid regex injection
 
 ### Test Coverage (Critical Business Logic)
 
-- [ ] Add tests for `src/utils/estimateCalculations.js`
-- [ ] Add tests for `src/utils/contractsUtils.js`
-- [ ] Add tests for `src/utils/estimatesUtils.js`
+- [x] Add tests for `src/utils/estimateCalculations.js`
+  - Created: `test/estimateCalculations.test.js`
+- [x] Add tests for `src/utils/contractsUtils.js`
+  - Created: `test/contractsUtils.test.js`
+  - Fixed: `calculateContractStats` to handle invalid `total_amount`
+- [x] Add tests for `src/utils/estimatesUtils.js`
+  - Created: `test/estimatesUtils.test.js`
+  - Fixed: `formatCurrency`, `formatDate`, `formatDateLong` to handle invalid inputs
 - [ ] Add tests for `src/app/api/` routes (integration tests)
 
 ### Remove Debug Code
 
-- [ ] Remove/conditionalize 120+ console statements in API routes
-  - All files in `src/app/api/`
+- [x] Remove/conditionalize 120+ console statements in API routes
+  - Removed 2 `console.log` statements (only debug logs)
+  - Kept 112 `console.error` statements (error logging is appropriate for production)
+  - Files cleaned: `src/app/api/contact/route.js`, `src/app/api/email-workflows/route.js`
 
 ---
 
@@ -154,14 +162,15 @@ Currently only 62 accessibility attributes (target: 500+)
 
 ## Files Requiring Immediate Attention
 
-| File | Issue | Priority |
-|------|-------|----------|
-| `src/app/api/admin/dashboard/route.js` | Missing auth | Critical |
-| `src/app/__create/not-found.tsx` | Unsafe postMessage | Critical |
-| `src/app/api/utils/send-email.js` | Regex injection | Critical |
-| `src/app/admin/scheduling/page.jsx` | Needs refactoring | High |
-| `src/components/admin/contracts/CreateContractModal.jsx` | Complex, 4 useEffects | High |
-| All API routes | Console statements | High |
+| File | Issue | Priority | Status |
+|------|-------|----------|--------|
+| `src/app/api/admin/dashboard/route.js` | Missing auth | Critical | ✅ Fixed (auth added) |
+| `src/app/__create/not-found.tsx` | Unsafe postMessage | Critical | ✅ Fixed (origin restricted) |
+| `src/app/api/utils/send-email.js` | Regex injection | Critical | ✅ Fixed (split/join pattern) |
+| `src/app/admin/scheduling/page.jsx` | Needs refactoring | High | ⚠️ Still large (931 lines) |
+| `src/components/admin/contracts/CreateContractModal.jsx` | Complex, 4 useEffects | High | ⚠️ Still complex (713 lines) |
+| All API routes | Console statements | High | ✅ Debug logs removed (error logs kept) |
+| `src/__create/@auth/create.js` | Missing `hono/context-storage` import | Critical | ⚠️ Broken import needs fixing |
 
 ---
 
@@ -169,4 +178,4 @@ Currently only 62 accessibility attributes (target: 500+)
 
 Update this file as improvements are completed. Mark items with [x] when done.
 
-Last updated: 2026-01-20
+Last updated: 2026-03-07

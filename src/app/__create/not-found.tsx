@@ -48,7 +48,7 @@ export default function CreateDefaultNotFoundPage({
         {
           type: 'sandbox:sitemap',
         },
-        '*'
+        window.location.origin
       );
       window.addEventListener('message', handler);
 
@@ -83,7 +83,7 @@ export default function CreateDefaultNotFoundPage({
         path: missingPath,
         view: 'web',
       },
-      '*'
+      window.location.origin
     );
   }, [missingPath]);
 

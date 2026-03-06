@@ -132,10 +132,10 @@ export async function sendTemplatedEmail(
     let text = tmpl.text_template;
 
     for (const [key, value] of Object.entries(variables)) {
-      const regex = new RegExp(`{{${key}}}`, "g");
-      subject = subject.replace(regex, value || "");
-      html = html.replace(regex, value || "");
-      if (text) text = text.replace(regex, value || "");
+      const placeholder = `{{${key}}}`;
+      subject = subject.split(placeholder).join(value || "");
+      html = html.split(placeholder).join(value || "");
+      if (text) text = text.split(placeholder).join(value || "");
     }
 
     // Send email with template name for logging
