@@ -48,6 +48,7 @@ export default function Header() {
     { label: "Pricing", href: "#pricing" },
     { label: "About", href: "#about" },
     { label: "Contact", href: "#contact" },
+    { label: "Get Quote", href: "#quote" },
   ];
 
   const scrollTo = (selector) => {

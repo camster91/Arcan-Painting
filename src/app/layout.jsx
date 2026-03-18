@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/utils/useTheme";
 import PWAInstaller, { PWAStatus } from "@/components/PWAInstaller";
+import ChatWidget from "@/components/ChatWidget";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -514,6 +515,7 @@ export default function RootLayout({ children }) {
           }}
         >
           {children}
+          <ChatWidget />
         </main>
         <PWAInstaller />
       </ThemeProvider>
