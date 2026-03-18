@@ -1,5 +1,6 @@
 import { sendTemplatedEmail } from "../utils/send-email.js";
 import { triggerWorkflow } from "../email-workflows/route.js";
+import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 
 export async function POST(request) {
   try {
@@ -122,6 +123,13 @@ export async function POST(request) {
       }
     } else {
       console.warn("RESEND not configured; skipping automated emails");
+    }
+
+    // Notify Gerardo via Telegram
+    try {
+      await notifyGerardo(formatLeadNotification(body));
+    } catch (tgError) {
+      console.error("Telegram notification failed:", tgError.message);
     }
 
     return Response.json({
