@@ -24,7 +24,7 @@ export async function POST(request) {
       const packageId = session.metadata?.package_id;
 
       if (userId && credits > 0) {
-        const newBalance = addCredits(
+        const newBalance = await addCredits(
           userId,
           credits,
           'purchase',
