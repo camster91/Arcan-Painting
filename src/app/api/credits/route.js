@@ -12,9 +12,9 @@ export async function GET(request) {
     const userId = 'gerardo';
 
     return Response.json({
-      balance: getBalance(userId),
+      balance: await getBalance(userId),
       packages: CREDIT_PACKAGES,
-      transactions: getTransactions(userId, 20),
+      transactions: await getTransactions(userId, 20),
     });
   } catch (error) {
     console.error('Credits GET error:', error.message);
