@@ -17,14 +17,14 @@ const queryClient = new QueryClient({
 
 export const metadata = {
   title:
-    "Arcan and Sons - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
+    "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
   description:
     "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
   keywords:
     "Toronto painting services, GTA painters, interior painting Toronto, exterior painting Toronto, commercial painting Toronto, residential painting Toronto, professional painters Toronto, licensed painters GTA, insured painters, free estimates Toronto, color consultation, specialty finishes",
-  authors: [{ name: "Arcan and Sons" }],
-  creator: "Arcan and Sons",
-  publisher: "Arcan and Sons",
+  authors: [{ name: "Arcan Painting" }],
+  creator: "Arcan Painting",
+  publisher: "Arcan Painting",
   robots: "index, follow",
   // PWA Manifest
   manifest: "/manifest",
@@ -33,11 +33,11 @@ export const metadata = {
   },
   openGraph: {
     title:
-      "Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters",
+      "Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters",
     description:
       "Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today.",
     url: "https://arcanpainting.ca",
-    siteName: "Arcan and Sons Painting",
+    siteName: "Arcan Painting",
     type: "website",
     locale: "en_CA",
     images: [
@@ -45,7 +45,7 @@ export const metadata = {
         url: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/",
         width: 1200,
         height: 630,
-        alt: "Arcan and Sons Professional Toronto Painting Services - Interior & Exterior Painters GTA",
+        alt: "Arcan Painting Professional Toronto Painting Services - Interior & Exterior Painters GTA",
         type: "image/jpeg",
       },
     ],
@@ -55,13 +55,13 @@ export const metadata = {
     site: "@arcanpainting",
     creator: "@arcanpainting",
     title:
-      "Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters",
+      "Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters",
     description:
       "Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today.",
     images: [
       {
         url: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/",
-        alt: "Arcan and Sons Professional Toronto Painting Services - Interior & Exterior Painters GTA",
+        alt: "Arcan Painting Professional Toronto Painting Services - Interior & Exterior Painters GTA",
       },
     ],
   },
@@ -130,7 +130,7 @@ function HeadTags() {
     // Basic SEO meta tags
     ensureMeta("description", metadata.description);
     ensureMeta("keywords", metadata.keywords);
-    ensureMeta("author", "Arcan and Sons");
+    ensureMeta("author", "Arcan Painting");
     ensureMeta(
       "robots",
       "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
@@ -183,7 +183,7 @@ function HeadTags() {
     ensureMeta("pinterest:media", metadata.openGraph.images[0].url);
 
     // LinkedIn specific
-    ensureMeta("linkedin:owner", "Arcan and Sons");
+    ensureMeta("linkedin:owner", "Arcan Painting");
 
     // Geographic meta tags
     ensureMeta("geo.region", metadata.other["geo.region"]);
@@ -267,8 +267,8 @@ function HeadTags() {
     addJsonLd("ld-local-business", {
       "@context": "https://schema.org",
       "@type": "PaintingContractor",
-      name: "Arcan and Sons",
-      alternateName: "Arcan and Sons Painting",
+      name: "Arcan Painting",
+      alternateName: "Arcan Painting",
       description:
         "Professional Toronto painting services for residential and commercial properties across the GTA.",
       url: "https://arcanpainting.ca",
@@ -310,7 +310,7 @@ function HeadTags() {
     addJsonLd("ld-website", {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Arcan and Sons Painting",
+      name: "Arcan Painting",
       url: "https://arcanpainting.ca",
       inLanguage: "en-CA",
       potentialAction: {

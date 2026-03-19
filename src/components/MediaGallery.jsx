@@ -270,7 +270,7 @@ export default function MediaGallery() {
   const currentItem = displayedItems[currentLightboxIndex];
 
   return (
-    <section id="media-gallery" className="py-16 lg:py-24 bg-white">
+    <section id="portfolio" className="py-16 lg:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div

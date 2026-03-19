@@ -93,8 +93,8 @@ export default function AboutSection() {
                   <p className="text-slate-300 text-lg leading-relaxed">
                     As our father grew older, Pablo and I realized it was time
                     to step up and help him transition into retirement. That's
-                    when Arcan Painting became{" "}
-                    <strong className="text-amber-400">Arcan and Sons</strong> -
+                    when we formalized the business as{" "}
+                    <strong className="text-amber-400">Arcan Painting</strong> -
                     honoring our father's legacy while ensuring his values and
                     standards live on through the next generation serving the
                     GTA.
@@ -114,7 +114,7 @@ export default function AboutSection() {
                     — Gerardo Cañabate
                   </div>
                   <div className="text-amber-400 font-semibold">
-                    Co‑Owner & Lead Painter
+                    Owner / Director of Sales
                   </div>
                 </div>
               </div>
