@@ -371,6 +371,56 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* SEO: Title & Description */}
+        <title>Arcan Painting | Professional Interior &amp; Exterior Painting Services</title>
+        <meta name="description" content="Expert painting services for residential &amp; commercial properties. Free estimates. Licensed &amp; insured." />
+        {/* SEO: Canonical tag */}
+        <link rel="canonical" href={`https://arcanpainting.ca${pathname}`} />
+        {/* SEO: LocalBusiness JSON-LD schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": "Arcan and Sons Painting",
+              "description": "Professional interior and exterior painting services for residential and commercial properties in Toronto and the GTA. Licensed, insured, and free estimates.",
+              "url": "https://arcanpainting.ca",
+              "telephone": "+1-416-000-0000",
+              "email": "info@arcanpainting.ca",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Toronto",
+                "addressRegion": "ON",
+                "addressCountry": "CA"
+              },
+              "areaServed": [
+                "Toronto", "Scarborough", "North York", "Etobicoke",
+                "Mississauga", "Brampton", "Vaughan", "Markham",
+                "Richmond Hill", "Pickering", "Ajax", "Oshawa"
+              ],
+              "image": "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/",
+              "priceRange": "$$",
+              "openingHoursSpecification": [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  "opens": "08:00",
+                  "closes": "18:00"
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": ["Saturday"],
+                  "opens": "09:00",
+                  "closes": "16:00"
+                }
+              ],
+              "sameAs": [
+                "https://arcanpainting.ca"
+              ]
+            })
+          }}
+        />
         {/* Static OG meta tags for social crawlers (SSR-rendered) */}
         <meta property="og:title" content="Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters" />
         <meta property="og:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
