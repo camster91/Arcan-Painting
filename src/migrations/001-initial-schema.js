@@ -54,6 +54,20 @@ export async function runMigrations() {
     // ── leads (soft-delete support) ─────────────────────────────────────────
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
 
+    // ── auth_verification_codes (magic code auth) ───────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS auth_verification_codes (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
+        code VARCHAR(10) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL,
+        used_at TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_username ON auth_verification_codes(username)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_code ON auth_verification_codes(code)`;
+
     // ── agent_runs (from agents/migrate.js) ─────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS agent_runs (
