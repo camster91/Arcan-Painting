@@ -371,6 +371,24 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Static OG meta tags for social crawlers (SSR-rendered) */}
+        <meta property="og:title" content="Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters" />
+        <meta property="og:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
+        <meta property="og:url" content="https://arcanpainting.ca" />
+        <meta property="og:site_name" content="Arcan and Sons Painting" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_CA" />
+        <meta property="og:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Arcan and Sons Professional Toronto Painting Services" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@arcanpainting" />
+        <meta name="twitter:title" content="Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters" />
+        <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
+        <meta name="twitter:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
+        <meta name="twitter:image:alt" content="Arcan and Sons Professional Toronto Painting Services" />
         <Meta />
         <Links />
         <script type="module" src="/src/__create/dev-error-overlay.js"></script>
