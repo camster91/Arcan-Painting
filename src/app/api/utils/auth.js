@@ -1,28 +1,14 @@
+import { createHash, randomBytes } from "crypto";
 import sql from "./sql.js";
+import { ensureSchema } from "../../../migrations/001-initial-schema.js";
 
-// Helper: ensure local auth tables exist
-export async function ensureAuthTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'admin',
-      password_is_hashed BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  // Migration: add password_is_hashed column if it doesn't exist
-  await sql`ALTER TABLE auth_users ADD COLUMN IF NOT EXISTS password_is_hashed BOOLEAN DEFAULT FALSE`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )
-  `;
+// ── Token generation ────────────────────────────────────────────────────────
+/**
+ * Generate a cryptographically secure session token.
+ * 32 bytes of entropy → 64 hex characters. Unpredictable, unique.
+ */
+export function generateSecureToken() {
+  return randomBytes(32).toString("hex");
 }
 
 // Helper function to parse cookies
@@ -40,7 +26,7 @@ export function parseCookies(cookieHeader) {
 // Helper function to get current user from session (returns user object or null)
 export async function getCurrentUser(request) {
   try {
-    await ensureAuthTables();
+    await ensureSchema();
   } catch {}
 
   const cookieHeader = request.headers.get("cookie");

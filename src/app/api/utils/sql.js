@@ -14,7 +14,7 @@ function getPool() {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: process.env.DATABASE_URL.includes("sslmode=require")
-        ? { rejectUnauthorized: false }
+        ? { rejectUnauthorized: true }  // Enforce SSL cert verification
         : false,
       max: 10,
       idleTimeoutMillis: 30000,

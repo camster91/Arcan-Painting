@@ -1,13 +1,19 @@
 /**
- * GET /api/agents — health check and status for AI agents
+ * GET /api/agents — health check and status for AI agents (ADMIN ONLY)
  * POST /api/agents/migrate — run DB migrations for agent fields
  */
 
-import { requireAdmin } from '../utils/auth.js';
+import { requireAdmin, unauthorizedResponse } from '../utils/auth.js';
 import { pingOpenClaw } from './openclaw.js';
 import { migrateAgentFields } from './migrate.js';
 
 export async function GET(request) {
+  // Require authentication — agent status is internal admin info
+  const authorized = await requireAdmin(request);
+  if (!authorized) {
+    return unauthorizedResponse();
+  }
+
   const openclawOnline = await pingOpenClaw();
   
   return Response.json({
@@ -30,7 +36,7 @@ export async function POST(request) {
   if (url.pathname.endsWith('/migrate')) {
     const authorized = await requireAdmin(request);
     if (!authorized) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return unauthorizedResponse();
     }
 
     const results = await migrateAgentFields();

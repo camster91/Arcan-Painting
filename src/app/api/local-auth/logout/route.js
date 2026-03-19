@@ -1,17 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
+import { parseCookies } from "@/app/api/utils/auth";
 
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [

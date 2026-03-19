@@ -1,6 +1,10 @@
 /**
  * In-memory rate limiter for Hono (per-IP).
  * Compatible with React Router v7 / Hono server — no express-rate-limit needed.
+ *
+ * ⚠️  LIMITATION: Counters are in-memory only — they reset on app restart / redeploy.
+ *     For multi-instance deployments, implement Redis-backed persistence.
+ *     See AUTH-ARCHITECTURE.md for details.
  */
 
 const store = new Map(); // ip -> { count, resetAt }

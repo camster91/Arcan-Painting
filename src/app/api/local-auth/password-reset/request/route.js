@@ -3,6 +3,8 @@ import { sendEmail } from "@/app/api/utils/send-email";
 import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
+import { generateSecureToken } from "@/app/api/utils/auth";
+import { ensureSchema } from "@/migrations/001-initial-schema";
 
 function buildBaseUrl(request) {
   try {
@@ -13,41 +15,13 @@ function buildBaseUrl(request) {
   return `${proto}://${host}`;
 }
 
-async function ensureTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'owner',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS password_reset_tokens (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      used BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-}
-
 export async function POST(request) {
   // Rate limiting — tight limit to prevent reset token spam
   const limited = passwordLimiter(request);
   if (limited) return limited;
 
   try {
-    await ensureTables();
+    await ensureSchema();
 
     const [body, validationError] = await validateBody(request, schemas.passwordResetRequest);
     if (validationError) return validationError;
@@ -73,7 +47,8 @@ export async function POST(request) {
       return genericResponse;
     }
 
-    const token = `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    // Cryptographically secure reset token
+    const token = generateSecureToken();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     await sql`
