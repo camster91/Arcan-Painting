@@ -1,4 +1,6 @@
 import sql from "@/app/api/utils/sql";
+import { generalLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
 
 // Helper function to parse cookies
 function parseCookies(cookieHeader) {
@@ -57,6 +59,9 @@ function generateContractNumber() {
 
 // GET /api/contracts - List contracts with filtering
 export async function GET(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await checkAuth(request);
     if (!session?.user) {
@@ -210,6 +215,9 @@ export async function GET(request) {
 
 // POST /api/contracts - Create new contract
 export async function POST(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await checkAuth(request);
     if (!session?.user) {

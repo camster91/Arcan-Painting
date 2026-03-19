@@ -1,4 +1,6 @@
 import sql from "@/app/api/utils/sql";
+import { authLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
 
 function parseCookies(cookieHeader) {
   const cookies = {};
@@ -30,6 +32,9 @@ function makeCookie(name, value, maxAgeSeconds) {
 }
 
 export async function POST(request) {
+  const limited = authLimiter(request);
+  if (limited) return limited;
+
   try {
     const cookieHeader = request.headers.get("cookie");
     const cookies = parseCookies(cookieHeader);
@@ -37,7 +42,17 @@ export async function POST(request) {
 
     if (token) {
       try {
+        // Get user before deleting session for audit log
+        const sessions = await sql`
+          SELECT u.id, u.username FROM auth_sessions s
+          JOIN auth_users u ON u.id = s.user_id
+          WHERE s.token = ${token} LIMIT 1
+        `;
+        const sessionUser = sessions[0];
         await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
+        if (sessionUser) {
+          await auditLog({ request, action: "logout", userId: sessionUser.id, username: sessionUser.username, status: "success" });
+        }
       } catch {}
     }
 

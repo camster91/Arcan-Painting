@@ -1,4 +1,6 @@
 import sql from "../utils/sql.js";
+import { generalLimiter, authLimiter } from "../utils/rate-limit.js";
+import { auditLog } from "../utils/audit.js";
 
 // Helper: ensure local auth tables exist
 async function ensureAuthTables() {
@@ -59,6 +61,9 @@ async function requireAdmin(request) {
 
 // Create a new lead
 export async function POST(request) {
+  const limited = authLimiter(request); // tight limit — public endpoint
+  if (limited) return limited;
+
   try {
     const body = await request.json();
 

@@ -46,16 +46,65 @@ async function sql(strings, ...values) {
   return result.rows;
 }
 
-// sql.transaction accepts an array of already-executed promises (Neon-style)
-// or a function that returns an array of SQL tagged literals
-sql.transaction = async (queries) => {
-  // If queries is a function, call it to get the array
-  if (typeof queries === "function") {
-    queries = queries(sql);
+/**
+ * Real PostgreSQL transaction using BEGIN/COMMIT/ROLLBACK.
+ *
+ * Usage — pass a callback that receives a `txSql` function (same API as `sql`):
+ *   const [payment, invoice] = await sql.transaction(async (txSql) => {
+ *     const [p] = await txSql`INSERT INTO payments ... RETURNING *`;
+ *     await txSql`UPDATE invoices SET ... WHERE id = ${invoiceId}`;
+ *     return [p];
+ *   });
+ *
+ * Legacy usage (array of already-running Promises) is preserved for
+ * backward-compat but DOES NOT provide atomicity — prefer the callback form.
+ */
+sql.transaction = async (queriesOrFn) => {
+  // ── New: callback form ──────────────────────────────────────────────────
+  if (typeof queriesOrFn === "function") {
+    const client = await getPool().connect();
+    try {
+      await client.query("BEGIN");
+
+      // Build a sql-tagged-template that uses this client (not the pool)
+      const txSql = async (strings, ...values) => {
+        if (typeof strings === "string") {
+          const result = await client.query(strings, values[0] || []);
+          return result.rows;
+        }
+        let text = "";
+        let paramCount = 1;
+        const params = [];
+        for (let i = 0; i < strings.length; i++) {
+          text += strings[i];
+          if (i < values.length) {
+            text += "$" + paramCount++;
+            params.push(values[i]);
+          }
+        }
+        const result = await client.query(text, params);
+        return result.rows;
+      };
+
+      const result = await queriesOrFn(txSql);
+      await client.query("COMMIT");
+      return result;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
   }
-  // Queries is now an array of Promises (already executing)
-  // Just await them all - no actual DB transaction needed for reads
-  // For writes, each query runs individually (acceptable for this app)
+
+  // ── Legacy: array of already-running Promises (no real atomicity) ───────
+  // Kept for backward-compat with existing call-sites that pass Promise arrays.
+  // Migrate these to the callback form for true atomicity.
+  console.warn(
+    "[sql.transaction] Legacy array mode — no real DB transaction. " +
+    "Migrate to callback form: sql.transaction(async (txSql) => { ... })"
+  );
+  const queries = queriesOrFn;
   try {
     const results = await Promise.all(
       queries.map((q) => (q instanceof Promise ? q : Promise.resolve(q)))
