@@ -11,6 +11,7 @@ import {
   Wallet,
   Calendar,
   Settings,
+  Bot,
 } from "lucide-react";
 import BottomTabNav from "@/components/BottomTabNav";
 import FloatingActionButton from "@/components/FloatingActionButton";
@@ -248,6 +249,16 @@ function AdminLayoutContent({ children }) {
         matchers: ["/admin/today", "/admin/messages", "/admin/capture"],
         description: "Daily operations",
         showNotificationBadge: unreadCount > 0,
+      },
+      {
+        key: "ai-chat",
+        label: "AI Help",
+        icon: Bot,
+        entryHref: "/admin/ai-chat",
+        tabs: [],
+        matchers: ["/admin/ai-chat"],
+        description: "Ask the AI assistant",
+        showNotificationBadge: false,
       },
       {
         key: "team",
