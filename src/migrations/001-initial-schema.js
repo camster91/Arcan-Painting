@@ -53,6 +53,7 @@ export async function runMigrations() {
 
     // ── leads (soft-delete support) ─────────────────────────────────────────
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
+    await sql`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
 
     // ── auth_verification_codes (magic code auth) ───────────────────────────
     await sql`

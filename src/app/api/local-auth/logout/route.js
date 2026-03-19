@@ -39,7 +39,8 @@ export async function POST(request) {
           WHERE s.token = ${token} LIMIT 1
         `;
         const sessionUser = sessions[0];
-        await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
+        // Soft-delete session (preserve audit trail instead of hard DELETE)
+        await sql`UPDATE auth_sessions SET deleted_at = NOW() WHERE token = ${token} AND deleted_at IS NULL`;
         if (sessionUser) {
           await auditLog({ request, action: "logout", userId: sessionUser.id, username: sessionUser.username, status: "success" });
         }
