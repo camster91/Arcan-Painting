@@ -1,4 +1,4 @@
-import { Eye, Send, Copy, Edit, Trash2 } from "lucide-react";
+import { Eye, Send, Copy, Edit, Trash2, Bot } from "lucide-react";
 import {
   getStatusInfo,
   formatCurrency,
@@ -13,6 +13,8 @@ export function EstimatesTable({
   onDuplicateEstimate,
   onEditEstimate,
   onDeleteEstimate,
+  onGenerateProposal,
+  onAction,
 }) {
   const [sendingId, setSendingId] = useState(null);
   const [duplicatingId, setDuplicatingId] = useState(null);
@@ -148,6 +150,19 @@ export function EstimatesTable({
                     >
                       <Eye size={16} />
                     </button>
+
+                    {(onGenerateProposal || onAction) && estimate.status !== 'cancelled' && (
+                      <button
+                        onClick={() => onGenerateProposal
+                          ? onGenerateProposal(estimate)
+                          : onAction('generate_proposal', estimate)
+                        }
+                        className="text-purple-600 hover:text-purple-700 p-1 rounded"
+                        title="Generate Proposal (AI)"
+                      >
+                        <Bot size={16} />
+                      </button>
+                    )}
 
                     {onEditEstimate && (
                       <button

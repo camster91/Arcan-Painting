@@ -24,6 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import { EstimateBuilder } from "@/components/admin/estimates/EstimateBuilder";
 import { EstimatesTable } from "@/components/admin/estimates/EstimatesTable";
 import { EstimateDetailModal } from "@/components/admin/estimates/EstimateDetailModal";
+import AIProposalModal from "@/components/admin/estimates/AIProposalModal";
 
 export default function EstimatesPage() {
   const [activeTab, setActiveTab] = useState("builder"); // builder, list
@@ -33,6 +34,8 @@ export default function EstimatesPage() {
   const [viewMode, setViewMode] = useState("table");
   const [notification, setNotification] = useState(null);
   const [editingEstimate, setEditingEstimate] = useState(null);
+  const [showAIProposal, setShowAIProposal] = useState(false);
+  const [aiProposalEstimate, setAIProposalEstimate] = useState(null);
 
   const { estimates, leads, loading, error, fetchData } = useEstimates();
 
@@ -196,6 +199,11 @@ export default function EstimatesPage() {
         } catch (e) {
           // Error handled in mutation
         }
+        break;
+      }
+      case "generate_proposal": {
+        setAIProposalEstimate(estimate);
+        setShowAIProposal(true);
         break;
       }
       default:
@@ -483,6 +491,22 @@ export default function EstimatesPage() {
           onNotification={(message) => {
             setNotification(message);
             setTimeout(() => setNotification(null), 5000);
+          }}
+        />
+      )}
+
+      {/* AI Proposal Generator Modal */}
+      {showAIProposal && aiProposalEstimate && (
+        <AIProposalModal
+          estimate={aiProposalEstimate}
+          onClose={() => {
+            setShowAIProposal(false);
+            setAIProposalEstimate(null);
+          }}
+          onProposalGenerated={(proposal) => {
+            setNotification("✅ Proposal generated! Review it in the modal.");
+            setTimeout(() => setNotification(null), 5000);
+            fetchData(); // Refresh estimates list (proposal_status updated)
           }}
         />
       )}
