@@ -1,0 +1,22 @@
+name: Deploy to arcanpainting.ca
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trigger Coolify Deploy
+        run: |
+          curl -s -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_WEBHOOK_TOKEN }}" \
+            --fail-with-body
+        env:
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+          COOLIFY_WEBHOOK_TOKEN: ${{ secrets.COOLIFY_WEBHOOK_TOKEN }}
