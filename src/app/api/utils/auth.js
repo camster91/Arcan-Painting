@@ -42,6 +42,7 @@ export async function getCurrentUser(request) {
     FROM auth_sessions s
     JOIN auth_users u ON u.id = s.user_id
     WHERE s.token = ${token}
+      AND s.deleted_at IS NULL
     LIMIT 1
   `;
   const row = rows[0];
@@ -52,8 +53,8 @@ export async function getCurrentUser(request) {
 
   const nowIso = new Date().toISOString();
   if (row.expires_at && row.expires_at < nowIso) {
-    // Cleanup expired session
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
+    // Soft-delete expired session (preserve audit trail)
+    await sql`UPDATE auth_sessions SET deleted_at = NOW() WHERE token = ${token} AND deleted_at IS NULL`;
     return null;
   }
 
