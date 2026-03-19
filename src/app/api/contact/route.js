@@ -2,6 +2,19 @@ import { sendTemplatedEmail } from "../utils/send-email.js";
 import { triggerWorkflow } from "../email-workflows/route.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 
+// Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
+async function spawnLeadQualifierAsync(leadData, baseUrl) {
+  try {
+    await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(leadData),
+    });
+  } catch (err) {
+    console.error('Lead qualifier spawn failed (non-fatal):', err.message);
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -85,8 +98,20 @@ export async function POST(request) {
         if (leadResponse.ok) {
           const leadData = await leadResponse.json();
           leadId = leadData.lead?.id;
-
           leadSaved = true;
+
+          // Fire-and-forget: spawn AI lead qualifier in background
+          const baseUrl = request.url.split("/api/")[0];
+          spawnLeadQualifierAsync({
+            leadId,
+            name: body.name,
+            email: body.email,
+            phone: body.phone,
+            serviceType: body.serviceType,
+            projectDescription: body.projectDescription,
+            address: body.address,
+            preferredContact,
+          }, baseUrl);
         } else {
           const leadError = await leadResponse.json();
           console.error("Failed to save lead:", leadError.error);

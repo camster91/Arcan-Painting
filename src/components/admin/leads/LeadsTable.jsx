@@ -1,4 +1,4 @@
-import { Eye, Mail, Phone, DollarSign, Calendar, Edit3 } from "lucide-react";
+import { Eye, Mail, Phone, DollarSign, Calendar, Edit3, Bot } from "lucide-react";
 
 function getStatusColor(status) {
   const colors = {
@@ -155,6 +155,14 @@ export default function LeadsTable({
                       >
                         <Edit3 size={14} />
                         Edit
+                      </button>
+                      <button
+                        onClick={() => onAction?.("ai_schedule", lead)}
+                        className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-1"
+                        title="AI Schedule Estimate"
+                      >
+                        <Bot size={14} />
+                        AI Schedule
                       </button>
                     </div>
                   </td>

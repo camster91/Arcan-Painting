@@ -19,6 +19,7 @@ import LeadCard from "@/components/LeadCard";
 import LeadQuickView from "@/components/LeadQuickView";
 import LeadsTable from "@/components/admin/leads/LeadsTable";
 import LeadEditModal from "@/components/admin/leads/LeadEditModal";
+import AIScheduleModal from "@/components/admin/leads/AIScheduleModal";
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState([]);
@@ -37,6 +38,8 @@ export default function LeadsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showAISchedule, setShowAISchedule] = useState(false);
+  const [aiScheduleLead, setAIScheduleLead] = useState(null);
 
   const statusOptions = [
     { label: "All Leads", value: "all" },
@@ -177,6 +180,10 @@ export default function LeadsPage() {
         break;
       case "schedule":
         window.location.href = `/admin/appointments?lead_id=${lead.id}`;
+        break;
+      case "ai_schedule":
+        setAIScheduleLead(lead);
+        setShowAISchedule(true);
         break;
       case "edit":
         setShowEdit(true);
@@ -576,6 +583,26 @@ export default function LeadsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* AI Schedule Estimate Modal */}
+      {showAISchedule && aiScheduleLead && (
+        <AIScheduleModal
+          lead={aiScheduleLead}
+          onClose={() => {
+            setShowAISchedule(false);
+            setAIScheduleLead(null);
+          }}
+          onSlotSelected={(slot, schedule) => {
+            // Navigate to appointments with pre-filled data
+            const params = new URLSearchParams({
+              lead_id: aiScheduleLead.id,
+              date: slot.date,
+              time: slot.time,
+            });
+            window.location.href = `/admin/appointments?${params}`;
+          }}
+        />
       )}
     </div>
   );

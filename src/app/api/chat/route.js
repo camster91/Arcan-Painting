@@ -1,5 +1,21 @@
 import { chatWithGemini } from '../utils/gemini.js';
 
+// Fire-and-forget: triage new chat messages via AI customer support agent
+async function triggerCustomerSupportAgent(message, baseUrl) {
+  try {
+    await fetch(`${baseUrl}/api/agents/customer-support`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messageText: message,
+        source: 'website_chat',
+      }),
+    });
+  } catch (err) {
+    console.error('Customer support agent trigger failed (non-fatal):', err.message);
+  }
+}
+
 export async function POST(request) {
   try {
     const { message, history } = await request.json();
@@ -17,6 +33,13 @@ export async function POST(request) {
     // deductCredits(userId, CREDITS_PER_CHAT, 'chat_message');
 
     const reply = await chatWithGemini(history || [], message);
+
+    // Fire-and-forget: triage this message for customer support categorization
+    // Only triage substantive messages (not one-word greetings)
+    if (message.length > 10) {
+      const baseUrl = request.url.split('/api/')[0];
+      triggerCustomerSupportAgent(message, baseUrl);
+    }
 
     return Response.json({ reply });
   } catch (error) {
