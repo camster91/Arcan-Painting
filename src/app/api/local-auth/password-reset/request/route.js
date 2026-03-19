@@ -1,5 +1,8 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
+import { passwordLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
+import { validateBody, schemas } from "@/app/api/utils/validate";
 
 function buildBaseUrl(request) {
   try {
@@ -36,32 +39,31 @@ async function ensureTables() {
       used BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
-  // Ensure primary business account exists (password will be reset by owner)
-  const defaultEmail = "info@arcanpainting.ca";
-  const tempPassword = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  await sql`
-    INSERT INTO auth_users (username, password, role)
-    VALUES (${defaultEmail}, ${tempPassword}, 'owner')
-    ON CONFLICT (username) DO NOTHING
-  `;
 }
 
 export async function POST(request) {
+  // Rate limiting — tight limit to prevent reset token spam
+  const limited = passwordLimiter(request);
+  if (limited) return limited;
+
   try {
     await ensureTables();
-    const body = await request.json();
+
+    const [body, validationError] = await validateBody(request, schemas.passwordResetRequest);
+    if (validationError) return validationError;
+
     const identifier = (
       body.emailOrUsername ||
       body.email ||
       body.username ||
       ""
     ).trim();
+
     if (!identifier) {
       return Response.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const users =
-      await sql`SELECT id, username FROM auth_users WHERE username = ${identifier}`;
+    const users = await sql`SELECT id, username FROM auth_users WHERE username = ${identifier}`;
     const user = users[0];
 
     // Always respond success to prevent user enumeration
@@ -79,6 +81,14 @@ export async function POST(request) {
       VALUES (${user.id}, ${token}, ${expiresAt.toISOString()})
     `;
 
+    await auditLog({
+      request,
+      action: "password.reset.request",
+      userId: user.id,
+      username: user.username,
+      status: "success",
+    });
+
     const baseUrl = buildBaseUrl(request);
     const resetUrl = `${baseUrl}/account/reset-password?token=${encodeURIComponent(token)}`;
 
@@ -91,15 +101,11 @@ export async function POST(request) {
       });
     } catch (err) {
       console.error("Email send error:", err);
-      // Even if email fails, don't leak info; still respond success
     }
 
     return genericResponse;
   } catch (error) {
     console.error("Password reset request error:", error);
-    return Response.json(
-      { error: "Failed to request password reset" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to request password reset" }, { status: 500 });
   }
 }

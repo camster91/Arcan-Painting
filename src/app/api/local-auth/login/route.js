@@ -1,4 +1,8 @@
+import { hash, verify as argon2Verify } from "argon2";
 import sql from "@/app/api/utils/sql";
+import { authLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
+import { validateBody, schemas } from "@/app/api/utils/validate";
 
 function parseCookies(cookieHeader) {
   const cookies = {};
@@ -12,15 +16,19 @@ function parseCookies(cookieHeader) {
 }
 
 async function ensureAuthTables() {
-  // Create users and sessions tables if they don't exist
   await sql`
     CREATE TABLE IF NOT EXISTS auth_users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       role VARCHAR(50) DEFAULT 'owner',
+      password_is_hashed BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
+  `;
+  // Add password_is_hashed column if it doesn't exist (migration)
+  await sql`
+    ALTER TABLE auth_users ADD COLUMN IF NOT EXISTS password_is_hashed BOOLEAN DEFAULT FALSE
   `;
   await sql`
     CREATE TABLE IF NOT EXISTS auth_sessions (
@@ -32,27 +40,33 @@ async function ensureAuthTables() {
     )
   `;
 
-  // Seed primary admin using business email if missing
+  // Seed primary admin with a temp hashed password if missing
   const defaultEmail = "info@arcanpainting.ca";
-  const tempPassword = `${Date.now()}-${Math.random().toString(36).slice(2)}`; // temp password; user should reset via email
-  await sql`
-    INSERT INTO auth_users (username, password, role)
-    VALUES (${defaultEmail}, ${tempPassword}, 'owner')
-    ON CONFLICT (username) DO NOTHING
-  `;
+  const existingAdmin = await sql`SELECT id FROM auth_users WHERE username = ${defaultEmail} LIMIT 1`;
+  if (existingAdmin.length === 0) {
+    const tempPassword = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const hashed = await hash(tempPassword);
+    await sql`
+      INSERT INTO auth_users (username, password, role, password_is_hashed)
+      VALUES (${defaultEmail}, ${hashed}, 'owner', TRUE)
+      ON CONFLICT (username) DO NOTHING
+    `;
+  }
 
-  // DEV convenience: ensure a deterministic demo owner exists for local testing
-  try {
-    if (!process.env.ENV || process.env.ENV !== "production") {
-      const demoEmail = "owner@demo.local";
-      const demoPass = "demo123!";
+  // DEV: ensure demo owner exists for local testing
+  if (!process.env.ENV || process.env.ENV !== "production") {
+    const demoEmail = "owner@demo.local";
+    const demoPass = "demo123!";
+    const demoExists = await sql`SELECT id, password_is_hashed FROM auth_users WHERE username = ${demoEmail} LIMIT 1`;
+    if (demoExists.length === 0) {
+      const hashed = await hash(demoPass);
       await sql`
-        INSERT INTO auth_users (username, password, role)
-        VALUES (${demoEmail}, ${demoPass}, 'owner')
-        ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = 'owner'
+        INSERT INTO auth_users (username, password, role, password_is_hashed)
+        VALUES (${demoEmail}, ${hashed}, 'owner', TRUE)
+        ON CONFLICT DO NOTHING
       `;
     }
-  } catch {}
+  }
 }
 
 function makeCookie(name, value, maxAgeSeconds) {
@@ -74,41 +88,57 @@ function makeCookie(name, value, maxAgeSeconds) {
 }
 
 export async function POST(request) {
+  // Rate limiting
+  const limited = authLimiter(request);
+  if (limited) return limited;
+
   try {
     await ensureAuthTables();
-    const body = await request.json();
+
+    const [body, validationError] = await validateBody(request, schemas.login);
+    if (validationError) {
+      await auditLog({ request, action: "login.attempt", status: "failure", changes: { reason: "validation_failed" } });
+      return validationError;
+    }
+
     const username = (body.username || body.email || "").trim();
     const password = (body.password || "").trim();
 
     if (!username || !password) {
-      return Response.json(
-        { error: "Email and password are required" },
-        { status: 400 },
-      );
+      return Response.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    // DEV convenience: allow demo owner login in non-production
-    if (
-      (!process.env.ENV || process.env.ENV !== "production") &&
-      username === "owner@demo.local"
-    ) {
-      await sql`
-        INSERT INTO auth_users (username, password, role)
-        VALUES (${username}, ${password}, 'owner')
-        ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = 'owner'
-      `;
-    }
-
-    // Verify credentials (plain text for backward compatibility)
-    const users =
-      await sql`SELECT id, username, password, role FROM auth_users WHERE username = ${username}`;
+    const users = await sql`SELECT id, username, password, role, password_is_hashed FROM auth_users WHERE username = ${username}`;
     const user = users[0];
 
-    if (!user || user.password !== password) {
-      return Response.json(
-        { error: "Invalid email or password" },
-        { status: 401 },
-      );
+    if (!user) {
+      await auditLog({ request, action: "login.attempt", status: "failure", changes: { username, reason: "user_not_found" } });
+      // Constant-time response to prevent user enumeration
+      return Response.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+
+    // Verify password — support both plain-text (legacy) and argon2 hashed
+    let passwordValid = false;
+    if (user.password_is_hashed) {
+      try {
+        passwordValid = await argon2Verify(user.password, password);
+      } catch {
+        passwordValid = false;
+      }
+    } else {
+      // Legacy plain-text comparison (migrate on-login)
+      passwordValid = user.password === password;
+      if (passwordValid) {
+        // On-login migration: hash the password now
+        const hashed = await hash(password);
+        await sql`UPDATE auth_users SET password = ${hashed}, password_is_hashed = TRUE WHERE id = ${user.id}`;
+        console.log(`[auth] Migrated password hash for user ${user.id}`);
+      }
+    }
+
+    if (!passwordValid) {
+      await auditLog({ request, action: "login.attempt", status: "failure", username: user.username, userId: user.id, changes: { reason: "wrong_password" } });
+      return Response.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
     // Create a session token valid for 7 days
@@ -120,18 +150,26 @@ export async function POST(request) {
       VALUES (${user.id}, ${token}, ${expiresAt.toISOString()})
     `;
 
+    await auditLog({
+      request,
+      action: "login.success",
+      userId: user.id,
+      username: user.username,
+      status: "success",
+    });
+
     const cookie = makeCookie("admin_session", token, 7 * 24 * 60 * 60);
 
     return new Response(
       JSON.stringify({
         success: true,
         user: { id: user.id, username: user.username, role: user.role },
-        token, // expose token for API clients that send Authorization header
+        token,
       }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", "Set-Cookie": cookie },
-      },
+      }
     );
   } catch (error) {
     console.error("Login error:", error);

@@ -1,6 +1,8 @@
 import { sendTemplatedEmail } from "../utils/send-email.js";
 import { triggerWorkflow } from "../email-workflows/route.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
+import { authLimiter } from "../utils/rate-limit.js";
+import { auditLog } from "../utils/audit.js";
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
@@ -16,6 +18,9 @@ async function spawnLeadQualifierAsync(leadData, baseUrl) {
 }
 
 export async function POST(request) {
+  const limited = authLimiter(request);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
 

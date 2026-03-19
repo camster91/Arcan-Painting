@@ -1,8 +1,14 @@
 import sql from "@/app/api/utils/sql";
 import { auth } from "@/auth";
+import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
+import { validateBody, schemas } from "@/app/api/utils/validate";
 
 // GET /api/payments - List payments with filtering or get single payment
 export async function GET(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await auth();
     if (!session?.user) {
@@ -175,13 +181,18 @@ export async function GET(request) {
 
 // POST /api/payments - Record new payment
 export async function POST(request) {
+  const limited = paymentLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await auth();
     if (!session?.user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const [body, validationError] = await validateBody(request, schemas.payment);
+    if (validationError) return validationError;
+
     const {
       invoice_id,
       contract_id,
@@ -194,65 +205,26 @@ export async function POST(request) {
       processed_by,
     } = body;
 
-    // Validation
-    if (!payment_method || !amount || !payment_date) {
-      return Response.json(
-        {
-          error:
-            "Missing required fields: payment_method, amount, payment_date",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (
-      !["cash", "check", "card", "bank_transfer", "other"].includes(
-        payment_method,
-      )
-    ) {
-      return Response.json(
-        { error: "Invalid payment method" },
-        { status: 400 },
-      );
-    }
-
-    if (!["pending", "cleared", "failed", "refunded"].includes(status)) {
-      return Response.json(
-        { error: "Invalid payment status" },
-        { status: 400 },
-      );
-    }
-
     const paymentAmount = parseFloat(amount);
-    if (paymentAmount <= 0) {
-      return Response.json(
-        {
-          error: "Payment amount must be greater than 0",
-        },
-        { status: 400 },
-      );
-    }
 
     // Verify invoice and contract exist if provided
     if (invoice_id) {
-      const invoiceExists =
-        await sql`SELECT id FROM invoices WHERE id = ${invoice_id}`;
+      const invoiceExists = await sql`SELECT id FROM invoices WHERE id = ${invoice_id}`;
       if (invoiceExists.length === 0) {
         return Response.json({ error: "Invoice not found" }, { status: 400 });
       }
     }
 
     if (contract_id) {
-      const contractExists =
-        await sql`SELECT id FROM contracts WHERE id = ${contract_id}`;
+      const contractExists = await sql`SELECT id FROM contracts WHERE id = ${contract_id}`;
       if (contractExists.length === 0) {
         return Response.json({ error: "Contract not found" }, { status: 400 });
       }
     }
 
-    // Start transaction to update payment and invoice status
-    const paymentQueries = [
-      sql`
+    // Real PostgreSQL transaction
+    const { payment, updatedInvoice } = await sql.transaction(async (txSql) => {
+      const [payment] = await txSql`
         INSERT INTO payments (
           invoice_id, contract_id, payment_method, payment_reference,
           amount, payment_date, status, notes, processed_by
@@ -261,89 +233,69 @@ export async function POST(request) {
           ${paymentAmount}, ${payment_date}, ${status}, ${notes || null},
           ${processed_by || session.user.username || session.user.email}
         ) RETURNING *
-      `,
-    ];
+      `;
 
-    // If payment is for an invoice, update invoice payment status
-    if (invoice_id) {
-      paymentQueries.push(
-        sql`
+      let updatedInvoice = null;
+      if (invoice_id) {
+        const [inv] = await txSql`
           UPDATE invoices 
           SET 
             amount_paid = COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
+              SELECT SUM(amount) FROM payments 
               WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
             ), 0),
             payment_status = CASE 
-              WHEN COALESCE((
-                SELECT SUM(amount) 
-                FROM payments 
-                WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-              ), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((
-                SELECT SUM(amount) 
-                FROM payments 
-                WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-              ), 0) > 0 THEN 'partial'
+              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
+              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
               ELSE 'unpaid'
             END,
             amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
+              SELECT SUM(amount) FROM payments 
               WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
             ), 0),
             updated_at = CURRENT_TIMESTAMP
           WHERE id = ${invoice_id}
           RETURNING *
-        `,
-      );
-    }
+        `;
+        updatedInvoice = inv;
+      }
 
-    const [payment, updatedInvoice] = await sql.transaction(paymentQueries);
+      return { payment, updatedInvoice };
+    });
 
-    return Response.json(
-      {
-        payment,
-        updated_invoice: updatedInvoice || null,
-      },
-      { status: 201 },
-    );
+    await auditLog({
+      request,
+      action: "payment.create",
+      userId: session.user.id,
+      username: session.user.email || session.user.username,
+      resource: "payment",
+      resourceId: payment.id,
+      changes: { amount: paymentAmount, payment_method, invoice_id, contract_id },
+      status: "success",
+    });
+
+    return Response.json({ payment, updated_invoice: updatedInvoice || null }, { status: 201 });
   } catch (error) {
     console.error("Error recording payment:", error);
-    return Response.json(
-      { error: "Failed to record payment" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to record payment" }, { status: 500 });
   }
 }
 
 // PUT /api/payments - Update payment
 export async function PUT(request) {
+  const limited = paymentLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await auth();
     if (!session?.user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const {
-      id,
-      payment_method,
-      payment_reference,
-      amount,
-      payment_date,
-      status,
-      notes,
-      processed_by,
-    } = body;
+    const [body, validationError] = await validateBody(request, schemas.paymentUpdate);
+    if (validationError) return validationError;
 
-    if (!id) {
-      return Response.json(
-        { error: "Payment ID is required" },
-        { status: 400 },
-      );
-    }
+    const { id, payment_method, payment_reference, amount, payment_date, status, notes, processed_by } = body;
 
     // Check if payment exists
     const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
@@ -351,90 +303,23 @@ export async function PUT(request) {
       return Response.json({ error: "Payment not found" }, { status: 404 });
     }
 
-    // Validation
-    if (
-      payment_method &&
-      !["cash", "check", "card", "bank_transfer", "other"].includes(
-        payment_method,
-      )
-    ) {
-      return Response.json(
-        { error: "Invalid payment method" },
-        { status: 400 },
-      );
-    }
-
-    if (
-      status &&
-      !["pending", "cleared", "failed", "refunded"].includes(status)
-    ) {
-      return Response.json(
-        { error: "Invalid payment status" },
-        { status: 400 },
-      );
-    }
-
-    if (amount !== undefined) {
-      const numericAmount = parseFloat(amount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        return Response.json(
-          { error: "Amount must be a positive number" },
-          { status: 400 },
-        );
-      }
-    }
-
     // Build update query dynamically
     const updateFields = [];
     const updateValues = [];
     let paramCount = 1;
 
-    if (payment_method !== undefined) {
-      updateFields.push(`payment_method = $${paramCount}`);
-      updateValues.push(payment_method);
-      paramCount++;
-    }
-    if (payment_reference !== undefined) {
-      updateFields.push(`payment_reference = $${paramCount}`);
-      updateValues.push(payment_reference);
-      paramCount++;
-    }
-    if (amount !== undefined) {
-      updateFields.push(`amount = $${paramCount}`);
-      updateValues.push(parseFloat(amount));
-      paramCount++;
-    }
-    if (payment_date !== undefined) {
-      updateFields.push(`payment_date = $${paramCount}`);
-      updateValues.push(payment_date);
-      paramCount++;
-    }
-    if (status !== undefined) {
-      updateFields.push(`status = $${paramCount}`);
-      updateValues.push(status);
-      paramCount++;
-    }
-    if (notes !== undefined) {
-      updateFields.push(`notes = $${paramCount}`);
-      updateValues.push(notes);
-      paramCount++;
-    }
-    if (processed_by !== undefined) {
-      updateFields.push(`processed_by = $${paramCount}`);
-      updateValues.push(processed_by);
-      paramCount++;
-    }
+    if (payment_method !== undefined) { updateFields.push(`payment_method = $${paramCount}`); updateValues.push(payment_method); paramCount++; }
+    if (payment_reference !== undefined) { updateFields.push(`payment_reference = $${paramCount}`); updateValues.push(payment_reference); paramCount++; }
+    if (amount !== undefined) { updateFields.push(`amount = $${paramCount}`); updateValues.push(parseFloat(amount)); paramCount++; }
+    if (payment_date !== undefined) { updateFields.push(`payment_date = $${paramCount}`); updateValues.push(payment_date); paramCount++; }
+    if (status !== undefined) { updateFields.push(`status = $${paramCount}`); updateValues.push(status); paramCount++; }
+    if (notes !== undefined) { updateFields.push(`notes = $${paramCount}`); updateValues.push(notes); paramCount++; }
+    if (processed_by !== undefined) { updateFields.push(`processed_by = $${paramCount}`); updateValues.push(processed_by); paramCount++; }
 
     updateFields.push(`updated_at = CURRENT_TIMESTAMP`);
     updateValues.push(id);
 
-    const updateQuery = `
-      UPDATE payments 
-      SET ${updateFields.join(", ")}
-      WHERE id = $${paramCount}
-      RETURNING *
-    `;
-
+    const updateQuery = `UPDATE payments SET ${updateFields.join(", ")} WHERE id = $${paramCount} RETURNING *`;
     const [payment] = await sql(updateQuery, updateValues);
 
     // If payment amount or status changed and it's linked to an invoice, update invoice totals
@@ -442,46 +327,41 @@ export async function PUT(request) {
       await sql`
         UPDATE invoices 
         SET 
-          amount_paid = COALESCE((
-            SELECT SUM(amount) 
-            FROM payments 
-            WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')
-          ), 0),
+          amount_paid = COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
           payment_status = CASE 
-            WHEN COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')
-            ), 0) >= total_amount THEN 'paid'
-            WHEN COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')
-            ), 0) > 0 THEN 'partial'
+            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
+            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
             ELSE 'unpaid'
           END,
-          amount_due = total_amount - COALESCE((
-            SELECT SUM(amount) 
-            FROM payments 
-            WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')
-          ), 0),
+          amount_due = total_amount - COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ${payment.invoice_id}
       `;
     }
 
+    await auditLog({
+      request,
+      action: "payment.update",
+      userId: session.user.id,
+      username: session.user.email || session.user.username,
+      resource: "payment",
+      resourceId: id,
+      changes: { amount, status, payment_method },
+      status: "success",
+    });
+
     return Response.json(payment);
   } catch (error) {
     console.error("Error updating payment:", error);
-    return Response.json(
-      { error: "Failed to update payment" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to update payment" }, { status: 500 });
   }
 }
 
 // DELETE /api/payments - Delete payment
 export async function DELETE(request) {
+  const limited = paymentLimiter(request);
+  if (limited) return limited;
+
   try {
     const session = await auth();
     if (!session?.user) {
@@ -492,13 +372,9 @@ export async function DELETE(request) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return Response.json(
-        { error: "Payment ID is required" },
-        { status: 400 },
-      );
+      return Response.json({ error: "Payment ID is required" }, { status: 400 });
     }
 
-    // Check if payment exists
     const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
     if (existingPayment.length === 0) {
       return Response.json({ error: "Payment not found" }, { status: 404 });
@@ -506,52 +382,47 @@ export async function DELETE(request) {
 
     const payment = existingPayment[0];
 
-    // Delete payment and update invoice if needed
-    const deleteQueries = [sql`DELETE FROM payments WHERE id = ${id}`];
+    // Real transaction: delete payment + recalculate invoice
+    await sql.transaction(async (txSql) => {
+      await txSql`DELETE FROM payments WHERE id = ${id}`;
 
-    // If payment was linked to an invoice, recalculate invoice totals
-    if (payment.invoice_id) {
-      deleteQueries.push(
-        sql`
+      if (payment.invoice_id) {
+        await txSql`
           UPDATE invoices 
           SET 
             amount_paid = COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
+              SELECT SUM(amount) FROM payments 
               WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
             ), 0),
             payment_status = CASE 
-              WHEN COALESCE((
-                SELECT SUM(amount) 
-                FROM payments 
-                WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-              ), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((
-                SELECT SUM(amount) 
-                FROM payments 
-                WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-              ), 0) > 0 THEN 'partial'
+              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) >= total_amount THEN 'paid'
+              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) > 0 THEN 'partial'
               ELSE 'unpaid'
             END,
             amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) 
-              FROM payments 
+              SELECT SUM(amount) FROM payments 
               WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
             ), 0),
             updated_at = CURRENT_TIMESTAMP
           WHERE id = ${payment.invoice_id}
-        `,
-      );
-    }
+        `;
+      }
+    });
 
-    await sql.transaction(deleteQueries);
+    await auditLog({
+      request,
+      action: "payment.delete",
+      userId: session.user.id,
+      username: session.user.email || session.user.username,
+      resource: "payment",
+      resourceId: id,
+      changes: { amount: payment.amount, payment_method: payment.payment_method },
+      status: "success",
+    });
 
     return Response.json({ message: "Payment deleted successfully" });
   } catch (error) {
     console.error("Error deleting payment:", error);
-    return Response.json(
-      { error: "Failed to delete payment" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to delete payment" }, { status: 500 });
   }
 }

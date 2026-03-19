@@ -1,5 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser, unauthorizedResponse } from "@/app/api/utils/auth";
+import { generalLimiter } from "@/app/api/utils/rate-limit";
+import { auditLog } from "@/app/api/utils/audit";
 
 // Generate invoice number
 function generateInvoiceNumber() {
@@ -13,6 +15,9 @@ function generateInvoiceNumber() {
 
 // GET /api/invoices - List invoices with filtering
 export async function GET(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
   try {
     const user = await getCurrentUser(request);
     if (!user) {
@@ -155,6 +160,9 @@ export async function GET(request) {
 
 // POST /api/invoices - Create new invoice
 export async function POST(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
   try {
     const user = await getCurrentUser(request);
     if (!user) {
