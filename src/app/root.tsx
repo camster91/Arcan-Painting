@@ -374,6 +374,9 @@ export function Layout({ children }: { children: ReactNode }) {
         {/* SEO: Title & Description */}
         <title>Arcan Painting | Professional Interior &amp; Exterior Painting Services</title>
         <meta name="description" content="Expert painting services for residential &amp; commercial properties. Free estimates. Licensed &amp; insured." />
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
         {/* SEO: Canonical tag */}
         <link rel="canonical" href={`https://arcanpainting.ca${pathname}`} />
         {/* SEO: LocalBusiness JSON-LD schema */}
