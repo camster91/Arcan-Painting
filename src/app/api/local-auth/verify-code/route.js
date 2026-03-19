@@ -1,17 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
+import { generateSecureToken, parseCookies } from "@/app/api/utils/auth";
 
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [
@@ -83,8 +73,8 @@ export async function POST(request) {
       return Response.json({ error: "User not found" }, { status: 401 });
     }
 
-    // Create session (7 days)
-    const token = `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    // Create cryptographically secure session token (7 days)
+    const token = generateSecureToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     await sql`
@@ -100,13 +90,14 @@ export async function POST(request) {
       username: user.username,
     });
 
+    // Token delivered ONLY via httpOnly cookie — not in JSON body
     const cookie = makeCookie("admin_session", token, 7 * 24 * 60 * 60);
 
     return new Response(
       JSON.stringify({
         success: true,
         user: { id: user.id, username: user.username, role: user.role },
-        token,
+        // NOTE: token intentionally omitted from response — httpOnly cookie only
       }),
       {
         status: 200,

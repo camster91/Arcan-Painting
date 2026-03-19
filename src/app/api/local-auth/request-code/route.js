@@ -1,27 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
-
-// Ensure magic code table exists
-async function ensureMagicTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_verification_codes (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) NOT NULL,
-      code VARCHAR(10) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL,
-      used_at TIMESTAMP
-    )
-  `;
-  // Index for fast lookups
-  await sql`
-    CREATE INDEX IF NOT EXISTS idx_auth_codes_username ON auth_verification_codes(username)
-  `;
-  await sql`
-    CREATE INDEX IF NOT EXISTS idx_auth_codes_code ON auth_verification_codes(code)
-  `;
-}
+import { ensureSchema } from "@/migrations/001-initial-schema";
 
 function generateCode() {
   // Cryptographically random 6-digit code
@@ -85,7 +65,8 @@ export async function POST(request) {
   if (limited) return limited;
 
   try {
-    await ensureMagicTables();
+    // Use centralized migration — no inline DDL
+    await ensureSchema();
 
     const body = await request.json().catch(() => ({}));
     const username = ((body.username || body.email) ?? "").trim().toLowerCase();
