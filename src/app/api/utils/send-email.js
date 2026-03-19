@@ -12,12 +12,12 @@ export async function sendEmail({
   userId,
   metadata = {},
 }) {
-  // Use either RESEND_API_KEY (old name) or RESEND (new secret name)
-  const apiKey = process.env.RESEND_API_KEY || process.env.RESEND;
+  const apiKey = process.env.MAILGUN_API_KEY;
+  const domain = process.env.MAILGUN_DOMAIN || "ashbi.ca";
 
   if (!apiKey) {
     throw new Error(
-      "Resend API key is not configured. Please set RESEND (preferred) or RESEND_API_KEY in your project secrets.",
+      "Mailgun API key is not configured. Please set MAILGUN_API_KEY in your project secrets.",
     );
   }
 
@@ -29,24 +29,31 @@ export async function sendEmail({
   const finalTo = toArray[0]; // For logging, use first recipient
 
   let status = "failed";
-  let resendId = null;
+  let messageId = null;
   let errorMessage = null;
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
+    // Build multipart/form-data body for Mailgun API
+    const formData = new FormData();
+    formData.append("from", finalFrom);
+    toArray.forEach((recipient) => formData.append("to", recipient));
+    formData.append("subject", subject);
+    if (html) formData.append("html", html);
+    if (text) formData.append("text", text);
+
+    // Basic auth: api:MAILGUN_API_KEY
+    const credentials = btoa(`api:${apiKey}`);
+
+    const response = await fetch(
+      `https://api.mailgun.net/v3/${domain}/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${credentials}`,
+        },
+        body: formData,
       },
-      body: JSON.stringify({
-        from: finalFrom,
-        to: toArray,
-        subject,
-        html,
-        text,
-      }),
-    });
+    );
 
     let data = null;
     try {
@@ -63,7 +70,7 @@ export async function sendEmail({
     }
 
     status = "sent";
-    resendId = data?.id;
+    messageId = data?.id;
 
     // Log successful email
     try {
@@ -73,7 +80,7 @@ export async function sendEmail({
           related_type, related_id, user_id, metadata, sent_at
         ) VALUES (
           ${finalTo}, ${finalFrom}, ${subject}, ${templateName}, ${status}, 
-          ${resendId}, ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)}, 
+          ${messageId}, ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)}, 
           CURRENT_TIMESTAMP
         )
       `;
@@ -82,7 +89,7 @@ export async function sendEmail({
       // Don't fail the email send if logging fails
     }
 
-    return { id: resendId };
+    return { id: messageId };
   } catch (error) {
     errorMessage = error.message;
 
