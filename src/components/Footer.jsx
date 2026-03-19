@@ -34,7 +34,7 @@ export default function Footer() {
                 className="text-xl font-bold"
                 style={{ color: themeColors.text }}
               >
-                Arcan and Sons
+                Arcan Painting
               </h3>
             </div>
             <p
@@ -122,23 +122,29 @@ export default function Footer() {
             </p>
             <div className="flex gap-3 mb-4">
               <a
-                href="#"
+                href="https://www.facebook.com/arcanpainting"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
-                aria-label="Facebook"
+                aria-label="Arcan Painting on Facebook"
               >
                 <Facebook size={18} className="text-white" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/arcanpainting"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-pink-600 hover:bg-pink-700 transition-colors"
-                aria-label="Instagram"
+                aria-label="Arcan Painting on Instagram"
               >
                 <Instagram size={18} className="text-white" />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/company/arcan-painting"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-blue-700 hover:bg-blue-800 transition-colors"
-                aria-label="LinkedIn"
+                aria-label="Arcan Painting on LinkedIn"
               >
                 <Linkedin size={18} className="text-white" />
               </a>
@@ -160,7 +166,7 @@ export default function Footer() {
           style={{ borderColor: themeColors.border }}
         >
           <p className="text-sm" style={{ color: themeColors.textMuted }}>
-            © {currentYear} Arcan and Sons. All rights reserved.
+            © {currentYear} Arcan Painting. All rights reserved.
           </p>
         </div>
       </div>

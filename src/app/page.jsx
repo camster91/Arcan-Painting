@@ -1,11 +1,9 @@
 import Header from "../components/Header";
-import QuoteRequestForm from "../components/QuoteRequestForm";
 import HeroSection from "../components/HeroSection";
 import ServicesSection from "../components/ServicesSection";
 import ProcessSection from "../components/ProcessSection";
-// import PortfolioSection from "../components/PortfolioSection"; // REMOVED for now
-// import PricingSection from "../components/PricingSection"; // HIDDEN for now
-// import TestimonialsSection from "../components/TestimonialsSection"; // REMOVED for now
+import PortfolioSection from "../components/PortfolioSection";
+import PricingSection from "../components/PricingSection";
 import GuaranteeSection from "../components/GuaranteeSection";
 import LocalAreaSection from "../components/LocalAreaSection";
 import FAQSection from "../components/FAQSection";
@@ -39,13 +37,10 @@ export default function HomePage() {
         <ProcessSection />
 
         {/* Portfolio Section - Before/after project photos */}
-        {/* <PortfolioSection /> REMOVED for now */}
+        <PortfolioSection />
 
-        {/* Unified Pricing Section - Calculator + transparent pricing tiers */}
-        {/* <PricingSection /> */}
-
-        {/* Testimonials Section - Customer reviews and ratings */}
-        {/* <TestimonialsSection /> REMOVED for now */}
+        {/* Pricing Section - Calculator + transparent pricing tiers */}
+        <PricingSection />
 
         {/* Guarantee Section - Risk reversal with warranties */}
         <GuaranteeSection />
@@ -58,19 +53,6 @@ export default function HomePage() {
 
         {/* About Section - Family business heritage and experience */}
         <AboutSection />
-
-        {/* Quote Request Section */}
-        <section id="quote" className="py-20 bg-gradient-to-b from-white to-amber-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get a Free Quote</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Tell us about your project and we'll send you a detailed estimate within 24-48 hours. No obligation.
-              </p>
-            </div>
-            <QuoteRequestForm />
-          </div>
-        </section>
 
         {/* Contact Section - Contact form and business information */}
         <ContactSection />
