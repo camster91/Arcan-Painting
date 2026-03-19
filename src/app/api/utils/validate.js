@@ -90,6 +90,33 @@ export const schemas = {
     notes: yup.string().max(10000).optional().nullable(),
   }),
 
+  leadUpdate: yup.object({
+    id: id,
+    name: yup.string().max(255).optional(),
+    email: yup.string().email().max(255).optional().nullable(),
+    phone: phone,
+    address: yup.string().max(500).optional().nullable(),
+    service_type: yup.string().max(100).optional().nullable(),
+    project_description: yup.string().max(10000).optional().nullable(),
+    notes: yup.string().max(10000).optional().nullable(),
+    status: yup
+      .string()
+      .oneOf(["new", "contacted", "qualified", "proposal_sent", "won", "lost", "follow_up"], "Invalid status")
+      .optional(),
+    preferred_contact: yup
+      .string()
+      .oneOf(["phone", "email", "text", "any"], "Invalid contact method")
+      .optional().nullable(),
+    contact_method: yup
+      .string()
+      .oneOf(["phone", "email", "text", "any"], "Invalid contact method")
+      .optional().nullable(),
+    lead_source: yup.string().max(100).optional().nullable(),
+    estimated_value: yup.number().min(0).optional().nullable(),
+    follow_up_date: dateString,
+    tags: yup.array().of(yup.string().max(50)).max(20, "Too many tags").optional().nullable(),
+  }),
+
   contact: yup.object({
     name: yup.string().max(255).required("Name is required"),
     email: email,

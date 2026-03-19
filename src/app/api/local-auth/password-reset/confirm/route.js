@@ -3,28 +3,7 @@ import sql from "@/app/api/utils/sql";
 import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
-
-async function ensureTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'owner',
-      password_is_hashed BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`ALTER TABLE auth_users ADD COLUMN IF NOT EXISTS password_is_hashed BOOLEAN DEFAULT FALSE`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS password_reset_tokens (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      used BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-}
+import { ensureSchema } from "@/migrations/001-initial-schema";
 
 export async function POST(request) {
   // Rate limiting
@@ -32,7 +11,7 @@ export async function POST(request) {
   if (limited) return limited;
 
   try {
-    await ensureTables();
+    await ensureSchema();
 
     const [body, validationError] = await validateBody(request, schemas.passwordResetConfirm);
     if (validationError) return validationError;

@@ -1,65 +1,10 @@
 import sql from "../utils/sql.js";
 import { generalLimiter, authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
+import { requireAdmin, getCurrentUser } from "../utils/auth.js";
+import { validateBody, schemas } from "../utils/validate.js";
 
-// Helper: ensure local auth tables exist
-async function ensureAuthTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'admin',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )
-  `;
-}
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-async function requireAdmin(request) {
-  try {
-    await ensureAuthTables();
-  } catch {}
-  const cookieHeader = request.headers.get("cookie");
-  const cookies = parseCookies(cookieHeader);
-  const token = cookies["admin_session"];
-  if (!token) return false;
-  const rows = await sql`
-    SELECT u.id, s.expires_at FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const row = rows[0];
-  if (!row) return false;
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return false;
-  }
-  return true;
-}
-
-// Create a new lead
+// Create a new lead (public endpoint — used by contact form)
 export async function POST(request) {
   const limited = authLimiter(request); // tight limit — public endpoint
   if (limited) return limited;
@@ -92,6 +37,10 @@ export async function POST(request) {
         { status: 400 },
       );
     }
+
+    // Sanitize lengths
+    if (body.name.trim().length > 255) return Response.json({ error: "Name too long" }, { status: 400 });
+    if (body.email.trim().length > 255) return Response.json({ error: "Email too long" }, { status: 400 });
 
     // Calculate follow-up date (24 hours from now)
     const followUpDate = new Date();
@@ -177,12 +126,17 @@ export async function GET(request) {
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
     const page = parseInt(url.searchParams.get("page")) || 1;
-    const limit = parseInt(url.searchParams.get("limit")) || 20;
+    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 20, 100); // cap at 100
     const search = url.searchParams.get("search");
+    const includeDeleted = url.searchParams.get("include_deleted") === "true";
     const offset = (page - 1) * limit;
 
     // Build dynamic query
     let queryParts = ["SELECT * FROM leads WHERE 1=1"];
+    // Exclude soft-deleted by default
+    if (!includeDeleted) {
+      queryParts.push("AND deleted_at IS NULL");
+    }
     let queryValues = [];
     let paramCount = 0;
 
@@ -219,6 +173,9 @@ export async function GET(request) {
 
     // Get total count for pagination
     let countQuery = "SELECT COUNT(*) as total FROM leads WHERE 1=1";
+    if (!includeDeleted) {
+      countQuery += " AND deleted_at IS NULL";
+    }
     let countValues = [];
     let countParamCount = 0;
 
@@ -260,7 +217,7 @@ export async function GET(request) {
   }
 }
 
-// Update a lead (ADMIN ONLY)
+// Update a lead (ADMIN ONLY) — with full yup validation
 export async function PUT(request) {
   try {
     const authorized = await requireAdmin(request);
@@ -268,7 +225,10 @@ export async function PUT(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    // Validate request body with yup schema
+    const [body, validationError] = await validateBody(request, schemas.leadUpdate);
+    if (validationError) return validationError;
+
     const {
       id,
       name,
@@ -276,6 +236,7 @@ export async function PUT(request) {
       phone,
       service_type,
       preferred_contact,
+      contact_method,
       status,
       lead_source,
       estimated_value,
@@ -283,13 +244,14 @@ export async function PUT(request) {
       address,
       project_description,
       notes,
+      tags,
     } = body;
 
     if (!id) {
       return Response.json({ error: "Lead ID is required" }, { status: 400 });
     }
 
-    const exists = await sql`SELECT id FROM leads WHERE id = ${id}`;
+    const exists = await sql`SELECT id FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
     if (!exists || exists.length === 0) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }
@@ -314,9 +276,9 @@ export async function PUT(request) {
       setClauses.push(`service_type = $${i++}`);
       values.push(service_type);
     }
-    if (preferred_contact !== undefined) {
+    if (preferred_contact !== undefined || contact_method !== undefined) {
       setClauses.push(`preferred_contact = $${i++}`);
-      values.push(preferred_contact);
+      values.push(preferred_contact || contact_method);
     }
     if (status !== undefined) {
       setClauses.push(`status = $${i++}`);
@@ -348,6 +310,10 @@ export async function PUT(request) {
       setClauses.push(`notes = $${i++}`);
       values.push(notes);
     }
+    if (tags !== undefined) {
+      setClauses.push(`tags = $${i++}`);
+      values.push(JSON.stringify(tags));
+    }
 
     if (setClauses.length === 0) {
       return Response.json({ error: "No fields to update" }, { status: 400 });
@@ -360,7 +326,7 @@ export async function PUT(request) {
     // where id
     values.push(id);
 
-    const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} RETURNING *`;
+    const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} AND deleted_at IS NULL RETURNING *`;
     const result = await sql(query, values);
 
     return Response.json({ success: true, lead: result[0] });
@@ -370,7 +336,7 @@ export async function PUT(request) {
   }
 }
 
-// Delete a lead (ADMIN ONLY)
+// Soft-delete a lead (ADMIN ONLY) — sets deleted_at, recoverable via /api/admin/recovery
 export async function DELETE(request) {
   try {
     const authorized = await requireAdmin(request);
@@ -385,25 +351,27 @@ export async function DELETE(request) {
       return Response.json({ error: "Lead ID is required" }, { status: 400 });
     }
 
-    // Check if lead exists
-    const existingLead = await sql`SELECT id, name FROM leads WHERE id = ${id}`;
+    // Check if lead exists and is not already deleted
+    const existingLead = await sql`SELECT id, name FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
     if (!existingLead || existingLead.length === 0) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }
 
-    // IMPORTANT: delete in dependency order to satisfy FKs
-    // 1) Delete follow-ups -> 2) Projects (FK to estimates) -> 3) Estimates -> 4) Appointments -> 5) Lead
-    await sql`DELETE FROM follow_ups WHERE lead_id = ${id}`;
-    await sql`DELETE FROM projects WHERE lead_id = ${id}`;
-    await sql`DELETE FROM estimates WHERE lead_id = ${id}`;
-    await sql`DELETE FROM appointments WHERE lead_id = ${id}`;
+    // Soft delete — set deleted_at timestamp instead of hard delete
+    const deletedAt = new Date().toISOString();
+    await sql`UPDATE leads SET deleted_at = ${deletedAt} WHERE id = ${id}`;
 
-    // Delete the lead
-    await sql`DELETE FROM leads WHERE id = ${id}`;
+    // Also soft-delete related follow-ups
+    try {
+      await sql`UPDATE follow_ups SET deleted_at = ${deletedAt} WHERE lead_id = ${id} AND deleted_at IS NULL`;
+    } catch {
+      // follow_ups may not have deleted_at yet — that's ok
+    }
 
     return Response.json({
       success: true,
-      message: `Lead "${existingLead[0].name}" has been deleted successfully`,
+      message: `Lead "${existingLead[0].name}" has been archived. It can be recovered from /api/admin/recovery.`,
+      deleted_at: deletedAt,
     });
   } catch (error) {
     console.error("Error deleting lead:", error);
