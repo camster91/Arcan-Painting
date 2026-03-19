@@ -227,6 +227,118 @@ app.all('/integrations/:path{.+}', async (c, next) => {
   });
 });
 
+// Serve robots.txt and sitemap.xml with correct Content-Type before React Router catch-all
+app.get('/robots.txt', (c) => {
+  const baseUrl = process.env.APP_URL || 'https://arcanpainting.ca';
+  const robotsTxt = `User-agent: *
+Allow: /
+Allow: /thank-you
+Allow: /#services
+Allow: /#portfolio
+Allow: /#about
+Allow: /#contact
+
+# Block admin areas from search engines
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/*
+Disallow: /account/
+Disallow: /account/*
+Disallow: /_next/
+Disallow: /static/
+
+# Block specific files
+Disallow: *.json$
+Disallow: /favicon.ico
+
+# Allow specific crawlers better access
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap location
+Sitemap: ${baseUrl}/sitemap.xml
+
+# Crawl delay for non-major search engines
+User-agent: *
+Crawl-delay: 1`;
+
+  return c.text(robotsTxt, 200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'public, max-age=86400',
+  });
+});
+
+app.get('/sitemap.xml', (c) => {
+  const baseUrl = process.env.APP_URL || 'https://arcanpainting.ca';
+  const currentDate = new Date().toISOString().split('T')[0];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/</image:loc>
+      <image:caption>Arcan and Sons Professional Toronto Painting Services</image:caption>
+      <image:title>Professional Painting Services GTA</image:title>
+    </image:image>
+  </url>
+
+  <!-- Thank you page -->
+  <url>
+    <loc>${baseUrl}/thank-you</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Services section -->
+  <url>
+    <loc>${baseUrl}/#services</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Portfolio section -->
+  <url>
+    <loc>${baseUrl}/#portfolio</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About section -->
+  <url>
+    <loc>${baseUrl}/#about</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Contact section -->
+  <url>
+    <loc>${baseUrl}/#contact</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>`;
+
+  return c.text(sitemap, 200, {
+    'Content-Type': 'application/xml; charset=utf-8',
+    'Cache-Control': 'public, max-age=86400',
+  });
+});
+
 app.use('/api/auth/*', async (c, next) => {
   if (isAuthAction(c.req.path)) {
     return authHandler()(c, next);
