@@ -392,7 +392,7 @@ export function Layout({ children }: { children: ReactNode }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              "name": "Arcan and Sons Painting",
+              "name": "Arcan Painting",
               "description": "Professional interior and exterior painting services for residential and commercial properties in Toronto and the GTA. Licensed, insured, and free estimates.",
               "url": "https://arcanpainting.ca",
               "telephone": "+1-416-000-0000",
@@ -431,23 +431,23 @@ export function Layout({ children }: { children: ReactNode }) {
           }}
         />
         {/* Static OG meta tags for social crawlers (SSR-rendered) */}
-        <meta property="og:title" content="Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters" />
+        <meta property="og:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
         <meta property="og:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
         <meta property="og:url" content="https://arcanpainting.ca" />
-        <meta property="og:site_name" content="Arcan and Sons Painting" />
+        <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_CA" />
         <meta property="og:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Arcan and Sons Professional Toronto Painting Services" />
+        <meta property="og:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         <meta property="og:image:type" content="image/jpeg" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@arcanpainting" />
-        <meta name="twitter:title" content="Arcan and Sons - Professional Toronto Painting Services | GTA's Trusted Painters" />
+        <meta name="twitter:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
         <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
         <meta name="twitter:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
-        <meta name="twitter:image:alt" content="Arcan and Sons Professional Toronto Painting Services" />
+        <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         {/* SEO: Geo tags for local search */}
         <meta name="geo.region" content="CA-ON" />
         <meta name="geo.position" content="43.6532;-79.3832" />
@@ -478,13 +478,13 @@ export function Layout({ children }: { children: ReactNode }) {
           }}
           aria-hidden="true"
         >
-          <h1>Professional Painting Services in Toronto &amp; the GTA — Arcan and Sons</h1>
+          <h1>Professional Painting Services in Toronto &amp; the GTA — Arcan Painting</h1>
 
-          <p>Arcan and Sons is Toronto's trusted painting contractor, proudly serving homeowners and businesses across the Greater Toronto Area. With over 15 years of hands-on experience, our family-owned team delivers exceptional interior and exterior painting results — on time, on budget, and backed by our 2-year satisfaction guarantee.</p>
+          <p>Arcan Painting is Toronto's trusted painting contractor, proudly serving homeowners and businesses across the Greater Toronto Area. With over 15 years of hands-on experience, our family-owned team delivers exceptional interior and exterior painting results — on time, on budget, and backed by our 2-year satisfaction guarantee.</p>
 
-          <p>From a single accent wall to a complete commercial repaint, we treat every project with the same care, precision, and pride that has made us one of the GTA's most recommended painting companies. Whether you need fresh colour for a bedroom, weather-resistant protection for your home's exterior, or a professional finish for your office space, Arcan and Sons is the team you can count on.</p>
+          <p>From a single accent wall to a complete commercial repaint, we treat every project with the same care, precision, and pride that has made us one of the GTA's most recommended painting companies. Whether you need fresh colour for a bedroom, weather-resistant protection for your home's exterior, or a professional finish for your office space, Arcan Painting is the team you can count on.</p>
 
-          <h2>Why Choose Arcan and Sons for Your Toronto Painting Project?</h2>
+          <h2>Why Choose Arcan Painting for Your Toronto Painting Project?</h2>
 
           <p>Choosing the right painting contractor is about more than just a good price. It's about trust, quality, and results that last. Here's why thousands of GTA homeowners and businesses choose us:</p>
 
@@ -518,7 +518,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           <h2>Our Painting Process — How We Work</h2>
 
-          <p>We believe a great paint job starts long before the brush ever touches the wall. Here's what you can expect when you hire Arcan and Sons:</p>
+          <p>We believe a great paint job starts long before the brush ever touches the wall. Here's what you can expect when you hire Arcan Painting:</p>
 
           <ol>
             <li><strong>Free On-Site Estimate:</strong> We visit your property, assess the scope of work, discuss your vision, and provide a detailed written quote — no obligation, no pressure.</li>
@@ -554,7 +554,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           <h2>Trust Signals &amp; Credentials</h2>
 
-          <p>When you invite a painting crew into your home or business, trust matters. Here's why Arcan and Sons has earned the trust of hundreds of GTA customers:</p>
+          <p>When you invite a painting crew into your home or business, trust matters. Here's why Arcan Painting has earned the trust of hundreds of GTA customers:</p>
 
           <ul>
             <li>✓ Fully licensed painting contractor in Ontario</li>
@@ -573,7 +573,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           <p>We serve the entire GTA and our estimates are always free, detailed, and no-obligation. Whether your project is big or small, we'd love the opportunity to earn your business and deliver results you'll be proud of for years to come.</p>
 
-          <p>Arcan and Sons — Toronto's trusted family painting company. <a href="#quote">Get your free estimate today.</a></p>
+          <p>Arcan Painting — Toronto's trusted family painting company. <a href="#quote">Get your free estimate today.</a></p>
         </div>
 
         <ClientOnly loader={() => children} />
