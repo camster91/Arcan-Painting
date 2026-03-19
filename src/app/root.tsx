@@ -395,7 +395,7 @@ export function Layout({ children }: { children: ReactNode }) {
               "name": "Arcan Painting",
               "description": "Professional interior and exterior painting services for residential and commercial properties in Toronto and the GTA. Licensed, insured, and free estimates.",
               "url": "https://arcanpainting.ca",
-              "telephone": "+1-416-000-0000",
+              "telephone": "+1 (416) 727-2148",
               "email": "info@arcanpainting.ca",
               "address": {
                 "@type": "PostalAddress",
