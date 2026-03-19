@@ -439,6 +439,14 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
         <meta name="twitter:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
         <meta name="twitter:image:alt" content="Arcan and Sons Professional Toronto Painting Services" />
+        {/* SEO: Geo tags for local search */}
+        <meta name="geo.region" content="CA-ON" />
+        <meta name="geo.position" content="43.6532;-79.3832" />
+        <meta name="ICBM" content="43.6532, -79.3832" />
+        {/* SEO: Robots meta */}
+        <meta name="robots" content="index, follow" />
+        {/* Performance: Preload hero image */}
+        <link rel="preload" as="image" href="/hero.jpg" />
         <Meta />
         <Links />
         <script type="module" src="/src/__create/dev-error-overlay.js"></script>

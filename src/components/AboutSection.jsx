@@ -133,6 +133,7 @@ export default function AboutSection() {
                   src="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/auto/"
                   alt="The Cañabate family - Jose and his three sons Pablo, Gerardo, and JJ painting a Toronto house, working together as a family team"
                   className="w-full h-[400px] object-cover"
+                  loading="lazy"
                 />
 
                 {/* Image overlay */}

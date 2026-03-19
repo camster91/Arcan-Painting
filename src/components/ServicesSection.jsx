@@ -291,6 +291,7 @@ export default function ServicesSection() {
                             src={service.image}
                             alt={service.title}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                           <div
                             className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`}
@@ -340,6 +341,7 @@ export default function ServicesSection() {
                             src={service.image}
                             alt={service.title}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/70 to-slate-900/60"></div>
                         </div>
