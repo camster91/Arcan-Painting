@@ -98,6 +98,46 @@ export async function runMigrations() {
       )
     `;
 
+    // ── Performance indexes ──────────────────────────────────────────────────
+    // leads table
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_deleted_at ON leads(deleted_at) WHERE deleted_at IS NULL`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_follow_up_date ON leads(follow_up_date)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email)`;
+
+    // estimates table
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_lead_id ON estimates(lead_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_status ON estimates(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_created_at ON estimates(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_created_by ON estimates(created_by)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_estimate_number ON estimates(estimate_number)`;
+
+    // projects table
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_lead_id ON projects(lead_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_estimate_id ON projects(estimate_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_assigned_painter_id ON projects(assigned_painter_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at DESC)`;
+
+    // auth_sessions — hot path on every request
+    await sql`CREATE INDEX IF NOT EXISTS idx_auth_sessions_token ON auth_sessions(token)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_auth_sessions_user_id ON auth_sessions(user_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires_at ON auth_sessions(expires_at)`;
+
+    // follow_ups table
+    await sql`CREATE INDEX IF NOT EXISTS idx_follow_ups_lead_id ON follow_ups(lead_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_follow_ups_status ON follow_ups(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_follow_ups_follow_up_date ON follow_ups(follow_up_date)`;
+
+    // audit_logs
+    await sql`CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id)`;
+
+    // agent_runs
+    await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_status ON agent_runs(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_agent_id ON agent_runs(agent_id)`;
+
     console.log("[migrations] 001-initial-schema: complete");
   } catch (err) {
     // Reset flag so next request retries

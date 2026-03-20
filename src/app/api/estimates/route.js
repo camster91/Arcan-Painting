@@ -1,75 +1,5 @@
 import sql from "@/app/api/utils/sql";
-import { cacheGet, cacheSet, TTL, CacheKeys } from "@/app/api/utils/cache";
-import { invalidateEstimatesCache } from "@/app/api/middleware/cache-middleware";
-
-// Auth helpers
-async function ensureAuthTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'admin',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )
-  `;
-}
-function parseCookies(h) {
-  const out = {};
-  if (!h) return out;
-  h.split(";").forEach((p) => {
-    const [k, v] = p.split("=");
-    if (!k) return;
-    out[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return out;
-}
-// BEGIN: new helper that also accepts Authorization: Bearer
-async function getCurrentUser(request) {
-  try {
-    await ensureAuthTables();
-  } catch {}
-  // Try Authorization header first
-  const authHeader = request.headers.get("authorization");
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const token = authHeader.slice(7);
-    const sessions =
-      await sql`SELECT * FROM auth_sessions WHERE token = ${token} AND expires_at > NOW()`;
-    if (sessions.length) {
-      const users =
-        await sql`SELECT id, username, role FROM auth_users WHERE id = ${sessions[0].user_id} LIMIT 1`;
-      if (users.length) return users[0];
-    }
-  }
-  // Fallback to cookie-based admin session
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const token = cookies["admin_session"];
-  if (!token) return null;
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const user = rows[0];
-  if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
-  return { id: user.id, username: user.username, role: user.role };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 // GET /api/estimates - Get all estimates with optional filtering (role-aware)
 export async function GET(request) {
@@ -80,15 +10,6 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const leadId = searchParams.get("lead_id");
-
-    // Cache key includes user role so each role sees correct data
-    const cacheKey = leadId
-      ? CacheKeys.estimatesByLead(leadId)
-      : CacheKeys.estimates(`${user.role}:${searchParams.toString()}`);
-    const cached = await cacheGet(cacheKey);
-    if (cached !== null) {
-      return Response.json(cached, { headers: { "X-Cache": "HIT" } });
-    }
 
     let query = `
       SELECT 
@@ -123,12 +44,10 @@ export async function GET(request) {
 
     const estimates = await sql(query, params);
 
-    const responseBody = { success: true, estimates: estimates || [] };
-
-    // Cache for 10 minutes
-    await cacheSet(cacheKey, responseBody, TTL.ESTIMATES);
-
-    return Response.json(responseBody, { headers: { "X-Cache": "MISS" } });
+    return Response.json({
+      success: true,
+      estimates: estimates || [],
+    });
   } catch (error) {
     console.error("Error fetching estimates:", error);
     return Response.json(
@@ -188,8 +107,12 @@ export async function POST(request) {
 
     const finalEstimateNumber = estimate_number || generateEstimateNumber();
 
-    // Verify the lead exists
-    const leadCheck = await sql`SELECT id FROM leads WHERE id = ${lead_id}`;
+    // Verify the lead exists and check for duplicate estimate number in a single round-trip
+    const [leadCheck, existingEstimate] = await Promise.all([
+      sql`SELECT id FROM leads WHERE id = ${lead_id}`,
+      sql`SELECT id FROM estimates WHERE estimate_number = ${finalEstimateNumber}`,
+    ]);
+
     if (!leadCheck || leadCheck.length === 0) {
       return Response.json(
         { success: false, error: "Lead not found" },
@@ -197,9 +120,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if estimate number already exists
-    const existingEstimate =
-      await sql`SELECT id FROM estimates WHERE estimate_number = ${finalEstimateNumber}`;
     if (existingEstimate && existingEstimate.length > 0) {
       return Response.json(
         { success: false, error: "Estimate number already exists" },
@@ -244,9 +164,6 @@ export async function POST(request) {
     `;
 
     const newEstimate = result[0];
-
-    // Invalidate estimates cache (all list views + lead-specific)
-    await invalidateEstimatesCache(lead_id);
 
     return Response.json(
       {
@@ -400,9 +317,6 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedEstimate = result[0];
 
-    // Invalidate estimates cache
-    await invalidateEstimatesCache();
-
     return Response.json({
       success: true,
       message: "Estimate updated successfully",
@@ -454,9 +368,6 @@ export async function DELETE(request) {
 
     // Delete the estimate
     await sql`DELETE FROM estimates WHERE id = ${id}`;
-
-    // Invalidate estimates cache
-    await invalidateEstimatesCache();
 
     return Response.json({
       success: true,

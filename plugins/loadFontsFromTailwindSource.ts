@@ -1584,13 +1584,21 @@ const GOOGLE_FONTS = new Map<string, string>(
   ].map((f) => [f.replaceAll(' ', '-').toLowerCase(), f])
 );
 
-// all combinations of font weights and styles
+// Font weight subsets per family — only load what the design actually uses.
+// Reduces font payload from ~200KB+ (18 variants) to ~30KB (3-4 variants).
+// Dancing Script supports 400–700 (no italic variants).
 // @see https://developers.google.com/fonts/docs/css2#api_url_specification
-const styleString =
-  '0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900';
+const FONT_WEIGHT_OVERRIDES: Record<string, string> = {
+  'Dancing Script': 'wght@400;600;700',
+  'Inter': 'wght@400;500;600;700',
+};
+
+// Default: normal weight only for unknown fonts
+const DEFAULT_STYLE_STRING = 'wght@400;600;700';
 
 const getFontURL = (font: string) => {
-  return `https://fonts.googleapis.com/css2?${`family=${font.replaceAll(' ', '+')}:ital,wght@${styleString}`}&display=block`;
+  const weightSpec = FONT_WEIGHT_OVERRIDES[font] ?? DEFAULT_STYLE_STRING;
+  return `https://fonts.googleapis.com/css2?family=${font.replaceAll(' ', '+')}:${weightSpec}&display=swap`;
 };
 
 const fontBlacklist = new Set([

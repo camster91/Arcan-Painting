@@ -111,7 +111,7 @@ export default function SignInPage() {
         </p>
 
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
+          <div role="alert" aria-live="assertive" className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
             {error}
           </div>
         )}
@@ -124,18 +124,21 @@ export default function SignInPage() {
               requestCodeMutation.mutate(email);
             }}
             className="space-y-4"
+            aria-label="Sign in with email"
           >
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Email
+              <label htmlFor="signin-email" className="block text-sm font-medium text-slate-700 mb-1">
+                Email <span className="sr-only">(required)</span>
               </label>
               <input
+                id="signin-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter your admin email"
                 autoComplete="email"
+                aria-required="true"
                 autoFocus
                 required
               />
@@ -143,6 +146,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={isLoading || !email}
+              aria-busy={requestCodeMutation.isPending}
               className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 transition-colors"
             >
               {requestCodeMutation.isPending ? "Sending code…" : "Send Code"}
@@ -156,13 +160,15 @@ export default function SignInPage() {
               verifyCodeMutation.mutate({ emailVal: email, codeVal: code });
             }}
             className="space-y-4"
+            aria-label="Enter verification code"
           >
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                6-digit code
+              <label htmlFor="signin-code" className="block text-sm font-medium text-slate-700 mb-1">
+                6-digit code <span className="sr-only">(required)</span>
               </label>
               <div className="relative">
                 <input
+                  id="signin-code"
                   ref={codeInputRef}
                   type="text"
                   inputMode="numeric"
@@ -173,13 +179,16 @@ export default function SignInPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-amber-500 text-center text-xl tracking-widest font-mono"
                   placeholder="000000"
                   autoComplete="one-time-code"
+                  aria-required="true"
+                  aria-describedby="signin-code-hint"
                   required
                 />
                 {code && (
                   <button
                     type="button"
                     onClick={handleCopyCode}
-                    title="Copy code"
+                    aria-label={copied ? "Code copied" : "Copy verification code"}
+                    title={copied ? "Code copied" : "Copy code"}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
                   >
                     {copied ? (
@@ -195,12 +204,13 @@ export default function SignInPage() {
                   </button>
                 )}
               </div>
-              <p className="mt-1 text-xs text-slate-400">Code expires in 15 minutes</p>
+              <p id="signin-code-hint" className="mt-1 text-xs text-slate-400">Code expires in 15 minutes</p>
             </div>
 
             <button
               type="submit"
               disabled={isLoading || code.length !== 6}
+              aria-busy={verifyCodeMutation.isPending}
               className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 transition-colors"
             >
               {verifyCodeMutation.isPending ? "Verifying…" : "Verify & Sign In"}

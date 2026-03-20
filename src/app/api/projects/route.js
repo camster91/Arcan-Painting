@@ -1,53 +1,5 @@
 import sql from "@/app/api/utils/sql";
-import { cacheGet, cacheSet, TTL, CacheKeys } from "@/app/api/utils/cache";
-import { invalidateProjectsCache } from "@/app/api/middleware/cache-middleware";
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-async function getCurrentUser(request) {
-  // Try Authorization: Bearer <token>
-  const authHeader =
-    request.headers.get("Authorization") ||
-    request.headers.get("authorization");
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const token = authHeader.slice(7);
-    const sessions =
-      await sql`SELECT * FROM auth_sessions WHERE token = ${token} AND expires_at > NOW()`;
-    if (sessions.length) {
-      const users =
-        await sql`SELECT id, username, role FROM auth_users WHERE id = ${sessions[0].user_id} LIMIT 1`;
-      if (users.length) return users[0];
-    }
-  }
-  // Fallback to cookie-based session
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const cookieToken = cookies["admin_session"];
-  if (!cookieToken) return null;
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${cookieToken}
-    LIMIT 1
-  `;
-  const user = rows[0];
-  if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${cookieToken}`;
-    return null;
-  }
-  return { id: user.id, username: user.username, role: user.role };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 // GET /api/projects - Get all projects with role-based filtering
 export async function GET(request) {
@@ -60,13 +12,6 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const leadId = searchParams.get("lead_id");
-
-    // Cache key scoped by role (painters only see their own projects)
-    const cacheKey = CacheKeys.projects(`${user.role}:${user.id}:${searchParams.toString()}`);
-    const cached = await cacheGet(cacheKey);
-    if (cached !== null) {
-      return Response.json(cached, { headers: { "X-Cache": "HIT" } });
-    }
 
     let query = `
       SELECT 
@@ -107,12 +52,10 @@ export async function GET(request) {
 
     const projects = await sql(query, params);
 
-    const responseBody = { success: true, projects: projects || [] };
-
-    // Cache for 15 minutes
-    await cacheSet(cacheKey, responseBody, TTL.PROJECTS);
-
-    return Response.json(responseBody, { headers: { "X-Cache": "MISS" } });
+    return Response.json({
+      success: true,
+      projects: projects || [],
+    });
   } catch (error) {
     console.error("Error fetching projects:", error);
     return Response.json(
@@ -215,9 +158,6 @@ export async function POST(request) {
     `;
 
     const newProject = result[0];
-
-    // Invalidate projects cache
-    await invalidateProjectsCache(lead_id);
 
     return Response.json(
       {
@@ -400,9 +340,6 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedProject = result[0];
 
-    // Invalidate projects cache
-    await invalidateProjectsCache();
-
     return Response.json({
       success: true,
       message: "Project updated successfully",
@@ -453,9 +390,6 @@ export async function DELETE(request) {
 
     // Delete the project
     await sql`DELETE FROM projects WHERE id = ${id}`;
-
-    // Invalidate projects cache
-    await invalidateProjectsCache();
 
     return Response.json({
       success: true,
