@@ -30,7 +30,7 @@ export default function HeroSection() {
         className="absolute inset-0 z-0"
         style={{
           backgroundImage:
-            "url('https://raw.createusercontent.com/bf59fc7f-c2f3-4eee-adaa-a7482b62994f/')",
+            "url('https://raw.createusercontent.com/bf59fc7f-c2f3-4eee-adaa-a7482b62994f/-/format/webp/-/resize/1920x/')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -202,11 +202,28 @@ export default function HeroSection() {
                 backgroundColor: "rgba(255,255,255,0.05)",
               }}
             >
-              <img
-                src="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/auto/"
-                alt="Professional painters working on a bright interior wall"
-                className="w-full h-[520px] object-cover"
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1920x/ 1920w"
+                  sizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
+                />
+                <source
+                  type="image/jpeg"
+                  srcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1920x/ 1920w"
+                  sizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
+                />
+                <img
+                  src="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1200x/"
+                  alt="Professional painters working on a bright interior wall"
+                  className="w-full h-[520px] object-cover"
+                  width="800"
+                  height="520"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
 
               {/* Floating Bubbles Container */}
               <div className="absolute inset-0 pointer-events-none">

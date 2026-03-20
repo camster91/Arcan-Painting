@@ -235,6 +235,10 @@ export default function TestimonialsSection() {
                           src={testimonial.image}
                           alt={testimonial.name}
                           className="w-16 h-16 rounded-full object-cover border-3 border-amber-200 dark:border-amber-700 shadow-lg"
+                          loading="lazy"
+                          decoding="async"
+                          width="64"
+                          height="64"
                         />
                         <div>
                           <div className="font-bold text-slate-900 dark:text-white text-lg">

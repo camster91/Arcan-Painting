@@ -81,13 +81,24 @@ export default function Header() {
           {/* Brand */}
           <div className="flex items-center group">
             <a href="/" className="block">
-              <img
-                src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/"
-                alt="Arcan Painting and Sons logo"
-                className={`transition-all duration-300 object-contain cursor-pointer ${
-                  isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"
-                }`}
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/webp/-/resize/340x/"
+                />
+                <img
+                  src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/340x/"
+                  alt="Arcan Painting and Sons logo"
+                  width="170"
+                  height="95"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className={`transition-all duration-300 object-contain cursor-pointer ${
+                    isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"
+                  }`}
+                />
+              </picture>
             </a>
           </div>
 
@@ -226,11 +237,21 @@ export default function Header() {
               className="flex items-center justify-between px-4 py-3 border-b"
               style={{ borderColor: themeColors.border }}
             >
-              <img
-                src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/"
-                alt="Arcan Painting and Sons logo"
-                className="w-[120px] h-[56px] object-contain"
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/webp/-/resize/240x/"
+                />
+                <img
+                  src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/240x/"
+                  alt="Arcan Painting and Sons logo"
+                  width="120"
+                  height="56"
+                  loading="eager"
+                  decoding="async"
+                  className="w-[120px] h-[56px] object-contain"
+                />
+              </picture>
               <button
                 ref={closeBtnRef}
                 className="p-2 rounded-lg transition-colors"

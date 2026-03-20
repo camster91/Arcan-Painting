@@ -129,12 +129,27 @@ export default function AboutSection() {
             {/* Main image with enhanced styling */}
             <div className="relative">
               <div className="relative overflow-hidden rounded-3xl">
-                <img
-                  src="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/auto/"
-                  alt="The Cañabate family - Jose and his three sons Pablo, Gerardo, and JJ painting a Toronto house, working together as a family team"
-                  className="w-full h-[400px] object-cover"
-                  loading="lazy"
-                />
+                <picture>
+                  <source
+                    type="image/webp"
+                    srcSet="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/webp/-/resize/1200x/ 1200w"
+                    sizes="(max-width: 640px) 600px, 1200px"
+                  />
+                  <source
+                    type="image/jpeg"
+                    srcSet="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/600x/ 600w, https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/1200x/ 1200w"
+                    sizes="(max-width: 640px) 600px, 1200px"
+                  />
+                  <img
+                    src="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/1200x/"
+                    alt="The Cañabate family - Jose and his three sons Pablo, Gerardo, and JJ painting a Toronto house, working together as a family team"
+                    className="w-full h-[400px] object-cover"
+                    width="800"
+                    height="400"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
 
                 {/* Image overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
