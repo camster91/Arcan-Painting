@@ -16,8 +16,9 @@ function getPool() {
       ssl: process.env.DATABASE_URL.includes("sslmode=require")
         ? { rejectUnauthorized: true }  // Enforce SSL cert verification
         : false,
-      max: 10,
-      idleTimeoutMillis: 30000,
+      max: 25,                    // Up from 10 — supports burst traffic without exhaustion
+      idleTimeoutMillis: 300000,  // 5 minutes idle before releasing (was 30s — too aggressive)
+      connectionTimeoutMillis: 5000, // Fail fast if pool exhausted
     });
     pool.on("error", (err) => {
       console.error("pg pool error:", err.message);

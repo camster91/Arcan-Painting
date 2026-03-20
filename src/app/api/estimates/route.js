@@ -1,73 +1,5 @@
 import sql from "@/app/api/utils/sql";
-
-// Auth helpers
-async function ensureAuthTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'admin',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )
-  `;
-}
-function parseCookies(h) {
-  const out = {};
-  if (!h) return out;
-  h.split(";").forEach((p) => {
-    const [k, v] = p.split("=");
-    if (!k) return;
-    out[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return out;
-}
-// BEGIN: new helper that also accepts Authorization: Bearer
-async function getCurrentUser(request) {
-  try {
-    await ensureAuthTables();
-  } catch {}
-  // Try Authorization header first
-  const authHeader = request.headers.get("authorization");
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const token = authHeader.slice(7);
-    const sessions =
-      await sql`SELECT * FROM auth_sessions WHERE token = ${token} AND expires_at > NOW()`;
-    if (sessions.length) {
-      const users =
-        await sql`SELECT id, username, role FROM auth_users WHERE id = ${sessions[0].user_id} LIMIT 1`;
-      if (users.length) return users[0];
-    }
-  }
-  // Fallback to cookie-based admin session
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const token = cookies["admin_session"];
-  if (!token) return null;
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const user = rows[0];
-  if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
-  return { id: user.id, username: user.username, role: user.role };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 // GET /api/estimates - Get all estimates with optional filtering (role-aware)
 export async function GET(request) {
@@ -175,8 +107,12 @@ export async function POST(request) {
 
     const finalEstimateNumber = estimate_number || generateEstimateNumber();
 
-    // Verify the lead exists
-    const leadCheck = await sql`SELECT id FROM leads WHERE id = ${lead_id}`;
+    // Verify the lead exists and check for duplicate estimate number in a single round-trip
+    const [leadCheck, existingEstimate] = await Promise.all([
+      sql`SELECT id FROM leads WHERE id = ${lead_id}`,
+      sql`SELECT id FROM estimates WHERE estimate_number = ${finalEstimateNumber}`,
+    ]);
+
     if (!leadCheck || leadCheck.length === 0) {
       return Response.json(
         { success: false, error: "Lead not found" },
@@ -184,9 +120,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if estimate number already exists
-    const existingEstimate =
-      await sql`SELECT id FROM estimates WHERE estimate_number = ${finalEstimateNumber}`;
     if (existingEstimate && existingEstimate.length > 0) {
       return Response.json(
         { success: false, error: "Estimate number already exists" },
