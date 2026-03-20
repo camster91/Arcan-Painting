@@ -1,5 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import nodeConsole from 'node:console';
+
+// ── Sentry — must be the very first import ────────────────────────────────────
+import { initSentryServer } from '../src/sentry.server.js';
+initSentryServer();
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { skipCSRFCheck } from '@auth/core';
 import Credentials from '@auth/core/providers/credentials';
 import { authHandler, initAuthConfig } from '@hono/auth-js';
@@ -50,7 +56,20 @@ app.use('*', (c, next) => {
 
 app.use(contextStorage());
 
-app.onError((err, c) => {
+app.onError(async (err, c) => {
+  // Report to Sentry
+  try {
+    const { captureServerError } = await import('../src/sentry.server.js');
+    captureServerError(err, {
+      endpoint: c.req.path,
+      method: c.req.method,
+      status: 500,
+      requestId: c.req.header('x-request-id') ?? c.get('requestId'),
+    });
+  } catch {
+    // Sentry not available — continue
+  }
+
   if (c.req.method !== 'GET') {
     return c.json(
       {

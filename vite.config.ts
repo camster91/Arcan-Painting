@@ -12,6 +12,7 @@ import { loadFontsFromTailwindSource } from './plugins/loadFontsFromTailwindSour
 import { nextPublicProcessEnv } from './plugins/nextPublicProcessEnv';
 import { restart } from './plugins/restart';
 import { restartEnvFileChange } from './plugins/restartEnvFileChange';
+import { sentrySourceMaps } from './plugins/sentrySourceMaps';
 
 export default defineConfig({
   // Keep them available via import.meta.env.NEXT_PUBLIC_*
@@ -65,6 +66,7 @@ export default defineConfig({
     tsconfigPaths(),
     aliases(),
     layoutWrapperPlugin(),
+    sentrySourceMaps(),
   ],
   resolve: {
     alias: {
@@ -78,6 +80,8 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   build: {
+    // Generate source maps for Sentry stack trace readability
+    sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : false,
     rollupOptions: {
       // Externalize Node-only / native server packages so neither the client
       // nor the SSR bundle tries to inline them.

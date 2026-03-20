@@ -21,6 +21,12 @@ import {
 } from 'react';
 import './global.css';
 
+// Sentry client init — must run before any other app code
+import { initSentryClient } from '../sentry.client.js';
+if (typeof window !== 'undefined') {
+  initSentryClient();
+}
+
 import fetch from '@/__create/fetch';
 // @ts-ignore
 import { SessionProvider } from '@auth/create/react';
@@ -190,6 +196,18 @@ class ErrorBoundaryWrapper extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: unknown, info: unknown) {
     console.error(error, info);
+    // Report to Sentry
+    try {
+      import('../sentry.client.js').then(({ Sentry }) => {
+        Sentry.withScope((scope: any) => {
+          scope.setTag('error_boundary', 'root');
+          scope.setExtra('componentStack', (info as any)?.componentStack);
+          Sentry.captureException(error);
+        });
+      });
+    } catch {
+      // Sentry not available — fail silently
+    }
   }
 
   render() {

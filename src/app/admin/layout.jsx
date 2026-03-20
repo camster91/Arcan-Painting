@@ -632,12 +632,16 @@ function AdminLayoutContent({ children }) {
   );
 }
 
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+
 export default function AdminLayout({ children }) {
   return (
-    <AdminAuthProvider>
-      <ModalProvider>
-        <AdminLayoutContent>{children}</AdminLayoutContent>
-      </ModalProvider>
-    </AdminAuthProvider>
+    <ErrorBoundary name="admin-dashboard" fullPage>
+      <AdminAuthProvider>
+        <ModalProvider>
+          <AdminLayoutContent>{children}</AdminLayoutContent>
+        </ModalProvider>
+      </AdminAuthProvider>
+    </ErrorBoundary>
   );
 }
