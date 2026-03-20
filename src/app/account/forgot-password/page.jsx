@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <>
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
+              <div role="alert" aria-live="assertive" className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
                 {error}
               </div>
             )}
@@ -53,26 +53,31 @@ export default function ForgotPasswordPage() {
                 requestMutation.mutate({ emailOrUsername: identifier });
               }}
               className="space-y-4"
+              aria-label="Forgot password form"
             >
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Email
+                <label htmlFor="forgot-email" className="block text-sm font-medium text-slate-700 mb-1">
+                  Email <span className="sr-only">(required)</span>
                 </label>
                 <input
+                  id="forgot-email"
                   type="email"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   placeholder="Enter your admin email"
+                  autoComplete="email"
+                  aria-required="true"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={requestMutation.isLoading}
+                aria-busy={requestMutation.isLoading}
                 className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 transition-colors"
               >
-                {requestMutation.isLoading ? "Sending..." : "Send Reset Link"}
+                {requestMutation.isLoading ? "Sending…" : "Send Reset Link"}
               </button>
             </form>
           </>
