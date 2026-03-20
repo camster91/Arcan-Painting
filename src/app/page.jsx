@@ -1,15 +1,29 @@
+import { lazy, Suspense } from "react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ServicesSection from "../components/ServicesSection";
-import ProcessSection from "../components/ProcessSection";
-import PortfolioSection from "../components/PortfolioSection";
-import PricingSection from "../components/PricingSection";
-import GuaranteeSection from "../components/GuaranteeSection";
-import LocalAreaSection from "../components/LocalAreaSection";
-import FAQSection from "../components/FAQSection";
-import AboutSection from "../components/AboutSection";
-import ContactSection from "../components/ContactSection";
-import Footer from "../components/Footer";
+
+// ─── Below-fold sections: lazy loaded for faster initial bundle ───────────────
+const ProcessSection = lazy(() => import("../components/ProcessSection"));
+const PortfolioSection = lazy(() => import("../components/PortfolioSection"));
+const PricingSection = lazy(() => import("../components/PricingSection"));
+const GuaranteeSection = lazy(() => import("../components/GuaranteeSection"));
+const LocalAreaSection = lazy(() => import("../components/LocalAreaSection"));
+const FAQSection = lazy(() => import("../components/FAQSection"));
+const AboutSection = lazy(() => import("../components/AboutSection"));
+const ContactSection = lazy(() => import("../components/ContactSection"));
+const Footer = lazy(() => import("../components/Footer"));
+
+// Minimal skeleton that matches each section's approximate height
+function SectionSkeleton({ minHeight = "24rem" }) {
+  return (
+    <div
+      className="w-full animate-pulse bg-slate-100"
+      style={{ minHeight }}
+      aria-hidden="true"
+    />
+  );
+}
 
 export default function HomePage() {
   return (
@@ -22,44 +36,64 @@ export default function HomePage() {
         Skip to content
       </a>
 
-      {/* Header - Navigation bar with logo and CTA */}
+      {/* Header - critical path, loaded synchronously */}
       <Header />
 
       {/* Main content */}
       <main id="main" role="main" tabIndex={-1}>
-        {/* Hero Section - Main banner with background image and CTA */}
+        {/* Hero Section - critical path, loaded synchronously */}
         <HeroSection />
 
-        {/* Services Section - Interior, exterior, commercial, residential painting */}
+        {/* Services Section - near top of page, loaded synchronously */}
         <ServicesSection />
 
-        {/* Process Section - Step-by-step how we work */}
-        <ProcessSection />
+        {/* Below-fold sections: lazy loaded */}
 
-        {/* Portfolio Section - Before/after project photos */}
-        <PortfolioSection />
+        {/* Process Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="32rem" />}>
+          <ProcessSection />
+        </Suspense>
+
+        {/* Portfolio Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="40rem" />}>
+          <PortfolioSection />
+        </Suspense>
 
         {/* Pricing Section - Calculator + transparent pricing tiers */}
-        <PricingSection />
+        <Suspense fallback={<SectionSkeleton minHeight="36rem" />}>
+          <PricingSection />
+        </Suspense>
 
-        {/* Guarantee Section - Risk reversal with warranties */}
-        <GuaranteeSection />
+        {/* Guarantee Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="20rem" />}>
+          <GuaranteeSection />
+        </Suspense>
 
-        {/* Local Area Section - Service areas and local expertise */}
-        <LocalAreaSection />
+        {/* Local Area Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="24rem" />}>
+          <LocalAreaSection />
+        </Suspense>
 
-        {/* FAQ Section - Address common concerns */}
-        <FAQSection />
+        {/* FAQ Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="28rem" />}>
+          <FAQSection />
+        </Suspense>
 
-        {/* About Section - Family business heritage and experience */}
-        <AboutSection />
+        {/* About Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="32rem" />}>
+          <AboutSection />
+        </Suspense>
 
-        {/* Contact Section - Contact form and business information */}
-        <ContactSection />
+        {/* Contact Section */}
+        <Suspense fallback={<SectionSkeleton minHeight="36rem" />}>
+          <ContactSection />
+        </Suspense>
       </main>
 
-      {/* Footer - Business info, social media, additional navigation */}
-      <Footer />
+      {/* Footer */}
+      <Suspense fallback={<SectionSkeleton minHeight="16rem" />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

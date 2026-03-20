@@ -15,7 +15,10 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
-import LeadFormPopup from "./LeadFormPopup"; // ADD
+import { lazy, Suspense } from "react";
+
+// Lazy-load popup (only shown on CTA click)
+const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
 export default function PricingSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -591,11 +594,15 @@ export default function PricingSection() {
         </div>
       </div>
 
-      {/* ADD: LeadFormPopup for this section */}
-      <LeadFormPopup
-        isOpen={isLeadFormOpen}
-        onClose={() => setIsLeadFormOpen(false)}
-      />
+      {/* LeadFormPopup - lazy loaded, only rendered when open */}
+      {isLeadFormOpen && (
+        <Suspense fallback={null}>
+          <LeadFormPopup
+            isOpen={isLeadFormOpen}
+            onClose={() => setIsLeadFormOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {/* CSS Animations */}
       <style jsx global>{`
