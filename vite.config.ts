@@ -77,6 +77,81 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
+  build: {
+    rollupOptions: {
+      // Externalize Node-only / native server packages so neither the client
+      // nor the SSR bundle tries to inline them.
+      external: (id) => {
+        const serverOnlyPkgs = [
+          'pg', 'pg-native', 'pg-pool',
+          'argon2',
+          'ws',
+          'sql.js',
+          'fsevents',
+          'lightningcss',
+          'better-sqlite3',
+        ];
+        return serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+      },
+      output: {
+        // Manual chunk splitting — client build only
+        // (SSR build produces a single server entry, so manualChunks is a no-op there)
+        manualChunks(id) {
+          // React core — tiny, keep together
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'vendor-react';
+          }
+          // React Router
+          if (id.includes('node_modules/react-router') || id.includes('node_modules/@react-router')) {
+            return 'vendor-router';
+          }
+          // Animation library (motion/framer) — medium, used in hero
+          if (id.includes('node_modules/motion') || id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          // Charts — heavy, admin-only
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
+            return 'vendor-charts';
+          }
+          // PDF — heavy, admin-only
+          if (id.includes('node_modules/pdfjs-dist')) {
+            return 'vendor-pdf';
+          }
+          // Tanstack (query + table)
+          if (id.includes('node_modules/@tanstack')) {
+            return 'vendor-tanstack';
+          }
+          // UI & icon libraries
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
+          if (
+            id.includes('node_modules/@chakra-ui') ||
+            id.includes('node_modules/@emotion') ||
+            id.includes('node_modules/@react-aria')
+          ) {
+            return 'vendor-ui';
+          }
+          // Auth
+          if (
+            id.includes('node_modules/@auth') ||
+            id.includes('node_modules/@hono') ||
+            id.includes('node_modules/hono')
+          ) {
+            return 'vendor-auth';
+          }
+          // Stripe
+          if (id.includes('node_modules/stripe')) {
+            return 'vendor-stripe';
+          }
+          // Everything else in node_modules
+          if (id.includes('node_modules/')) {
+            return 'vendor-misc';
+          }
+        },
+      },
+    },
+  },
   clearScreen: false,
   server: {
     allowedHosts: true,
