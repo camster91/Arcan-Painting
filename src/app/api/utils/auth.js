@@ -24,11 +24,30 @@ export function parseCookies(cookieHeader) {
 }
 
 // Helper function to get current user from session (returns user object or null)
+// Supports both Authorization: Bearer <token> and admin_session cookie.
+// Uses a single JOIN query for both paths — no N+1.
 export async function getCurrentUser(request) {
   try {
     await ensureSchema();
   } catch {}
 
+  // 1. Try Authorization: Bearer header first (API clients / mobile)
+  const authHeader = request.headers.get("authorization");
+  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+    const token = authHeader.slice(7);
+    const rows = await sql`
+      SELECT u.id, u.username, u.role, s.expires_at
+      FROM auth_sessions s
+      JOIN auth_users u ON u.id = s.user_id
+      WHERE s.token = ${token}
+        AND s.deleted_at IS NULL
+        AND s.expires_at > NOW()
+      LIMIT 1
+    `;
+    if (rows.length) return { id: rows[0].id, username: rows[0].username, role: rows[0].role };
+  }
+
+  // 2. Fallback: cookie-based session
   const cookieHeader = request.headers.get("cookie");
   const cookies = parseCookies(cookieHeader);
   const token = cookies["admin_session"];

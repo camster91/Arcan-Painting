@@ -183,7 +183,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
       { key: "other", label: "Other" },
     ];
     stepBody = (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {
           const isActive = serviceType === opt.key;
           const cls = isActive
@@ -193,6 +193,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
             <button
               type="button"
               key={opt.key}
+              aria-pressed={isActive}
               onClick={() => {
                 setServiceType(opt.key);
                 next(true); // auto-advance on selection
@@ -209,6 +210,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
     stepTitle = "What's your name?";
     stepBody = (
       <div>
+        <label htmlFor="popup-contact-name" className="sr-only">Full name</label>
         <input
           type="text"
           value={fullName}
@@ -220,9 +222,9 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           }}
           className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
           placeholder="Full name"
-          aria-label="Full name"
+          aria-required="true"
           name="name"
-          id="contact-name"
+          id="popup-contact-name"
           autoComplete="name"
         />
       </div>
@@ -230,9 +232,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
   } else if (step === 2) {
     stepTitle = "How should we contact you?";
     stepBody = (
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3" role="group" aria-label="Preferred contact method">
         <button
           type="button"
+          aria-pressed={preferredContact === "phone"}
           onClick={() => {
             setPreferredContact("phone");
             next(true); // auto-advance
@@ -240,12 +243,13 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           className={`${optionBtn} ${preferredContact === "phone" ? optionBtnActive : optionBtnIdle}`}
         >
           <div className="flex items-center justify-center gap-2">
-            <Phone size={18} />
+            <Phone size={18} aria-hidden="true" />
             <span>Phone</span>
           </div>
         </button>
         <button
           type="button"
+          aria-pressed={preferredContact === "email"}
           onClick={() => {
             setPreferredContact("email");
             next(true); // auto-advance
@@ -253,7 +257,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           className={`${optionBtn} ${preferredContact === "email" ? optionBtnActive : optionBtnIdle}`}
         >
           <div className="flex items-center justify-center gap-2">
-            <Mail size={18} />
+            <Mail size={18} aria-hidden="true" />
             <span>Email</span>
           </div>
         </button>
@@ -271,10 +275,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
             value: email,
             onChange: (e) => setEmail(e.target.value),
             placeholder: "you@email.com",
-            ariaLabel: "Email",
+            ariaLabel: "Email address",
             isValid: isEmailValid(email),
             name: "email",
-            id: "contact-email",
+            id: "popup-contact-email",
             autoComplete: "email",
             inputMode: undefined,
           }
@@ -283,15 +287,16 @@ export default function LeadFormPopup({ isOpen, onClose }) {
             value: phone,
             onChange: (e) => setPhone(e.target.value),
             placeholder: "(555) 123-4567",
-            ariaLabel: "Phone",
+            ariaLabel: "Phone number",
             isValid: isPhoneValid(phone) && phone.trim().length >= 7,
             name: "tel",
-            id: "contact-tel",
+            id: "popup-contact-tel",
             autoComplete: "tel",
             inputMode: "tel",
           };
     stepBody = (
       <div>
+        <label htmlFor={inputProps.id} className="sr-only">{inputProps.ariaLabel}</label>
         <input
           type={inputProps.type}
           value={inputProps.value}
@@ -303,7 +308,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           }}
           className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
           placeholder={inputProps.placeholder}
-          aria-label={inputProps.ariaLabel}
+          aria-required="true"
           name={inputProps.name}
           id={inputProps.id}
           autoComplete={inputProps.autoComplete}
@@ -318,7 +323,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
     stepTitle = "Anything else we should know? (optional)";
     stepBody = (
       <div>
+        <label htmlFor="popup-project-description" className="sr-only">Project description (optional)</label>
         <textarea
+          id="popup-project-description"
+          name="projectDescription"
           rows={4}
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
@@ -366,9 +374,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close estimate form"
             className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           >
-            <X size={24} className="text-slate-600 dark:text-slate-400" />
+            <X size={24} className="text-slate-600 dark:text-slate-400" aria-hidden="true" />
           </button>
         </div>
 
@@ -400,14 +409,21 @@ export default function LeadFormPopup({ isOpen, onClose }) {
               {/* Enhanced Progress */}
               <div className="mb-8">
                 <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mb-3">
-                  <span className="font-medium">
+                  <span className="font-medium" aria-live="polite" aria-atomic="true">
                     Step {step + 1} of {stepsTotal}
                   </span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                  <span className="font-bold text-amber-600 dark:text-amber-400" aria-hidden="true">
                     {progressPercent}%
                   </span>
                 </div>
-                <div className="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                <div
+                  role="progressbar"
+                  aria-valuenow={step + 1}
+                  aria-valuemin={1}
+                  aria-valuemax={stepsTotal}
+                  aria-label={`Form progress: step ${step + 1} of ${stepsTotal}`}
+                  className="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner"
+                >
                   <div
                     className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
                     style={{ width: `${progressPercent}%` }}
@@ -422,7 +438,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                 </h4>
                 {stepBody}
                 {error && (
-                  <div className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
+                  <div role="alert" aria-live="assertive" className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
                     {error}
                   </div>
                 )}
@@ -434,9 +450,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                   type="button"
                   onClick={back}
                   disabled={step === 0 || isSubmitting}
+                  aria-label="Go to previous step"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-50 transition-all duration-200 font-medium"
                 >
-                  <ChevronLeft size={18} /> Back
+                  <ChevronLeft size={18} aria-hidden="true" /> Back
                 </button>
 
                 {step < stepsTotal - 1 ? (
@@ -444,25 +461,27 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                     type="button"
                     onClick={() => next()}
                     disabled={!canGoNext || isSubmitting}
+                    aria-label="Go to next step"
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                   >
-                    Next <ChevronRight size={18} />
+                    Next <ChevronRight size={18} aria-hidden="true" />
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting}
+                    aria-busy={isSubmitting}
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Submitting...
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                        <span>Submitting…</span>
                       </>
                     ) : (
                       <>
-                        <Send size={18} /> Submit
+                        <Send size={18} aria-hidden="true" /> Submit
                       </>
                     )}
                   </button>
