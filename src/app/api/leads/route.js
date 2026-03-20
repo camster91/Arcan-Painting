@@ -3,6 +3,8 @@ import { generalLimiter, authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
 import { validateBody, schemas } from "../utils/validate.js";
+import { cacheGet, cacheSet, TTL, CacheKeys } from "../utils/cache.js";
+import { invalidateLeadsCache } from "../middleware/cache-middleware.js";
 
 // Create a new lead (public endpoint — used by contact form)
 export async function POST(request) {
@@ -93,6 +95,9 @@ export async function POST(request) {
       )
     `;
 
+    // Invalidate leads cache so the next GET fetches fresh data
+    await invalidateLeadsCache();
+
     return Response.json({
       success: true,
       message: "Lead created successfully",
@@ -124,6 +129,13 @@ export async function GET(request) {
     }
 
     const url = new URL(request.url);
+
+    // Build cache key from query params (status, page, limit, search, include_deleted)
+    const cacheKey = CacheKeys.leads(url.search);
+    const cached = await cacheGet(cacheKey);
+    if (cached !== null) {
+      return Response.json(cached, { headers: { "X-Cache": "HIT" } });
+    }
     const status = url.searchParams.get("status");
     const page = parseInt(url.searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(url.searchParams.get("limit")) || 20, 100); // cap at 100
@@ -199,7 +211,7 @@ export async function GET(request) {
     const countResult = await sql(countQuery, countValues);
     const total = parseInt(countResult[0].total);
 
-    return Response.json({
+    const responseBody = {
       success: true,
       leads: leads,
       pagination: {
@@ -210,7 +222,13 @@ export async function GET(request) {
         hasNext: page < Math.ceil(total / limit),
         hasPrev: page > 1,
       },
-    });
+    };
+
+    // Cache for 5 minutes (skip caching filtered/paginated results beyond page 1
+    // to avoid storing stale counts on frequent writes)
+    await cacheSet(cacheKey, responseBody, TTL.LEADS);
+
+    return Response.json(responseBody, { headers: { "X-Cache": "MISS" } });
   } catch (error) {
     console.error("Error fetching leads:", error);
     return Response.json({ error: "Failed to fetch leads" }, { status: 500 });
@@ -329,6 +347,9 @@ export async function PUT(request) {
     const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} AND deleted_at IS NULL RETURNING *`;
     const result = await sql(query, values);
 
+    // Invalidate leads cache and related estimates/projects caches
+    await invalidateLeadsCache();
+
     return Response.json({ success: true, lead: result[0] });
   } catch (error) {
     console.error("Error updating lead:", error);
@@ -367,6 +388,9 @@ export async function DELETE(request) {
     } catch {
       // follow_ups may not have deleted_at yet — that's ok
     }
+
+    // Invalidate leads cache + estimates/projects that reference this lead
+    await invalidateLeadsCache();
 
     return Response.json({
       success: true,
