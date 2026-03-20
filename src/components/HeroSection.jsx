@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { motion, useScroll, useTransform, useInView, useReducedMotion } from "motion/react";
-import LeadFormPopup from "./LeadFormPopup";
+
+// LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
+const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
 // Animated counter component
 function AnimatedCounter({ target, suffix = "", duration = 2 }) {
@@ -484,11 +486,15 @@ export default function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Lead Form Popup */}
-      <LeadFormPopup
-        isOpen={isLeadFormOpen}
-        onClose={() => setIsLeadFormOpen(false)}
-      />
+      {/* Lead Form Popup - lazy loaded, only rendered when open */}
+      {isLeadFormOpen && (
+        <Suspense fallback={null}>
+          <LeadFormPopup
+            isOpen={isLeadFormOpen}
+            onClose={() => setIsLeadFormOpen(false)}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }
