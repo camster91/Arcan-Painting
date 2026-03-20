@@ -25,11 +25,21 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src="https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/"
-                alt="Arcan Painting logo"
-                className="w-10 h-10 rounded-lg bg-white object-contain"
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet="https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/webp/-/resize/80x/"
+                />
+                <img
+                  src="https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/png/-/quality/smart/-/resize/80x/"
+                  alt="Arcan Painting logo"
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-10 h-10 rounded-lg bg-white object-contain"
+                />
+              </picture>
               <h3
                 className="text-xl font-bold"
                 style={{ color: themeColors.text }}

@@ -454,8 +454,21 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="ICBM" content="43.6532, -79.3832" />
         {/* SEO: Robots meta */}
         <meta name="robots" content="index, follow" />
-        {/* Performance: Preload hero image */}
-        <link rel="preload" as="image" href="/hero.jpg" />
+        {/* Performance: Preload hero images (critical above-fold) */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/"
+          type="image/webp"
+          imageSrcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1920x/ 1920w"
+          imageSizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="https://raw.createusercontent.com/bf59fc7f-c2f3-4eee-adaa-a7482b62994f/-/format/webp/-/resize/1920x/"
+          type="image/webp"
+        />
         <Meta />
         <Links />
         <script type="module" src="/src/__create/dev-error-overlay.js"></script>

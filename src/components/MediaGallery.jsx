@@ -30,9 +30,9 @@ export default function MediaGallery() {
     {
       id: 1,
       type: "image",
-      src: "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/",
+      src: "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/-/format/webp/-/quality/smart/",
       thumbnail:
-        "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/-/resize/400x300/",
+        "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/-/format/webp/-/quality/smart/-/resize/400x300/",
       alt: "Residential exterior painting project",
       title: "Modern Home Exterior",
       location: "Toronto, ON",
@@ -320,6 +320,9 @@ export default function MediaGallery() {
                     alt={item.alt}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
                   />
                 ) : (
                   <>
@@ -328,6 +331,9 @@ export default function MediaGallery() {
                       alt={item.alt}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       loading="lazy"
+                      decoding="async"
+                      width="400"
+                      height="300"
                     />
                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                       <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
@@ -424,6 +430,8 @@ export default function MediaGallery() {
                 src={currentItem.src}
                 alt={currentItem.alt}
                 className="max-w-full max-h-full object-contain"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <div className="relative max-w-full max-h-full">
