@@ -44,7 +44,7 @@ export default defineConfig({
       include: ['src/**/*.{js,jsx,ts,tsx}'], // or RegExp: /src\/.*\.[tj]sx?$/
       exclude: /node_modules/, // skip everything else
       babelConfig: {
-        babelrc: false, // don’t merge other Babel files
+        babelrc: false, // don't merge other Babel files
         configFile: false,
         plugins: ['styled-jsx/babel'],
       },
@@ -80,6 +80,7 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   build: {
+    target: 'es2022',
     // Generate source maps for Sentry stack trace readability
     sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : false,
     rollupOptions: {
@@ -95,7 +96,7 @@ export default defineConfig({
           'lightningcss',
           'better-sqlite3',
         ];
-        return serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+        return serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(\/\));
       },
       output: {
         // Manual chunk splitting — client build only
