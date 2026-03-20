@@ -78,6 +78,7 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   build: {
+    target: 'es2022',
     rollupOptions: {
       // Externalize Node-only / native server packages so neither the client
       // nor the SSR bundle tries to inline them.
