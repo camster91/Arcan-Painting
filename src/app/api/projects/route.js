@@ -1,5 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { cacheGet, cacheSet, TTL, CacheKeys } from "@/app/api/utils/cache";
+import { invalidateProjectsCache } from "@/app/api/middleware/cache-middleware";
 
 // GET /api/projects - Get all projects with role-based filtering
 export async function GET(request) {
@@ -12,6 +14,13 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const leadId = searchParams.get("lead_id");
+
+    // Redis cache lookup (role+user scoped for row-level security)
+    const cacheKey = CacheKeys.projects(`${user.role}:${user.id}:${searchParams.toString()}`);
+    const cached = await cacheGet(cacheKey);
+    if (cached !== null) {
+      return Response.json(cached, { headers: { "X-Cache": "HIT" } });
+    }
 
     let query = `
       SELECT 
@@ -52,10 +61,9 @@ export async function GET(request) {
 
     const projects = await sql(query, params);
 
-    return Response.json({
-      success: true,
-      projects: projects || [],
-    });
+    const responseBody = { success: true, projects: projects || [] };
+    await cacheSet(cacheKey, responseBody, TTL.PROJECTS);
+    return Response.json(responseBody, { headers: { "X-Cache": "MISS" } });
   } catch (error) {
     console.error("Error fetching projects:", error);
     return Response.json(
@@ -158,6 +166,9 @@ export async function POST(request) {
     `;
 
     const newProject = result[0];
+
+    // Invalidate projects cache on write
+    await invalidateProjectsCache(lead_id);
 
     return Response.json(
       {
@@ -340,6 +351,9 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedProject = result[0];
 
+    // Invalidate projects cache on write
+    await invalidateProjectsCache();
+
     return Response.json({
       success: true,
       message: "Project updated successfully",
@@ -390,6 +404,9 @@ export async function DELETE(request) {
 
     // Delete the project
     await sql`DELETE FROM projects WHERE id = ${id}`;
+
+    // Invalidate projects cache on delete
+    await invalidateProjectsCache();
 
     return Response.json({
       success: true,
