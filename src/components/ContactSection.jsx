@@ -172,7 +172,7 @@ export default function ContactSection() {
       { key: "other", label: "Other" },
     ];
     stepBody = (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {
           const isActive = serviceType === opt.key;
           const cls = isActive
@@ -182,6 +182,7 @@ export default function ContactSection() {
             <button
               type="button"
               key={opt.key}
+              aria-pressed={isActive}
               onClick={() => {
                 setServiceType(opt.key);
                 next(true); // auto-advance on selection
@@ -398,14 +399,21 @@ export default function ContactSection() {
                 {/* Enhanced Progress */}
                 <div className="mb-8">
                   <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
-                    <span className="font-medium">
+                    <span className="font-medium" aria-live="polite" aria-atomic="true">
                       Step {step + 1} of {stepsTotal}
                     </span>
-                    <span className="font-bold text-amber-600">
+                    <span className="font-bold text-amber-600" aria-hidden="true">
                       {progressPercent}%
                     </span>
                   </div>
-                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                  <div
+                    role="progressbar"
+                    aria-valuenow={step + 1}
+                    aria-valuemin={1}
+                    aria-valuemax={stepsTotal}
+                    aria-label={`Form progress: step ${step + 1} of ${stepsTotal}`}
+                    className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner"
+                  >
                     <div
                       className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
                       style={{ width: `${progressPercent}%` }}
@@ -432,9 +440,10 @@ export default function ContactSection() {
                     type="button"
                     onClick={back}
                     disabled={step === 0 || submitMutation.isLoading}
+                    aria-label="Go to previous step"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition-all duration-200 font-medium"
                   >
-                    <ChevronLeft size={18} /> Back
+                    <ChevronLeft size={18} aria-hidden="true" /> Back
                   </button>
 
                   {step < stepsTotal - 1 ? (
@@ -442,25 +451,27 @@ export default function ContactSection() {
                       type="button"
                       onClick={() => next()}
                       disabled={!canGoNext || submitMutation.isLoading}
+                      aria-label="Go to next step"
                       className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                     >
-                      Next <ChevronRight size={18} />
+                      Next <ChevronRight size={18} aria-hidden="true" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={handleSubmit}
                       disabled={submitMutation.isLoading}
+                      aria-busy={submitMutation.isLoading}
                       className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                     >
                       {submitMutation.isLoading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Submitting...
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                          <span>Submitting…</span>
                         </>
                       ) : (
                         <>
-                          <Send size={18} /> Submit
+                          <Send size={18} aria-hidden="true" /> Submit
                         </>
                       )}
                     </button>

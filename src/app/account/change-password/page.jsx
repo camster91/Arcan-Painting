@@ -59,12 +59,12 @@ export default function ChangePasswordPage() {
         </p>
 
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
+          <div role="alert" aria-live="assertive" className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg p-3">
+          <div role="status" aria-live="polite" className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg p-3">
             {success}
           </div>
         )}
@@ -75,39 +75,47 @@ export default function ChangePasswordPage() {
             changeMutation.mutate({ currentPassword, newPassword });
           }}
           className="space-y-4"
+          aria-label="Change password form"
         >
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Current Password
+            <label htmlFor="change-current-password" className="block text-sm font-medium text-slate-700 mb-1">
+              Current Password <span className="sr-only">(required)</span>
             </label>
             <input
+              id="change-current-password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="Enter your current password"
+              autoComplete="current-password"
+              aria-required="true"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              New Password
+            <label htmlFor="change-new-password" className="block text-sm font-medium text-slate-700 mb-1">
+              New Password <span className="sr-only">(required)</span>
             </label>
             <input
+              id="change-new-password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="Enter your new password"
+              autoComplete="new-password"
+              aria-required="true"
               required
             />
           </div>
           <button
             type="submit"
             disabled={changeMutation.isLoading}
+            aria-busy={changeMutation.isLoading}
             className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 transition-colors"
           >
-            {changeMutation.isLoading ? "Updating..." : "Update Password"}
+            {changeMutation.isLoading ? "Updating…" : "Update Password"}
           </button>
         </form>
       </div>
