@@ -62,25 +62,7 @@ export default function HeroSection() {
     textMuted: "#64748b",
   };
 
-  // Animation variants
-  const fadeSlideUp = {
-    hidden: { opacity: 1, y: 0 },
-    visible: (delay = 0) => ({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, delay: delay * 0.5, ease: [0.22, 1, 0.36, 1] },
-    }),
-  };
-
-  const ctaVariant = {
-    hidden: { opacity: 1, scale: 1 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.3, delay: 0.3, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-
+  // Background slow zoom — kept as-is (no SSR issue: initial scale is visible)
   const bgZoomVariant = {
     initial: { scale: shouldReduceMotion ? 1 : 1.08 },
     animate: {
@@ -136,17 +118,12 @@ export default function HeroSection() {
           {/* Left Column */}
           <div className="text-center lg:text-left">
             {/* Badge */}
-            <motion.div
+            <div
               className="inline-flex items-center gap-2 backdrop-blur-sm border px-4 py-2 rounded-full text-sm font-medium mb-6"
-              variants={fadeSlideUp}
-              custom={0.2}
-              initial="hidden"
-              animate="visible"
               style={{
                 backgroundColor: "#fbbf2433",
                 borderColor: "#fbbf2466",
                 color: "#fbbf24",
-                willChange: "transform, opacity",
               }}
             >
               <div
@@ -154,20 +131,15 @@ export default function HeroSection() {
                 style={{ backgroundColor: "#fbbf24" }}
               />
               Toronto's Trusted Painting Experts
-            </motion.div>
+            </div>
 
             {/* Main Headline */}
-            <motion.h1
-              variants={fadeSlideUp}
-              custom={0.4}
-              initial="hidden"
-              animate="visible"
+            <h1
               className="font-bold leading-[1.1] mb-6"
               style={{
                 fontSize: "clamp(32px, 6vw, 72px)",
                 letterSpacing: "-0.02em",
                 color: themeColors.text,
-                willChange: "transform, opacity",
               }}
             >
               Transform Your Space with{" "}
@@ -179,33 +151,20 @@ export default function HeroSection() {
               >
                 Professional Painting
               </span>
-            </motion.h1>
+            </h1>
 
             {/* Description */}
-            <motion.p
-              variants={fadeSlideUp}
-              custom={0.6}
-              initial="hidden"
-              animate="visible"
+            <p
               className="text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
-              style={{
-                color: themeColors.textSecondary,
-                willChange: "transform, opacity",
-              }}
+              style={{ color: themeColors.textSecondary }}
             >
               From residential homes to commercial spaces across the GTA. Expert
               craftsmanship, premium materials, and guaranteed satisfaction on
               every project.
-            </motion.p>
+            </p>
 
             {/* CTA Buttons */}
-            <motion.div
-              variants={ctaVariant}
-              initial="hidden"
-              animate="visible"
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-              style={{ willChange: "transform, opacity" }}
-            >
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               {/* Primary CTA */}
               <div className="flex flex-col items-center sm:items-start gap-1">
                 <motion.button
@@ -271,14 +230,10 @@ export default function HeroSection() {
               >
                 View Our Work
               </motion.button>
-            </motion.div>
+            </div>
 
             {/* Social Proof / Trust Bar */}
-            <motion.div
-              variants={fadeSlideUp}
-              custom={1.2}
-              initial="hidden"
-              animate="visible"
+            <div
               className="mt-10 pt-8 border-t"
               style={{ borderColor: "rgba(255,255,255,0.1)" }}
             >
@@ -370,18 +325,11 @@ export default function HeroSection() {
                   <span style={{ color: "#4ade80" }}>✓</span> GTA-Wide Service
                 </span>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Right Column - Visual with Floating Bubbles */}
-          <motion.div
-            variants={fadeSlideUp}
-            custom={0.8}
-            initial="hidden"
-            animate="visible"
-            className="hidden lg:block"
-            style={{ willChange: "transform, opacity" }}
-          >
+          <div className="hidden lg:block">
             {/* Image Card */}
             <div
               className="relative rounded-3xl overflow-hidden border shadow-2xl"
@@ -455,18 +403,12 @@ export default function HeroSection() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        variants={fadeSlideUp}
-        custom={1.5}
-        initial="hidden"
-        animate="visible"
-      >
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <div
           className="flex flex-col items-center gap-2"
           style={{ color: `${themeColors.textMuted}99` }}
@@ -484,7 +426,7 @@ export default function HeroSection() {
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Lead Form Popup - lazy loaded, only rendered when open */}
       {isLeadFormOpen && (
