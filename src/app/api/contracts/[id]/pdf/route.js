@@ -1,5 +1,5 @@
 import sql from "@/app/api/utils/sql";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 async function getAppSettings() {
   try {
@@ -12,8 +12,8 @@ async function getAppSettings() {
 
 export async function GET(request, { params }) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return new Response("Unauthorized", { status: 401 });
     }
 

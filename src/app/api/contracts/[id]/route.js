@@ -1,11 +1,11 @@
 import sql from "@/app/api/utils/sql";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 // GET /api/contracts/[id] - Get contract details
 export async function GET(request, { params }) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -46,8 +46,8 @@ export async function GET(request, { params }) {
 // PUT /api/contracts/[id] - Update contract
 export async function PUT(request, { params }) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -158,8 +158,8 @@ export async function PUT(request, { params }) {
 // DELETE /api/contracts/[id] - Delete contract
 export async function DELETE(request, { params }) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 

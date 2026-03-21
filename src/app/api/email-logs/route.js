@@ -1,10 +1,10 @@
 import sql from "@/app/api/utils/sql";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 export async function GET(request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -101,8 +101,8 @@ export async function GET(request) {
 // Delete old email logs (cleanup endpoint)
 export async function DELETE(request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 

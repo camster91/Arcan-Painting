@@ -6,6 +6,7 @@ import { initSentryServer } from '../src/sentry.server.js';
 initSentryServer();
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { migratePasswords } from '../src/app/api/utils/migrate-passwords.js';
 import { skipCSRFCheck } from '@auth/core';
 import Credentials from '@auth/core/providers/credentials';
 import { authHandler, initAuthConfig } from '@hono/auth-js';
@@ -365,6 +366,11 @@ app.use('/api/auth/*', async (c, next) => {
   return next();
 });
 app.route(API_BASENAME, api);
+
+// Run password migration on startup (hash any remaining plain-text passwords)
+migratePasswords().catch((err) =>
+  console.error('[startup] Password migration failed:', err)
+);
 
 export default await createHonoServer({
   app,

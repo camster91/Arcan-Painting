@@ -1,10 +1,10 @@
 import sql from "@/app/api/utils/sql";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 export async function GET(request, { params }) {
   try {
-    const session = await auth();
-    if (!session) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
