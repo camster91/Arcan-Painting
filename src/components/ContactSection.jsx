@@ -132,24 +132,6 @@ export default function ContactSection() {
     [submitMutation],
   );
 
-  // Don't render until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return (
-      <section className="py-20 lg:py-32 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
-            <div className="h-16 bg-gray-300 rounded w-2/3 mx-auto mb-8"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="h-96 bg-gray-300 rounded-3xl"></div>
-              <div className="h-96 bg-gray-300 rounded-3xl"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   // Reusable button styles - simplified for light mode only
   const optionBtn =
     "px-4 py-3 rounded-lg border transition-all text-sm sm:text-base font-medium";
