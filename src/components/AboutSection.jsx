@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Heart, Users, Star, Quote } from "lucide-react";
 
 export default function AboutSection() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
