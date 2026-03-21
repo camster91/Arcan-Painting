@@ -64,7 +64,7 @@ export default function HeroSection() {
 
   // Animation variants
   const fadeSlideUp = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 28 },
+    hidden: { opacity: 1, y: shouldReduceMotion ? 0 : 28 },
     visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
@@ -73,7 +73,7 @@ export default function HeroSection() {
   };
 
   const ctaVariant = {
-    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.85 },
+    hidden: { opacity: 1, scale: shouldReduceMotion ? 1 : 0.85 },
     visible: {
       opacity: 1,
       scale: 1,
