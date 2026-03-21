@@ -14,10 +14,32 @@ export async function GET() {
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/</image:loc>
+      <image:loc>${baseUrl}/og-image.png</image:loc>
       <image:caption>Arcan and Sons Professional Toronto Painting Services</image:caption>
       <image:title>Professional Painting Services GTA</image:title>
     </image:image>
+  </url>
+
+  <!-- Service Pages -->
+  <url>
+    <loc>${baseUrl}/interior-painting</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/exterior-painting</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/commercial-painting</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <!-- Thank you page -->
@@ -26,14 +48,6 @@ export async function GET() {
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-
-  <!-- Admin login -->
-  <url>
-    <loc>${baseUrl}/account/signin</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
   </url>
 
   <!-- Services section (anchor link) -->

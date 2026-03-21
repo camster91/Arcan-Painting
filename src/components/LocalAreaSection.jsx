@@ -125,6 +125,29 @@ export default function LocalAreaSection() {
           </p>
         </div>
 
+        {/* Google Maps Embed */}
+        <div
+          className={`mb-16 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
+          <h3 className="text-3xl font-bold text-white text-center mb-8">
+            Find Us in Toronto
+          </h3>
+          <div
+            className="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/20"
+            style={{ paddingBottom: "40%", minHeight: "280px" }}
+          >
+            <iframe
+              src="https://maps.google.com/maps?q=Toronto,ON&output=embed"
+              title="Arcan Painting - Toronto, Ontario Service Area"
+              className="absolute inset-0 w-full h-full"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+
         {/* Enhanced CTA */}
         <div
           className={`mt-16 transition-all duration-1000 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}

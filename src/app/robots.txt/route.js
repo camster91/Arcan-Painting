@@ -5,6 +5,9 @@ export async function GET() {
   const robotsTxt = `User-agent: *
 Allow: /
 Allow: /thank-you
+Allow: /interior-painting
+Allow: /exterior-painting
+Allow: /commercial-painting
 Allow: /#services
 Allow: /#portfolio  
 Allow: /#about
