@@ -134,17 +134,7 @@ export default function ServicesSection() {
       gradient: "from-amber-400/40 to-yellow-500/40",
       isCTA: true,
     },
-  ];
-
-  // Don't render until mounted
-  if (!mounted) {
-    return (
-      <section id="services" className="py-24 bg-slate-900">
-        <div className="animate-pulse max-w-7xl mx-auto px-6">
-          <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-8"></div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-96 bg-gray-300 rounded-3xl"></div>
+  ]; className="h-96 bg-gray-300 rounded-3xl"></div>
             ))}
           </div>
         </div>
