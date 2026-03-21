@@ -9,8 +9,21 @@ const API_BASENAME = '/api';
 const api = new Hono();
 
 // Get current directory
-const __dirname = join(fileURLToPath(new URL('.', import.meta.url)), '../src/app/api');
-if (globalThis.fetch) {
+// In production, resolve from the project root (2 levels up from build/server/)
+// In dev, resolve from __create/ directory (1 level up)
+const __dirname = (() => {
+  const metaDir = fileURLToPath(new URL('.', import.meta.url));
+  // Check if we're in a build output (build/server/) or dev (__create/)
+  const prodPath = join(metaDir, '../../src/app/api');
+  const devPath = join(metaDir, '../src/app/api');
+  try {
+    require('fs').readdirSync(prodPath);
+    return prodPath;
+  } catch {
+    return devPath;
+  }
+})();
+if (process.env.NODE_ENV !== 'production' && globalThis.fetch) {
   globalThis.fetch = updatedFetch;
 }
 
