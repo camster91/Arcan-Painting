@@ -497,16 +497,7 @@ export function Layout({ children }: { children: ReactNode }) {
         {/* SSR SEO Block — visible to Google crawlers, hidden after React hydration */}
         <div
           id="ssr-seo-block"
-          style={{
-            position: 'absolute',
-            left: '-9999px',
-            top: '-9999px',
-            width: '1px',
-            height: '1px',
-            overflow: 'hidden',
-            clip: 'rect(0,0,0,0)',
-            whiteSpace: 'nowrap',
-          }}
+          className="sr-only"
           aria-hidden="true"
         >
           <h1>Professional Painting Services in Toronto &amp; the GTA — Arcan Painting</h1>
