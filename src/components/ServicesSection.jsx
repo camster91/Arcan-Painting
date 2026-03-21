@@ -134,13 +134,7 @@ export default function ServicesSection() {
       gradient: "from-amber-400/40 to-yellow-500/40",
       isCTA: true,
     },
-  ]; className="h-96 bg-gray-300 rounded-3xl"></div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  ];
 
   return (
     <section
