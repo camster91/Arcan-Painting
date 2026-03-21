@@ -42,7 +42,7 @@ export const metadata = {
     locale: "en_CA",
     images: [
       {
-        url: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/",
+        url: "https://arcanpainting.ca/og-image.png",
         width: 1200,
         height: 630,
         alt: "Arcan Painting Professional Toronto Painting Services - Interior & Exterior Painters GTA",
@@ -60,7 +60,7 @@ export const metadata = {
       "Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today.",
     images: [
       {
-        url: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/",
+        url: "https://arcanpainting.ca/og-image.png",
         alt: "Arcan Painting Professional Toronto Painting Services - Interior & Exterior Painters GTA",
       },
     ],
