@@ -79,7 +79,7 @@ export default defineConfig({
           'lightningcss',
           'better-sqlite3',
         ];
-        return serverOnlyPkgs.some((pkg) => id === pkg);
+        return serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(pkg + '/'));
       },
       output: {
         // Manual chunk splitting — client build only
