@@ -16,7 +16,7 @@ export default function TestimonialsSection() {
       location: "Downtown Resident",
       rating: 5,
       review:
-        "Arcan and Sons transformed our home completely! The attention to detail was incredible, and they finished ahead of schedule. Jose and his sons were professional, clean, and the quality is outstanding. Highly recommend!",
+        "Arcan Painting transformed our home completely! The attention to detail was incredible, and they finished ahead of schedule. Jose and his sons were professional, clean, and the quality is outstanding. Highly recommend!",
       image:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80",
       service: "Interior Painting",
@@ -66,7 +66,7 @@ export default function TestimonialsSection() {
       location: "Property Manager",
       rating: 5,
       review:
-        "I manage several properties and Arcan and Sons is my go-to team. Reliable, high-quality work, and they always respect tenant schedules. Three generations of excellence shows in every project.",
+        "I manage several properties and Arcan Painting is my go-to team. Reliable, high-quality work, and they always respect tenant schedules. Three generations of excellence shows in every project.",
       image:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80",
       service: "Multiple Services",
@@ -185,7 +185,7 @@ export default function TestimonialsSection() {
 
           <p className="text-slate-600 dark:text-slate-300 text-lg md:text-xl leading-relaxed">
             Don't just take our word for it. Read what our satisfied customers
-            have to say about their experience with Arcan and Sons.
+            have to say about their experience with Arcan Painting.
           </p>
         </div>
 
