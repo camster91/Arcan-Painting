@@ -1,53 +1,5 @@
 import sql from "@/app/api/utils/sql";
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-async function getCurrentUser(request) {
-  // Try Authorization: Bearer <token>
-  const authHeader =
-    request.headers.get("Authorization") ||
-    request.headers.get("authorization");
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const token = authHeader.slice(7);
-    const sessions = await sql`
-      SELECT * FROM auth_sessions WHERE token = ${token} AND expires_at > NOW()
-    `;
-    if (sessions.length) {
-      const users = await sql`
-        SELECT id, username, role FROM auth_users WHERE id = ${sessions[0].user_id} LIMIT 1
-      `;
-      if (users.length) return users[0];
-    }
-  }
-  // Fallback: cookie-based session
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const cookieToken = cookies["admin_session"];
-  if (!cookieToken) return null;
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${cookieToken}
-    LIMIT 1
-  `;
-  const user = rows[0];
-  if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${cookieToken}`;
-    return null;
-  }
-  return { id: user.id, username: user.username, role: user.role };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 async function ensureProjectAccess(user, projectId) {
   if (!user) return false;

@@ -1,4 +1,7 @@
-import { hash, verify as argon2Verify } from "argon2";
+// NOTE: Passwords are now hashed with argon2id.
+// Existing plain-text passwords in the DB will fail login until reset.
+// Admin must manually reset any existing accounts via the change-password endpoint.
+import { verify as argon2Verify } from "argon2";
 import sql from "@/app/api/utils/sql";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
@@ -51,7 +54,7 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    const users = await sql`SELECT id, username, password, role, password_is_hashed FROM auth_users WHERE username = ${username}`;
+    const users = await sql`SELECT id, username, password, role FROM auth_users WHERE username = ${username}`;
     const user = users[0];
 
     if (!user) {
@@ -60,23 +63,12 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    // Verify password — support both plain-text (legacy) and argon2 hashed
+    // Verify password (argon2 only — plain-text no longer accepted)
     let passwordValid = false;
-    if (user.password_is_hashed) {
-      try {
-        passwordValid = await argon2Verify(user.password, password);
-      } catch {
-        passwordValid = false;
-      }
-    } else {
-      // Legacy plain-text comparison (migrate on-login)
-      passwordValid = user.password === password;
-      if (passwordValid) {
-        // On-login migration: hash the password now
-        const hashed = await hash(password);
-        await sql`UPDATE auth_users SET password = ${hashed}, password_is_hashed = TRUE WHERE id = ${user.id}`;
-        console.log(`[auth] Migrated password hash for user ${user.id}`);
-      }
+    try {
+      passwordValid = await argon2Verify(user.password, password);
+    } catch {
+      passwordValid = false;
     }
 
     if (!passwordValid) {

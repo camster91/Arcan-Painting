@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { requireAdmin } from "@/app/api/utils/auth";
 // Using local admin session cookie like other admin APIs
 
 async function ensureSchema() {
@@ -27,55 +28,6 @@ async function ensureSchema() {
   await sql(
     `CREATE INDEX IF NOT EXISTS idx_internal_tasks_due_date ON internal_tasks(due_date);`,
   );
-}
-
-async function ensureAuthTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'owner',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )
-  `;
-}
-function parseCookies(h) {
-  const out = {};
-  if (!h) return out;
-  h.split(";").forEach((p) => {
-    const [k, v] = p.split("=");
-    if (!k) return;
-    out[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return out;
-}
-async function requireAdmin(request) {
-  try {
-    await ensureAuthTables();
-  } catch {}
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const token = cookies["admin_session"];
-  if (!token) return false;
-  const rows =
-    await sql`SELECT expires_at FROM auth_sessions WHERE token = ${token} LIMIT 1`;
-  const row = rows[0];
-  if (!row) return false;
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return false;
-  }
-  return true;
 }
 
 function buildFilters(searchParams) {

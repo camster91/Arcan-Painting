@@ -1,50 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
-
-// Helper function to parse cookies
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-// Helper function to check authentication using local auth system
-async function checkAuth(request) {
-  const cookieHeader = request.headers.get("cookie");
-  const cookies = parseCookies(cookieHeader);
-  const token = cookies["admin_session"];
-
-  if (!token) {
-    return null;
-  }
-
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const row = rows[0];
-
-  if (!row) {
-    return null;
-  }
-
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
-    // Cleanup expired session
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
-
-  return { user: { id: row.id, username: row.username, role: row.role } };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 async function getAppSettings() {
   try {
@@ -65,8 +21,8 @@ function applyTemplate(tpl, vars) {
 
 export async function POST(request, { params }) {
   try {
-    const session = await checkAuth(request);
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -110,7 +66,7 @@ export async function POST(request, { params }) {
         ? new Date(c.start_date).toLocaleDateString()
         : "",
       pdf_url: pdfUrl,
-      sender: session.user.username || session.user.email,
+      sender: user.username || user.email,
     };
 
     const subject = `Contract ${vars.contract_number} — ${vars.title}`;
