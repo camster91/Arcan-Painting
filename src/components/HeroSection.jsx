@@ -68,7 +68,7 @@ export default function HeroSection() {
     visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
+      transition: { duration: 0.4, delay: delay * 0.5, ease: [0.22, 1, 0.36, 1] },
     }),
   };
 
@@ -77,7 +77,7 @@ export default function HeroSection() {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.5, delay: 1.0, ease: [0.22, 1, 0.36, 1] },
+      transition: { duration: 0.3, delay: 0.3, ease: [0.22, 1, 0.36, 1] },
     },
   };
 
@@ -85,7 +85,7 @@ export default function HeroSection() {
     initial: { scale: shouldReduceMotion ? 1 : 1.08 },
     animate: {
       scale: 1,
-      transition: { duration: 8, ease: "easeOut" },
+      transition: { duration: 4, ease: "easeOut" },
     },
   };
 
