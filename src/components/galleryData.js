@@ -230,7 +230,7 @@ export const GALLERY_PROJECTS = [
     testimonial: {
       name: "Thomas & Linda Adeyemi",
       avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&q=80&fit=facearea",
-      quote: "Arcan and Sons delivered magazine-quality results. Our home sold in 4 days above asking – we credit the paint!",
+      quote: "Arcan Painting delivered magazine-quality results. Our home sold in 4 days above asking – we credit the paint!",
       rating: 5,
     },
   },

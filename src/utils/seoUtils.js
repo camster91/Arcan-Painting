@@ -1,9 +1,9 @@
-// Comprehensive SEO utilities for Arcan and Sons Painting
+// Comprehensive SEO utilities for Arcan Painting
 
 export const seoConfig = {
-  siteName: "Arcan and Sons Painting",
+  siteName: "Arcan Painting",
   defaultTitle:
-    "Arcan and Sons - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
+    "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
   defaultDescription:
     "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
   siteUrl: "https://arcanpainting.ca",
@@ -77,7 +77,7 @@ export function generatePageMetadata({
             url: seoConfig.socialImageUrl,
             width: 1200,
             height: 630,
-            alt: "Arcan and Sons Professional Toronto Painting Services",
+            alt: "Arcan Painting Professional Toronto Painting Services",
             type: "image/jpeg",
           },
         ];
@@ -122,7 +122,7 @@ export function generateLocalBusinessSchema() {
     "@context": "https://schema.org",
     "@type": "PaintingContractor",
     name: seoConfig.siteName,
-    alternateName: "Arcan and Sons",
+    alternateName: "Arcan Painting",
     description: seoConfig.defaultDescription,
     url: seoConfig.siteUrl,
     logo: seoConfig.logoUrl,

@@ -15,7 +15,7 @@ export async function GET() {
     <priority>1.0</priority>
     <image:image>
       <image:loc>${baseUrl}/og-image.png</image:loc>
-      <image:caption>Arcan and Sons Professional Toronto Painting Services</image:caption>
+      <image:caption>Arcan Painting Professional Toronto Painting Services</image:caption>
       <image:title>Professional Painting Services GTA</image:title>
     </image:image>
   </url>

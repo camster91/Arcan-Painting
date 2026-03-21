@@ -167,7 +167,7 @@ const ProjectSlider = memo(function ProjectSlider({ project, index, isActive }) 
       e.stopPropagation();
       const shareData = {
         title: `${project.name} – Arcan Painting`,
-        text: `Check out this amazing painting project by Arcan and Sons Painting in ${project.location}!`,
+        text: `Check out this amazing painting project by Arcan Painting in ${project.location}!`,
         url: typeof window !== "undefined" ? window.location.href : "https://arcanpainting.ca",
       };
       if (navigator.share) {
