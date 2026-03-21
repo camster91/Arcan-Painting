@@ -35,11 +35,21 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    // Parse date + time into start/end (1-hour default duration)
-    const startDateTime = new Date(`${body.date}T${body.time}`);
+    // Parse date + time — accepts "HH:MM" (24hr) or "HH:MM AM/PM" (12hr)
+    let timeStr = body.time.trim();
+    const ampmMatch = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (ampmMatch) {
+      let hours = parseInt(ampmMatch[1], 10);
+      const mins = ampmMatch[2];
+      const ampm = ampmMatch[3].toUpperCase();
+      if (ampm === "AM" && hours === 12) hours = 0;
+      if (ampm === "PM" && hours !== 12) hours += 12;
+      timeStr = String(hours).padStart(2, "0") + ":" + mins;
+    }
+    const startDateTime = new Date(`${body.date}T${timeStr}`);
     if (isNaN(startDateTime.getTime())) {
       return Response.json(
-        { error: "Invalid date or time format. Use date: YYYY-MM-DD, time: HH:MM" },
+        { error: "Invalid date or time format. Use date: YYYY-MM-DD, time: HH:MM or HH:MM AM/PM" },
         { status: 400 },
       );
     }
