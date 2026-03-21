@@ -137,30 +137,6 @@ class ErrorBoundaryWrapper extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
-function LoaderWrapper({ loader }: { loader: () => React.ReactNode }) {
-  return <>{loader()}</>;
-}
-
-type ClientOnlyProps = {
-  loader: () => React.ReactNode;
-};
-
-export const ClientOnly: React.FC<ClientOnlyProps> = ({ loader }) => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) return null;
-
-  return (
-    <ErrorBoundaryWrapper>
-      <LoaderWrapper loader={loader} />
-    </ErrorBoundaryWrapper>
-  );
-};
-
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location?.pathname;
@@ -268,7 +244,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
         <LoadFonts />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {/* SSR SEO Block — visible to Google crawlers, hidden after React hydration */}
         <div
           id="ssr-seo-block"
@@ -317,7 +293,9 @@ export function Layout({ children }: { children: ReactNode }) {
           <p>Arcan Painting — Toronto's trusted family painting company. <a href="#quote">Get your free estimate today.</a></p>
         </div>
 
-        <ClientOnly loader={() => children} />
+        <ErrorBoundaryWrapper>
+          {children}
+        </ErrorBoundaryWrapper>
         <Toaster position="bottom-right" />
         <ScrollRestoration />
         <Scripts />
