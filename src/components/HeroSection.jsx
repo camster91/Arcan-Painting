@@ -1,36 +1,14 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { motion, useScroll, useTransform, useInView, useReducedMotion } from "motion/react";
+import { useState, useRef, lazy, Suspense } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
 // Animated counter component
-function AnimatedCounter({ target, suffix = "", duration = 2 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const shouldReduceMotion = useReducedMotion();
-  const [count, setCount] = useState(shouldReduceMotion ? target : 0);
-
-  useEffect(() => {
-    if (!isInView || shouldReduceMotion) return;
-    let startTime = null;
-    const startValue = 0;
-
-    const animate = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-
-    requestAnimationFrame(animate);
-  }, [isInView, target, duration, shouldReduceMotion]);
-
+function AnimatedCounter({ target, suffix = "" }) {
   return (
-    <span ref={ref}>
-      {count}{suffix}
+    <span>
+      {target}{suffix}
     </span>
   );
 }
@@ -244,7 +222,7 @@ export default function HeroSection() {
                     className="text-2xl font-bold"
                     style={{ color: "#fbbf24" }}
                   >
-                    <AnimatedCounter target={500} suffix="+" duration={2} />
+                    <AnimatedCounter target={500} suffix="+" />
                   </span>
                   <span
                     className="text-xs font-medium mt-0.5"
@@ -267,7 +245,7 @@ export default function HeroSection() {
                       className="text-2xl font-bold"
                       style={{ color: "#fbbf24" }}
                     >
-                      <AnimatedCounter target={5} suffix=".0" duration={1.5} />
+                      <AnimatedCounter target={4} suffix=".9" />
                     </span>
                     <span style={{ color: "#fbbf24", fontSize: "1.2rem" }}>★</span>
                   </div>
@@ -291,7 +269,7 @@ export default function HeroSection() {
                     className="text-2xl font-bold"
                     style={{ color: "#fbbf24" }}
                   >
-                    <AnimatedCounter target={10} suffix="+" duration={1.8} />
+                    <AnimatedCounter target={25} suffix="+" />
                   </span>
                   <span
                     className="text-xs font-medium mt-0.5"

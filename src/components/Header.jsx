@@ -130,28 +130,24 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            {/* Call link (desktop) */}
+            {/* Phone number (desktop) */}
             <a
-              href="#contact"
-              className="hidden md:inline-flex items-center gap-2 text-base font-medium px-4 py-2 rounded-lg transition-colors"
+              href="tel:+14167272148"
+              className="hidden md:inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
               style={{
                 color: themeColors.textSecondary,
                 backgroundColor: "transparent",
               }}
               onMouseEnter={(e) => {
-                e.target.style.color = "#f59e0b";
-                e.target.style.backgroundColor = "rgba(0,0,0,0.05)";
+                e.currentTarget.style.color = "#f59e0b";
+                e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
               }}
               onMouseLeave={(e) => {
-                e.target.style.color = themeColors.textSecondary;
-                e.target.style.backgroundColor = "transparent";
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                setIsLeadFormOpen(true);
+                e.currentTarget.style.color = themeColors.textSecondary;
+                e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              <Phone size={18} aria-hidden="true" /> Contact
+              <Phone size={16} aria-hidden="true" /> +1 (416) 727-2148
             </a>
 
             {/* CTA */}
