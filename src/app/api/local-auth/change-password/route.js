@@ -22,23 +22,18 @@ export async function POST(request) {
     const { currentPassword, newPassword } = body;
 
     // Fetch full user record (need password hash)
-    const rows = await sql`SELECT id, username, password, password_is_hashed FROM auth_users WHERE id = ${user.id} LIMIT 1`;
+    const rows = await sql`SELECT id, username, password FROM auth_users WHERE id = ${user.id} LIMIT 1`;
     const fullUser = rows[0];
     if (!fullUser) {
       return Response.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Verify current password
+    // Verify current password (argon2 only — plain-text no longer accepted)
     let currentValid = false;
-    if (fullUser.password_is_hashed) {
-      try {
-        currentValid = await argon2Verify(fullUser.password, currentPassword);
-      } catch {
-        currentValid = false;
-      }
-    } else {
-      // Legacy plain-text
-      currentValid = fullUser.password === currentPassword;
+    try {
+      currentValid = await argon2Verify(fullUser.password, currentPassword);
+    } catch {
+      currentValid = false;
     }
 
     if (!currentValid) {

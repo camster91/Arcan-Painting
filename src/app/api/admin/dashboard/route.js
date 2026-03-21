@@ -28,7 +28,7 @@ export async function GET(request) {
       appointmentsStats,
       recentActivities,
       todaysTasks,
-    ] = await sql.transaction([
+    ] = await Promise.all([
       // Leads metrics
       sql`
         SELECT 

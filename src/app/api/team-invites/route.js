@@ -1,55 +1,10 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-// UPDATED: allow owner auth via either legacy admin_session cookie OR Authorization: Bearer <token>
 async function requireOwner(request) {
-  // First, try Authorization header (matches other admin APIs like /api/team-members)
-  const authHeader = request.headers.get("authorization");
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const bearer = authHeader.slice(7);
-    const sessions =
-      await sql`SELECT * FROM auth_sessions WHERE token = ${bearer} AND expires_at > NOW()`;
-    if (sessions.length) {
-      const users =
-        await sql`SELECT id, username, role FROM auth_users WHERE id = ${sessions[0].user_id} LIMIT 1`;
-      if (users.length && users[0].role === "owner") {
-        return users[0];
-      }
-      return null;
-    }
-  }
-
-  // Fallback: legacy cookie-based admin session
-  const cookieHeader = request.headers.get("cookie");
-  const cookies = parseCookies(cookieHeader);
-  const token = cookies["admin_session"];
-  if (!token) return null;
-
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const user = rows[0];
+  const user = await getCurrentUser(request);
   if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
   if (user.role !== "owner") return null;
   return user;
 }

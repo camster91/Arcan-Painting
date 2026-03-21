@@ -1,51 +1,7 @@
 import sql from "@/app/api/utils/sql";
+import { getCurrentUser } from "@/app/api/utils/auth";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
-
-// Helper function to parse cookies
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-// Helper function to check authentication using local auth system
-async function checkAuth(request) {
-  const cookieHeader = request.headers.get("cookie");
-  const cookies = parseCookies(cookieHeader);
-  const token = cookies["admin_session"];
-
-  if (!token) {
-    return null;
-  }
-
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const row = rows[0];
-
-  if (!row) {
-    return null;
-  }
-
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
-    // Cleanup expired session
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
-
-  return { user: { id: row.id, username: row.username, role: row.role } };
-}
 
 // Generate contract number
 function generateContractNumber() {
@@ -63,8 +19,8 @@ export async function GET(request) {
   if (limited) return limited;
 
   try {
-    const session = await checkAuth(request);
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -219,8 +175,8 @@ export async function POST(request) {
   if (limited) return limited;
 
   try {
-    const session = await checkAuth(request);
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -278,7 +234,7 @@ export async function POST(request) {
         ${title}, ${description}, ${scope_of_work}, ${terms_and_conditions},
         ${payment_terms}, ${warranty_terms}, ${total_amount}, ${deposit_amount},
         ${deposit_percentage}, ${start_date}, ${completion_date},
-        ${estimated_duration_days}, ${session.user.username || session.user.email}, ${notes}
+        ${estimated_duration_days}, ${user.username || user.email}, ${notes}
       ) RETURNING *
     `;
 
@@ -312,8 +268,8 @@ export async function POST(request) {
 // PUT /api/contracts - Update contract
 export async function PUT(request) {
   try {
-    const session = await checkAuth(request);
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -420,8 +376,8 @@ export async function PUT(request) {
 // DELETE /api/contracts - Delete contract
 export async function DELETE(request) {
   try {
-    const session = await checkAuth(request);
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 

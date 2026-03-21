@@ -1,7 +1,5 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
-import { cacheGet, cacheSet, TTL, CacheKeys } from "@/app/api/utils/cache";
-import { invalidateEstimatesCache } from "@/app/api/middleware/cache-middleware";
 
 // GET /api/estimates - Get all estimates with optional filtering (role-aware)
 export async function GET(request) {
@@ -12,15 +10,6 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const leadId = searchParams.get("lead_id");
-
-    // Redis cache lookup
-    const cacheKey = leadId
-      ? CacheKeys.estimatesByLead(leadId)
-      : CacheKeys.estimates(`${user.role}:${searchParams.toString()}`);
-    const cached = await cacheGet(cacheKey);
-    if (cached !== null) {
-      return Response.json(cached, { headers: { "X-Cache": "HIT" } });
-    }
 
     let query = `
       SELECT 
@@ -55,8 +44,7 @@ export async function GET(request) {
 
     const estimates = await sql(query, params);
     const responseBody = { success: true, estimates: estimates || [] };
-    await cacheSet(cacheKey, responseBody, TTL.ESTIMATES);
-    return Response.json(responseBody, { headers: { "X-Cache": "MISS" } });
+    return Response.json(responseBody);
   } catch (error) {
     console.error("Error fetching estimates:", error);
     return Response.json(
@@ -173,9 +161,6 @@ export async function POST(request) {
     `;
 
     const newEstimate = result[0];
-
-    // Invalidate estimates cache on write
-    await invalidateEstimatesCache(lead_id);
 
     return Response.json(
       {
@@ -329,9 +314,6 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedEstimate = result[0];
 
-    // Invalidate estimates cache on write
-    await invalidateEstimatesCache();
-
     return Response.json({
       success: true,
       message: "Estimate updated successfully",
@@ -383,9 +365,6 @@ export async function DELETE(request) {
 
     // Delete the estimate
     await sql`DELETE FROM estimates WHERE id = ${id}`;
-
-    // Invalidate estimates cache on delete
-    await invalidateEstimatesCache();
 
     return Response.json({
       success: true,

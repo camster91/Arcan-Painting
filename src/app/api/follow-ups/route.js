@@ -1,36 +1,5 @@
 import sql from "@/app/api/utils/sql";
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (!cookieHeader) return cookies;
-  cookieHeader.split(";").forEach((pair) => {
-    const [k, v] = pair.split("=");
-    if (!k) return;
-    cookies[k.trim()] = decodeURIComponent((v || "").trim());
-  });
-  return cookies;
-}
-
-async function getCurrentUser(request) {
-  const cookies = parseCookies(request.headers.get("cookie"));
-  const token = cookies["admin_session"];
-  if (!token) return null;
-  const rows = await sql`
-    SELECT u.id, u.username, u.role, s.expires_at
-    FROM auth_sessions s
-    JOIN auth_users u ON u.id = s.user_id
-    WHERE s.token = ${token}
-    LIMIT 1
-  `;
-  const user = rows[0];
-  if (!user) return null;
-  const nowIso = new Date().toISOString();
-  if (user.expires_at && user.expires_at < nowIso) {
-    await sql`DELETE FROM auth_sessions WHERE token = ${token}`;
-    return null;
-  }
-  return { id: user.id, username: user.username, role: user.role };
-}
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 // GET /api/follow-ups - Get all follow-ups with optional filtering (ADMIN)
 export async function GET(request) {
