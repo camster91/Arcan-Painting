@@ -64,7 +64,7 @@ export default function ServicesSection() {
         "Power washing & surface prep",
         "Professional surface repair & priming",
         "Weather-resistant protection coatings",
-        "10-year durability guarantee",
+        "5-year warranty",
       ],
       image:
         "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80",
