@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import LeadFormPopup from "./LeadFormPopup";
 
 export default function LocalAreaSection() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
 
   useEffect(() => {

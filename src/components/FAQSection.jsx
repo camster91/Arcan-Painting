@@ -9,7 +9,7 @@ import LeadFormPopup from "./LeadFormPopup"; // ADD
 
 export default function FAQSection() {
   const [openFAQ, setOpenFAQ] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false); // ADD
 
   useEffect(() => {

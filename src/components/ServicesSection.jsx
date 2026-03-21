@@ -17,7 +17,7 @@ import LeadFormPopup from "./LeadFormPopup";
 export default function ServicesSection() {
   const [activeCard, setActiveCard] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const { mounted } = useTheme(); // Remove isDark, only use mounted
 

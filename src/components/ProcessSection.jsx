@@ -10,7 +10,7 @@ import {
 import LeadFormPopup from "./LeadFormPopup"; // ADD
 
 export default function ProcessSection() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false); // ADD
 
   useEffect(() => {
