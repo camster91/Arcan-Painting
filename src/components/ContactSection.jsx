@@ -520,6 +520,23 @@ export default function ContactSection() {
                     </div>
                   </a>
 
+                  <a
+                    href="tel:+14167272148"
+                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all duration-200 group"
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
+                      <Phone size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 text-lg">
+                        Phone
+                      </div>
+                      <div className="text-amber-600 font-medium">
+                        +1 (416) 727-2148
+                      </div>
+                    </div>
+                  </a>
+
                   <div className="flex items-center gap-4 p-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
                       <MapPin size={20} className="text-white" />

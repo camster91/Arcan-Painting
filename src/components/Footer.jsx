@@ -1,4 +1,4 @@
-import { Mail, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
+import { Mail, MapPin, Phone, Facebook, Instagram, Linkedin } from "lucide-react";
 import { useTheme, getThemeColors } from "@/utils/useTheme";
 
 export default function Footer() {
@@ -56,6 +56,22 @@ export default function Footer() {
                 }
               >
                 info@arcanpainting.ca
+              </a>
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <Phone size={16} style={{ color: themeColors.primary }} />
+              <a
+                href="tel:+14167272148"
+                className="text-sm transition-colors"
+                style={{ color: themeColors.textSecondary }}
+                onMouseEnter={(e) =>
+                  (e.target.style.color = themeColors.primary)
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.color = themeColors.textSecondary)
+                }
+              >
+                +1 (416) 727-2148
               </a>
             </div>
             <div className="flex items-center gap-2">

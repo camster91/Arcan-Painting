@@ -50,38 +50,6 @@ export async function GET() {
     <priority>0.5</priority>
   </url>
 
-  <!-- Services section (anchor link) -->
-  <url>
-    <loc>${baseUrl}/#services</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Portfolio section (anchor link) -->
-  <url>
-    <loc>${baseUrl}/#portfolio</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- About section (anchor link) -->
-  <url>
-    <loc>${baseUrl}/#about</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Contact section (anchor link) -->
-  <url>
-    <loc>${baseUrl}/#contact</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
 </urlset>`;
 
   return new Response(sitemap, {

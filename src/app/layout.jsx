@@ -86,7 +86,7 @@ export const metadata = {
     "business:contact_data:postal_code": "",
     "business:contact_data:country_name": "Canada",
     "business:contact_data:email": "info@arcanpainting.ca",
-    "business:contact_data:phone_number": "",
+    "business:contact_data:phone_number": "+14167272148",
     "business:contact_data:website": "https://arcanpainting.ca",
   },
 };
@@ -266,23 +266,27 @@ function HeadTags() {
 
     addJsonLd("ld-local-business", {
       "@context": "https://schema.org",
-      "@type": "PaintingContractor",
+      "@type": "LocalBusiness",
+      "@id": "https://arcanpainting.ca/#business",
       name: "Arcan Painting",
-      alternateName: "Arcan Painting",
       description:
-        "Professional Toronto painting services for residential and commercial properties across the GTA.",
+        "Professional interior and exterior painting services for residential and commercial properties across the Greater Toronto Area.",
       url: "https://arcanpainting.ca",
+      telephone: "+14167272148",
+      email: "info@arcanpainting.ca",
       logo: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/",
       image:
         "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/",
-      email: "info@arcanpainting.ca",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Greater Toronto Area",
         addressLocality: "Toronto",
         addressRegion: "ON",
-        postalCode: "",
         addressCountry: "CA",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 43.6532,
+        longitude: -79.3832,
       },
       areaServed: [
         "Toronto",
@@ -297,13 +301,27 @@ function HeadTags() {
         "Pickering",
         "Ajax",
         "Whitby",
-        "Oshawa",
-        "Newmarket",
-        "Aurora",
+      ],
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "07:00",
+          closes: "18:00",
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Saturday"],
+          opens: "08:00",
+          closes: "16:00",
+        },
       ],
       priceRange: "$$",
-      openingHours: "Mo-Fr 07:00-18:00, Sa 08:00-16:00",
-      currenciesAccepted: "CAD",
+      sameAs: [
+        "https://www.facebook.com/arcanpainting",
+        "https://www.instagram.com/arcanpaint",
+        "https://www.linkedin.com/company/arcan-painting",
+      ],
     });
 
     // Website JSON-LD
