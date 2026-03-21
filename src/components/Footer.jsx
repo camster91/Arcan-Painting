@@ -7,9 +7,7 @@ export default function Footer() {
   const themeColors = getThemeColors(false); // Always use light mode colors
 
   // Don't render until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return null;
-  }
+
 
   return (
     <footer
