@@ -1,5 +1,5 @@
 import sql from "@/app/api/utils/sql";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
@@ -10,8 +10,8 @@ export async function GET(request) {
   if (limited) return limited;
 
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -185,8 +185,8 @@ export async function POST(request) {
   if (limited) return limited;
 
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -231,7 +231,7 @@ export async function POST(request) {
         ) VALUES (
           ${invoice_id || null}, ${contract_id || null}, ${payment_method}, ${payment_reference || null},
           ${paymentAmount}, ${payment_date}, ${status}, ${notes || null},
-          ${processed_by || session.user.username || session.user.email}
+          ${processed_by || user.username}
         ) RETURNING *
       `;
 
@@ -266,8 +266,8 @@ export async function POST(request) {
     await auditLog({
       request,
       action: "payment.create",
-      userId: session.user.id,
-      username: session.user.email || session.user.username,
+      userId: user.id,
+      username: user.username,
       resource: "payment",
       resourceId: payment.id,
       changes: { amount: paymentAmount, payment_method, invoice_id, contract_id },
@@ -287,8 +287,8 @@ export async function PUT(request) {
   if (limited) return limited;
 
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -342,8 +342,8 @@ export async function PUT(request) {
     await auditLog({
       request,
       action: "payment.update",
-      userId: session.user.id,
-      username: session.user.email || session.user.username,
+      userId: user.id,
+      username: user.username,
       resource: "payment",
       resourceId: id,
       changes: { amount, status, payment_method },
@@ -363,8 +363,8 @@ export async function DELETE(request) {
   if (limited) return limited;
 
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -412,8 +412,8 @@ export async function DELETE(request) {
     await auditLog({
       request,
       action: "payment.delete",
-      userId: session.user.id,
-      username: session.user.email || session.user.username,
+      userId: user.id,
+      username: user.username,
       resource: "payment",
       resourceId: id,
       changes: { amount: payment.amount, payment_method: payment.payment_method },

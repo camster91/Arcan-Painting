@@ -1,11 +1,11 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 export async function POST(request, { params }) {
   try {
-    const session = await auth();
-    if (!session?.user) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { id } = params; // payment id

@@ -1,10 +1,10 @@
 import { sendEmail } from "@/app/api/utils/send-email";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 
 export async function POST(request) {
   try {
-    const session = await auth();
-    if (!session) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -53,7 +53,7 @@ export async function POST(request) {
               <strong>System Details:</strong><br>
               Sent from: ${process.env.APP_URL || "Painting CRM"}<br>
               Email Provider: Resend<br>
-              Test initiated by: ${session.user?.email || "Admin"}
+              Test initiated by: ${user.username || "Admin"}
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@ System Information:
 System Details:
 Sent from: ${process.env.APP_URL || "Painting CRM"}
 Email Provider: Resend
-Test initiated by: ${session.user?.email || "Admin"}
+Test initiated by: ${user.username || "Admin"}
     `;
 
     const result = await sendEmail({
@@ -89,11 +89,11 @@ Test initiated by: ${session.user?.email || "Admin"}
       text,
       templateName: "test_email",
       relatedType: "email_test",
-      userId: session.user?.id,
+      userId: user.id,
       metadata: {
         test_type: "manual",
         admin_initiated: true,
-        initiated_by: session.user?.email,
+        initiated_by: user.username,
       },
     });
 
