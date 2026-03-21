@@ -4,14 +4,10 @@ import { reactRouterHonoServer } from 'react-router-hono-server/dev';
 import { defineConfig } from 'vite';
 import babel from 'vite-plugin-babel';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { addRenderIds } from './plugins/addRenderIds';
 import { aliases } from './plugins/aliases';
-import consoleToParent from './plugins/console-to-parent';
 import { layoutWrapperPlugin } from './plugins/layouts';
 import { loadFontsFromTailwindSource } from './plugins/loadFontsFromTailwindSource';
 import { nextPublicProcessEnv } from './plugins/nextPublicProcessEnv';
-import { restart } from './plugins/restart';
-import { restartEnvFileChange } from './plugins/restartEnvFileChange';
 import { sentrySourceMaps } from './plugins/sentrySourceMaps';
 
 export default defineConfig({
@@ -35,7 +31,6 @@ export default defineConfig({
   logLevel: 'info',
   plugins: [
     nextPublicProcessEnv(),
-    restartEnvFileChange(),
     reactRouterHonoServer({
       serverEntryPoint: './__create/index.ts',
       runtime: 'node',
@@ -49,19 +44,7 @@ export default defineConfig({
         plugins: ['styled-jsx/babel'],
       },
     }),
-    restart({
-      restart: [
-        'src/**/page.jsx',
-        'src/**/page.tsx',
-        'src/**/layout.jsx',
-        'src/**/layout.tsx',
-        'src/**/route.js',
-        'src/**/route.ts',
-      ],
-    }),
-    consoleToParent(),
     loadFontsFromTailwindSource(),
-    addRenderIds(),
     reactRouter(),
     tsconfigPaths(),
     aliases(),
