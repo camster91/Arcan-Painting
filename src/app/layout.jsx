@@ -46,7 +46,7 @@ export const metadata = {
         width: 1200,
         height: 630,
         alt: "Arcan Painting Professional Toronto Painting Services - Interior & Exterior Painters GTA",
-        type: "image/jpeg",
+        type: "image/png",
       },
     ],
   },
