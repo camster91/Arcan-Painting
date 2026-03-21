@@ -19,8 +19,6 @@ Disallow: /admin/*
 Disallow: /api/*
 Disallow: /account/
 Disallow: /account/*
-Disallow: /_next/
-Disallow: /static/
 
 # Block specific files
 Disallow: *.json$
