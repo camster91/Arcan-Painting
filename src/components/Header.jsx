@@ -36,11 +36,7 @@ export default function Header() {
   }, [isMenuOpen]);
 
   // Don't render until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return (
-      <header className="sticky top-0 z-50 h-20 bg-white border-b border-gray-200" />
-    );
-  }
+
 
   const navItems = [
     { label: "Services", href: "#services" },
