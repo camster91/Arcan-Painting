@@ -88,7 +88,7 @@ export default function Header() {
                 />
                 <img
                   src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/340x/"
-                  alt="Arcan Painting and Sons logo"
+                  alt="Arcan Painting logo"
                   width="170"
                   height="95"
                   loading="eager"
@@ -244,7 +244,7 @@ export default function Header() {
                 />
                 <img
                   src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/240x/"
-                  alt="Arcan Painting and Sons logo"
+                  alt="Arcan Painting logo"
                   width="120"
                   height="56"
                   loading="eager"

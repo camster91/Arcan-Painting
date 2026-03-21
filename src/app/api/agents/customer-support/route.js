@@ -33,7 +33,7 @@ export async function POST(request) {
 
     // Build the task prompt
     const task = `
-Please triage this incoming customer message for Arcan and Sons Painting.
+Please triage this incoming customer message for Arcan Painting.
 
 **Message Details:**
 - Source: ${source}
