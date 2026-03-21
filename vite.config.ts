@@ -81,6 +81,7 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
+    target: 'es2022',
     // Generate source maps for Sentry stack trace readability
     sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : false,
     rollupOptions: {
