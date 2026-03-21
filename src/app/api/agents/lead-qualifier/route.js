@@ -25,7 +25,7 @@ export async function POST(request) {
 
     // Build the task prompt for the agent
     const task = `
-Please qualify this new lead for Arcan and Sons Painting.
+Please qualify this new lead for Arcan Painting.
 
 **Lead Details:**
 - Name: ${name}
