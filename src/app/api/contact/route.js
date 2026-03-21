@@ -1,5 +1,4 @@
-import { sendTemplatedEmail } from "../utils/send-email.js";
-import { triggerWorkflow } from "../email-workflows/route.js";
+import { sendGmailEmail } from "@/lib/google.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
@@ -126,33 +125,37 @@ export async function POST(request) {
       console.error("Database error (continuing with email):", dbError);
     }
 
-    // UPDATED: support both RESEND_API_KEY and RESEND
-    const hasResendKey = !!(process.env.RESEND_API_KEY || process.env.RESEND);
+    // Send notification + confirmation emails via Gmail
+    const adminEmail = process.env.GOOGLE_EMAIL || "info@arcanpainting.ca";
+    try {
+      // Notify the business
+      await sendGmailEmail({
+        to: adminEmail,
+        subject: `New Lead: ${body.name} — ${body.serviceType}`,
+        replyTo: hasEmail ? body.email : undefined,
+        body: `<h2>New Contact Form Submission</h2>
+<p><strong>Name:</strong> ${body.name}</p>
+${hasEmail ? `<p><strong>Email:</strong> ${body.email}</p>` : ""}
+${hasPhone ? `<p><strong>Phone:</strong> ${body.phone}</p>` : ""}
+<p><strong>Service:</strong> ${body.serviceType}</p>
+<p><strong>Preferred Contact:</strong> ${preferredContact}</p>
+${body.address ? `<p><strong>Address:</strong> ${body.address}</p>` : ""}
+${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDescription}</p>` : ""}`,
+      });
 
-    // Send automated email workflows if Resend is configured
-    if (hasResendKey) {
-      try {
-        // Trigger automated email workflows
-        await triggerWorkflow("new_lead", {
-          customer_name: body.name,
-          customer_email: body.email,
-          customer_phone: body.phone,
-          service_type: body.serviceType,
-          project_description:
-            body.projectDescription || "No description provided",
-          preferred_contact: preferredContact,
-          address: body.address,
-          app_url: process.env.APP_URL,
-          related_type: "lead",
-          related_id: leadId,
-          admin_email: "info@arcanpainting.ca",
+      // Send confirmation to customer if they provided email
+      if (hasEmail) {
+        await sendGmailEmail({
+          to: body.email,
+          subject: "We received your request — Arcan Painting",
+          body: `<p>Hi ${body.name},</p>
+<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${body.serviceType}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
+<p>Best regards,<br>The Arcan Painting Team</p>`,
         });
-      } catch (emailError) {
-        console.error("Failed to send automated emails:", emailError);
-        // Don't fail the request if emails fail
       }
-    } else {
-      console.warn("RESEND not configured; skipping automated emails");
+    } catch (emailError) {
+      console.error("Failed to send Gmail emails:", emailError);
+      // Don't fail the request if emails fail
     }
 
     // Notify Gerardo via Telegram
