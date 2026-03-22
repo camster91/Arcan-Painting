@@ -88,10 +88,8 @@ export default defineConfig({
         // Manual chunk splitting — client build only
         // (SSR build produces a single server entry, so manualChunks is a no-op there)
         manualChunks(id) {
-          // React core — tiny, keep together
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-            return 'vendor-react';
-          }
+          // NOTE: React is NOT split into its own chunk - doing so creates circular deps
+          // with vendor-misc (which imports React), causing TDZ crashes on init
           // React Router
           if (id.includes('node_modules/react-router') || id.includes('node_modules/@react-router')) {
             return 'vendor-router';
