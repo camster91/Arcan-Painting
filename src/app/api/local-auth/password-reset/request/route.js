@@ -70,9 +70,22 @@ export async function POST(request) {
     try {
       await sendEmail({
         to: user.username,
-        subject: "Reset your password",
-        text: `Reset your password: ${resetUrl}`,
-        html: `<p>You requested a password reset.</p><p><a href="${resetUrl}">Click here to reset your password</a></p><p>This link expires in 1 hour.</p>`,
+        from: "Arcan Painting <noreply@arcanpainting.ca>",
+        subject: "Reset your Arcan Painting password",
+        text: `Reset your Arcan Painting password: ${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you did not request this, you can ignore this email.`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <img src="https://arcanpainting.ca/logo.png" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
+            </div>
+            <h2 style="color: #1e293b; text-align: center;">Reset your password</h2>
+            <p style="color: #475569; text-align: center;">You requested a password reset for your Arcan Painting admin account.</p>
+            <div style="text-align: center; margin: 24px 0;">
+              <a href="${resetUrl}" style="display: inline-block; background: #1e293b; color: #fff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">Reset Password</a>
+            </div>
+            <p style="color: #94a3b8; font-size: 13px; text-align: center;">This link expires in 1 hour. If you did not request this, you can ignore this email.</p>
+          </div>
+        `,
       });
     } catch (err) {
       console.error("Email send error:", err);
