@@ -31,7 +31,7 @@ export function AdminAuthProvider({ children }) {
 
       // Add timeout to prevent hanging forever
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
 
       const res = await fetch("/api/local-auth/me", {
         credentials: "include",
@@ -53,16 +53,9 @@ export function AdminAuthProvider({ children }) {
     } catch (error) {
       console.error("Auth check failed:", error);
 
-      // Handle different error types
-      if (error.name === "AbortError") {
-        setAuthError(
-          "Authentication check timed out. Please refresh the page.",
-        );
-        setAuthChecked(true); // Set to true to show error state instead of infinite loading
-      } else {
-        // Redirect to login on other errors
-        window.location.href = "/account/signin";
-      }
+      // Redirect to login on any error (timeout or network)
+      const redirect = encodeURIComponent(window.location.pathname);
+      window.location.href = `/account/signin?callbackUrl=${redirect}`;
     } finally {
       setLoading(false);
     }
