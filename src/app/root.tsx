@@ -18,10 +18,11 @@ import {
 } from 'react';
 import './global.css';
 
-// Sentry client init — must run before any other app code
-import { initSentryClient } from '../sentry.client.js';
+// Sentry client init — lazy to avoid bundle circular dep issues
 if (typeof window !== 'undefined') {
-  initSentryClient();
+  import('../sentry.client.js').then(({ initSentryClient }) => {
+    initSentryClient();
+  }).catch(() => {});
 }
 
 // @ts-ignore
