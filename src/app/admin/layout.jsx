@@ -13,6 +13,14 @@ import {
   Settings,
   Bot,
   Megaphone,
+  Search,
+  Sparkles,
+  TrendingUp,
+  BarChart2,
+  Linkedin,
+  MapPin,
+  Mail,
+  Zap,
 } from "lucide-react";
 import BottomTabNav from "@/components/BottomTabNav";
 import FloatingActionButton from "@/components/FloatingActionButton";
@@ -274,19 +282,20 @@ function AdminLayoutContent({ children }) {
         icon: Megaphone,
         entryHref: "/admin/marketing",
         tabs: [
-          {
-            label: "Overview",
-            href: "/admin/marketing",
-            description: "Marketing hub",
-          },
-          {
-            label: "AI Assistant",
-            href: "/admin/marketing/ai-assistant",
-            description: "AI marketing help",
-          },
+          { label: "Overview", href: "/admin/marketing", description: "Marketing hub" },
+          { label: "AI Assistant", href: "/admin/marketing/ai-assistant", description: "AI marketing help" },
+          { label: "Content Research", href: "/admin/marketing/research", description: "Keywords & ideas" },
+          { label: "Social Scheduler", href: "/admin/marketing/social-scheduler", description: "Schedule posts" },
+          { label: "Ad Creative", href: "/admin/marketing/ad-creative", description: "AI ad generation" },
+          { label: "Facebook Ads", href: "/admin/marketing/facebook", description: "Meta campaigns" },
+          { label: "Google Ads", href: "/admin/marketing/google-ads", description: "Search & display" },
+          { label: "LinkedIn", href: "/admin/marketing/linkedin", description: "B2B outreach" },
+          { label: "Citations", href: "/admin/marketing/citations", description: "Local listings" },
+          { label: "Cold Email", href: "/admin/marketing/cold-email", description: "Email outreach" },
+          { label: "Workflows", href: "/admin/marketing/workflows", description: "Automation" },
         ],
         matchers: ["/admin/marketing"],
-        description: "Campaigns & AI assistant",
+        description: "Campaigns & AI tools",
         showNotificationBadge: false,
       },
       {
