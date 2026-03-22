@@ -107,7 +107,7 @@ export default function SignInPage() {
         <p className="text-center text-slate-600 mb-6">
           {step === "email"
             ? "Enter your admin email to receive a login code."
-            : `A 6-digit code was sent to ${email}`}
+            : `Check your email for a sign-in link. You can also enter the 6-digit code below.`}
         </p>
 
         {error && (
