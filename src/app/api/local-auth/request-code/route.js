@@ -20,10 +20,10 @@ async function sendCodeEmail(username, code) {
   }
 
   const body = new URLSearchParams({
-    from: `Arcan Painting <noreply@${mailgunDomain}>`,
+    from: `Arcan Painting <noreply@arcanpainting.ca>`,
     to: username,
-    subject: "Your Arcan login code",
-    text: `Your Arcan admin login code is: ${code}\n\nThis code expires in 15 minutes. Do not share it.\n\nIf you did not request this, you can ignore this email.`,
+    subject: "Your Arcan Painting login code",
+    text: `Hi,\n\nYour Arcan Painting admin login code is:\n\n${code}\n\nThis code expires in 15 minutes. If you did not request this, you can ignore this email.\n\nArcan Painting\nhttps://arcanpainting.ca`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 24px;">

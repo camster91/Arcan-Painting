@@ -75,7 +75,7 @@ export async function POST(request) {
 
     // Create cryptographically secure session token (7 days)
     const token = generateSecureToken();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
     await sql`
       INSERT INTO auth_sessions (user_id, token, expires_at)
@@ -91,7 +91,7 @@ export async function POST(request) {
     });
 
     // Token delivered ONLY via httpOnly cookie — not in JSON body
-    const cookie = makeCookie("admin_session", token, 7 * 24 * 60 * 60);
+    const cookie = makeCookie("admin_session", token, 90 * 24 * 60 * 60);
 
     return new Response(
       JSON.stringify({
