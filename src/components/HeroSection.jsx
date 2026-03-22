@@ -319,16 +319,16 @@ export default function HeroSection() {
               <picture>
                 <source
                   type="image/webp"
-                  srcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1920x/ 1920w"
+                  srcSet="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&q=80&fm=webp 600w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp 1200w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80&fm=webp 1920w"
                   sizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
                 />
                 <source
                   type="image/jpeg"
-                  srcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1920x/ 1920w"
+                  srcSet="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&q=80 600w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80 1200w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80 1920w"
                   sizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
                 />
                 <img
-                  src="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/jpeg/-/quality/smart/-/resize/1200x/"
+                  src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80"
                   alt="Professional painters working on a bright interior wall"
                   className="w-full h-[520px] object-cover"
                   width="800"

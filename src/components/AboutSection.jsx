@@ -132,16 +132,16 @@ export default function AboutSection() {
                 <picture>
                   <source
                     type="image/webp"
-                    srcSet="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/webp/-/resize/1200x/ 1200w"
+                    srcSet="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&q=80&fm=webp 600w, https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=1200&q=80&fm=webp 1200w"
                     sizes="(max-width: 640px) 600px, 1200px"
                   />
                   <source
                     type="image/jpeg"
-                    srcSet="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/600x/ 600w, https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/1200x/ 1200w"
+                    srcSet="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&q=80 600w, https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=1200&q=80 1200w"
                     sizes="(max-width: 640px) 600px, 1200px"
                   />
                   <img
-                    src="https://ucarecdn.com/163d1bd0-c531-4fa3-80b4-7e5dfa193f78/-/format/jpeg/-/quality/smart/-/resize/1200x/"
+                    src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=1200&q=80"
                     alt="The Cañabate family - Jose and his three sons Pablo, Gerardo, and JJ painting a Toronto house, working together as a family team"
                     className="w-full h-[400px] object-cover"
                     width="800"

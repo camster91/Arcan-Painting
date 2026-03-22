@@ -30,9 +30,9 @@ export default function MediaGallery() {
     {
       id: 1,
       type: "image",
-      src: "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/-/format/webp/-/quality/smart/",
+      src: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=800&q=80&fm=webp",
       thumbnail:
-        "https://ucarecdn.com/e0a5a531-0739-43d5-88c9-5245ac7df197/-/format/webp/-/quality/smart/-/resize/400x300/",
+        "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=300&q=80&fm=webp&fit=crop",
       alt: "Residential exterior painting project",
       title: "Modern Home Exterior",
       location: "Toronto, ON",

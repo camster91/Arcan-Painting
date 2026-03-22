@@ -229,9 +229,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <link
           rel="preload"
           as="image"
-          href="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/"
+          href="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp"
           type="image/webp"
-          imageSrcSet="https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/600x/ 600w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1200x/ 1200w, https://ucarecdn.com/8549198e-0903-4f02-a80c-424ffc8e2dc9/-/format/webp/-/resize/1920x/ 1920w"
+          imageSrcSet="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&q=80&fm=webp 600w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp 1200w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80&fm=webp 1920w"
           imageSizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
         />
         <link
