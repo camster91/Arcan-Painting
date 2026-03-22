@@ -4,6 +4,7 @@
  * Idempotent — safe to re-run (uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
  */
 import sql from "@/app/api/utils/sql.js";
+import { hash as argon2Hash } from "argon2";
 
 let migrationRun = false;
 
@@ -764,6 +765,17 @@ Arcan Painting
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_created_at ON cold_email_prospects(created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_prospect_id ON cold_email_sends(prospect_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_sent_at ON cold_email_sends(sent_at DESC)`;
+
+    // ── Seed admin users ────────────────────────────────────────────────────
+    const existingAdmins = await sql`SELECT COUNT(*) as count FROM auth_users WHERE username IN ('info@arcanpainting.ca', 'cameron@ashbi.ca')`;
+    if (parseInt(existingAdmins[0].count) < 2) {
+      const [hash1, hash2] = await Promise.all([
+        argon2Hash('Arcan2026!'),
+        argon2Hash('Ashbi2026!')
+      ]);
+      await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('info@arcanpainting.ca', ${hash1}, 'owner', true) ON CONFLICT (username) DO NOTHING`;
+      await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('cameron@ashbi.ca', ${hash2}, 'admin', true) ON CONFLICT (username) DO NOTHING`;
+    }
 
     // Citation indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_citation_directories_category ON citation_directories(category)`;
