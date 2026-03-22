@@ -380,7 +380,7 @@ function AdminLayoutContent({ children }) {
                 className="block hover:opacity-75 transition-opacity"
               >
                 <img
-                  src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/"
+                  src="/logo.png"
                   alt="Arcan Painting Admin"
                   className="w-[160px] h-[74px] lg:w-[180px] lg:h-[84px] object-contain"
                 />

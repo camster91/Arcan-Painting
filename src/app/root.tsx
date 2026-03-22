@@ -183,7 +183,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 "Mississauga", "Brampton", "Vaughan", "Markham",
                 "Richmond Hill", "Pickering", "Ajax", "Oshawa"
               ],
-              "image": "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/",
+              "image": "https://arcanpainting.ca/logo.png",
               "priceRange": "$$",
               "openingHoursSpecification": [
                 {
@@ -212,7 +212,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_CA" />
-        <meta property="og:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
+        <meta property="og:image" content="https://arcanpainting.ca/logo.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
@@ -221,7 +221,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="twitter:site" content="@arcanpainting" />
         <meta name="twitter:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
         <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
-        <meta name="twitter:image" content="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/" />
+        <meta name="twitter:image" content="https://arcanpainting.ca/logo.png" />
         <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         {/* SEO: Robots meta */}
         <meta name="robots" content="index, follow" />

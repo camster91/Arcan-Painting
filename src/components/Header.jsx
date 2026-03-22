@@ -77,13 +77,8 @@ export default function Header() {
           {/* Brand */}
           <div className="flex items-center group">
             <a href="/" className="block">
-              <picture>
-                <source
-                  type="image/webp"
-                  srcSet="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/webp/-/resize/340x/"
-                />
-                <img
-                  src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/340x/"
+              <img
+                  src="/logo.png"
                   alt="Arcan Painting logo"
                   width="170"
                   height="95"
@@ -94,7 +89,6 @@ export default function Header() {
                     isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"
                   }`}
                 />
-              </picture>
             </a>
           </div>
 
@@ -229,13 +223,8 @@ export default function Header() {
               className="flex items-center justify-between px-4 py-3 border-b"
               style={{ borderColor: themeColors.border }}
             >
-              <picture>
-                <source
-                  type="image/webp"
-                  srcSet="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/webp/-/resize/240x/"
-                />
-                <img
-                  src="https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/png/-/quality/smart/-/resize/240x/"
+              <img
+                  src="/logo.png"
                   alt="Arcan Painting logo"
                   width="120"
                   height="56"
