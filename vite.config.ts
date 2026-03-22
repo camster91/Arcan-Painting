@@ -85,59 +85,9 @@ export default defineConfig({
         return false;
       },
       output: {
-        // Manual chunk splitting — client build only
-        // (SSR build produces a single server entry, so manualChunks is a no-op there)
-        manualChunks(id) {
-          // NOTE: React is NOT split into its own chunk - doing so creates circular deps
-          // with vendor-misc (which imports React), causing TDZ crashes on init
-          // React Router
-          if (id.includes('node_modules/react-router') || id.includes('node_modules/@react-router')) {
-            return 'vendor-router';
-          }
-          // Animation library (motion/framer) — medium, used in hero
-          if (id.includes('node_modules/motion') || id.includes('node_modules/framer-motion')) {
-            return 'vendor-motion';
-          }
-          // Charts — heavy, admin-only
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-            return 'vendor-charts';
-          }
-          // PDF — heavy, admin-only
-          if (id.includes('node_modules/pdfjs-dist')) {
-            return 'vendor-pdf';
-          }
-          // Tanstack (query + table)
-          if (id.includes('node_modules/@tanstack')) {
-            return 'vendor-tanstack';
-          }
-          // UI & icon libraries
-          if (id.includes('node_modules/lucide-react')) {
-            return 'vendor-icons';
-          }
-          if (
-            id.includes('node_modules/@chakra-ui') ||
-            id.includes('node_modules/@emotion') ||
-            id.includes('node_modules/@react-aria')
-          ) {
-            return 'vendor-ui';
-          }
-          // Auth
-          if (
-            id.includes('node_modules/@auth') ||
-            id.includes('node_modules/@hono') ||
-            id.includes('node_modules/hono')
-          ) {
-            return 'vendor-auth';
-          }
-          // Stripe
-          if (id.includes('node_modules/stripe')) {
-            return 'vendor-stripe';
-          }
-          // Everything else in node_modules
-          if (id.includes('node_modules/')) {
-            return 'vendor-misc';
-          }
-        },
+        // manualChunks removed - was causing circular dep TDZ crashes
+        // (vendor-react and vendor-misc imported from each other)
+        // Vite's automatic code splitting handles this correctly
       },
     },
   },
