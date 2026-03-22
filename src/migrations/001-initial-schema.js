@@ -138,6 +138,101 @@ export async function runMigrations() {
     await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_status ON agent_runs(status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_agent_id ON agent_runs(agent_id)`;
 
+    // ── marketing_connections ─────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS marketing_connections (
+        id SERIAL PRIMARY KEY,
+        platform VARCHAR(50) NOT NULL UNIQUE,
+        access_token TEXT,
+        refresh_token TEXT,
+        token_expiry TIMESTAMP,
+        scopes TEXT,
+        account_email VARCHAR(255),
+        account_name VARCHAR(255),
+        metadata JSONB DEFAULT '{}',
+        is_active BOOLEAN DEFAULT true,
+        connected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── marketing_campaigns ───────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS marketing_campaigns (
+        id SERIAL PRIMARY KEY,
+        platform VARCHAR(50),
+        campaign_name VARCHAR(255),
+        campaign_id VARCHAR(255),
+        status VARCHAR(50),
+        budget NUMERIC,
+        spend NUMERIC DEFAULT 0,
+        impressions INTEGER DEFAULT 0,
+        clicks INTEGER DEFAULT 0,
+        conversions INTEGER DEFAULT 0,
+        start_date DATE,
+        end_date DATE,
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── email_sequences ───────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS email_sequences (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        target_audience VARCHAR(255),
+        subject_template TEXT,
+        body_template TEXT,
+        follow_up_days INTEGER DEFAULT 3,
+        status VARCHAR(50) DEFAULT 'draft',
+        sent_count INTEGER DEFAULT 0,
+        open_count INTEGER DEFAULT 0,
+        reply_count INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── outreach_contacts ─────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS outreach_contacts (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        company VARCHAR(255),
+        role VARCHAR(255),
+        platform VARCHAR(50),
+        sequence_id INTEGER REFERENCES email_sequences(id),
+        status VARCHAR(50) DEFAULT 'not_contacted',
+        last_contacted_at TIMESTAMP,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── ai_conversations ──────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS ai_conversations (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255),
+        role VARCHAR(20),
+        content TEXT,
+        model VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Marketing indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_marketing_connections_platform ON marketing_connections(platform)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_marketing_campaigns_platform ON marketing_campaigns(platform)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_marketing_campaigns_status ON marketing_campaigns(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_email_sequences_status ON email_sequences(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_outreach_contacts_sequence_id ON outreach_contacts(sequence_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_outreach_contacts_status ON outreach_contacts(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ai_conversations_session_id ON ai_conversations(session_id)`;
+
     console.log("[migrations] 001-initial-schema: complete");
   } catch (err) {
     // Reset flag so next request retries
