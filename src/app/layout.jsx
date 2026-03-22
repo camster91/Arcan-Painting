@@ -227,7 +227,6 @@ function HeadTags() {
     ensureLink("canonical", metadata.alternates.canonical);
 
     // DNS prefetch and preconnect for performance
-    ensureLink("preconnect", "https://ucarecdn.com");
     ensureLink("preconnect", "https://raw.createusercontent.com");
     ensureLink("preconnect", "https://images.unsplash.com");
     ensureLink("preconnect", "https://fonts.googleapis.com");
@@ -238,17 +237,17 @@ function HeadTags() {
     // Favicons
     ensureLink(
       "icon",
-      "https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/-/resize/32x32/",
+      "/logo.png",
       { sizes: "32x32", type: "image/png" },
     );
     ensureLink(
       "icon",
-      "https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/-/resize/16x16/",
+      "/logo.png",
       { sizes: "16x16", type: "image/png" },
     );
     ensureLink(
       "apple-touch-icon",
-      "https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/-/resize/180x180/",
+      "/logo.png",
       { sizes: "180x180" },
     );
 
@@ -273,10 +272,9 @@ function HeadTags() {
         "Professional interior and exterior painting services for residential and commercial properties across the Greater Toronto Area.",
       url: "https://arcanpainting.ca",
       telephone: "+14167272148",
+      logo: "https://arcanpainting.ca/logo.png",
+      image: "https://arcanpainting.ca/logo.png",
       email: "info@arcanpainting.ca",
-      logo: "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/",
-      image:
-        "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Toronto",

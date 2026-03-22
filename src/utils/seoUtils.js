@@ -7,10 +7,8 @@ export const seoConfig = {
   defaultDescription:
     "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
   siteUrl: "https://arcanpainting.ca",
-  logoUrl:
-    "https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/",
-  socialImageUrl:
-    "https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/",
+  logoUrl: "https://arcanpainting.ca/logo.png",
+  socialImageUrl: "https://arcanpainting.ca/logo.png",
   twitterHandle: "@arcanpainting",
   businessEmail: "info@arcanpainting.ca",
   businessPhone: "", // Add when available

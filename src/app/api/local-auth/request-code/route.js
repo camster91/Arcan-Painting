@@ -27,7 +27,7 @@ async function sendCodeEmail(username, code) {
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <img src="https://ucarecdn.com/5631c374-f418-4e89-beff-af262560ff31/-/format/auto/" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
+          <img src="https://arcanpainting.ca/logo.png" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
         </div>
         <h2 style="color: #1e293b; text-align: center;">Your login code</h2>
         <p style="color: #475569; text-align: center;">Enter this code to sign in to your Arcan admin dashboard:</p>

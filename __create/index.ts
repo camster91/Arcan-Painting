@@ -305,7 +305,7 @@ app.get('/sitemap.xml', (c) => {
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://ucarecdn.com/599e7887-839f-4d2a-ba07-41425b1276a2/-/format/auto/-/resize/1200x630/-/quality/smart/</image:loc>
+      <image:loc>https://arcanpainting.ca/logo.png</image:loc>
       <image:caption>Arcan and Sons Professional Toronto Painting Services</image:caption>
       <image:title>Professional Painting Services GTA</image:title>
     </image:image>

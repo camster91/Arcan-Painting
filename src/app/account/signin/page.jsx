@@ -96,7 +96,7 @@ export default function SignInPage() {
       <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-center mb-4">
           <img
-            src="https://ucarecdn.com/5631c374-f418-4e89-beff-af262560ff31/-/format/auto/"
+            src="/logo.png"
             alt="Logo"
             className="w-[80px] h-[80px] object-contain"
           />

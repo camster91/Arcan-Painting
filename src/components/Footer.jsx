@@ -24,7 +24,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="https://ucarecdn.com/d3a2d3b6-b78f-4d6c-94bf-ce75c42de977/-/format/auto/"
+                src="/logo.png"
                 alt="Arcan Painting logo"
                 className="w-10 h-10 rounded-lg bg-white object-contain"
               />
