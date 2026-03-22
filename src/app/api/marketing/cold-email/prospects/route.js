@@ -78,12 +78,13 @@ async function handleFindProspects({ role, city, count = 20 }) {
     }, { status: 501 });
   }
 
-  const searchQuery =
-    role === "real_estate_agent"
-      ? `real estate agent ${city}`
-      : role === "property_manager"
-        ? `property management company ${city}`
-        : `${role.replace(/_/g, " ")} ${city}`;
+  const roleSearchQueries = {
+    real_estate_agent: `real estate agent ${city}`,
+    property_manager: `property management company ${city}`,
+    hoa_manager: `HOA management condo corporation ${city}`,
+    facilities_manager: `facilities management building maintenance ${city}`,
+  };
+  const searchQuery = roleSearchQueries[role] || `${role.replace(/_/g, " ")} ${city}`;
 
   try {
     const placesRes = await fetch(

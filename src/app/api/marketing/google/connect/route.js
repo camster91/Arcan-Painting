@@ -24,6 +24,10 @@ export async function GET(request) {
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://arcanpainting.ca"}/api/marketing/google/callback`;
 
+  // Check if this connect request is coming from onboarding
+  const url = new URL(request.url);
+  const fromOnboarding = url.searchParams.get("from") === "onboarding";
+
   const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("redirect_uri", redirectUri);
@@ -31,6 +35,9 @@ export async function GET(request) {
   authUrl.searchParams.set("scope", scopes);
   authUrl.searchParams.set("access_type", "offline");
   authUrl.searchParams.set("prompt", "consent");
+  if (fromOnboarding) {
+    authUrl.searchParams.set("state", "onboarding");
+  }
 
   return Response.redirect(authUrl.toString());
 }

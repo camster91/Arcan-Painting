@@ -409,6 +409,66 @@ No pressure at all — just wanted to make sure you have us on your radar for wh
 
 Gerardo
 Arcan Painting
+(416) 727-2148'),
+        ('HOA Manager Intro', 'hoa_manager', 1,
+         'Reliable painting contractor for {{city}} HOAs and condos',
+         'Hi {{name}},
+
+My name is Gerardo from Arcan Painting. We work with HOA boards and condo corporations across the GTA who need a dependable painting contractor for common areas, hallways, lobbies, and exterior maintenance.
+
+We understand HOA budgets and timelines — we provide detailed quotes, stick to agreed schedules, and document everything for your board meetings.
+
+We currently service 3-5 condo/HOA properties per month in {{city}} and surrounding areas.
+
+Would you be open to a quick call to see if we''d be a fit for your upcoming projects?
+
+Gerardo
+Arcan Painting
+(416) 727-2148
+arcanpainting.ca'),
+        ('HOA Manager Follow-Up', 'hoa_manager', 2,
+         'Follow-up — painting for your HOA properties in {{city}}',
+         'Hi {{name}},
+
+Following up on my note about painting services for HOA properties.
+
+We recently completed a full common-area refresh for a 120-unit condo in Mississauga — new hallway paint, lobby feature wall, and exterior touch-ups — all done on schedule and within budget.
+
+Happy to share photos and a sample quote if helpful.
+
+Gerardo
+Arcan Painting
+(416) 727-2148'),
+        ('Facilities Manager Intro', 'facilities_manager', 1,
+         'Commercial painting maintenance for your facilities in {{city}}',
+         'Hi {{name}},
+
+I run Arcan Painting — we provide commercial painting services to facilities managers and building owners across the Greater Toronto Area.
+
+We specialize in:
+- Office and retail space repaints
+- Exterior building maintenance
+- Parking garage line marking and surface coatings
+- After-hours and weekend scheduling to minimize disruption
+
+Many of our commercial clients schedule us 3-4 times per year for ongoing maintenance. We''re fully insured and WSIB-compliant.
+
+Would it make sense to connect for 10 minutes to discuss your upcoming painting needs?
+
+Gerardo
+Arcan Painting
+(416) 727-2148
+arcanpainting.ca'),
+        ('Facilities Manager Follow-Up', 'facilities_manager', 2,
+         'Quick follow-up — commercial painting for {{company}}',
+         'Hi {{name}},
+
+Just following up on my earlier note about commercial painting services for your facilities in {{city}}.
+
+We work with several office buildings and retail plazas in the GTA on an ongoing maintenance basis. Happy to put together a no-obligation quote for any upcoming projects.
+
+Gerardo
+Arcan Painting
 (416) 727-2148')
       `;
     }
@@ -581,6 +641,79 @@ Arcan Painting
       )
     `;
 
+    // ── citation_directories ──────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS citation_directories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        url VARCHAR(500) NOT NULL,
+        category VARCHAR(100),
+        domain_authority INTEGER DEFAULT 0,
+        is_free BOOLEAN DEFAULT true,
+        submission_url VARCHAR(500),
+        notes TEXT,
+        priority VARCHAR(20) DEFAULT 'medium'
+      )
+    `;
+
+    // ── citation_status ─────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS citation_status (
+        id SERIAL PRIMARY KEY,
+        directory_id INTEGER REFERENCES citation_directories(id),
+        status VARCHAR(50) DEFAULT 'not_listed',
+        listing_url VARCHAR(500),
+        nap_correct BOOLEAN DEFAULT true,
+        last_checked_at TIMESTAMP,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── Seed citation directories ──────────────────────────────────────────
+    const existingDirs = await sql`SELECT COUNT(*)::int as count FROM citation_directories`;
+    if (existingDirs[0].count === 0) {
+      await sql`
+        INSERT INTO citation_directories (name, url, category, domain_authority, is_free, submission_url, priority) VALUES
+        ('Google Business Profile', 'https://business.google.com', 'general', 100, true, 'https://business.google.com/add', 'high'),
+        ('Bing Places', 'https://www.bingplaces.com', 'general', 95, true, 'https://www.bingplaces.com', 'high'),
+        ('Apple Maps', 'https://mapsconnect.apple.com', 'general', 90, true, 'https://mapsconnect.apple.com', 'high'),
+        ('Facebook Business', 'https://facebook.com/business', 'general', 95, true, 'https://www.facebook.com/pages/create', 'high'),
+        ('Yelp', 'https://www.yelp.ca', 'general', 92, true, 'https://biz.yelp.ca/signup', 'high'),
+        ('HomeStars', 'https://homestars.com', 'home_services', 68, true, 'https://pro.homestars.com/signup', 'high'),
+        ('Better Business Bureau', 'https://www.bbb.org', 'general', 85, false, 'https://www.bbb.org/canada/accreditation-application', 'high'),
+        ('Yellow Pages Canada', 'https://www.yellowpages.ca', 'general', 75, true, 'https://www.yellowpages.ca/free-listing/', 'high'),
+        ('Canada411', 'https://www.canada411.ca', 'canada', 72, true, 'https://www.canada411.ca/business/add-my-business/', 'high'),
+        ('LinkedIn Company', 'https://linkedin.com/company', 'general', 98, true, 'https://www.linkedin.com/company/setup/new/', 'high'),
+        ('Houzz', 'https://www.houzz.com', 'home_services', 80, true, 'https://www.houzz.com/pro/signup', 'medium'),
+        ('Angi (Angies List)', 'https://www.angi.com', 'home_services', 72, true, 'https://pro.angi.com/signup', 'medium'),
+        ('Thumbtack', 'https://www.thumbtack.com', 'home_services', 70, true, 'https://www.thumbtack.com/pro', 'medium'),
+        ('Bark.com', 'https://www.bark.com', 'home_services', 65, true, 'https://www.bark.com/become-a-professional/', 'medium'),
+        ('Kijiji', 'https://www.kijiji.ca', 'local', 82, true, 'https://www.kijiji.ca/p-post-ad.html', 'medium'),
+        ('Oodle', 'https://www.oodle.com', 'general', 60, true, 'https://www.oodle.com/info/add_listing', 'medium'),
+        ('Hotfrog Canada', 'https://www.hotfrog.ca', 'canada', 55, true, 'https://www.hotfrog.ca/AddBusiness.aspx', 'medium'),
+        ('EZlocal', 'https://www.ezlocal.com', 'general', 52, true, 'https://www.ezlocal.com/add-business', 'medium'),
+        ('Manta', 'https://www.manta.com', 'general', 68, true, 'https://www.manta.com/add-your-business', 'medium'),
+        ('Foursquare', 'https://foursquare.com', 'general', 75, true, 'https://business.foursquare.com', 'medium'),
+        ('FindLocal Canada', 'https://www.findlocal.ca', 'canada', 40, true, 'https://www.findlocal.ca/add-listing', 'low'),
+        ('Canadian Business Directory', 'https://www.canadianbusinessdirectory.ca', 'canada', 35, true, 'https://www.canadianbusinessdirectory.ca/add-listing/', 'low'),
+        ('Tupalo', 'https://tupalo.com', 'general', 48, true, 'https://tupalo.com/en/add-business', 'low'),
+        ('Cylex Canada', 'https://www.cylex.ca', 'canada', 45, true, 'https://www.cylex.ca/add-business.html', 'low'),
+        ('n49', 'https://www.n49.ca', 'canada', 42, true, 'https://www.n49.ca/add/', 'low'),
+        ('iBegin', 'https://www.ibegin.com', 'canada', 38, true, 'https://www.ibegin.com/add/', 'low'),
+        ('Brownbook', 'https://www.brownbook.net', 'general', 50, true, 'https://www.brownbook.net/add-business/', 'low'),
+        ('Opendi Canada', 'https://ca.opendi.com', 'canada', 35, true, 'https://ca.opendi.com/add-business/', 'low'),
+        ('Contractor Locator', 'https://contractorlocator.ca', 'contractor', 32, true, 'https://contractorlocator.ca/add-listing', 'medium'),
+        ('Trusted Pros', 'https://www.trustedpros.ca', 'contractor', 45, true, 'https://www.trustedpros.ca/join', 'medium'),
+        ('GoodContractors.ca', 'https://www.goodcontractors.ca', 'contractor', 30, true, 'https://www.goodcontractors.ca/register', 'medium')
+      `;
+    }
+
+    // ── Onboarding columns on app_settings ──────────────────────────────────
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS google_prompted_at TIMESTAMP`;
+
     // Workflow indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_category ON workflow_skills(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_is_active ON workflow_skills(is_active)`;
@@ -631,6 +764,13 @@ Arcan Painting
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_created_at ON cold_email_prospects(created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_prospect_id ON cold_email_sends(prospect_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_sent_at ON cold_email_sends(sent_at DESC)`;
+
+    // Citation indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_citation_directories_category ON citation_directories(category)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_citation_directories_priority ON citation_directories(priority)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_citation_directories_domain_authority ON citation_directories(domain_authority DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_citation_status_directory_id ON citation_status(directory_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_citation_status_status ON citation_status(status)`;
 
     console.log("[migrations] 001-initial-schema: complete");
   } catch (err) {
