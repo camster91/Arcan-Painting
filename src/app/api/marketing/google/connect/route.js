@@ -19,6 +19,7 @@ export async function GET(request) {
     "https://www.googleapis.com/auth/userinfo.profile",
     "https://www.googleapis.com/auth/business.manage",
     "https://www.googleapis.com/auth/adwords",
+    "https://www.googleapis.com/auth/generative-language",
   ].join(" ");
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://arcanpainting.ca"}/api/marketing/google/callback`;
