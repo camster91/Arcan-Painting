@@ -12,6 +12,7 @@ import {
   Calendar,
   Settings,
   Bot,
+  Megaphone,
 } from "lucide-react";
 import BottomTabNav from "@/components/BottomTabNav";
 import FloatingActionButton from "@/components/FloatingActionButton";
@@ -249,6 +250,27 @@ function AdminLayoutContent({ children }) {
         matchers: ["/admin/today", "/admin/messages", "/admin/capture"],
         description: "Daily operations",
         showNotificationBadge: unreadCount > 0,
+      },
+      {
+        key: "marketing",
+        label: "Marketing",
+        icon: Megaphone,
+        entryHref: "/admin/marketing",
+        tabs: [
+          {
+            label: "Overview",
+            href: "/admin/marketing",
+            description: "Marketing hub",
+          },
+          {
+            label: "AI Assistant",
+            href: "/admin/marketing/ai-assistant",
+            description: "AI marketing help",
+          },
+        ],
+        matchers: ["/admin/marketing"],
+        description: "Campaigns & AI assistant",
+        showNotificationBadge: false,
       },
       {
         key: "ai-chat",
