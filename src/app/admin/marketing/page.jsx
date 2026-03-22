@@ -31,7 +31,7 @@ const PLATFORMS = [
     name: "Facebook",
     description: "Facebook & Instagram Ads",
     color: "bg-indigo-500",
-    connectUrl: null, // not yet implemented
+    connectUrl: "/api/marketing/facebook/connect",
   },
   {
     id: "linkedin",
@@ -261,7 +261,11 @@ export default function MarketingPage() {
           <div className="space-y-6">
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className={`bg-white rounded-xl p-5 ${
+                connections.filter((c) => c.is_active).length === 0
+                  ? "border border-dashed border-blue-300"
+                  : "border border-gray-200"
+              }`}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Link2 className="w-4 h-4 text-blue-600" />
@@ -270,15 +274,31 @@ export default function MarketingPage() {
                     Connected Platforms
                   </span>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {connections.filter((c) => c.is_active).length}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  of {PLATFORMS.length} available
-                </p>
+                {connections.filter((c) => c.is_active).length > 0 ? (
+                  <>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {connections.filter((c) => c.is_active).length}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      of {PLATFORMS.length} available
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-gray-700 mb-1">
+                      Get started
+                    </p>
+                    <button
+                      onClick={() => setActiveTab("connections")}
+                      className="text-xs text-orange-600 hover:text-orange-700 font-medium"
+                    >
+                      Connect Google to unlock ads, posts & AI &rarr;
+                    </button>
+                  </>
+                )}
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-white rounded-xl border border-dashed border-green-300 p-5">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                     <Mail className="w-4 h-4 text-green-600" />
@@ -287,11 +307,15 @@ export default function MarketingPage() {
                     Email Sequences
                   </span>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">0</p>
-                <p className="text-xs text-gray-400 mt-1">Coming soon</p>
+                <p className="text-sm font-medium text-gray-700 mb-1">
+                  Automated follow-ups
+                </p>
+                <p className="text-xs text-gray-400">
+                  Send drip emails to property managers and realtors automatically. Coming soon!
+                </p>
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-white rounded-xl border border-dashed border-purple-300 p-5">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-4 h-4 text-purple-600" />
@@ -300,8 +324,12 @@ export default function MarketingPage() {
                     Outreach Contacts
                   </span>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">0</p>
-                <p className="text-xs text-gray-400 mt-1">Coming soon</p>
+                <p className="text-sm font-medium text-gray-700 mb-1">
+                  Find new clients nearby
+                </p>
+                <p className="text-xs text-gray-400">
+                  Discover property managers and realtors in the GTA to grow your network. Coming soon!
+                </p>
               </div>
             </div>
 
@@ -434,9 +462,8 @@ export default function MarketingPage() {
                             Connect
                           </a>
                         ) : (
-                          <span className="flex items-center gap-1 text-xs text-gray-400 px-2 py-1">
-                            <AlertCircle className="w-3 h-3" />
-                            Coming soon
+                          <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
+                            Coming soon — we'll let you know!
                           </span>
                         )}
                       </div>
