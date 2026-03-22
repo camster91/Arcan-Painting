@@ -1,6 +1,6 @@
 // ─── Before/After Gallery Data ───────────────────────────────────────────────
 // 12 real painting projects for arcanpainting.ca
-// Images: Unsplash + Uploadcare CDN (WebP-capable)
+// Images: Unsplash (WebP-capable via fm=webp param)
 // All testimonials ≤ 150 chars per spec
 
 export const GALLERY_PROJECTS = [
