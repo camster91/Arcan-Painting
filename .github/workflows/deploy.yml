@@ -32,7 +32,7 @@ jobs:
       - name: Trigger Coolify Deployment
         run: |
           echo "Triggering Coolify redeploy for $COOLIFY_APP_UUID"
-          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+          RESPONSE=$(curl -s --max-time 15 -w "\n%{http_code}" -X GET \
             "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_APP_UUID&force=true" \
             -H "Authorization: Bearer $COOLIFY_TOKEN")
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)
