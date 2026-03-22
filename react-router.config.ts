@@ -4,5 +4,5 @@ export default {
 	appDirectory: './src/app',
 	ssr: true,
 	prerender: false,
-	routeDiscovery: { mode: 'initial' },
+	routeDiscovery: { mode: 'initial' }, // fixes SSR hydration crash
 } satisfies Config;
