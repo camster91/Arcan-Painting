@@ -18,6 +18,12 @@ export function useAdminAuth() {
   return context;
 }
 
+function goToLogin() {
+  if (typeof window === "undefined") return;
+  const redirect = encodeURIComponent(window.location.pathname);
+  window.location.replace(`/account/signin?callbackUrl=${redirect}`);
+}
+
 export function AdminAuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,9 +35,11 @@ export function AdminAuthProvider({ children }) {
       if (showLoading) setLoading(true);
       setAuthError(null);
 
-      // Add timeout to prevent hanging forever
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        goToLogin();
+      }, 5000);
 
       const res = await fetch("/api/local-auth/me", {
         credentials: "include",
@@ -41,9 +49,7 @@ export function AdminAuthProvider({ children }) {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        // Redirect to login with current page as callback
-        const redirect = encodeURIComponent(window.location.pathname);
-        window.location.href = `/account/signin?callbackUrl=${redirect}`;
+        goToLogin();
         return;
       }
 
@@ -51,11 +57,9 @@ export function AdminAuthProvider({ children }) {
       setUser(userData);
       setAuthChecked(true);
     } catch (error) {
-      console.error("Auth check failed:", error);
-
-      // Redirect to login on any error (timeout or network)
-      const redirect = encodeURIComponent(window.location.pathname);
-      window.location.href = `/account/signin?callbackUrl=${redirect}`;
+      if (error.name !== "AbortError") {
+        goToLogin();
+      }
     } finally {
       setLoading(false);
     }
@@ -63,38 +67,19 @@ export function AdminAuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     try {
-      await fetch("/api/local-auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      window.location.href = "/account/signin";
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Force redirect even on error
-      window.location.href = "/account/signin";
-    }
+      await fetch("/api/local-auth/logout", { method: "POST", credentials: "include" });
+    } catch {}
+    window.location.replace("/account/signin");
   }, []);
 
-  const refreshAuth = useCallback(() => {
-    return checkAuth(false);
-  }, [checkAuth]);
+  const refreshAuth = useCallback(() => checkAuth(false), [checkAuth]);
 
-  // Initial auth check
   useEffect(() => {
     checkAuth(true);
   }, [checkAuth]);
 
-  const value = {
-    user,
-    loading,
-    authChecked,
-    authError,
-    logout,
-    refreshAuth,
-  };
-
   return (
-    <AdminAuthContext.Provider value={value}>
+    <AdminAuthContext.Provider value={{ user, loading, authChecked, authError, logout, refreshAuth }}>
       {children}
     </AdminAuthContext.Provider>
   );

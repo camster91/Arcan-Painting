@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import { useNavigate } from "react-router";
 import DashboardOverview from "@/components/admin/dashboard/DashboardOverview";
 import AdaptiveContentArea, {
   ResponsiveGrid,
@@ -59,6 +60,21 @@ function DashboardSkeleton() {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fast auth check — redirect to login if not authenticated
+    fetch("/api/local-auth/me", { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) {
+          navigate("/account/signin?callbackUrl=%2Fadmin", { replace: true });
+        }
+      })
+      .catch(() => {
+        navigate("/account/signin?callbackUrl=%2Fadmin", { replace: true });
+      });
+  }, [navigate]);
+
   return (
     <AdaptiveContentArea
       title="Dashboard"
