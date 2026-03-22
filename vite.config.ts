@@ -79,7 +79,10 @@ export default defineConfig({
           'lightningcss',
           'better-sqlite3',
         ];
-        return serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(pkg + '/'));
+        if (serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(pkg + '/'))) return true;
+        // Sentry has internal circular deps that crash Vite's bundler; no DSN configured so skip client bundle
+        if (id.startsWith('@sentry/') || id.startsWith('node_modules/@sentry/')) return true;
+        return false;
       },
       output: {
         // Manual chunk splitting — client build only
@@ -131,10 +134,6 @@ export default defineConfig({
           // Stripe
           if (id.includes('node_modules/stripe')) {
             return 'vendor-stripe';
-          }
-          // Sentry -- own chunk to break circular dep with vendor-react
-          if (id.includes("node_modules/@sentry/")) {
-            return "vendor-sentry";
           }
           // Everything else in node_modules
           if (id.includes('node_modules/')) {
