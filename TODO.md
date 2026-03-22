@@ -178,4 +178,78 @@ Currently only 62 accessibility attributes (target: 500+)
 
 Update this file as improvements are completed. Mark items with [x] when done.
 
-Last updated: 2026-03-07
+Last updated: 2026-03-21
+
+---
+
+## Phase 5: Marketing Command Center (NEW — 2026-03-21)
+
+Full digital marketing toolkit embedded in the admin backend, powered by Kimi K2 (Ollama on VPS).
+
+### Infrastructure
+
+- [ ] **Deploy Ollama on Coolify VPS**
+  - Pull `kimi-k2` model (or closest available: `qwen2.5:7b` as fallback)
+  - Register free Ollama account with info@arcanpainting.ca
+  - Expose internal endpoint: http://ollama:11434
+  - Add Coolify health check + always-restart policy
+  - Add `OLLAMA_URL` env var to app
+
+- [ ] **AI Fallback Chain**
+  - Primary: Ollama (Kimi K2 / local)
+  - Fallback: Gemini 2.0 Flash API
+  - In-app banner if Ollama is down
+
+### Pages to Build
+
+- [ ] `/admin/marketing` — Hub dashboard (platform connection status, quick stats)
+- [ ] `/admin/marketing/ai-assistant` — Full chat with Kimi K2 (business-aware context)
+- [ ] `/admin/marketing/facebook` — FB/IG Ads: view campaigns, create ads, boost posts (Meta Marketing API)
+- [ ] `/admin/marketing/google-ads` — Google Ads: dashboard, keyword performance, budget (Google Ads API)
+- [ ] `/admin/marketing/google-business` — GBP: post updates, respond to reviews, view insights (GBP API)
+- [ ] `/admin/marketing/email-outreach` — Cold email sequences: real estate agents, property managers (Mailgun)
+- [ ] `/admin/marketing/linkedin` — LinkedIn message drafts + outreach tracker
+- [ ] `/admin/marketing/email-triage` — Gmail inbox: AI reads, labels, drafts replies (Gmail API)
+- [ ] `/admin/marketing/reviews` — Review management: Google + Homestars (AI draft, Gerardo approves)
+- [ ] `/admin/system` — App control panel: health status, logs, restart services, env var manager
+
+### API Routes to Build
+
+- [ ] `POST /api/marketing/generate` — AI content generation (proxies to Ollama, fallback Gemini)
+- [ ] `GET/POST /api/marketing/facebook` — Meta API proxy (campaigns, insights, boost)
+- [ ] `GET/POST /api/marketing/google-ads` — Google Ads API proxy
+- [ ] `GET/POST /api/marketing/google-business` — GBP API proxy (posts, reviews)
+- [ ] `GET/POST /api/marketing/email-sequences` — Cold email sequence management
+- [ ] `GET /api/marketing/email-triage` — Gmail inbox fetch + AI draft
+- [ ] `POST /api/marketing/review-response` — Draft review reply with AI
+
+### DB Tables to Add
+
+- [ ] `marketing_connections` — stores API keys/tokens per platform (encrypted)
+- [ ] `email_sequences` — cold email sequence templates + send schedules
+- [ ] `outreach_contacts` — leads for cold email/LinkedIn outreach
+- [ ] `marketing_campaigns` — track cross-platform campaign performance
+
+### Recovery & Resilience
+
+- [ ] Coolify restart policy: always restart on failure
+- [ ] `/api/health` enhanced: check Ollama, DB, Mailgun connectivity
+- [ ] In-app expired API key warnings with re-connect flow
+- [ ] Ad spend anomaly alerts (>2x normal spend triggers notification)
+- [ ] Neon DB: 30-day point-in-time recovery (already active)
+
+### What Client Needs to Provide
+
+- Facebook Business Manager access (for Meta API)
+- Google Ads account ID (for Google Ads API)
+- Google Business Profile verified listing (for GBP API)
+- AI walks Gerardo through connecting everything else
+
+### Build Order
+
+1. Ollama VPS deploy + AI assistant chat (foundation)
+2. Marketing hub page + platform connection status cards
+3. Email outreach + Gmail triage (uses Mailgun already connected)
+4. Facebook Ads + Google Business Profile
+5. Google Ads + LinkedIn outreach
+6. /admin/system control panel + recovery tools
