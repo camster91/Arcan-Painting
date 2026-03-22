@@ -1,6 +1,53 @@
 import { getCurrentUser } from "../../../utils/auth.js";
 import sql from "../../../utils/sql.js";
 
+async function getGoogleAccessToken() {
+  const rows = await sql(
+    `SELECT access_token, refresh_token, token_expiry, account_email FROM marketing_connections WHERE platform = 'google' AND is_active = true LIMIT 1`
+  );
+  if (!rows.length) return { token: null, email: null };
+
+  const { access_token, refresh_token, token_expiry, account_email } = rows[0];
+
+  // If token is still valid (with 5min buffer), use it
+  if (token_expiry && new Date(token_expiry) > new Date(Date.now() + 5 * 60 * 1000)) {
+    return { token: access_token, email: account_email };
+  }
+
+  // Token expired — refresh it
+  if (!refresh_token) return { token: null, email: account_email };
+
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return { token: null, email: account_email };
+
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token,
+      grant_type: "refresh_token",
+    }),
+  });
+
+  if (!res.ok) return { token: null, email: account_email };
+
+  const tokens = await res.json();
+  const newExpiry = tokens.expires_in
+    ? new Date(Date.now() + tokens.expires_in * 1000)
+    : null;
+
+  // Update stored token
+  await sql(
+    `UPDATE marketing_connections SET access_token = $1, token_expiry = $2, updated_at = CURRENT_TIMESTAMP WHERE platform = 'google'`,
+    [tokens.access_token, newExpiry]
+  );
+
+  return { token: tokens.access_token, email: account_email };
+}
+
 // POST - send cold emails (up to 20 per day)
 export async function POST(request) {
   // Allow cron OR admin
@@ -59,14 +106,17 @@ export async function POST(request) {
     });
   }
 
-  const mailgunKey = process.env.MAILGUN_API_KEY;
-  const mailgunDomain = process.env.MAILGUN_DOMAIN || "ashbi.ca";
-  const fromEmail = process.env.COLD_EMAIL_FROM || "gerardo@arcanpainting.ca";
-  const fromName = "Gerardo | Arcan Painting";
-
-  if (!mailgunKey) {
-    return Response.json({ error: "Mailgun not configured" }, { status: 501 });
+  // Check for valid Google OAuth token
+  const { token: accessToken, email: connectedEmail } = await getGoogleAccessToken();
+  if (!accessToken) {
+    return Response.json(
+      { error: "Connect your Google account first to send cold emails", code: "NOT_CONNECTED" },
+      { status: 501 }
+    );
   }
+
+  const fromEmail = connectedEmail || "info@arcanpainting.ca";
+  const fromName = "Gerardo | Arcan Painting";
 
   let sent = 0;
   let failed = 0;
@@ -89,31 +139,39 @@ export async function POST(request) {
         .replace(/\{\{city\}\}/g, cityName)
         .replace(/\{\{company\}\}/g, companyName);
 
-      // Send via Mailgun
-      const formData = new FormData();
-      formData.append("from", `${fromName} <${fromEmail}>`);
-      formData.append("to", prospect.email);
-      formData.append("subject", subject);
-      formData.append("text", emailBody);
-      formData.append("o:tag", "cold-outreach");
-      formData.append("o:tracking-opens", "yes");
-      formData.append("o:tracking-clicks", "yes");
-      formData.append("h:List-Unsubscribe", `<mailto:${fromEmail}?subject=unsubscribe>`);
+      // Build RFC 2822 raw email
+      const rawEmail = [
+        `From: ${fromName} <${fromEmail}>`,
+        `To: ${prospect.email}`,
+        `Subject: ${subject}`,
+        `Content-Type: text/plain; charset=utf-8`,
+        `List-Unsubscribe: <mailto:${fromEmail}?subject=unsubscribe>`,
+        ``,
+        emailBody,
+      ].join("\r\n");
 
-      const mgRes = await fetch(
-        `https://api.mailgun.net/v3/${mailgunDomain}/messages`,
+      // Base64url encode
+      const encoded = btoa(unescape(encodeURIComponent(rawEmail)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+
+      // Send via Gmail API
+      const gmailRes = await fetch(
+        "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
         {
           method: "POST",
           headers: {
-            Authorization: `Basic ${btoa("api:" + mailgunKey)}`,
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
-          body: formData,
+          body: JSON.stringify({ raw: encoded }),
         }
       );
 
-      const mgData = await mgRes.json();
+      const gmailData = await gmailRes.json();
 
-      if (mgRes.ok) {
+      if (gmailRes.ok) {
         const nextStep = prospect.sequence_step + 1;
 
         // Update prospect
@@ -126,20 +184,38 @@ export async function POST(request) {
         // Log the send
         await sql`
           INSERT INTO cold_email_sends (prospect_id, sequence_step, subject, body, mailgun_id, status)
-          VALUES (${prospect.id}, ${nextStep}, ${subject}, ${emailBody}, ${mgData.id}, 'sent')
+          VALUES (${prospect.id}, ${nextStep}, ${subject}, ${emailBody}, ${gmailData.id}, 'sent')
         `;
 
         sent++;
         results.push({ email: prospect.email, name: prospect.name, status: "sent" });
       } else {
         failed++;
+
+        // Google account not connected or token expired
+        if (gmailRes.status === 401 || gmailRes.status === 403) {
+          results.push({
+            email: prospect.email,
+            name: prospect.name,
+            status: "failed",
+            error: "Google account not connected. Connect Google in Marketing settings.",
+          });
+          break; // No point trying more if auth is broken
+        }
+
         // Mark bounced if invalid email
-        if (mgData.message?.includes("bounce") || mgData.message?.includes("invalid")) {
+        const errMsg = gmailData.error?.message || "";
+        if (errMsg.includes("bounce") || errMsg.includes("invalid") || errMsg.includes("notFound")) {
           await sql`
             UPDATE cold_email_prospects SET status = 'bounced', updated_at = NOW() WHERE id = ${prospect.id}
           `;
         }
-        results.push({ email: prospect.email, name: prospect.name, status: "failed", error: mgData.message });
+        results.push({ email: prospect.email, name: prospect.name, status: "failed", error: errMsg });
+      }
+
+      // Rate delay between sends
+      if (toEmail.indexOf(prospect) < toEmail.length - 1) {
+        await new Promise((r) => setTimeout(r, 500));
       }
     } catch (err) {
       failed++;
