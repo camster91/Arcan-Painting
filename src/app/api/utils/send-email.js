@@ -22,7 +22,7 @@ export async function sendEmail({
   }
 
   // Use Arcan Painting's domain email
-  const defaultFrom = "info@arcanpainting.ca";
+  const defaultFrom = "Arcan Painting <noreply@arcanpainting.ca>";
 
   const finalFrom = from || defaultFrom;
   const toArray = Array.isArray(to) ? to : [to];
