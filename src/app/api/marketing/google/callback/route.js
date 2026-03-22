@@ -4,6 +4,8 @@ export async function GET(request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const error = url.searchParams.get("error");
+  const state = url.searchParams.get("state");
+  const fromOnboarding = state === "onboarding";
 
   if (error || !code) {
     return Response.redirect("/admin/marketing?error=google_auth_failed");
@@ -63,9 +65,21 @@ export async function GET(request) {
       ]
     );
 
+    if (fromOnboarding) {
+      // Mark onboarding as complete and redirect to dashboard
+      await sql(
+        `UPDATE app_settings SET onboarding_completed = true, updated_at = CURRENT_TIMESTAMP
+         WHERE id = (SELECT id FROM app_settings ORDER BY id DESC LIMIT 1)`
+      );
+      return Response.redirect("/admin?onboarding=complete");
+    }
+
     return Response.redirect("/admin/marketing?connected=google");
   } catch (err) {
     console.error("[google/callback]", err);
+    if (fromOnboarding) {
+      return Response.redirect("/admin?onboarding=error");
+    }
     return Response.redirect("/admin/marketing?error=google_token_failed");
   }
 }

@@ -20,6 +20,7 @@ import MobileBreadcrumb from "@/components/MobileBreadcrumb";
 import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
 import { ModalProvider, useModal } from "@/contexts/ModalContext";
 import { initSmartPreloader } from "@/utils/pagePreloader";
+import OnboardingModal from "@/components/admin/OnboardingModal";
 
 function AdminLayoutContent({ children }) {
   const { user, loading, authChecked, authError, logout, refreshAuth } =
@@ -31,6 +32,7 @@ function AdminLayoutContent({ children }) {
   const [currentPath, setCurrentPath] = useState("");
   const [isOffline, setIsOffline] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -51,6 +53,21 @@ function AdminLayoutContent({ children }) {
       };
     }
   }, []);
+
+  // Check onboarding status after auth is confirmed
+  useEffect(() => {
+    if (!authChecked || !user) return;
+    let mounted = true;
+    fetch("/api/onboarding", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (mounted && data.needsOnboarding) {
+          setShowOnboarding(true);
+        }
+      })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, [authChecked, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -650,6 +667,14 @@ function AdminLayoutContent({ children }) {
         <BottomTabNav />
         <FloatingActionButton />
       </div>
+
+      {/* First-login onboarding modal */}
+      {showOnboarding && (
+        <OnboardingModal
+          onComplete={() => setShowOnboarding(false)}
+          onSkip={() => setShowOnboarding(false)}
+        />
+      )}
     </div>
   );
 }
