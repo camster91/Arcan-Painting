@@ -24,7 +24,7 @@ jobs:
           NODE_ENV: production
 
       - name: Run tests
-        run: bun test
+        run: bun run test
         env:
           CI: true
         continue-on-error: true
