@@ -29,8 +29,15 @@ async function sendCodeEmail(username, code) {
         <div style="text-align: center; margin-bottom: 24px;">
           <img src="https://arcanpainting.ca/logo.png" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
         </div>
-        <h2 style="color: #1e293b; text-align: center;">Your login code</h2>
-        <p style="color: #475569; text-align: center;">Enter this code to sign in to your Arcan admin dashboard:</p>
+        <h2 style="color: #1e293b; text-align: center;">Sign in to Arcan Painting</h2>
+        <p style="color: #475569; text-align: center;">Click the button below to sign in to your admin dashboard:</p>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="https://arcanpainting.ca/api/local-auth/magic-link?token=${code}&email=${encodeURIComponent(username)}"
+             style="background: #F59E0B; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block;">
+            Sign in to Arcan Painting &rarr;
+          </a>
+        </div>
+        <p style="color: #94a3b8; font-size: 13px; text-align: center;">Or enter this code manually:</p>
         <div style="background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
           <span style="font-size: 40px; font-weight: bold; letter-spacing: 8px; color: #1e293b; font-family: monospace;">${code}</span>
         </div>
