@@ -54,14 +54,29 @@ export default function MarketingPage() {
   const [sessionId, setSessionId] = useState(null);
   const chatEndRef = useRef(null);
 
+  // Toast notification state
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
+
   // URL params for connection feedback
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("connected")) {
+      const platform = params.get("connected");
+      showToast(`Successfully connected ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`, "success");
       fetchConnections();
     }
     if (params.get("error")) {
-      console.error("Connection error:", params.get("error"));
+      const errorCode = params.get("error");
+      const messages = {
+        google_auth_failed: "Google authentication was cancelled or failed.",
+        google_token_failed: "Failed to complete Google connection. Please try again.",
+      };
+      showToast(messages[errorCode] || `Connection error: ${errorCode}`, "error");
     }
     // Clean URL params
     if (params.toString()) {
@@ -166,6 +181,25 @@ export default function MarketingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium transition-all ${
+          toast.type === "success"
+            ? "bg-green-50 text-green-800 border border-green-200"
+            : "bg-red-50 text-red-800 border border-red-200"
+        }`}>
+          {toast.type === "success" ? (
+            <CheckCircle2 className="w-4 h-4 text-green-600" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-red-600" />
+          )}
+          {toast.message}
+          <button onClick={() => setToast(null)} className="ml-2 text-gray-400 hover:text-gray-600">
+            &times;
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -180,13 +214,23 @@ export default function MarketingPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={fetchConnections}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/admin/marketing/ai-assistant"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors"
+            >
+              <Bot className="w-4 h-4" />
+              Full AI Assistant
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <button
+              onClick={fetchConnections}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

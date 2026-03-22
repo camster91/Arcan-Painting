@@ -1,4 +1,9 @@
-export async function GET() {
+import { getCurrentUser } from "../../../utils/auth.js";
+
+export async function GET(request) {
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
   const clientId = process.env.GOOGLE_CLIENT_ID;
   if (!clientId) {
     return Response.json(
