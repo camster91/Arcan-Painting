@@ -132,6 +132,10 @@ export default defineConfig({
           if (id.includes('node_modules/stripe')) {
             return 'vendor-stripe';
           }
+          // Sentry -- own chunk to break circular dep with vendor-react
+          if (id.includes("node_modules/@sentry/")) {
+            return "vendor-sentry";
+          }
           // Everything else in node_modules
           if (id.includes('node_modules/')) {
             return 'vendor-misc';
