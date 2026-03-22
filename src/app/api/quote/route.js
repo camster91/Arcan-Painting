@@ -1,7 +1,13 @@
 import { notifyGerardo, formatQuoteNotification } from '../utils/telegram.js';
 import { chatWithGemini } from '../utils/gemini.js';
+import { createRateLimiter } from '../utils/rate-limit.js';
+
+const quoteLimiter = createRateLimiter({ windowMs: 60_000, max: 5, prefix: 'quote' });
 
 export async function POST(request) {
+  const limited = quoteLimiter(request);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
     const { name, email, phone, serviceType, scope, timeline, budget, details, address } = body;

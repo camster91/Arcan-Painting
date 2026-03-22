@@ -232,7 +232,6 @@ export default function Header() {
                   decoding="async"
                   className="w-[120px] h-[56px] object-contain"
                 />
-              </picture>
               <button
                 ref={closeBtnRef}
                 className="p-2 rounded-lg transition-colors"

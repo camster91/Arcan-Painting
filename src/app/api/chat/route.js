@@ -1,4 +1,7 @@
 import { chatWithGemini } from '../utils/gemini.js';
+import { createRateLimiter } from '../utils/rate-limit.js';
+
+const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 10, prefix: 'chat' });
 
 // Fire-and-forget: triage new chat messages via AI customer support agent
 async function triggerCustomerSupportAgent(message, baseUrl) {
@@ -17,6 +20,9 @@ async function triggerCustomerSupportAgent(message, baseUrl) {
 }
 
 export async function POST(request) {
+  const limited = chatLimiter(request);
+  if (limited) return limited;
+
   try {
     const { message, history } = await request.json();
 
