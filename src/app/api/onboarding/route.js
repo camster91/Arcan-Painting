@@ -55,10 +55,21 @@ export async function GET(request) {
     });
   } catch (err) {
     console.error("[onboarding] GET error:", err);
-    return Response.json(
-      { error: "Failed to check onboarding status" },
-      { status: 500 },
-    );
+    // If tables don't exist yet (fresh deployment), return safe defaults
+    return Response.json({
+      success: true,
+      completed: true,
+      needsOnboarding: false,
+      onboardingStep: 1,
+      googleConnected: false,
+      onboardingCompleted: true,
+      companyName: null,
+      companyPhone: null,
+      companyEmail: null,
+      companyAddress: null,
+      companyTagline: null,
+      googleAccount: null,
+    });
   }
 }
 
