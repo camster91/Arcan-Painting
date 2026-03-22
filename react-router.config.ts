@@ -4,5 +4,5 @@ export default {
 	appDirectory: './src/app',
 	ssr: true,
 	prerender: false,
+	routeDiscovery: { mode: 'initial' },
 } satisfies Config;
-
