@@ -1,6 +1,53 @@
 import { getCurrentUser } from "../../utils/auth.js";
 import sql from "../../utils/sql.js";
 
+async function getGoogleAccessToken() {
+  const rows = await sql(
+    `SELECT access_token, refresh_token, token_expiry FROM marketing_connections WHERE platform = 'google' AND is_active = true LIMIT 1`
+  );
+  if (!rows.length) return null;
+
+  const { access_token, refresh_token, token_expiry } = rows[0];
+
+  // If token is still valid (with 5min buffer), use it
+  if (token_expiry && new Date(token_expiry) > new Date(Date.now() + 5 * 60 * 1000)) {
+    return access_token;
+  }
+
+  // Token expired — refresh it
+  if (!refresh_token) return null;
+
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token,
+      grant_type: "refresh_token",
+    }),
+  });
+
+  if (!res.ok) return null;
+
+  const tokens = await res.json();
+  const newExpiry = tokens.expires_in
+    ? new Date(Date.now() + tokens.expires_in * 1000)
+    : null;
+
+  // Update stored token
+  await sql(
+    `UPDATE marketing_connections SET access_token = $1, token_expiry = $2, updated_at = CURRENT_TIMESTAMP WHERE platform = 'google'`,
+    [tokens.access_token, newExpiry]
+  );
+
+  return tokens.access_token;
+}
+
 export async function POST(request) {
   const user = await getCurrentUser(request);
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -49,7 +96,41 @@ If something breaks or an error occurs, help diagnose and fix it.`;
   let reply = null;
   let modelUsed = null;
 
-  // Try Gemini API (direct, using env var)
+  // Strategy 1: Use Google OAuth token from marketing_connections (no API key needed)
+  try {
+    const oauthToken = await getGoogleAccessToken();
+    if (oauthToken) {
+      const geminiMessages = messages.map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }],
+      }));
+
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${oauthToken}`,
+          },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: geminiMessages,
+            generationConfig: { maxOutputTokens: 1024, temperature: 0.7 },
+          }),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        modelUsed = "gemini-2.0-flash (oauth)";
+      }
+    }
+  } catch (e) {
+    console.error("[marketing/ai] Gemini OAuth error:", e.message);
+  }
+
+  // Strategy 2: Fall back to GEMINI_API_KEY if OAuth unavailable
   const geminiKey = process.env.GEMINI_API_KEY;
   if (geminiKey && !reply) {
     try {
@@ -76,11 +157,11 @@ If something breaks or an error occurs, help diagnose and fix it.`;
         modelUsed = "gemini-2.0-flash";
       }
     } catch (e) {
-      console.error("[marketing/ai] Gemini error:", e.message);
+      console.error("[marketing/ai] Gemini API key error:", e.message);
     }
   }
 
-  // Fallback: Ollama Cloud (if configured)
+  // Strategy 3: Ollama Cloud fallback
   const ollamaUrl = process.env.OLLAMA_CLOUD_URL;
   const ollamaKey = process.env.OLLAMA_CLOUD_KEY;
   if (ollamaUrl && ollamaKey && !reply) {
@@ -109,7 +190,7 @@ If something breaks or an error occurs, help diagnose and fix it.`;
 
   if (!reply) {
     return Response.json(
-      { error: "AI service unavailable. Please try again." },
+      { error: "AI service unavailable. Connect your Google account or try again." },
       { status: 503 }
     );
   }
