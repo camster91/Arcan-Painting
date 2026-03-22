@@ -224,6 +224,370 @@ export async function runMigrations() {
       )
     `;
 
+    // ── ad_creatives ──────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS ad_creatives (
+        id SERIAL PRIMARY KEY,
+        campaign_name VARCHAR(255),
+        platform VARCHAR(50) NOT NULL,
+        ad_type VARCHAR(50),
+        headline TEXT,
+        primary_text TEXT,
+        description TEXT,
+        call_to_action VARCHAR(100),
+        target_audience TEXT,
+        service VARCHAR(100),
+        location VARCHAR(100),
+        status VARCHAR(50) DEFAULT 'draft',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── ads_accounts ──────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS ads_accounts (
+        id SERIAL PRIMARY KEY,
+        platform VARCHAR(50) NOT NULL,
+        account_id VARCHAR(255),
+        account_name VARCHAR(255),
+        access_token TEXT,
+        refresh_token TEXT,
+        token_expiry TIMESTAMP,
+        currency VARCHAR(10) DEFAULT 'CAD',
+        is_active BOOLEAN DEFAULT true,
+        connected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── live_campaigns ────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS live_campaigns (
+        id SERIAL PRIMARY KEY,
+        platform VARCHAR(50) NOT NULL,
+        platform_campaign_id VARCHAR(255),
+        creative_id INTEGER REFERENCES ad_creatives(id),
+        campaign_name VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'active',
+        daily_budget NUMERIC,
+        total_budget NUMERIC,
+        spent NUMERIC DEFAULT 0,
+        impressions INTEGER DEFAULT 0,
+        clicks INTEGER DEFAULT 0,
+        conversions INTEGER DEFAULT 0,
+        start_date DATE,
+        end_date DATE,
+        target_url VARCHAR(500) DEFAULT 'https://arcanpainting.ca',
+        targeting JSONB DEFAULT '{}',
+        platform_data JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── cold_email_prospects ───────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS cold_email_prospects (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255),
+        email VARCHAR(255) UNIQUE,
+        company VARCHAR(255),
+        role VARCHAR(100),
+        city VARCHAR(100),
+        source VARCHAR(100),
+        status VARCHAR(50) DEFAULT 'new',
+        sequence_step INTEGER DEFAULT 0,
+        last_emailed_at TIMESTAMP,
+        replied_at TIMESTAMP,
+        converted_at TIMESTAMP,
+        notes TEXT,
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── cold_email_sends ────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS cold_email_sends (
+        id SERIAL PRIMARY KEY,
+        prospect_id INTEGER REFERENCES cold_email_prospects(id),
+        sequence_step INTEGER,
+        subject VARCHAR(500),
+        body TEXT,
+        mailgun_id VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'sent',
+        sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── cold_email_templates ────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS cold_email_templates (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        target_role VARCHAR(100),
+        sequence_step INTEGER DEFAULT 1,
+        subject_template TEXT NOT NULL,
+        body_template TEXT NOT NULL,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── Seed default cold email templates ────────────────────────────────────
+    // Only insert if table is empty (idempotent)
+    const existingTemplates = await sql`SELECT COUNT(*)::int as count FROM cold_email_templates`;
+    if (existingTemplates[0].count === 0) {
+      await sql`
+        INSERT INTO cold_email_templates (name, target_role, sequence_step, subject_template, body_template) VALUES
+        ('RE Agent Intro', 'real_estate_agent', 1,
+         'Partnering with you — painting services for your listings in {{city}}',
+         'Hi {{name}},
+
+I hope this finds you well! My name is Gerardo, and I run Arcan Painting — a professional painting company serving the Greater Toronto Area.
+
+I wanted to reach out because I know how much a fresh coat of paint can make a difference when you''re preparing a property for sale. We specialize in quick turnarounds for real estate listings — often completing full interior paint jobs in 2-3 days to help you hit your listing date.
+
+We work with several agents across {{city}} and the GTA, and our clients regularly tell us it''s one of the best ROI improvements before listing.
+
+Would you be open to a quick 10-minute call to explore if we might be a good fit for your future listings?
+
+Best,
+Gerardo
+Arcan Painting
+(416) 727-2148
+arcanpainting.ca'),
+        ('RE Agent Follow-Up', 'real_estate_agent', 2,
+         'Quick follow-up — painting for your listings',
+         'Hi {{name}},
+
+I wanted to follow up on my message from a few days ago about painting services for real estate listings.
+
+I understand you''re busy — just wanted to make sure this didn''t get buried. We''ve helped listings in {{city}} sell faster and for more by refreshing interiors before listing.
+
+If timing isn''t right now, no worries at all — I''d love to be a resource for you when the need comes up.
+
+Happy to send over some before/after photos from recent listings if that''s helpful.
+
+Best,
+Gerardo
+Arcan Painting
+(416) 727-2148'),
+        ('Property Manager Intro', 'property_manager', 1,
+         'Reliable painting contractor for your properties in {{city}}',
+         'Hi {{name}},
+
+My name is Gerardo from Arcan Painting. We provide professional interior and exterior painting services to property managers and landlords across the GTA.
+
+I know that when a unit turns over or a property needs refreshing, you need someone reliable who shows up on time, communicates well, and does quality work without the headaches. That''s exactly what we focus on.
+
+We offer:
+- Fast turnarounds on unit turnovers
+- Competitive bulk pricing for multiple units
+- Fully insured and WSIB-compliant
+- Free estimates within 24 hours
+
+Would you be open to keeping us in mind for your next project? I''d love to provide a quote.
+
+Best,
+Gerardo
+Arcan Painting
+(416) 727-2148
+arcanpainting.ca'),
+        ('Property Manager Follow-Up', 'property_manager', 2,
+         'Following up — painting for your managed properties',
+         'Hi {{name}},
+
+Quick follow-up on my earlier note about painting services for your properties in {{city}}.
+
+We just finished a 12-unit refresh for a property manager in Mississauga — happy to share photos and pricing if you''d ever like to compare.
+
+No pressure at all — just wanted to make sure you have us on your radar for when the need comes up.
+
+Gerardo
+Arcan Painting
+(416) 727-2148')
+      `;
+    }
+
+    // ── linkedin_posts ─────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS linkedin_posts (
+        id SERIAL PRIMARY KEY,
+        content TEXT NOT NULL,
+        media_url TEXT,
+        post_type VARCHAR(50) DEFAULT 'text',
+        platform_post_id VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'draft',
+        scheduled_for TIMESTAMP,
+        posted_at TIMESTAMP,
+        impressions INTEGER DEFAULT 0,
+        likes INTEGER DEFAULT 0,
+        comments INTEGER DEFAULT 0,
+        shares INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── linkedin_outreach ───────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS linkedin_outreach (
+        id SERIAL PRIMARY KEY,
+        prospect_name VARCHAR(255),
+        prospect_title VARCHAR(255),
+        prospect_company VARCHAR(255),
+        prospect_linkedin_url VARCHAR(500),
+        target_role VARCHAR(100),
+        connection_message TEXT,
+        followup_message TEXT,
+        status VARCHAR(50) DEFAULT 'draft',
+        sent_at TIMESTAMP,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── workflow_skills ────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS workflow_skills (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        category VARCHAR(100),
+        trigger_type VARCHAR(100),
+        trigger_config JSONB DEFAULT '{}',
+        actions JSONB NOT NULL DEFAULT '[]',
+        is_active BOOLEAN DEFAULT false,
+        run_count INTEGER DEFAULT 0,
+        last_run_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── workflow_runs ─────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS workflow_runs (
+        id SERIAL PRIMARY KEY,
+        skill_id INTEGER REFERENCES workflow_skills(id),
+        trigger_data JSONB,
+        status VARCHAR(50) DEFAULT 'running',
+        steps_completed INTEGER DEFAULT 0,
+        steps_total INTEGER DEFAULT 0,
+        result JSONB DEFAULT '{}',
+        error_message TEXT,
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMP
+      )
+    `;
+
+    // ── Seed default workflow skills ────────────────────────────────────
+    const existingSkills = await sql`SELECT COUNT(*)::int as count FROM workflow_skills`;
+    if (existingSkills[0].count === 0) {
+      await sql`
+        INSERT INTO workflow_skills (name, description, category, trigger_type, trigger_config, actions, is_active) VALUES
+        ('Weekly Social Post Generator',
+         'Every Monday, AI generates 3 social posts for the week with painting tips and project showcases.',
+         'marketing', 'schedule',
+         '{"cron": "0 9 * * 1"}',
+         '[{"type": "ai_generate", "prompt": "Generate 3 social media posts for a painting company"}, {"type": "save_drafts"}]',
+         false),
+        ('New Lead Welcome Email',
+         'When a new lead is created, automatically send a personalized welcome email.',
+         'leads', 'event',
+         '{"event": "lead.created"}',
+         '[{"type": "ai_generate", "prompt": "Write a welcome email for a new painting lead"}, {"type": "send_email"}]',
+         false),
+        ('Estimate Follow-Up Reminder',
+         'If an estimate has been pending for 3 days, send a gentle follow-up email to the lead.',
+         'leads', 'schedule',
+         '{"cron": "0 10 * * *", "condition": "estimates.status = pending AND age > 3 days"}',
+         '[{"type": "query", "sql": "SELECT pending estimates older than 3 days"}, {"type": "send_email_batch"}]',
+         false),
+        ('Monthly Performance Report',
+         'On the 1st of each month, compile leads, conversions, and revenue into a summary report.',
+         'analytics', 'schedule',
+         '{"cron": "0 8 1 * *"}',
+         '[{"type": "query", "sql": "Aggregate monthly metrics"}, {"type": "ai_generate", "prompt": "Summarize monthly performance"}, {"type": "send_email"}]',
+         false),
+        ('Review Request After Project',
+         'After a project is marked complete, wait 2 days then send a review request to the client.',
+         'leads', 'event',
+         '{"event": "project.completed", "delay": "2d"}',
+         '[{"type": "delay", "duration": "2d"}, {"type": "ai_generate", "prompt": "Write a review request email"}, {"type": "send_email"}]',
+         false),
+        ('Cold Email Drip Campaign',
+         'Automatically advance cold email prospects through the sequence on a daily schedule.',
+         'outreach', 'schedule',
+         '{"cron": "0 8 * * 1-5"}',
+         '[{"type": "query", "sql": "Get prospects due for next step"}, {"type": "send_email_batch"}]',
+         false),
+        ('Ad Spend Alert',
+         'If daily ad spend exceeds budget threshold, send an alert notification.',
+         'marketing', 'schedule',
+         '{"cron": "0 18 * * *", "condition": "daily_spend > budget_limit"}',
+         '[{"type": "query", "sql": "Check daily spend vs budget"}, {"type": "send_notification"}]',
+         false),
+        ('Stale Lead Cleanup',
+         'Weekly scan for leads with no activity in 30+ days. Tag them as stale and notify the team.',
+         'leads', 'schedule',
+         '{"cron": "0 9 * * 5"}',
+         '[{"type": "query", "sql": "Find leads inactive > 30 days"}, {"type": "update_status", "status": "stale"}, {"type": "send_notification"}]',
+         false),
+        ('SEO Blog Post Generator',
+         'Twice a month, AI drafts a blog post targeting local painting keywords for SEO.',
+         'marketing', 'schedule',
+         '{"cron": "0 9 1,15 * *"}',
+         '[{"type": "ai_generate", "prompt": "Write an SEO blog post about painting services in the GTA"}, {"type": "save_drafts"}]',
+         false)
+      `;
+    }
+
+    // ── content_research ───────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS content_research (
+        id SERIAL PRIMARY KEY,
+        research_type VARCHAR(100),
+        title VARCHAR(500),
+        summary TEXT,
+        source_url TEXT,
+        source_name VARCHAR(255),
+        relevance_score INTEGER DEFAULT 5,
+        content_ideas JSONB DEFAULT '[]',
+        used_count INTEGER DEFAULT 0,
+        tags JSONB DEFAULT '[]',
+        expires_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── content_calendar ────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS content_calendar (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(500) NOT NULL,
+        content_type VARCHAR(100),
+        content TEXT,
+        research_id INTEGER REFERENCES content_research(id),
+        status VARCHAR(50) DEFAULT 'idea',
+        scheduled_for TIMESTAMP,
+        posted_at TIMESTAMP,
+        platform_post_id VARCHAR(255),
+        performance JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Workflow indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_category ON workflow_skills(category)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_is_active ON workflow_skills(is_active)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_workflow_runs_skill_id ON workflow_runs(skill_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_workflow_runs_status ON workflow_runs(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_workflow_runs_started_at ON workflow_runs(started_at DESC)`;
+
     // Marketing indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_marketing_connections_platform ON marketing_connections(platform)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_marketing_campaigns_platform ON marketing_campaigns(platform)`;
@@ -232,6 +596,41 @@ export async function runMigrations() {
     await sql`CREATE INDEX IF NOT EXISTS idx_outreach_contacts_sequence_id ON outreach_contacts(sequence_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_outreach_contacts_status ON outreach_contacts(status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_ai_conversations_session_id ON ai_conversations(session_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ad_creatives_platform ON ad_creatives(platform)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ad_creatives_status ON ad_creatives(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ad_creatives_created_at ON ad_creatives(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ads_accounts_platform ON ads_accounts(platform)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_ads_accounts_is_active ON ads_accounts(is_active)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_live_campaigns_platform ON live_campaigns(platform)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_live_campaigns_status ON live_campaigns(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_live_campaigns_creative_id ON live_campaigns(creative_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_live_campaigns_created_at ON live_campaigns(created_at DESC)`;
+
+    // LinkedIn indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_posts_status ON linkedin_posts(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_posts_scheduled_for ON linkedin_posts(scheduled_for)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_posts_created_at ON linkedin_posts(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_outreach_status ON linkedin_outreach(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_outreach_target_role ON linkedin_outreach(target_role)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_linkedin_outreach_created_at ON linkedin_outreach(created_at DESC)`;
+
+    // Content research indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_research_type ON content_research(research_type)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_research_relevance ON content_research(relevance_score DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_research_expires_at ON content_research(expires_at)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_research_created_at ON content_research(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_calendar_status ON content_calendar(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_calendar_research_id ON content_calendar(research_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_calendar_scheduled_for ON content_calendar(scheduled_for)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_content_calendar_created_at ON content_calendar(created_at DESC)`;
+
+    // Cold email indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_status ON cold_email_prospects(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_role ON cold_email_prospects(role)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_email ON cold_email_prospects(email)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_prospects_created_at ON cold_email_prospects(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_prospect_id ON cold_email_sends(prospect_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_sent_at ON cold_email_sends(sent_at DESC)`;
 
     console.log("[migrations] 001-initial-schema: complete");
   } catch (err) {
