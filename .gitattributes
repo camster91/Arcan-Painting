@@ -1,4 +1,0 @@
-public/gallery/images/*.webp filter=lfs diff=lfs merge=lfs -text
-public/gallery/videos/*.webm filter=lfs diff=lfs merge=lfs -text
-public/gallery/thumbnails/*.webp filter=lfs diff=lfs merge=lfs -text
-public/gallery/** !text !filter !merge !diff
