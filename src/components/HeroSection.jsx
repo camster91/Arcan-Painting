@@ -152,6 +152,7 @@ export default function HeroSection() {
                     backgroundSize: "200% 200%",
                     color: "#0f172a",
                     boxShadow: "0 10px 40px rgba(251, 191, 36, 0.35)",
+                    display: "block",
                   }}
                   whileHover={
                     shouldReduceMotion
