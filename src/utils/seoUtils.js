@@ -24,12 +24,10 @@ export const seoConfig = {
     longitude: "-79.3832",
   },
   serviceAreas: [
+    // GTA
     "Toronto",
     "Mississauga",
     "Brampton",
-    "Markham",
-    "Vaughan",
-    "Richmond Hill",
     "Oakville",
     "Burlington",
     "Milton",
@@ -37,8 +35,28 @@ export const seoConfig = {
     "Ajax",
     "Whitby",
     "Oshawa",
+    // York Region
     "Newmarket",
     "Aurora",
+    "Richmond Hill",
+    "Markham",
+    "Vaughan",
+    "King City",
+    "Stouffville",
+    "Georgina",
+    "East Gwillimbury",
+    "Whitchurch-Stouffville",
+    // Simcoe County
+    "Barrie",
+    "Orillia",
+    "Innisfil",
+    "Bradford",
+    "Alliston",
+    "Collingwood",
+    "Wasaga Beach",
+    "Midland",
+    "Penetanguishene",
+    "New Tecumseth",
   ],
   services: [
     "Interior Painting",
@@ -50,6 +68,7 @@ export const seoConfig = {
     "Pressure Washing",
     "Surface Preparation",
     "Wallpaper Removal",
+    "High-End Wallpaper Installation",
   ],
 };
 
@@ -148,7 +167,7 @@ export function generateLocalBusinessSchema() {
         latitude: seoConfig.coordinates.latitude,
         longitude: seoConfig.coordinates.longitude,
       },
-      geoRadius: "50000", // 50km radius
+      geoRadius: "120000", // 120km radius — covers GTA, York Region, and Simcoe County
     },
     priceRange: "$$",
     openingHours: "Mo-Fr 07:00-18:00, Sa 08:00-16:00",

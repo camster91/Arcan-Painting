@@ -89,13 +89,13 @@ export default function ServicesSection() {
     {
       icon: Wallpaper,
       title: "Wallpaper Services",
-      subtitle: "Design Installation",
+      subtitle: "High-End Wallpaper Installation",
       description:
-        "Expert wallpaper installation and removal throughout the GTA with perfect pattern matching and seamless application.",
+        "Luxury and designer wallpaper installation specialists. From high-end residential feature walls to commercial statement pieces, we deliver flawless results with premium materials throughout the GTA.",
       features: [
+        "Luxury & designer wallpaper specialists",
         "Precise pattern matching & alignment",
-        "Professional installation techniques",
-        "Safe removal without wall damage",
+        "Professional installation & safe removal",
         "Custom design consultation services",
       ],
       image:

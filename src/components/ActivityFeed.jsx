@@ -26,7 +26,7 @@ export default function ActivityFeed() {
           id: 1,
           type: "lead",
           title: "New lead received",
-          description: "Sarah Johnson requested interior painting estimate",
+          description: "New interior painting estimate request received",
           timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
           icon: UserPlus,
           color: "bg-blue-500",
@@ -37,7 +37,7 @@ export default function ActivityFeed() {
           id: 2,
           type: "appointment",
           title: "Appointment scheduled",
-          description: "Site visit with Mike Rodriguez tomorrow 2:00 PM",
+          description: "Site visit scheduled for tomorrow at 2:00 PM",
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
           icon: Calendar,
           color: "bg-green-500",
@@ -48,7 +48,7 @@ export default function ActivityFeed() {
           id: 3,
           type: "estimate",
           title: "Estimate sent",
-          description: "Quote #EST-2024-015 delivered to Lisa Wong",
+          description: "Quote #EST-2024-015 delivered to client",
           timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
           icon: FileText,
           color: "bg-purple-500",
@@ -70,7 +70,7 @@ export default function ActivityFeed() {
           id: 5,
           type: "follow_up",
           title: "Follow-up due",
-          description: "Contact Jennifer Lee about kitchen painting",
+          description: "Follow up on kitchen painting inquiry",
           timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
           icon: Clock,
           color: "bg-amber-500",
@@ -81,7 +81,7 @@ export default function ActivityFeed() {
           id: 6,
           type: "call",
           title: "Call completed",
-          description: "Discussed timeline with David Kim",
+          description: "Discussed project timeline with client",
           timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
           icon: Phone,
           color: "bg-rose-500",

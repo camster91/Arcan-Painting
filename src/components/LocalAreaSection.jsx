@@ -22,19 +22,19 @@ export default function LocalAreaSection() {
     return () => observer.disconnect();
   }, []);
 
-  const serviceAreas = [
-    "Toronto",
-    "Mississauga",
-    "Brampton",
-    "Markham",
-    "Vaughan",
-    "Richmond Hill",
-    "Oakville",
-    "Burlington",
-    "Milton",
-    "Pickering",
-    "Ajax",
-    "Whitby",
+  const serviceRegions = [
+    {
+      name: "Greater Toronto Area",
+      cities: ["Toronto", "Mississauga", "Brampton", "Oakville", "Burlington", "Milton", "Pickering", "Ajax", "Whitby", "Oshawa"],
+    },
+    {
+      name: "York Region",
+      cities: ["Newmarket", "Aurora", "Richmond Hill", "Markham", "Vaughan", "King City", "Stouffville", "Georgina", "East Gwillimbury"],
+    },
+    {
+      name: "Simcoe County",
+      cities: ["Barrie", "Orillia", "Innisfil", "Bradford", "Alliston", "Collingwood", "Wasaga Beach", "Midland", "Penetanguishene"],
+    },
   ];
 
   return (
@@ -95,21 +95,30 @@ export default function LocalAreaSection() {
           <h3 className="text-3xl font-bold text-white text-center mb-8">
             Areas We Serve
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {serviceAreas.map((area, index) => (
-              <div
-                key={index}
-                className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all duration-300 hover:scale-105"
-                style={{
-                  animation: isVisible
-                    ? `fadeInUp 0.6s ease-out ${index * 0.05}s both`
-                    : "none",
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-yellow-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative text-white font-medium text-lg">
-                  {area}
-                </span>
+          <div className="max-w-5xl mx-auto space-y-10">
+            {serviceRegions.map((region, regionIndex) => (
+              <div key={regionIndex}>
+                <h4 className="text-xl font-semibold text-amber-400 text-center mb-4">
+                  {region.name}
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {region.cities.map((area, index) => (
+                    <div
+                      key={index}
+                      className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 text-center hover:bg-white/20 transition-all duration-300 hover:scale-105"
+                      style={{
+                        animation: isVisible
+                          ? `fadeInUp 0.6s ease-out ${(regionIndex * 10 + index) * 0.03}s both`
+                          : "none",
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-yellow-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative text-white font-medium text-base">
+                        {area}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
