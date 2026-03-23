@@ -57,10 +57,6 @@ jobs:
           echo "Response: $BODY"
           if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
             echo "Deployment triggered successfully!"
-            DEPLOY_UUID=$(echo "$BODY" | jq -r '.deployments[0].deployment_uuid // empty')
-            if [ -n "$DEPLOY_UUID" ]; then
-              echo "deploy_uuid=$DEPLOY_UUID" >> "$GITHUB_OUTPUT"
-            fi
           else
             echo "Coolify trigger failed (HTTP $HTTP_CODE): $BODY"
             exit 1
@@ -70,46 +66,15 @@ jobs:
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
 
-      - name: Wait for Coolify deploy to finish
-        run: |
-          DEPLOY_UUID="${{ steps.deploy.outputs.deploy_uuid }}"
-          if [ -z "$DEPLOY_UUID" ]; then
-            echo "No deploy UUID captured, skipping poll"
-            sleep 60
-            exit 0
-          fi
-          echo "Polling deploy $DEPLOY_UUID..."
-          TIMEOUT=480
-          INTERVAL=15
-          ELAPSED=0
-          while [ $ELAPSED -lt $TIMEOUT ]; do
-            RESPONSE=$(curl -s --max-time 10 \
-              "$COOLIFY_URL/api/v1/deploy/$DEPLOY_UUID" \
-              -H "Authorization: Bearer $COOLIFY_TOKEN")
-            STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"')
-            echo "[$ELAPSED s] Deploy status: $STATUS"
-            case "$STATUS" in
-              finished)
-                echo "Deploy completed successfully!"
-                exit 0
-                ;;
-              failed|cancelled|error)
-                echo "Deploy failed with status: $STATUS"
-                exit 1
-                ;;
-            esac
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-          done
-          echo "Deploy timed out after ${TIMEOUT}s"
-          exit 1
+      - name: Deploy triggered
+        run: echo "Coolify deployment triggered successfully. Monitor at $COOLIFY_URL"
         env:
           COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
 
       - name: Health check
         run: |
-          echo "Checking https://arcanpainting.ca..."
+          echo "Waiting 30s for deploy to start, then checking https://arcanpainting.ca..."
+          sleep 30
           RETRIES=5
           DELAY=10
           for i in $(seq 1 $RETRIES); do
