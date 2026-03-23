@@ -246,7 +246,7 @@ export default function HeroSection() {
                       className="text-2xl font-bold"
                       style={{ color: "#fbbf24" }}
                     >
-                      <AnimatedCounter target={4} suffix=".9" />
+                      <AnimatedCounter target={5} suffix=".0" />
                     </span>
                     <span style={{ color: "#fbbf24", fontSize: "1.2rem" }}>★</span>
                   </div>
@@ -254,7 +254,7 @@ export default function HeroSection() {
                     className="text-xs font-medium mt-0.5"
                     style={{ color: themeColors.textSecondary }}
                   >
-                    Rating · 200+ Reviews
+                    Rating on Google
                   </span>
                 </div>
 

@@ -171,40 +171,12 @@ export function generateLocalBusinessSchema() {
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "127",
+      ratingValue: "5.0",
+      reviewCount: "18",
       bestRating: "5",
       worstRating: "1",
     },
     review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-        },
-        author: {
-          "@type": "Person",
-          name: "Sarah Johnson",
-        },
-        reviewBody:
-          "Outstanding work! The team was professional, punctual, and the quality exceeded our expectations. Our home looks amazing!",
-      },
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-        },
-        author: {
-          "@type": "Person",
-          name: "Mike Chen",
-        },
-        reviewBody:
-          "Excellent communication throughout the project. Clean, efficient, and the final result is perfect. Highly recommend!",
-      },
     ],
   };
 }

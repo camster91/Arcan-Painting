@@ -1,10 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Camera, Play } from "lucide-react";
 import LeadFormPopup from "./LeadFormPopup";
 
-// ─── Real gallery data (65 curated, deduplicated images) ─────────────────────
+// ─── Real gallery data (65 images + 5 video stills, curated & deduplicated) ──
 const GALLERY_ITEMS = [
-  // 2025-2026 projects first (newest work)
+  // Video stills (mid-frame thumbnails from real project videos)
+  { id: "v1", file: "PXL_20260313_212046509_video.webp", category: "Interior", title: "Painting in Progress", isVideo: true },
+  { id: "v2", file: "PXL_20260213_194740208_video.webp", category: "Interior", title: "Project Walkthrough", isVideo: true },
+  { id: "v3", file: "PXL_20251106_144856945_video.webp", category: "Interior", title: "Interior Painting", isVideo: true },
+  { id: "v4", file: "VID-20260212-WA0034_video.webp", category: "Interior", title: "Work in Progress", isVideo: true },
+  { id: "v5", file: "VID-20260213-WA0004_video.webp", category: "Interior", title: "Painting Detail", isVideo: true },
+  // 2025-2026 projects (newest work)
   { id: 1, file: "IMG-20260212-WA0016.webp", category: "Interior", title: "Staircase Refinishing" },
   { id: 2, file: "PXL_20260313_212041611.webp", category: "Interior", title: "Interior Painting" },
   { id: 3, file: "PXL_20260213_210915996.webp", category: "Interior", title: "Interior Painting" },
@@ -241,9 +247,17 @@ export default function PortfolioSection() {
                     decoding="async"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
                   />
+                  {/* Video play icon */}
+                  {item.isVideo && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                        <Play size={22} className="text-slate-800 ml-1" fill="currentColor" />
+                      </div>
+                    </div>
+                  )}
                   {/* Category badge */}
                   <span className="absolute top-2 left-2 text-[11px] font-medium px-2.5 py-1 rounded-full bg-black/40 text-white backdrop-blur-sm">
-                    {item.category}
+                    {item.isVideo ? "📹 Video" : item.category}
                   </span>
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-end p-3">
