@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -29,7 +33,20 @@ jobs:
           CI: true
         continue-on-error: true
 
+      - name: Cancel stuck Coolify deploys
+        run: |
+          mkdir -p ~/.ssh
+          echo "$COOLIFY_SSH_KEY" > ~/.ssh/coolify_key
+          chmod 600 ~/.ssh/coolify_key
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/coolify_key root@187.77.26.99 \
+            "docker exec coolify-db psql -U coolify -c \"UPDATE application_deployment_queues SET status='cancelled' WHERE status IN ('queued','in_progress');\""
+          echo "Cleared stuck deploy queue"
+          rm -f ~/.ssh/coolify_key
+        env:
+          COOLIFY_SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
+
       - name: Trigger Coolify Deployment
+        id: deploy
         run: |
           echo "Triggering Coolify redeploy for $COOLIFY_APP_UUID"
           RESPONSE=$(curl -s --max-time 15 -w "\n%{http_code}" -X GET \
@@ -40,6 +57,10 @@ jobs:
           echo "Response: $BODY"
           if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
             echo "Deployment triggered successfully!"
+            DEPLOY_UUID=$(echo "$BODY" | jq -r '.deployments[0].deployment_uuid // empty')
+            if [ -n "$DEPLOY_UUID" ]; then
+              echo "deploy_uuid=$DEPLOY_UUID" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "Coolify trigger failed (HTTP $HTTP_CODE): $BODY"
             exit 1
@@ -48,3 +69,57 @@ jobs:
           COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+
+      - name: Wait for Coolify deploy to finish
+        run: |
+          DEPLOY_UUID="${{ steps.deploy.outputs.deploy_uuid }}"
+          if [ -z "$DEPLOY_UUID" ]; then
+            echo "No deploy UUID captured, skipping poll"
+            sleep 60
+            exit 0
+          fi
+          echo "Polling deploy $DEPLOY_UUID..."
+          TIMEOUT=480
+          INTERVAL=15
+          ELAPSED=0
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            RESPONSE=$(curl -s --max-time 10 \
+              "$COOLIFY_URL/api/v1/deploy/$DEPLOY_UUID" \
+              -H "Authorization: Bearer $COOLIFY_TOKEN")
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"')
+            echo "[$ELAPSED s] Deploy status: $STATUS"
+            case "$STATUS" in
+              finished)
+                echo "Deploy completed successfully!"
+                exit 0
+                ;;
+              failed|cancelled|error)
+                echo "Deploy failed with status: $STATUS"
+                exit 1
+                ;;
+            esac
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+          echo "Deploy timed out after ${TIMEOUT}s"
+          exit 1
+        env:
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+
+      - name: Health check
+        run: |
+          echo "Checking https://arcanpainting.ca..."
+          RETRIES=5
+          DELAY=10
+          for i in $(seq 1 $RETRIES); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://arcanpainting.ca)
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+              echo "Health check passed (HTTP $HTTP_CODE)"
+              exit 0
+            fi
+            echo "Attempt $i/$RETRIES: HTTP $HTTP_CODE, retrying in ${DELAY}s..."
+            sleep $DELAY
+          done
+          echo "Health check failed after $RETRIES attempts"
+          exit 1
