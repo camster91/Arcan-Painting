@@ -144,9 +144,9 @@ export default function HeroSection() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               {/* Primary CTA */}
-              <div className="flex flex-col items-center sm:items-start gap-1">
+              <div className="flex flex-col items-center sm:items-start gap-1 w-full sm:w-auto">
                 <motion.button
-                  className="font-semibold text-lg px-8 py-4 rounded-xl shadow-xl relative overflow-hidden"
+                  className="w-full sm:w-auto font-semibold text-lg px-8 py-4 rounded-xl shadow-xl relative overflow-hidden"
                   style={{
                     background: "linear-gradient(135deg, #fbbf24 0%, #fde047 50%, #fbbf24 100%)",
                     backgroundSize: "200% 200%",
@@ -184,7 +184,7 @@ export default function HeroSection() {
               </div>
 
               <motion.button
-                className="font-semibold text-lg px-8 py-4 rounded-xl border transition-colors"
+                className="w-full sm:w-auto font-semibold text-lg px-8 py-4 rounded-xl border transition-colors"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.1)",
                   color: themeColors.text,
