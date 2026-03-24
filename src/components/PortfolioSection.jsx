@@ -372,44 +372,64 @@ export default function PortfolioSection() {
         </div>
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox — full screen immersive overlay */}
       {lightboxOpen && currentItem && (
         <div
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+          onClick={closeLightbox}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
+          {/* Close button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center"
+            className="absolute top-4 right-4 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            aria-label="Close"
           >
-            <X size={24} className="text-white" />
+            <X size={22} className="text-white" />
           </button>
+
+          {/* Prev button */}
           <button
-            onClick={prevLightbox}
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center"
+            onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            aria-label="Previous"
           >
             <ChevronLeft size={24} className="text-white" />
           </button>
+
+          {/* Next button */}
           <button
-            onClick={nextLightbox}
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center"
+            onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            aria-label="Next"
           >
             <ChevronRight size={24} className="text-white" />
           </button>
-          <div className="max-w-5xl w-full h-full flex items-center justify-center p-4">
+
+          {/* Image — fills available space */}
+          <div
+            className="w-full h-full flex items-center justify-center p-4 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={`/gallery/images/${currentItem.file}`}
               alt={currentItem.altText}
-              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              className="max-w-full max-h-full object-contain"
               style={{ imageOrientation: "from-image" }}
             />
           </div>
-          <div className="absolute bottom-4 left-4 text-white/70 text-sm">
-            {lightboxIndex + 1} / {filtered.length}
-          </div>
-          <div className="absolute bottom-4 right-4 text-white/70 text-sm">
-            {currentItem.title} · {currentItem.category}
+
+          {/* Bottom bar */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 sm:px-6 sm:py-4">
+            <div className="flex items-center justify-between">
+              <span className="text-white/60 text-xs sm:text-sm">
+                {lightboxIndex + 1} / {filtered.length}
+              </span>
+              <span className="text-white font-medium text-xs sm:text-sm">
+                {currentItem.title} · {currentItem.category}
+              </span>
+            </div>
           </div>
         </div>
       )}
