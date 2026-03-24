@@ -238,9 +238,9 @@ export default function PricingSection() {
           </div>
         </div>
 
-        {/* Tab Content */}
+        {/* Tab Content — no gap when closed, spacing when open */}
         <div
-          className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${activeTab ? "pt-8" : "pt-0"}`}
         >
           {/* Quick Calculator Tab */}
           {activeTab === "calculator" && (
