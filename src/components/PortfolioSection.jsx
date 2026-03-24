@@ -49,22 +49,19 @@ function GalleryCard({ item, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-      style={{ width: "200px", height: "200px" }}
+      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card"
+      style={{
+        width: "clamp(140px, 28vw, 260px)",
+        height: "clamp(140px, 28vw, 260px)",
+      }}
     >
       <img
         src={`/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`}
         alt={item.altText}
         loading="lazy"
         decoding="async"
-        className="gallery-img w-full h-full object-cover rounded-2xl"
-        style={{
-          aspectRatio: "1/1",
-          imageOrientation: "from-image",
-          transition: "transform 0.3s ease, filter 0.3s ease",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
+        className="gallery-img w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover/card:scale-105"
+        style={{ imageOrientation: "from-image" }}
       />
     </div>
   );
@@ -77,11 +74,14 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragStartPos = useRef(0);
+  const touchStartX = useRef(0);
+  const touchMoved = useRef(false);
   const [localPaused, setLocalPaused] = useState(false);
 
   const isPaused = paused || localPaused;
-  const speed = direction === "left" ? 0.4 : -0.4;
+  const speed = direction === "left" ? 0.35 : -0.35;
 
+  // Duplicate for seamless loop
   const tripled = [...items, ...items, ...items];
 
   const animate = useCallback(() => {
@@ -108,38 +108,60 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
     return () => cancelAnimationFrame(animRef.current);
   }, [animate, direction]);
 
+  // Mouse drag for desktop
   const handleMouseDown = (e) => {
+    // Only start drag if it's a primary mouse button (left click)
+    if (e.button !== 0) return;
     isDragging.current = true;
     dragStartX.current = e.clientX;
     dragStartPos.current = posRef.current;
     setLocalPaused(true);
+    e.preventDefault();
   };
   const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
+    if (!isDragging.current || !rowRef.current) return;
     posRef.current = dragStartPos.current + (e.clientX - dragStartX.current);
+    rowRef.current.style.transform = `translateX(${posRef.current}px)`;
   };
   const handleMouseUp = () => {
     isDragging.current = false;
     setTimeout(() => setLocalPaused(false), 2000);
   };
+
+  // Natural touch scroll + drag for mobile/tablet
   const handleTouchStart = (e) => {
-    isDragging.current = true;
-    dragStartX.current = e.touches[0].clientX;
+    touchStartX.current = e.touches[0].clientX;
     dragStartPos.current = posRef.current;
+    touchMoved.current = false;
+    isDragging.current = false; // Let native scroll handle it initially
     setLocalPaused(true);
   };
   const handleTouchMove = (e) => {
-    if (!isDragging.current) return;
-    posRef.current = dragStartPos.current + (e.touches[0].clientX - dragStartX.current);
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    if (dx > 8 && !isDragging.current) {
+      // User is scrolling horizontally — take over
+      isDragging.current = true;
+      dragStartX.current = touchStartX.current;
+      touchMoved.current = true;
+    }
+    if (isDragging.current && rowRef.current) {
+      // Override native scroll
+      e.preventDefault();
+      posRef.current = dragStartPos.current + (e.touches[0].clientX - dragStartX.current);
+      rowRef.current.style.transform = `translateX(${posRef.current}px)`;
+    }
   };
   const handleTouchEnd = () => {
     isDragging.current = false;
-    setTimeout(() => setLocalPaused(false), 2000);
+    setTimeout(() => {
+      setLocalPaused(false);
+      touchMoved.current = false;
+    }, touchMoved.current ? 3000 : 500);
   };
 
   return (
     <div
-      className="overflow-hidden cursor-grab active:cursor-grabbing"
+      className="overflow-hidden cursor-grab active:cursor-grabbing select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -150,14 +172,20 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
     >
       <div
         ref={rowRef}
-        className="flex gap-4 will-change-transform"
-        style={{ touchAction: "pan-y" }}
+        className="flex gap-3 sm:gap-4 will-change-transform"
+        style={{ touchAction: "none" }}
       >
         {tripled.map((item, i) => (
           <GalleryCard
             key={`${item.id}-${i}`}
             item={item}
-            onClick={() => onItemClick(items.indexOf(item) === -1 ? 0 : items.indexOf(item))}
+            onClick={() => {
+              // items is the original array (index 0 to items.length-1 in the middle copy)
+              // Middle copy starts at index items.length
+              const midStart = items.length;
+              const idx = i < midStart ? i : (i < midStart + items.length ? i - midStart : i - midStart * 2);
+              onItemClick(idx);
+            }}
           />
         ))}
       </div>
@@ -308,8 +336,8 @@ export default function PortfolioSection() {
         </div>
       </div>
 
-      {/* Two-row auto-scrolling gallery */}
-      <div className="space-y-4">
+      {/* Two-row auto-scrolling gallery — full viewport width */}
+      <div className="px-2 sm:px-4 md:px-8 lg:px-12 space-y-3 sm:space-y-4">
         {ROW_1.length > 0 && (
           <ScrollingRow
             items={ROW_1}
@@ -328,7 +356,8 @@ export default function PortfolioSection() {
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* CTA below the gallery */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {/* CTA */}
         <div className="mt-12 text-center">
           <p className="text-slate-500 text-base mb-4">
