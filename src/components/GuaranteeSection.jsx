@@ -48,7 +48,42 @@ export default function GuaranteeSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Mobile: snap-scroll carousel */}
+        <div className="lg:hidden -mx-4 px-4">
+          <div
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4"
+            style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {guarantees.map((guarantee, index) => {
+              const IconComponent = guarantee.icon;
+              return (
+                <div
+                  key={index}
+                  className="flex-shrink-0 w-[80vw] snap-center bg-white rounded-2xl p-6 text-center shadow-xl flex flex-col justify-between"
+                  style={{ minHeight: "220px" }}
+                >
+                  <div>
+                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <IconComponent className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <span className="bg-amber-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                      {guarantee.badge}
+                    </span>
+                    <h3 className="text-base font-semibold text-slate-900 mt-3 mb-2">
+                      {guarantee.title}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed line-clamp-3">
+                      {guarantee.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: 4-column grid */}
+        <div className="hidden lg:grid lg:grid-cols-4 gap-8">
           {guarantees.map((guarantee, index) => {
             const IconComponent = guarantee.icon;
             return (
