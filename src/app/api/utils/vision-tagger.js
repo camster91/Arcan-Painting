@@ -3,7 +3,7 @@
  * Used by admin gallery API for on-demand image tagging.
  */
 
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const PROMPT = `Analyze this painting project photo and return ONLY valid JSON (no markdown, no code blocks):
 {

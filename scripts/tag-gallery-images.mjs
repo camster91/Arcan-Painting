@@ -27,7 +27,7 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const PROMPT = `Analyze this painting project photo and return ONLY valid JSON (no markdown, no code blocks):
 {
@@ -56,7 +56,8 @@ async function analyzeImage(filename) {
     }],
     generationConfig: {
       temperature: 0.1,
-      maxOutputTokens: 500,
+      maxOutputTokens: 2048,
+      responseMimeType: "application/json",
     }
   };
 
