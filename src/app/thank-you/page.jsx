@@ -20,10 +20,10 @@ export default function ThankYouPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen h-dvh overflow-y-auto bg-white">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 sm:px-4 py-16">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
         {/* Thank You Section */}
         <div className="text-center mb-12">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -43,7 +43,7 @@ export default function ThankYouPage() {
         </div>
 
         {/* Next Step - Book Appointment */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-8">
           {/* Scheduler */}
           <SchedulerSection />
         </div>

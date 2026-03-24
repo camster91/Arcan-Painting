@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function SchedulerSection() {
   const queryClient = useQueryClient();
@@ -18,6 +19,8 @@ export default function SchedulerSection() {
     return d;
   });
   const [selectedSlotId, setSelectedSlotId] = useState(null);
+  const [datePage, setDatePage] = useState(0);
+  const DAYS_PER_PAGE = typeof window !== "undefined" && window.innerWidth < 640 ? 7 : 14;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -238,34 +241,60 @@ export default function SchedulerSection() {
               </button>
             </div>
 
-            {/* Date strip */}
+            {/* Date strip — paginated */}
             <div className="overflow-x-auto -mx-2 px-2">
-              <div className="inline-flex gap-2 min-w-full">
-                {dateStrip.map((d) => {
-                  const isActive = formattedDate === toISODate(d);
-                  const dow = dayNames[d.getDay()];
-                  const dateNum = d.getDate();
-                  const mon = monthNames[d.getMonth()];
-                  return (
-                    <button
-                      key={d.toISOString()}
-                      onClick={() => setSelectedDate(d)}
-                      className={`flex flex-col items-center justify-center w-[80px] py-2 rounded-xl border text-sm transition-all ${
-                        isActive
-                          ? "bg-amber-500 border-amber-600 text-white shadow"
-                          : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
-                      }`}
-                    >
-                      <span className="text-xs opacity-80">{dow}</span>
-                      <span className="text-lg font-semibold leading-tight">
-                        {String(dateNum).padStart(2, "0")}
-                      </span>
-                      <span className="text-[11px] opacity-80">{mon}</span>
-                    </button>
-                  );
-                })}
+              <div className="inline-flex gap-2 min-w-full items-center">
+                {/* Prev */}
+                <button
+                  onClick={() => setDatePage(Math.max(0, datePage - 1))}
+                  disabled={datePage === 0}
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Previous days"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+
+                {/* Days */}
+                {dateStrip
+                  .slice(datePage * DAYS_PER_PAGE, (datePage + 1) * DAYS_PER_PAGE)
+                  .map((d) => {
+                    const isActive = formattedDate === toISODate(d);
+                    const dow = dayNames[d.getDay()];
+                    const dateNum = d.getDate();
+                    const mon = monthNames[d.getMonth()];
+                    return (
+                      <button
+                        key={d.toISOString()}
+                        onClick={() => setSelectedDate(d)}
+                        className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-xl border text-sm transition-all flex-shrink-0 ${
+                          isActive
+                            ? "bg-amber-500 border-amber-600 text-white shadow"
+                            : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
+                        }`}
+                      >
+                        <span className="text-[10px] sm:text-xs opacity-80">{dow}</span>
+                        <span className="text-base sm:text-lg font-semibold leading-tight">
+                          {String(dateNum).padStart(2, "0")}
+                        </span>
+                        <span className="text-[10px] sm:text-[11px] opacity-80">{mon}</span>
+                      </button>
+                    );
+                  })}
+
+                {/* Next */}
+                <button
+                  onClick={() => setDatePage(datePage + 1)}
+                  disabled={(datePage + 1) * DAYS_PER_PAGE >= dateStrip.length}
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  aria-label="More days"
+                >
+                  <ChevronRight size={16} />
+                </button>
               </div>
             </div>
+            <p className="text-xs text-slate-400 mt-1 text-center">
+              {Math.min((datePage + 1) * DAYS_PER_PAGE, dateStrip.length)} of {dateStrip.length} available days
+            </p>
 
             {/* Times for selected date */}
             <div className="mt-5">
