@@ -14,6 +14,8 @@ import {
   Shield,
   Clock,
   ArrowRight,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { lazy, Suspense } from "react";
 
@@ -22,7 +24,7 @@ const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
 export default function PricingSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState("calculator");
+  const [activeTab, setActiveTab] = useState(null);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false); // ADD
 
   // Calculator state
@@ -202,7 +204,7 @@ export default function PricingSection() {
           {/* Tab Navigation */}
           <div className="inline-flex bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-2 shadow-lg">
             <button
-              onClick={() => setActiveTab("calculator")}
+              onClick={() => setActiveTab(activeTab === "calculator" ? null : "calculator")}
               className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 activeTab === "calculator"
                   ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
@@ -211,9 +213,14 @@ export default function PricingSection() {
             >
               <Calculator size={16} className="inline mr-2" />
               Quick Calculator
+              {activeTab === "calculator" ? (
+                <ChevronUp size={14} className="inline ml-1" />
+              ) : (
+                <ChevronDown size={14} className="inline ml-1" />
+              )}
             </button>
             <button
-              onClick={() => setActiveTab("pricing")}
+              onClick={() => setActiveTab(activeTab === "pricing" ? null : "pricing")}
               className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 activeTab === "pricing"
                   ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
@@ -222,6 +229,11 @@ export default function PricingSection() {
             >
               <Star size={16} className="inline mr-2" />
               Pricing Tiers
+              {activeTab === "pricing" ? (
+                <ChevronUp size={14} className="inline ml-1" />
+              ) : (
+                <ChevronDown size={14} className="inline ml-1" />
+              )}
             </button>
           </div>
         </div>
