@@ -1,0 +1,702 @@
+{
+  "20251012_140909.webp": {
+    "category": "exterior",
+    "room": "garage",
+    "service": "door_painting",
+    "phase": "during",
+    "quality_score": 0.7,
+    "title": "Painter Taping Garage Door for a Fresh Coat of Dark Gray Paint",
+    "alt_text": "A painter on a step ladder applies blue painter's tape around the trim of a garage door. The garage door is being painted a dark gray color, with paint rollers and trays visible on the driveway. The house exterior features brick and stone accents.",
+    "orientation": "normal"
+  },
+  "IMG-20260210-WA0003.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "floor_painting",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Staircase Treads Painted Black with White Risers in Progress",
+    "alt_text": "View of a residential staircase during a painting project. The stair treads are freshly painted black, while the risers are white. Blue painter's tape is visible along the edges of the treads and risers, indicating work in progress. A wooden handrail and white balusters are also visible on the left.",
+    "orientation": "normal"
+  },
+  "20160713_091616.webp": {
+    "category": "residential",
+    "room": "garage",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.1,
+    "title": "Garage Painting Project in Progress with Drywall Prep",
+    "alt_text": "A garage interior showing a painting project in progress. The ceiling is painted white, while walls are a mix of light beige, unpainted drywall with mudding, and an old peeling green wall. Two ladders, a white paint bucket, and metal shelving are visible on the concrete floor.",
+    "orientation": "normal"
+  },
+  "20160808_152240.webp": {
+    "category": "commercial",
+    "room": "bathroom",
+    "service": "wall_painting",
+    "phase": "after",
+    "quality_score": 0.3,
+    "title": "Commercial Restroom with Freshly Painted Gray Walls",
+    "alt_text": "View of a commercial restroom with multiple white toilets protected by plastic and drop cloths. The walls are painted a smooth, light gray, contrasting with the white drop ceiling on the left. The image showcases the completed wall painting work.",
+    "orientation": "rotated_90"
+  },
+  "20160808_152306.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Teal Painted Brick Ceiling in Commercial Space",
+    "alt_text": "A newly painted teal blue brick ceiling with visible conduit, showcasing a commercial painting project. The brick texture is prominent under the fresh paint.",
+    "orientation": "rotated_90"
+  },
+  "20160901_105150.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.8,
+    "title": "Commercial Ceiling Beam Painting in Progress with Red Accent",
+    "alt_text": "A painter on scaffolding spray painting a large commercial ceiling. Red paint is being applied to exposed metal beams and parts of the white plank ceiling. The painter wears a respirator and white work clothes. The walls are white brick, and a light fixture is covered in plastic.",
+    "orientation": "normal"
+  },
+  "20160902_170415.webp": {
+    "category": "commercial",
+    "room": "office",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.55,
+    "title": "Commercial Interior Painting in Progress with Red Accent Wall",
+    "alt_text": "Photo taken during the painting of a commercial interior, showing a large open space with a newly painted bold red accent wall and light beige walls. The exposed ceiling, ductwork, and structural columns are painted white and black respectively. Paint cans, drop cloths, and construction equipment are visible on the concrete floor, indicating work in progress.",
+    "orientation": "normal"
+  },
+  "20160921_090451.webp": {
+    "category": "exterior",
+    "room": "facade",
+    "service": "exterior_siding",
+    "phase": "during",
+    "quality_score": 0.7,
+    "title": "Residential Exterior Painting in Progress: Two-Tone Siding",
+    "alt_text": "Exterior view of a residential house undergoing painting. The upper siding is a reddish-brown, while the lower siding and trim are freshly painted white. Windows are masked with plastic and paper for protection, indicating work in progress on the house facade.",
+    "orientation": "normal"
+  },
+  "20161213_103137.webp": {
+    "category": "residential",
+    "room": "foyer",
+    "service": "full_room",
+    "phase": "during",
+    "quality_score": 0.4,
+    "title": "Grand Foyer and Staircase Painting Project in Progress",
+    "alt_text": "A large residential foyer and grand staircase during a painting project. Walls with wainscoting are visible, showing patches of white primer over a pink base coat, indicating drywall repair and prep work. The dark wood staircase with white balusters and a light pink carpet runner is prominent. Boxes of drywall compound are on the stairs, and floors are covered with protective paper, signifying an active painting job.",
+    "orientation": "normal"
+  },
+  "20161213_103144.webp": {
+    "category": "interior",
+    "room": "foyer",
+    "service": "wall_painting|trim_work|drywall_repair",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Residential Foyer and Staircase Painting Project in Progress",
+    "alt_text": "Interior view of a residential foyer and staircase during a painting project. Walls feature decorative paneling, with pink sections and beige trim showing primer and spackle patches. White balusters and baseboards are visible, along with a dark wood staircase and a white ceiling with a fan.",
+    "orientation": "normal"
+  },
+  "20170116_143917.webp": {
+    "category": "residential",
+    "room": "foyer",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.6,
+    "title": "Foyer and Staircase with Freshly Painted White Wainscoting and Balusters",
+    "alt_text": "A residential foyer and staircase with newly painted white wainscoting, trim, and balusters. The walls are a light neutral color, and the stair treads and handrail are dark wood. A vacuum cleaner and extension cord are visible on the floor, indicating ongoing work.",
+    "orientation": "rotated_90"
+  },
+  "20180516_145706.webp": {
+    "category": "exterior",
+    "room": "facade",
+    "service": "trim_work",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Exterior Window Frame Painting in Black",
+    "alt_text": "Close-up of a building exterior showcasing newly painted black window frames. The windows are set into a textured red brick wall, with reflections of trees and a bright sky. A light-colored gutter and soffit are visible on the left side of the image.",
+    "orientation": "normal"
+  },
+  "20180625_090401.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "after",
+    "quality_score": 0.3,
+    "title": "Bedroom with Light Tan Walls and White Window Trim",
+    "alt_text": "A bedroom with light tan painted walls and crisp white window trim. A large window looks out onto a residential street. A white popcorn ceiling and a ceiling fan are visible. The room features a bed with dark bedding and a modern lamp.",
+    "orientation": "rotated_90"
+  },
+  "20180723_133033.webp": {
+    "category": "exterior",
+    "room": "facade",
+    "service": "trim_work",
+    "phase": "after",
+    "quality_score": 0.4,
+    "title": "Exterior Window Trim Painting on Brick Facade",
+    "alt_text": "Exterior view of a building facade featuring a newly painted white window frame and trim against a light brown brick wall. Brown siding is visible on the left side of the image.",
+    "orientation": "rotated_90"
+  },
+  "20251012_165336.webp": {
+    "category": "residential",
+    "room": "facade",
+    "service": "door_painting|garage|railing|trim_work",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Residential Exterior with Freshly Painted Front Door, Garage, Columns, and Railings",
+    "alt_text": "Front exterior of a brick townhouse featuring a dark gray painted front door and matching garage door. White painted porch columns and railings frame the entrance. The house has light-colored window trim and a paved driveway with a black car and garbage bins.",
+    "orientation": "normal"
+  },
+  "IMG-20260210-WA0000.webp": {
+    "category": "residential",
+    "room": "staircase",
+    "service": "railing",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Staircase Baluster and Riser Painting in Progress",
+    "alt_text": "A residential staircase during a painting project. White balusters and risers are visible, with blue painter's tape protecting the wooden treads and parts of the handrail. The newel post and a section of the handrail are painted black. Drop cloths cover the floor, and paint cans are visible, indicating active work.",
+    "orientation": "normal"
+  },
+  "IMG-20260212-WA0016.webp": {
+    "category": "residential",
+    "room": "staircase",
+    "service": "railing",
+    "phase": "after",
+    "quality_score": 0.9,
+    "title": "Modern Staircase with Contrasting Black Treads and White Risers",
+    "alt_text": "A newly painted modern staircase featuring dark black treads, crisp white risers, white balusters, and a dark newel post and handrail. The surrounding walls are painted in a light, neutral color, showcasing a clean and updated look.",
+    "orientation": "normal"
+  },
+  "IMG-20260212-WA0019.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "railing",
+    "phase": "after",
+    "quality_score": 0.4,
+    "title": "Modern Staircase with Two-Tone Railing and Neutral Walls",
+    "alt_text": "View of a modern residential staircase featuring dark brown or black treads and handrail, contrasted with white balusters and stringers. The surrounding walls are painted a light, neutral beige or greige color. Hardwood floors are visible in the foreground and background, leading to a living area with large windows.",
+    "orientation": "rotated_90"
+  },
+  "IMG-20260212-WA0021.webp": {
+    "category": "residential",
+    "room": "staircase",
+    "service": "floor_painting",
+    "phase": "during",
+    "quality_score": 0.7,
+    "title": "Staircase Treads Being Painted Black with Protective Taping",
+    "alt_text": "Overhead view of a residential staircase during a painting project. The wooden stair treads are being painted black, with blue painter's tape protecting the carpeted landing below. White balusters and a wooden handrail are visible. In the background, a living room with light gray walls, a fireplace, and large windows can be seen, with a painter working.",
+    "orientation": "normal"
+  },
+  "IMG-20260212-WA0022.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "railing",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Modern Staircase with Contrasting Black and White Railing",
+    "alt_text": "A newly painted staircase railing featuring a modern design with alternating black and white balusters and a dark handrail. The adjacent walls are painted a light neutral gray, and white baseboards are visible at the bottom.",
+    "orientation": "rotated_90"
+  },
+  "IMG-20260212-WA0023.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "staircase",
+    "phase": "after",
+    "quality_score": 0.8,
+    "title": "Modern Staircase with Contrasting Black Treads and White Risers",
+    "alt_text": "A newly painted staircase featuring dark black treads and crisp white risers, balusters, and trim. The handrail is painted a dark brown or black, complementing the treads. The surrounding walls are painted a light, neutral beige or off-white color. The photo showcases a clean, finished look for residential interior painting.",
+    "orientation": "normal"
+  },
+  "IMG-20260212-WA0024.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "trim_work",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Modern Staircase Renovation with Contrasting Black and White Paint",
+    "alt_text": "Residential staircase featuring newly painted black treads and handrail, contrasted with crisp white risers and balusters. Light gray walls are visible, with painter's tape and a drop cloth on the floor indicating the project is in progress.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0017.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Commercial Dining Room with Dark Painted Ceiling",
+    "alt_text": "A commercial dining room featuring a dark matte black painted ceiling, walls covered in vibrant patterned wallpaper, a long wooden dining table, and pink upholstered chairs. Sunlight streams in from large windows on the right, illuminating the space.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0018.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Commercial Wine Bar with Bold Red Ceiling and Walls",
+    "alt_text": "Interior view of a commercial space, possibly a wine bar or restaurant, featuring a newly painted deep red ceiling and upper walls. A ladder is visible in the center, suggesting ongoing work. The space includes wooden shelving stocked with wine bottles, a coffee machine, and patterned tapestry-like wallpaper on the right wall, with a beige curtain.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0019.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "full_room",
+    "phase": "after",
+    "quality_score": 0.3,
+    "title": "Commercial Space with Bold Red Walls and Dark Ceiling",
+    "alt_text": "Interior of a commercial space featuring a dark painted ceiling, a vibrant red accent wall, and dark red cabinetry. A person is visible in the background near a wall covered in patterned wallpaper, with a wine display and coffee station in the foreground.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0020.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Modern Commercial Bar with Dark Painted Ceiling and Curved Bulkhead",
+    "alt_text": "Interior view of a commercial bar featuring a dark gray painted ceiling and a large, curved dark gray bulkhead. Pendant lights hang above a marble-topped bar, with a back bar displaying liquor bottles. The space combines modern painted elements with traditional patterned fabrics and gold accents.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0021.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.7,
+    "title": "Modern Commercial Bar with Dark Painted Ceiling and Bulkhead",
+    "alt_text": "Interior view of a modern commercial bar featuring a newly painted dark grey ceiling and a curved bulkhead. Exposed ductwork is also painted dark. The bar area includes a colorful granite countertop, wooden paneling, and decorative lighting. Patrons are visible at the bar.",
+    "orientation": "normal"
+  },
+  "IMG_20191201_125943_MP.webp": {
+    "category": "residential",
+    "room": "bedroom",
+    "service": "full_room",
+    "phase": "after",
+    "quality_score": 0.7,
+    "title": "Modern Bedroom with Gray Walls and White Trim",
+    "alt_text": "A residential bedroom featuring walls painted in a contemporary gray, complemented by crisp white trim and closet doors. The room contains two beds with white bedding, a patterned throw, and a parquet wood floor. A piece of abstract art hangs on the gray wall.",
+    "orientation": "normal"
+  },
+  "PXL_20200928_183711726.webp": {
+    "category": "residential",
+    "room": "living_room",
+    "service": "accent_wall",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Bold Blue Accent Wall Painting in Progress",
+    "alt_text": "A room featuring a newly painted bold blue accent wall, with white walls and ceiling. Drop cloths cover the floor, and a step ladder, paint tray, and roller are visible, indicating the painting project is in progress. Large windows with a view are on the right.",
+    "orientation": "normal"
+  },
+  "PXL_20210109_221844861.webp": {
+    "category": "interior",
+    "room": "living_room",
+    "service": "accent_wall",
+    "phase": "after",
+    "quality_score": 0.75,
+    "title": "Vibrant Blue Accent Wall in Modern Living Room",
+    "alt_text": "A modern living room featuring a vibrant blue accent wall with a mounted television above a white decorative fireplace. The adjacent wall is painted a light gray, and a multi-head floor lamp stands in the corner. A large window is visible on the right, showing a glimpse of the exterior.",
+    "orientation": "normal"
+  },
+  "PXL_20220416_153255477.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.4,
+    "title": "Bedroom Wall Painting Project in Progress",
+    "alt_text": "Interior view of a residential bedroom during a painting project. Walls are light beige, with some areas appearing freshly painted white. Painter's tape lines the baseboards, and a drop cloth covers part of the carpeted floor. Paint cans, rollers, and brushes are visible on the floor.",
+    "orientation": "normal"
+  },
+  "PXL_20230716_234552246_MP.webp": {
+    "category": "exterior",
+    "room": "deck",
+    "service": "deck_staining",
+    "phase": "after",
+    "quality_score": 0.05,
+    "title": "Friends enjoying an outdoor meal on a stained deck",
+    "alt_text": "Four men sitting around a table on a brown stained wooden deck with matching railings, enjoying food and drinks outdoors. The deck appears to be recently stained.",
+    "orientation": "normal"
+  },
+  "PXL_20240506_133509833_MP.webp": {
+    "category": "residential",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "before",
+    "quality_score": 0.4,
+    "title": "Bedroom Wall Preparation for Painting with Drywall Patches",
+    "alt_text": "A bedroom showing a gray accent wall behind a bed with visible white drywall patches, indicating preparation for a new paint job. The ceiling is white, and the room contains a bed with a tufted headboard, nightstands, and a fan.",
+    "orientation": "normal"
+  },
+  "PXL_20240507_232710177_MP.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "full_room",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Modern Bedroom with Dark Accent Wall and Light Walls",
+    "alt_text": "A finished bedroom featuring a dark navy or charcoal accent wall behind a wooden bed frame, contrasted with light off-white painted walls and a white ceiling. The room is furnished with a bed, nightstands, and a window with curtains.",
+    "orientation": "normal"
+  },
+  "PXL_20240715_194939243_MP.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "trim_work",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Crisp White Wall Paneling and Trim in Commercial Space",
+    "alt_text": "A close-up view of freshly painted white wall paneling and trim in a commercial dining or lounge area, showcasing clean lines and a bright finish. A glass display case and a plant in a gold pot are visible on the left, with modern white chairs and patterned floor tiles in the background.",
+    "orientation": "normal"
+  },
+  "PXL_20250217_224338011_MP.webp": {
+    "category": "interior",
+    "room": "living_room",
+    "service": "full_room",
+    "phase": "after",
+    "quality_score": 0.85,
+    "title": "Bright, Freshly Painted Living Room with White Walls and Trim",
+    "alt_text": "An empty, bright living room after painting, featuring clean white walls, a white ceiling, and crisp white baseboard trim. Dark hardwood floors contrast with the light paint.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_133955998.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Bedroom Wall Painting and Drywall Repair in Progress",
+    "alt_text": "A painter in a white t-shirt is actively painting a dark grey wall in a bedroom. On the adjacent wall, white drywall patches are visible, indicating prior repair work. A white bed frame is in the foreground, and drop cloths protect the wooden floor. A window with white trim is on the right, showing a brick exterior.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_134004778.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Bedroom Wall Painting in Progress with Dark Taupe Color",
+    "alt_text": "A painter in a white t-shirt and pants is actively painting the walls of a bedroom a dark taupe color. Drop cloths are laid out on the hardwood floor, and green painter's tape is visible on a wall. A white bed frame and two windows with blinds are also in the room, showing the work in progress.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_151308442.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Painter applying light blue paint to a bedroom wall",
+    "alt_text": "A painter wearing a Benjamin Moore shirt uses a roller to apply light blue paint to a bedroom wall. The room features a white ceiling, white baseboards, and a wooden floor. A white bed frame with toys is visible in the foreground.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_151315576.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Professional Painter Applying Fresh Coat to Bedroom Walls",
+    "alt_text": "A painter wearing a Benjamin Moore shirt uses a roller to apply light blue paint to a bedroom wall. The room features a white crib, hardwood floors, and a window, with drop cloths protecting the floor during the painting process.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_181230249.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting|ceiling|trim_work",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Residential Bedroom with Fresh Light Blue Walls and White Trim",
+    "alt_text": "A residential bedroom featuring freshly painted light blue walls, a clean white ceiling, and crisp white baseboards and window trim. A white child's bed with toys is visible, and a window is on the right.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_184229024.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "accent_wall",
+    "phase": "during",
+    "quality_score": 0.6,
+    "title": "Commercial Bar Area Wallpaper Installation in Progress",
+    "alt_text": "A wide-angle photo showing a commercial bar or restaurant area during wallpaper installation. A worker is applying a decorative wallpaper featuring a nature scene with trees, birds, and a crane. Painting supplies, buckets, and tools are on a table in the foreground. The ceiling is white, and wooden paneling is visible on the walls, with a bar counter to the right.",
+    "orientation": "normal"
+  },
+  "PXL_20251018_142500065.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.9,
+    "title": "Vibrant Commercial Dining Room with Matte Black Ceiling",
+    "alt_text": "A commercial dining room featuring a long wooden table set with white plates and black napkins, surrounded by plush pink chairs. The walls are adorned with a rich, multi-patterned wallpaper resembling antique rugs in shades of red, blue, orange, and beige. The ceiling is painted a sleek matte black, contrasting with the vibrant walls. A large, white, pleated pendant light hangs above the table, and a gold wall sconce is visible on the right wall.",
+    "orientation": "normal"
+  },
+  "PXL_20251106_144856945_video.webp": {
+    "category": "interior",
+    "room": "garage",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Professional Painter Spraying Ceiling in Garage",
+    "alt_text": "A professional painter wearing a respirator and white uniform uses an airless sprayer with an extension pole to apply white paint to a ceiling in a garage. Windows are masked with green tape and plastic sheeting, and walls are also painted white.",
+    "orientation": "normal"
+  },
+  "PXL_20260213_194740208_video.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Workers Installing Floral Wallpaper and Painting Walls in a Residential Room",
+    "alt_text": "Two workers installing light pink floral wallpaper on one wall, with an adjacent wall painted a solid light pink color, and a white textured ceiling visible in a residential room.",
+    "orientation": "normal"
+  },
+  "PXL_20260213_210915996.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "after",
+    "quality_score": 0.8,
+    "title": "Soft Pink Bedroom with Floral Accent Wall and White Trim",
+    "alt_text": "A finished bedroom featuring a light pink painted wall, a contrasting accent wall with delicate floral wallpaper in pastel shades, and crisp white painted baseboards. The ceiling is white with a popcorn texture, and there are white sliding closet doors on the right. The floor is light wood laminate.",
+    "orientation": "normal"
+  },
+  "PXL_20260313_212046509_video.webp": {
+    "category": "interior",
+    "room": "bathroom",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.4,
+    "title": "Modern Dark Wall with White Trim in Bathroom",
+    "alt_text": "A newly painted dark charcoal or black wall contrasting with crisp white crown molding and a white door frame. Through the doorway, a light gray room with a round mirror and a dark vanity is visible. Outlet covers are removed from the dark wall, indicating ongoing painting work.",
+    "orientation": "normal"
+  },
+  "VID-20260212-WA0034_video.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "railing",
+    "phase": "during",
+    "quality_score": 0.6,
+    "title": "Painter Refinishing a Modern Two-Tone Staircase Railing",
+    "alt_text": "A painter in a gray hoodie and jeans meticulously paints white balusters on a staircase. The staircase features contrasting black treads and handrail, white risers, and light gray walls. Drop cloths and painting supplies are visible on the floor, indicating an active painting project.",
+    "orientation": "normal"
+  },
+  "VID-20260213-WA0004_video.webp": {
+    "category": "commercial",
+    "room": "hallway",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.3,
+    "title": "Bold Red Ceiling in a Commercial Hallway",
+    "alt_text": "A rotated image of a commercial hallway featuring a vibrant red painted ceiling. The walls are adorned with intricate, colorful patterned wallpaper. A black track lighting system is installed on the ceiling, and a green exit sign is visible on the right wall.",
+    "orientation": "rotated_90"
+  },
+  "20160713_142534.webp": {
+    "category": "residential",
+    "room": "garage",
+    "service": "full_room",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Freshly Painted White Garage Walls and Ceiling",
+    "alt_text": "Interior view of a garage with newly painted white walls and a white textured ceiling. A white door, metal shelving units, a ladder, and a paint bucket are visible. The concrete floor is dirty, indicating recent work completion.",
+    "orientation": "normal"
+  },
+  "20161229_164826.webp": {
+    "category": "interior",
+    "room": "living_room",
+    "service": "trim_work",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Interior Painting Project with White Wall Paneling and Trim",
+    "alt_text": "A residential interior painting project in progress, featuring high white walls with intricate decorative paneling and trim. The white ceiling with recessed lighting and a ceiling fan is also visible. Furniture and flooring are covered with plastic sheeting and green painter's tape.",
+    "orientation": "rotated_90"
+  },
+  "20170106_165738.webp": {
+    "category": "residential",
+    "room": "living_room",
+    "service": "full_room",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Residential Living Room Painting in Progress with White Paneling",
+    "alt_text": "Interior view of a residential living room or foyer during a painting project, featuring freshly painted white walls with decorative paneling, white ceiling, and white trim around a window and fireplace. A ladder and covered furniture indicate work in progress.",
+    "orientation": "normal"
+  },
+  "20170116_143904.webp": {
+    "category": "interior",
+    "room": "living_room",
+    "service": "trim_work",
+    "phase": "during",
+    "quality_score": 0.3,
+    "title": "Living Room with White Wall Paneling and Trim During Painting Project",
+    "alt_text": "Interior view of a residential living room or foyer during a painting project, showcasing freshly painted white wall panels, crown molding, and ceiling. A staircase with white balusters and a dark wood handrail is visible. The floor is dusty, and moving boxes are present, indicating the 'during' phase of the project.",
+    "orientation": "rotated_90"
+  },
+  "IMG-20260212-WA0018.webp": {
+    "category": "interior",
+    "room": "staircase",
+    "service": "trim_work",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Modern Staircase with Contrasting Black and White Paint",
+    "alt_text": "A residential staircase featuring white painted risers and balusters, black painted treads and handrail, and light gray painted walls. Hardwood floors are visible in the foreground, leading to a living area and front door.",
+    "orientation": "rotated_270"
+  },
+  "IMG-20260217-WA0016.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.3,
+    "title": "Commercial Interior with Bold Red Ceiling Painting",
+    "alt_text": "A commercial interior featuring a newly painted deep red ceiling and a matching red wall. A ladder is visible in the foreground, indicating work in progress. The room is decorated with patterned wall coverings, gold curtains, and a unique chandelier.",
+    "orientation": "normal"
+  },
+  "IMG-20260217-WA0022.webp": {
+    "category": "commercial",
+    "room": "other",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.65,
+    "title": "Commercial Bar Interior with Dark Painted Ceiling and Exposed Elements",
+    "alt_text": "Interior view of a stylish commercial bar featuring a dark, possibly black or charcoal, painted ceiling. Exposed ductwork and structural beams are also painted dark to match the ceiling. A bartender is visible behind a curved bar with a colorful marble countertop. Large windows with decorative screens are on the right, letting in natural light.",
+    "orientation": "normal"
+  },
+  "PXL_20250902_181247007.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "full_room",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Residential Bedroom Painting with Blue Walls and White Trim",
+    "alt_text": "A residential bedroom featuring freshly painted light blue walls, crisp white window trim, and baseboards. The ceiling is painted white, and one wall is a contrasting brown color with a visible patch. A bed frame and wooden floor are also visible, indicating a painting project in progress.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_152611793.webp": {
+    "category": "interior",
+    "room": "dining_room",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Painter Applying Two-Tone Paint to Interior Wall",
+    "alt_text": "A painter in a white shirt is actively painting an interior wall, applying a light beige color over a dark border. Painting tools including a ladder, roller, and paint tray are visible on a drop cloth and a large wooden table. The room features wooden paneling and wall sconces, suggesting a dining room or office setting.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_164317186.webp": {
+    "category": "interior",
+    "room": "other",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.5,
+    "title": "Painter Installing Wallpaper and Painting Walls",
+    "alt_text": "A painter wearing a Benjamin Moore shirt stands on an orange ladder, installing a light-colored wallpaper with a green leaf pattern on a wall. The adjacent wall is being painted a light off-white color, with a darker green paint line visible at the ceiling edge. Drop cloths cover the floor.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_165546627.webp": {
+    "category": "interior",
+    "room": "other",
+    "service": "other",
+    "phase": "during",
+    "quality_score": 0.7,
+    "title": "Professional Wallpaper Installation in Progress",
+    "alt_text": "A professional installer carefully applying patterned wallpaper featuring dark leaf motifs on a light background, using a smoothing tool. The worker is on a step ladder, wearing work clothes with paint splatters, indicating a painting and decorating service.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_180850831.webp": {
+    "category": "interior",
+    "room": "dining_room",
+    "service": "accent_wall",
+    "phase": "during",
+    "quality_score": 0.85,
+    "title": "Painter applying finish to a detailed botanical mural accent wall",
+    "alt_text": "A painter in white overalls stands on an orange ladder, applying a finish with a brush to a large accent wall. The wall features a hand-painted mural with birds and botanical elements in muted greens, browns, and creams. Drop cloths are on the floor, and wooden cabinets are visible in the background, indicating an interior residential painting project.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_180904253.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "accent_wall",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Installing Decorative Wallpaper in a Commercial Bar Area",
+    "alt_text": "A painter on a ladder installing decorative wallpaper featuring birds and trees on a wall in a dimly lit commercial bar or lounge area. Drop cloths cover the floor, and painting tools are visible on a nearby table.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_184239255.webp": {
+    "category": "interior",
+    "room": "dining_room",
+    "service": "wall_painting",
+    "phase": "during",
+    "quality_score": 0.65,
+    "title": "Painter Installing Decorative Wallcovering and Painting Walls",
+    "alt_text": "A painter in a white Benjamin Moore shirt is actively working on a large wall, applying a decorative wallcovering featuring a nature mural with birds and foliage. To the right, an adjacent wall is partially painted in a light green color over a white primer. Painting tools, buckets of adhesive, and a level are visible on a wooden table in the foreground. Dark wood cabinets flank the wall, suggesting a dining or living room area.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_200610576.webp": {
+    "category": "interior",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.75,
+    "title": "Painter working on ceiling in a luxurious dining room",
+    "alt_text": "A painter on a ladder carefully paints the white ceiling where it meets a decorative wall with nature-themed wallpaper in a luxurious room. Painting tools and drop cloths are visible on the floor and table.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_213933435.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.4,
+    "title": "Commercial Dining Room with Freshly Painted Ceiling and Decorative Wallpaper",
+    "alt_text": "A wide shot of a commercial dining room or bar area featuring a long dark wood table, teal bar stools, and a wall covered in decorative wallpaper with a crane and foliage pattern. The ceiling is painted a light, neutral color. A ladder and a trash bag are visible, indicating ongoing work.",
+    "orientation": "normal"
+  },
+  "PXL_20260213_211346296.webp": {
+    "category": "interior",
+    "room": "bedroom",
+    "service": "wall_painting",
+    "phase": "after",
+    "quality_score": 0.75,
+    "title": "Residential Room with Freshly Painted Walls and Decorative Wallpaper",
+    "alt_text": "Two painters giving thumbs up in a newly finished residential room, featuring a light pink painted wall, crisp white baseboards, and a beautiful floral wallpaper accent wall with pastel flowers and butterflies. The room has light wood flooring and white sliding closet doors.",
+    "orientation": "normal"
+  },
+  "PXL_20260313_212041611.webp": {
+    "category": "interior",
+    "room": "bathroom",
+    "service": "trim_work",
+    "phase": "during",
+    "quality_score": 0.6,
+    "title": "Bathroom with Patterned Wallpaper and Freshly Painted White Trim",
+    "alt_text": "A bathroom wall featuring dark gray patterned wallpaper, with white painted window trim, white baseboards, and a white painted door frame. Exposed plumbing for a sink is visible on the wall.",
+    "orientation": "normal"
+  },
+  "20251008_120210.webp": {
+    "category": "exterior",
+    "room": "facade",
+    "service": "door_painting",
+    "phase": "after",
+    "quality_score": 0.6,
+    "title": "Townhouse Exterior with Freshly Painted Grey Doors",
+    "alt_text": "Front exterior of a brick townhouse featuring a newly painted grey garage door and matching grey front entry door. White porch columns and railings frame the entrance, complementing the light-colored window frames and soffit.",
+    "orientation": "normal"
+  },
+  "PXL_20251016_201542360.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "after",
+    "quality_score": 0.4,
+    "title": "Commercial Dining Room with Black Ceiling and Light Walls",
+    "alt_text": "A commercial dining room featuring a dark black painted ceiling, a light off-white painted wall on the right, and a vibrant, multi-colored patterned wallpaper on the main wall. A long wooden dining table with several pink upholstered chairs and a large white modern pendant light fixture are visible.",
+    "orientation": "normal"
+  },
+  "PXL_20251009_205103782.webp": {
+    "category": "commercial",
+    "room": "dining_room",
+    "service": "ceiling",
+    "phase": "during",
+    "quality_score": 0.6,
+    "title": "Ceiling Painting and Wallpaper Installation in Commercial Dining Area",
+    "alt_text": "A painter working on ceiling and wallpaper installation in a commercial dining space with dark ceiling and decorative wall covering",
+    "orientation": "normal"
+  }
+}
