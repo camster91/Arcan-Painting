@@ -1,4 +1,4 @@
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
@@ -20,10 +20,28 @@ function trackEvent(eventName, params = {}) {
   }
 }
 
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80",
+  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
+];
+
 export default function HeroSection() {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const shouldReduceMotion = useReducedMotion();
   const containerRef = useRef(null);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(s => (s + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [shouldReduceMotion]);
 
   // Parallax scroll effect on background
   const { scrollYProgress } = useScroll({
@@ -40,15 +58,6 @@ export default function HeroSection() {
     textMuted: "#64748b",
   };
 
-  // Background slow zoom — kept as-is (no SSR issue: initial scale is visible)
-  const bgZoomVariant = {
-    initial: { scale: shouldReduceMotion ? 1 : 1.08 },
-    animate: {
-      scale: 1,
-      transition: { duration: 4, ease: "easeOut" },
-    },
-  };
-
   return (
     <section
       id="home"
@@ -56,25 +65,25 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: themeColors.bg }}
     >
-      {/* Background Image with slow zoom + parallax */}
+      {/* Background Slideshow with parallax */}
       <motion.div
         className="absolute inset-0 z-0"
         style={shouldReduceMotion ? {} : { y: bgY, willChange: "transform" }}
       >
-        <motion.div
-          className="absolute inset-0"
-          variants={bgZoomVariant}
-          initial="initial"
-          animate="animate"
-          style={{
-            backgroundImage:
-              "url('https://raw.createusercontent.com/bf59fc7f-c2f3-4eee-adaa-a7482b62994f/-/format/webp/-/resize/1920x/')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            willChange: "transform",
-          }}
-        />
+        {HERO_IMAGES.map((img, i) => (
+          <div
+            key={img}
+            className="absolute inset-0 transition-opacity duration-1000"
+            style={{
+              opacity: i === currentSlide ? 1 : 0,
+              backgroundImage: `url('${img}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              willChange: "opacity",
+            }}
+          />
+        ))}
         {/* Gradient Overlays */}
         <div
           className="absolute inset-0"
@@ -146,13 +155,12 @@ export default function HeroSection() {
               {/* Primary CTA */}
               <div className="flex flex-col items-center sm:items-start gap-1 w-full sm:w-auto">
                 <motion.button
-                  className="w-full sm:w-auto font-semibold text-lg px-8 py-4 rounded-xl shadow-xl relative overflow-hidden"
+                  className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl shadow-xl relative overflow-hidden"
                   style={{
                     background: "linear-gradient(135deg, #fbbf24 0%, #fde047 50%, #fbbf24 100%)",
                     backgroundSize: "200% 200%",
                     color: "#0f172a",
                     boxShadow: "0 10px 40px rgba(251, 191, 36, 0.35)",
-                    display: "block",
                   }}
                   whileHover={
                     shouldReduceMotion
@@ -185,7 +193,7 @@ export default function HeroSection() {
               </div>
 
               <motion.button
-                className="w-full sm:w-auto font-semibold text-lg px-8 py-4 rounded-xl border transition-colors"
+                className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl border transition-colors"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.1)",
                   color: themeColors.text,
@@ -352,8 +360,8 @@ export default function HeroSection() {
                     className="pointer-events-auto backdrop-blur-lg rounded-2xl shadow-xl border ring-1 px-4 py-3 flex items-center gap-3 max-w-[280px] absolute"
                     style={{
                       ...pos,
-                      backgroundColor: "rgba(255,255,255,0.15)",
-                      borderColor: "rgba(255,255,255,0.2)",
+                      backgroundColor: "rgba(15, 23, 42, 0.75)",
+                      borderColor: "rgba(251, 191, 36, 0.4)",
                       color: themeColors.text,
                       willChange: "transform",
                     }}
@@ -384,6 +392,27 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Slide dot indicators */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentSlide(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className="transition-all duration-300"
+            style={{
+              width: i === currentSlide ? "24px" : "8px",
+              height: "8px",
+              borderRadius: "4px",
+              backgroundColor: i === currentSlide ? "#fbbf24" : "rgba(255,255,255,0.35)",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          />
+        ))}
       </div>
 
       {/* Scroll Indicator */}

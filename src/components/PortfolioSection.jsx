@@ -7,7 +7,6 @@ import galleryTags from "@/data/gallery-tags.json";
 function buildGalleryItems() {
   const entries = Object.entries(galleryTags).map(([file, tag], i) => {
     const isVideo = file.includes("_video.webp");
-    // Map category: residential+exterior→Exterior, commercial→Commercial, else→Interior
     let category = "Interior";
     if (tag.category === "commercial") category = "Commercial";
     else if (tag.category === "exterior" || tag.service === "exterior" || tag.room === "exterior" || tag.room === "facade" || tag.room === "deck" || tag.room === "porch") category = "Exterior";
@@ -25,7 +24,6 @@ function buildGalleryItems() {
     };
   });
 
-  // Group by project date, keep best 4 per project
   const byProject = {};
   for (const item of entries) {
     const key = item.projectDate;
@@ -39,14 +37,133 @@ function buildGalleryItems() {
     curated.push(...items.slice(0, 4));
   }
 
-  // Sort: highest quality first within each category, newest first for ties
   curated.sort((a, b) => b.qualityScore - a.qualityScore || b.projectDate.localeCompare(a.projectDate));
-
   return curated;
 }
 
 const GALLERY_ITEMS = buildGalleryItems();
 const CATEGORIES = ["All", "Interior", "Exterior", "Commercial"];
+
+// Two-row scrolling gallery component (mirrors GoogleReviewsSection pattern)
+function GalleryCard({ item, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+      style={{ width: "200px", height: "200px" }}
+    >
+      <img
+        src={`/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`}
+        alt={item.altText}
+        loading="lazy"
+        decoding="async"
+        className="gallery-img w-full h-full object-cover rounded-2xl"
+        style={{
+          aspectRatio: "1/1",
+          imageOrientation: "from-image",
+          transition: "transform 0.3s ease, filter 0.3s ease",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
+      />
+    </div>
+  );
+}
+
+function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
+  const rowRef = useRef(null);
+  const animRef = useRef(null);
+  const posRef = useRef(0);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const dragStartPos = useRef(0);
+  const [localPaused, setLocalPaused] = useState(false);
+
+  const isPaused = paused || localPaused;
+  const speed = direction === "left" ? 0.4 : -0.4;
+
+  const tripled = [...items, ...items, ...items];
+
+  const animate = useCallback(() => {
+    if (!rowRef.current) return;
+    if (!isPaused && !isDragging.current) {
+      posRef.current -= speed;
+    }
+    const totalWidth = rowRef.current.scrollWidth / 3;
+    if (direction === "left" && posRef.current <= -totalWidth) {
+      posRef.current += totalWidth;
+    } else if (direction === "right" && posRef.current >= 0) {
+      posRef.current -= totalWidth;
+    }
+    rowRef.current.style.transform = `translateX(${posRef.current}px)`;
+    animRef.current = requestAnimationFrame(animate);
+  }, [isPaused, speed, direction]);
+
+  useEffect(() => {
+    if (direction === "right" && rowRef.current) {
+      const totalWidth = rowRef.current.scrollWidth / 3;
+      posRef.current = -totalWidth;
+    }
+    animRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [animate, direction]);
+
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    dragStartX.current = e.clientX;
+    dragStartPos.current = posRef.current;
+    setLocalPaused(true);
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    posRef.current = dragStartPos.current + (e.clientX - dragStartX.current);
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    setTimeout(() => setLocalPaused(false), 2000);
+  };
+  const handleTouchStart = (e) => {
+    isDragging.current = true;
+    dragStartX.current = e.touches[0].clientX;
+    dragStartPos.current = posRef.current;
+    setLocalPaused(true);
+  };
+  const handleTouchMove = (e) => {
+    if (!isDragging.current) return;
+    posRef.current = dragStartPos.current + (e.touches[0].clientX - dragStartX.current);
+  };
+  const handleTouchEnd = () => {
+    isDragging.current = false;
+    setTimeout(() => setLocalPaused(false), 2000);
+  };
+
+  return (
+    <div
+      className="overflow-hidden cursor-grab active:cursor-grabbing"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        ref={rowRef}
+        className="flex gap-4 will-change-transform"
+        style={{ touchAction: "pan-y" }}
+      >
+        {tripled.map((item, i) => (
+          <GalleryCard
+            key={`${item.id}-${i}`}
+            item={item}
+            onClick={() => onItemClick(items.indexOf(item) === -1 ? 0 : items.indexOf(item))}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function PortfolioSection() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -54,8 +171,8 @@ export default function PortfolioSection() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
-  const carouselRef = useRef(null);
   const sectionRef = useRef(null);
 
   const filtered = useMemo(
@@ -64,6 +181,9 @@ export default function PortfolioSection() {
       : GALLERY_ITEMS.filter(item => item.category === activeFilter),
     [activeFilter]
   );
+
+  const ROW_1 = useMemo(() => filtered.slice(0, Math.ceil(filtered.length / 2)), [filtered]);
+  const ROW_2 = useMemo(() => filtered.slice(Math.ceil(filtered.length / 2)), [filtered]);
 
   const categoryCounts = useMemo(() => {
     const counts = {};
@@ -119,16 +239,6 @@ export default function PortfolioSection() {
     setLightboxIndex(i => (i + 1) % filtered.length);
   }, [filtered.length]);
 
-  // Carousel scroll
-  const scrollCarousel = (direction) => {
-    if (!carouselRef.current) return;
-    const scrollAmount = carouselRef.current.offsetWidth * 0.8;
-    carouselRef.current.scrollBy({
-      left: direction === "next" ? scrollAmount : -scrollAmount,
-      behavior: "smooth"
-    });
-  };
-
   // Lightbox swipe
   const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
   const handleTouchEnd = (e) => {
@@ -140,6 +250,15 @@ export default function PortfolioSection() {
     setTouchStart(null);
   };
 
+  // For row click: map row-local index back to filtered index
+  const handleRow1Click = useCallback((rowIdx) => {
+    openLightbox(rowIdx);
+  }, [openLightbox]);
+
+  const handleRow2Click = useCallback((rowIdx) => {
+    openLightbox(ROW_1.length + rowIdx);
+  }, [openLightbox, ROW_1.length]);
+
   const currentItem = filtered[lightboxIndex];
 
   return (
@@ -147,10 +266,12 @@ export default function PortfolioSection() {
       id="portfolio"
       ref={sectionRef}
       className={[
-        "py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white",
+        "py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden",
         "transition-all duration-700 ease-out",
         sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
       ].join(" ")}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -185,66 +306,29 @@ export default function PortfolioSection() {
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Carousel container */}
-        <div className="relative group">
-          {/* Scroll buttons (desktop) */}
-          <button
-            onClick={() => scrollCarousel("prev")}
-            className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-200 rounded-full shadow-lg items-center justify-center text-slate-600 hover:text-amber-600 hover:border-amber-300 transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Previous"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() => scrollCarousel("next")}
-            className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-200 rounded-full shadow-lg items-center justify-center text-slate-600 hover:text-amber-600 hover:border-amber-300 transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Next"
-          >
-            <ChevronRight size={20} />
-          </button>
+      {/* Two-row auto-scrolling gallery */}
+      <div className="space-y-4">
+        {ROW_1.length > 0 && (
+          <ScrollingRow
+            items={ROW_1}
+            direction="left"
+            paused={hovered}
+            onItemClick={handleRow1Click}
+          />
+        )}
+        {ROW_2.length > 0 && (
+          <ScrollingRow
+            items={ROW_2}
+            direction="right"
+            paused={hovered}
+            onItemClick={handleRow2Click}
+          />
+        )}
+      </div>
 
-          {/* Scrollable carousel */}
-          <div
-            ref={carouselRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
-            style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {filtered.map((item, index) => (
-              <div
-                key={item.id}
-                onClick={() => openLightbox(index)}
-                className="flex-shrink-0 snap-start cursor-pointer group/card relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-                style={{ width: "min(280px, 75vw)" }}
-              >
-                <div className="aspect-[3/4] relative">
-                  <img
-                    src={`/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`}
-                    alt={item.altText}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
-                    style={{ imageOrientation: "from-image" }}
-                  />
-                  {/* Category badge */}
-                  <span className="absolute top-2 left-2 text-[11px] font-medium px-2.5 py-1 rounded-full bg-black/40 text-white backdrop-blur-sm">
-                    {item.isVideo ? "📹 Video still" : item.category}
-                  </span>
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                    <p className="text-white text-sm font-medium">{item.title}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Scroll hint on mobile */}
-          <div className="md:hidden text-center mt-2">
-            <span className="text-slate-400 text-xs">← Swipe to see more →</span>
-          </div>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* CTA */}
         <div className="mt-12 text-center">
           <p className="text-slate-500 text-base mb-4">
@@ -252,7 +336,7 @@ export default function PortfolioSection() {
           </p>
           <button
             onClick={() => setIsLeadFormOpen(true)}
-            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-base px-8 py-4 rounded-full shadow-lg shadow-amber-200 transition-all duration-200 min-h-[56px]"
+            className="btn-primary inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-base rounded-full shadow-lg shadow-amber-200 transition-all duration-200"
           >
             Get Your Free Quote
           </button>
@@ -303,8 +387,15 @@ export default function PortfolioSection() {
 
       <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} source="gallery_cta" />
 
-      {/* Hide scrollbar CSS */}
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
+      <style>{`
+        .gallery-img {
+          filter: brightness(1.1) contrast(1.05);
+          transition: filter 0.3s ease;
+        }
+        .gallery-img:hover {
+          filter: brightness(1.15) contrast(1.08);
+        }
+      `}</style>
     </section>
   );
 }

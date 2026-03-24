@@ -7,3 +7,15 @@
     @apply outline-none focus:outline-none;
   }
 }
+
+.btn-primary {
+  min-height: 56px;
+  min-width: 180px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
