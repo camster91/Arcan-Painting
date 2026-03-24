@@ -199,21 +199,21 @@ export default function Header() {
 
       {/* Mobile Fullscreen Menu */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
           <div
-            className="absolute inset-0"
-            style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+            className="absolute inset-0 z-0"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
             onClick={() => setIsMenuOpen(false)}
           />
 
           {/* Panel */}
           <div
             id="mobile-menu-panel"
-            className="absolute inset-y-0 right-0 w-[88%] max-w-[360px] shadow-2xl border-l flex flex-col"
+            className="absolute inset-y-0 right-0 w-[88%] max-w-[360px] shadow-2xl flex flex-col z-10"
             style={{
               backgroundColor: themeColors.bg,
-              borderColor: themeColors.border,
+              borderLeft: `1px solid ${themeColors.border}`,
             }}
             role="dialog"
             aria-modal="true"
