@@ -38,6 +38,27 @@ export default function ChatWidget() {
     }
   }, [isOpen]);
 
+  // Hide chat button when any modal (LeadFormPopup) is open
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onOpen = () => setIsModalOpen(true);
+    const onClose = () => setIsModalOpen(false);
+    window.addEventListener('modal:open', onOpen);
+    window.addEventListener('modal:close', onClose);
+    // Also check for common modal selectors
+    const observer = new MutationObserver(() => {
+      const modal = document.querySelector('[class*="fixed inset-0"][class*="z-50"]:not([class*="chat"])');
+      setIsModalOpen(!!modal);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      window.removeEventListener('modal:open', onOpen);
+      window.removeEventListener('modal:close', onClose);
+      observer.disconnect();
+    };
+  }, []);
+
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     if (typeof window !== 'undefined') {
@@ -134,7 +155,7 @@ export default function ChatWidget() {
         }
       `}</style>
 
-      {!isOpen && (
+      {!isOpen && !isModalOpen && (
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"

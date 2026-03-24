@@ -83,11 +83,14 @@ export default function LeadFormPopup({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      window.dispatchEvent(new Event('modal:open'));
     } else {
       document.body.style.overflow = "unset";
+      window.dispatchEvent(new Event('modal:close'));
     }
     return () => {
       document.body.style.overflow = "unset";
+      window.dispatchEvent(new Event('modal:close'));
     };
   }, [isOpen]);
 
