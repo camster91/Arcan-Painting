@@ -65,24 +65,45 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: themeColors.bg }}
     >
-      {/* Background Slideshow with parallax */}
+      {/* Background Slideshow with parallax — <img> for better mobile support */}
       <motion.div
         className="absolute inset-0 z-0"
         style={shouldReduceMotion ? {} : { y: bgY, willChange: "transform" }}
       >
         {HERO_IMAGES.map((img, i) => (
-          <div
-            key={img}
-            className="absolute inset-0 transition-opacity duration-1000"
-            style={{
-              opacity: i === currentSlide ? 1 : 0,
-              backgroundImage: `url('${img}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              willChange: "opacity",
-            }}
-          />
+          <picture key={img} style={{
+            position: "absolute",
+            inset: 0,
+            opacity: i === currentSlide ? 1 : 0,
+            transition: "opacity 1s ease-in-out",
+            willChange: "opacity",
+          }}>
+            <source
+              media="(min-width: 768px)"
+              srcSet={`${img.replace("w=1920","w=1920")} 1920w, ${img.replace("w=1920","w=1280")} 1280w, ${img.replace("w=1920","w=768")} 768w`}
+              sizes="100vw"
+            />
+            <source
+              media="(max-width: 767px)"
+              srcSet={`${img.replace("w=1920","w=900")} 900w, ${img.replace("w=1920","w=600")} 600w`}
+              sizes="100vw"
+            />
+            <img
+              src={img.replace("w=1920","w=900")}
+              alt=""
+              aria-hidden="true"
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "low"}
+              decoding="async"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "block",
+              }}
+            />
+          </picture>
         ))}
         {/* Gradient Overlays */}
         <div
@@ -98,6 +119,29 @@ export default function HeroSection() {
           }}
         />
       </motion.div>
+
+      {/* Dot Indicators */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"
+        style={{ bottom: "4.5rem" }}
+      >
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentSlide(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className="transition-all duration-300 rounded-full"
+            style={{
+              width: i === currentSlide ? "24px" : "8px",
+              height: "8px",
+              backgroundColor: i === currentSlide ? "#fbbf24" : "rgba(255,255,255,0.4)",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          />
+        ))}
+      </div>
 
       {/* Content Container */}
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
