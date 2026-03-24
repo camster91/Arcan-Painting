@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Home,
   Building,
@@ -13,6 +13,227 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/utils/useTheme";
 import LeadFormPopup from "./LeadFormPopup";
+
+// ─── Reusable Service Card ────────────────────────────────────────────────────
+function ServiceCard({ service, index, isVisible, isFlipped, onFlip, onQuote }) {
+  if (service.isCTA) {
+    return (
+      <div className="relative h-full w-full rounded-3xl overflow-hidden">
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500" />
+        <div className="absolute inset-0 rounded-3xl bg-white/5" />
+        <div className="absolute inset-0 rounded-3xl ring-1 ring-white/30" />
+        <div className="absolute -bottom-10 -right-10 w-56 h-56 rounded-full blur-3xl opacity-40 bg-white/30" />
+        <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full blur-2xl opacity-40 bg-white/20" />
+        <div className="relative z-10 h-full flex flex-col justify-between p-8">
+          <div>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-xl mb-4 bg-white/20 backdrop-blur-sm">
+              <service.icon size={30} className="text-white" />
+            </div>
+            <h3 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight drop-shadow-sm">
+              {service.title}
+            </h3>
+          </div>
+          <button
+            onClick={onQuote}
+            className="w-full font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-lg bg-white hover:bg-white/90 text-amber-700 hover:text-amber-800"
+          >
+            Get Your Free Estimate
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative h-full w-full"
+      style={{ perspective: "1000px" }}
+    >
+      <div
+        className="relative h-full w-full transition-transform duration-700"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+        }}
+      >
+        {/* FRONT FACE */}
+        <div
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{
+            backfaceVisibility: "hidden",
+            opacity: isFlipped ? 0 : 1,
+          }}
+        >
+          <div className="absolute inset-0">
+            <img
+              src={service.image}
+              alt={service.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="400"
+            />
+            <div className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
+            <div className="absolute inset-0 bg-slate-900/40" />
+          </div>
+          <div className="relative z-10 h-full flex flex-col">
+            <div className="p-6 lg:p-8">
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-white to-white/90 backdrop-blur-sm rounded-2xl mb-5 shadow-xl">
+                <service.icon size={26} className="text-amber-600" />
+              </div>
+              <div className="mb-3">
+                <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-sm lg:text-base font-semibold text-amber-400 uppercase tracking-wider">
+                  {service.subtitle}
+                </p>
+              </div>
+            </div>
+            <div className="flex-1 p-6 lg:p-8 pt-0">
+              <p className="text-base lg:text-lg text-white/90 leading-relaxed">
+                {service.description}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* BACK FACE */}
+        <div
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            opacity: isFlipped ? 1 : 0,
+          }}
+        >
+          <div className="absolute inset-0">
+            <img
+              src={service.image}
+              alt={service.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="400"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/70 to-slate-900/60" />
+          </div>
+          <div className="relative z-10 h-full flex flex-col p-6 lg:p-8">
+            <div className="mb-5">
+              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                {service.title}
+              </h3>
+              <p className="text-sm lg:text-base font-semibold text-amber-400 uppercase tracking-wider">
+                What's Included
+              </p>
+            </div>
+            <div className="flex-1 mb-5">
+              <ul className="space-y-3">
+                {service.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-start gap-3 text-sm lg:text-base">
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
+                    <span className="text-white/90 leading-relaxed">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              onClick={onQuote}
+              className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:-to-yellow-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
+            >
+              Get Free Quote
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Mobile Carousel Card (no flip — simple tap) ──────────────────────────────
+function ServiceCarouselCard({ service, index, onQuote }) {
+  const [showDetails, setShowDetails] = useState(false);
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl cursor-pointer h-[420px]"
+      onClick={() => !showDetails && setShowDetails(true)}
+    >
+      <img
+        src={service.image}
+        alt={service.title}
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+        decoding="async"
+      />
+      <div className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
+      <div className="absolute inset-0 bg-slate-900/40" />
+
+      {!showDetails ? (
+        <div className="relative z-10 h-full flex flex-col justify-end p-5">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-sm rounded-xl mb-3 shadow-lg">
+            <service.icon size={22} className="text-amber-600" />
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">{service.title}</h3>
+          <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
+            {service.subtitle}
+          </p>
+          <p className="text-sm text-white/80 line-clamp-2 mb-3">{service.description}</p>
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onQuote(); }}
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors"
+            >
+              Get Quote
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}
+              className="flex-1 bg-white/20 hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors backdrop-blur-sm border border-white/20"
+            >
+              Details
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 z-20 bg-slate-900/95 p-5 flex flex-col">
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowDetails(false); }}
+            className="self-end text-white/60 hover:text-white text-sm font-medium mb-3"
+          >
+            ✕ Close
+          </button>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+              <service.icon size={20} className="text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">{service.title}</h3>
+              <p className="text-xs text-amber-400 uppercase tracking-wider">{service.subtitle}</p>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto mb-4">
+            <ul className="space-y-2">
+              {service.features.map((feature, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
+                  <span className="text-white/80">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onQuote(); }}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-xl text-sm transition-colors"
+          >
+            Get Free Quote
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ServicesSection() {
   const [activeCard, setActiveCard] = useState(null);
@@ -192,10 +413,36 @@ export default function ServicesSection() {
         </div>
 
         {/* Enhanced Services Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+        {/* Mobile: snap-scroll carousel */}
+        <div className="lg:hidden mb-8 -mx-4 px-4">
+          <div
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4"
+            style={{
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 w-[85vw] snap-center"
+                style={{ scrollSnapAlign: "center" }}
+              >
+                <ServiceCarouselCard
+                  service={service}
+                  index={index}
+                  onQuote={() => setIsLeadFormOpen(true)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop: grid layout */}
+        <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
           {services.map((service, index) => {
             const isFlipped = hoveredIndex === index || activeCard === index;
-
             return (
               <div
                 key={index}
@@ -207,173 +454,15 @@ export default function ServicesSection() {
                 }}
                 onMouseEnter={() => !service.isCTA && setHoveredIndex(index)}
                 onMouseLeave={() => !service.isCTA && setHoveredIndex(null)}
-                onClick={() =>
-                  !service.isCTA && setActiveCard(isFlipped ? null : index)
-                }
+                onClick={() => !service.isCTA && setActiveCard(isFlipped ? null : index)}
               >
-                {service.isCTA ? (
-                  // CTA Card - light mode only
-                  <div className="relative h-full w-full rounded-3xl overflow-hidden">
-                    {/* Light mode background */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500"></div>
-
-                    {/* Subtle overlay for better text contrast */}
-                    <div className="absolute inset-0 rounded-3xl bg-white/5"></div>
-
-                    {/* Ring border for better definition */}
-                    <div className="absolute inset-0 rounded-3xl ring-1 ring-white/30"></div>
-
-                    {/* Subtle accent elements */}
-                    <div className="absolute -bottom-10 -right-10 w-56 h-56 rounded-full blur-3xl opacity-40 bg-white/30"></div>
-                    <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full blur-2xl opacity-40 bg-white/20"></div>
-
-                    {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-between p-8 lg:p-10">
-                      <div>
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-xl mb-4 bg-white/20 backdrop-blur-sm">
-                          <service.icon size={30} className="text-white" />
-                        </div>
-                        <h3 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight drop-shadow-sm">
-                          {service.title}
-                        </h3>
-                      </div>
-
-                      <button
-                        className="w-full font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-lg bg-white hover:bg-white/90 text-amber-700 hover:text-amber-800"
-                        onClick={() => setIsLeadFormOpen(true)}
-                      >
-                        Get Your Free Estimate
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  // Regular service cards remain the same
-                  <div
-                    className="relative h-full w-full"
-                    style={{ perspective: "1000px" }}
-                  >
-                    <div
-                      className="relative h-full w-full transition-transform duration-700"
-                      style={{
-                        transformStyle: "preserve-3d",
-                        transform: isFlipped
-                          ? "rotateY(180deg)"
-                          : "rotateY(0deg)",
-                      }}
-                    >
-                      {/* FRONT FACE */}
-                      <div
-                        className="absolute inset-0 transition-opacity duration-500"
-                        style={{
-                          backfaceVisibility: "hidden",
-                          opacity: isFlipped ? 0 : 1,
-                        }}
-                      >
-                        {/* Background Image with Overlay */}
-                        <div className="absolute inset-0">
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            decoding="async"
-                            width="600"
-                            height="400"
-                          />
-                          <div
-                            className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`}
-                          ></div>
-                          <div className="absolute inset-0 bg-slate-900/40"></div>
-                        </div>
-
-                        {/* Content */}
-                        <div className="relative z-10 h-full flex flex-col">
-                          <div className="p-6 lg:p-8">
-                            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-white to-white/90 backdrop-blur-sm rounded-2xl mb-5 shadow-xl">
-                              <service.icon
-                                size={26}
-                                className="text-amber-600"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
-                                {service.title}
-                              </h3>
-                              <p className="text-sm lg:text-base font-semibold text-amber-400 uppercase tracking-wider">
-                                {service.subtitle}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex-1 p-6 lg:p-8 pt-0">
-                            <p className="text-base lg:text-lg text-white/90 leading-relaxed">
-                              {service.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* BACK FACE */}
-                      <div
-                        className="absolute inset-0 transition-opacity duration-500"
-                        style={{
-                          backfaceVisibility: "hidden",
-                          transform: "rotateY(180deg)",
-                          opacity: isFlipped ? 1 : 0,
-                        }}
-                      >
-                        {/* Background */}
-                        <div className="absolute inset-0">
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            decoding="async"
-                            width="600"
-                            height="400"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/70 to-slate-900/60"></div>
-                        </div>
-
-                        {/* Back Content */}
-                        <div className="relative z-10 h-full flex flex-col p-6 lg:p-8">
-                          <div className="mb-5">
-                            <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
-                              {service.title}
-                            </h3>
-                            <p className="text-sm lg:text-base font-semibold text-amber-400 uppercase tracking-wider">
-                              What's Included
-                            </p>
-                          </div>
-                          <div className="flex-1 mb-5">
-                            <ul className="space-y-3">
-                              {service.features.map((feature, featureIndex) => (
-                                <li
-                                  key={featureIndex}
-                                  className="flex items-start gap-3 text-sm lg:text-base"
-                                >
-                                  <span className="inline-block w-2 h-2 rounded-full bg-amber-400 mt-2 flex-shrink-0"></span>
-                                  <span className="text-white/90 leading-relaxed">
-                                    {feature}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <button
-                              className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
-                              onClick={() => setIsLeadFormOpen(true)}
-                            >
-                              Get Free Quote
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <ServiceCard
+                  service={service}
+                  index={index}
+                  isVisible={isVisible}
+                  isFlipped={isFlipped}
+                  onQuote={() => setIsLeadFormOpen(true)}
+                />
               </div>
             );
           })}
