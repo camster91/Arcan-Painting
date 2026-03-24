@@ -1,0 +1,702 @@
+{
+  "20160713_091616.webp": {
+    "title": "Barrie Heritage Home Living Room",
+    "alt": "Freshly painted living room walls in warm beige with white crown moulding trim",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.82,
+    "project_date": "2016-07-13"
+  },
+  "20160713_142534.webp": {
+    "title": "Barrie Heritage Home Hallway Detail",
+    "alt": "Hallway accent wall painted in soft grey with crisp white baseboards",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.78,
+    "project_date": "2016-07-13"
+  },
+  "20160808_152240.webp": {
+    "title": "Innisfil Lakefront Home Exterior Front",
+    "alt": "Two-storey home exterior freshly painted in slate blue with white trim and shutters",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.85,
+    "project_date": "2016-08-08"
+  },
+  "20160808_152306.webp": {
+    "title": "Innisfil Lakefront Home Exterior Side",
+    "alt": "Side view of home exterior showing clean paint lines on siding and fascia boards",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.83,
+    "project_date": "2016-08-08"
+  },
+  "20160901_105150.webp": {
+    "title": "Orillia Condo Kitchen Cabinet Refinish",
+    "alt": "Kitchen cabinets refinished in crisp white with brushed nickel hardware",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2016-09-01"
+  },
+  "20160902_170415.webp": {
+    "title": "Orillia Condo Kitchen Complete",
+    "alt": "Full kitchen view with freshly painted white cabinets and pale green accent wall",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2016-09-02"
+  },
+  "20160921_090451.webp": {
+    "title": "Barrie Townhouse Master Bedroom",
+    "alt": "Master bedroom with navy blue feature wall and light grey surrounding walls",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.74,
+    "project_date": "2016-09-21"
+  },
+  "20161213_103137.webp": {
+    "title": "Alliston Family Room Renovation",
+    "alt": "Family room walls painted in warm taupe with white wainscoting below chair rail",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.80,
+    "project_date": "2016-12-13"
+  },
+  "20161213_103144.webp": {
+    "title": "Alliston Family Room Accent Wall",
+    "alt": "Close-up of dark charcoal accent wall with clean edges against white ceiling",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.79,
+    "project_date": "2016-12-13"
+  },
+  "20161229_164826.webp": {
+    "title": "Newmarket Basement Rec Room",
+    "alt": "Basement recreation room painted in light grey with bright white trim throughout",
+    "category": "residential",
+    "room": "basement",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.72,
+    "project_date": "2016-12-29"
+  },
+  "20170106_165738.webp": {
+    "title": "Bradford Home Office Makeover",
+    "alt": "Home office with deep forest green walls and white built-in shelving freshly painted",
+    "category": "residential",
+    "room": "office",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.77,
+    "project_date": "2017-01-06"
+  },
+  "20170116_143904.webp": {
+    "title": "Angus Bungalow Bathroom Refresh",
+    "alt": "Bathroom vanity area with soft blue walls and white semi-gloss trim work",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.81,
+    "project_date": "2017-01-16"
+  },
+  "20170116_143917.webp": {
+    "title": "Angus Bungalow Bathroom Wide Shot",
+    "alt": "Full bathroom view showing coordinated blue walls with clean white ceiling and trim",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.80,
+    "project_date": "2017-01-16"
+  },
+  "20180516_145706.webp": {
+    "title": "Collingwood Dining Room Transformation",
+    "alt": "Dining room with rich burgundy walls and cream-colored wainscoting panels",
+    "category": "residential",
+    "room": "dining-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.87,
+    "project_date": "2018-05-16"
+  },
+  "20180625_090401.webp": {
+    "title": "Wasaga Beach Cottage Exterior Repaint",
+    "alt": "Cottage exterior painted in classic white with hunter green trim and front door",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.84,
+    "project_date": "2018-06-25"
+  },
+  "20180723_133033.webp": {
+    "title": "Midland Nursery Room Preparation",
+    "alt": "Nursery room walls in soft mint green with white ceiling and smooth finish",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.76,
+    "project_date": "2018-07-23"
+  },
+  "20251008_120210.webp": {
+    "title": "Aurora Modern Kitchen Cabinets",
+    "alt": "Modern kitchen with matte black painted cabinets and clean white backsplash area",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.91,
+    "project_date": "2025-10-08"
+  },
+  "20251012_140909.webp": {
+    "title": "Richmond Hill Home Exterior Front Elevation",
+    "alt": "Large two-storey home exterior painted in modern dark grey with white garage doors",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.89,
+    "project_date": "2025-10-12"
+  },
+  "20251012_165336.webp": {
+    "title": "Richmond Hill Home Exterior Rear View",
+    "alt": "Rear exterior of home showing freshly painted deck railing and siding in coordinated grey tones",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.87,
+    "project_date": "2025-10-12"
+  },
+  "IMG-20260210-WA0000.webp": {
+    "title": "Barrie South Staircase and Railing",
+    "alt": "Open staircase with freshly painted white spindles and dark-stained handrail",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.90,
+    "project_date": "2026-02-10"
+  },
+  "IMG-20260210-WA0003.webp": {
+    "title": "Barrie South Entryway Feature Wall",
+    "alt": "Grand entryway with deep navy feature wall and bright white surrounding trim",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2026-02-10"
+  },
+  "IMG-20260212-WA0016.webp": {
+    "title": "Innisfil Open-Concept Main Floor",
+    "alt": "Open-concept living and dining area painted in warm greige with white ceiling",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.92,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0018.webp": {
+    "title": "Innisfil Home Powder Room",
+    "alt": "Small powder room with bold dark teal walls and white pedestal sink area",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.85,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0019.webp": {
+    "title": "Innisfil Home Master Suite",
+    "alt": "Master bedroom painted in calming sage green with crisp white window casings",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0021.webp": {
+    "title": "Innisfil Home Kids Bedroom",
+    "alt": "Children's bedroom with light lavender walls and white closet door trim",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.83,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0022.webp": {
+    "title": "Innisfil Home Upstairs Hallway",
+    "alt": "Second-floor hallway with neutral off-white walls and bright white door frames",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.81,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0023.webp": {
+    "title": "Innisfil Home Laundry Room",
+    "alt": "Laundry room freshly painted in clean white with light blue accent above cabinets",
+    "category": "residential",
+    "room": "laundry",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.79,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260212-WA0024.webp": {
+    "title": "Innisfil Home Garage Interior",
+    "alt": "Garage interior walls coated in durable light grey with white ceiling paint",
+    "category": "residential",
+    "room": "garage",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.73,
+    "project_date": "2026-02-12"
+  },
+  "IMG-20260217-WA0016.webp": {
+    "title": "Barrie Downtown Office Reception Area",
+    "alt": "Commercial reception area with corporate blue walls and white ceiling tiles",
+    "category": "commercial",
+    "room": "office",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.93,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0017.webp": {
+    "title": "Barrie Downtown Office Conference Room",
+    "alt": "Conference room with slate grey accent wall and light neutral surrounding walls",
+    "category": "commercial",
+    "room": "office",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.91,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0018.webp": {
+    "title": "Barrie Downtown Office Open Workspace",
+    "alt": "Open workspace area painted in bright white with green branding stripe accent",
+    "category": "commercial",
+    "room": "office",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.90,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0019.webp": {
+    "title": "Barrie Downtown Office Kitchen Break Room",
+    "alt": "Office kitchenette area with clean white walls and warm wood-tone cabinet painting",
+    "category": "commercial",
+    "room": "kitchen",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0020.webp": {
+    "title": "Barrie Downtown Office Corridor",
+    "alt": "Long commercial corridor freshly painted in soft warm white with charcoal door frames",
+    "category": "commercial",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0021.webp": {
+    "title": "Barrie Downtown Office Washroom",
+    "alt": "Commercial washroom with clean semi-gloss white walls and grey tile contrast",
+    "category": "commercial",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.84,
+    "project_date": "2026-02-17"
+  },
+  "IMG-20260217-WA0022.webp": {
+    "title": "Barrie Downtown Office Entrance Lobby",
+    "alt": "Office entrance lobby with two-tone grey and white walls and company logo wall",
+    "category": "commercial",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.92,
+    "project_date": "2026-02-17"
+  },
+  "IMG_20191201_125943_MP.webp": {
+    "title": "Oro-Medonte Farmhouse Living Room",
+    "alt": "Rustic farmhouse living room with warm off-white walls and painted exposed beams",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.82,
+    "project_date": "2019-12-01"
+  },
+  "PXL_20200928_183711726.webp": {
+    "title": "Springwater Township Guest Bedroom",
+    "alt": "Guest bedroom with soft dusty rose walls and white trim around windows",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.75,
+    "project_date": "2020-09-28"
+  },
+  "PXL_20210109_221844861.webp": {
+    "title": "Barrie North Basement Suite",
+    "alt": "Finished basement suite painted in light warm grey with bright white pot-light ceiling",
+    "category": "residential",
+    "room": "basement",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.80,
+    "project_date": "2021-01-09"
+  },
+  "PXL_20220416_153255477.webp": {
+    "title": "Midhurst Home Dining Room Repaint",
+    "alt": "Dining room with deep olive green walls and painted white chair rail moulding",
+    "category": "residential",
+    "room": "dining-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.83,
+    "project_date": "2022-04-16"
+  },
+  "PXL_20230716_234552246_MP.webp": {
+    "title": "Shanty Bay Waterfront Home Exterior",
+    "alt": "Waterfront home exterior repainted in coastal white with navy blue shutters and door",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.89,
+    "project_date": "2023-07-16"
+  },
+  "PXL_20240506_133509833_MP.webp": {
+    "title": "Keswick Home Main Floor Colour Consult",
+    "alt": "Living room painted in trending warm mushroom tone with bright white ceiling",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2024-05-06"
+  },
+  "PXL_20240507_232710177_MP.webp": {
+    "title": "Keswick Home Kitchen and Island",
+    "alt": "Kitchen island cabinets painted in deep charcoal with white upper cabinetry",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.90,
+    "project_date": "2024-05-07"
+  },
+  "PXL_20240715_194939243_MP.webp": {
+    "title": "Tottenham Heritage Home Exterior Restoration",
+    "alt": "Victorian-style home exterior restored with period-appropriate cream and dark green paint scheme",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.91,
+    "project_date": "2024-07-15"
+  },
+  "PXL_20250217_224338011_MP.webp": {
+    "title": "Alcona Condo Ensuite Bathroom",
+    "alt": "Ensuite bathroom with light warm grey walls and glossy white vanity cabinet repaint",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.84,
+    "project_date": "2025-02-17"
+  },
+  "PXL_20250902_133955998.webp": {
+    "title": "Thornton Home Full Interior - Foyer",
+    "alt": "Bright foyer with fresh eggshell white walls and painted front door in matte black",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.87,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20250902_134004778.webp": {
+    "title": "Thornton Home Full Interior - Kitchen",
+    "alt": "Kitchen walls painted in warm linen white with semi-gloss trim around window",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.85,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20250902_151308442.webp": {
+    "title": "Thornton Home Full Interior - Master Bed",
+    "alt": "Master bedroom with soothing pale blue walls and white painted closet doors",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20250902_151315576.webp": {
+    "title": "Thornton Home Full Interior - Ensuite",
+    "alt": "Ensuite bathroom with moisture-resistant satin white paint and grey accent tile wall",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20250902_181230249.webp": {
+    "title": "Thornton Home Full Interior - Family Room",
+    "alt": "Family room with warm greige walls and freshly painted white fireplace mantel surround",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.90,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20250902_181247007.webp": {
+    "title": "Thornton Home Full Interior - Fireplace Detail",
+    "alt": "Close-up of painted fireplace surround in bright white with clean edges against wall",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.89,
+    "project_date": "2025-09-02"
+  },
+  "PXL_20251009_152611793.webp": {
+    "title": "Cookstown Whole Home - Living Area",
+    "alt": "Spacious living area with soft neutral walls and bright white painted ceiling beams",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.93,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_164317186.webp": {
+    "title": "Cookstown Whole Home - Dining Space",
+    "alt": "Dining area with elegant warm grey walls and white wainscoting panels below",
+    "category": "residential",
+    "room": "dining-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.91,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_165546627.webp": {
+    "title": "Cookstown Whole Home - Kitchen Cabinets",
+    "alt": "Kitchen cabinets sprayed in smooth satin white with clean factory-like finish",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.94,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_180850831.webp": {
+    "title": "Cookstown Whole Home - Primary Bedroom",
+    "alt": "Primary bedroom painted in calming pale green with white painted door and trim",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.90,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_180904253.webp": {
+    "title": "Cookstown Whole Home - Second Bedroom",
+    "alt": "Second bedroom with warm sand-colored walls and bright white window trim detail",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_184229024.webp": {
+    "title": "Cookstown Whole Home - Main Bath",
+    "alt": "Main bathroom with durable semi-gloss white walls and grey-blue vanity cabinet paint",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.87,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_184239255.webp": {
+    "title": "Cookstown Whole Home - Bath Vanity Close-Up",
+    "alt": "Vanity cabinet detail showing smooth painted finish in muted blue-grey tone",
+    "category": "residential",
+    "room": "bathroom",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.86,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_200610576.webp": {
+    "title": "Cookstown Whole Home - Basement Rec Area",
+    "alt": "Basement recreation area with light grey walls and painted white ceiling tiles",
+    "category": "residential",
+    "room": "basement",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.82,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_205103782.webp": {
+    "title": "Cookstown Whole Home - Stairwell",
+    "alt": "Open stairwell with two-tone paint scheme in white and warm taupe with clean cut lines",
+    "category": "residential",
+    "room": "hallway",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.85,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251009_213933435.webp": {
+    "title": "Cookstown Whole Home - Laundry and Mudroom",
+    "alt": "Laundry mudroom with cheerful pale yellow walls and white hook board area",
+    "category": "residential",
+    "room": "laundry",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.81,
+    "project_date": "2025-10-09"
+  },
+  "PXL_20251016_201542360.webp": {
+    "title": "Stroud Split-Level Accent Walls",
+    "alt": "Split-level home with bold terracotta accent wall in living room against white walls",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.83,
+    "project_date": "2025-10-16"
+  },
+  "PXL_20251018_142500065.webp": {
+    "title": "Essa Township Farmhouse Exterior Refresh",
+    "alt": "Farmhouse exterior repainted in classic barn red with white window trim and porch railing",
+    "category": "residential",
+    "room": "exterior",
+    "service": "exterior",
+    "phase": "after",
+    "quality_score": 0.88,
+    "project_date": "2025-10-18"
+  },
+  "PXL_20251106_144856945_video.webp": {
+    "title": "Barrie Condo Painting In Progress",
+    "alt": "Painter rolling smooth coat of light grey paint onto condo living room wall",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "during",
+    "quality_score": 0.70,
+    "project_date": "2025-11-06"
+  },
+  "PXL_20260213_194740208_video.webp": {
+    "title": "Spray Painting Kitchen Cabinets In Action",
+    "alt": "Spray gun applying even white coat on kitchen cabinet doors in spray booth setup",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "during",
+    "quality_score": 0.68,
+    "project_date": "2026-02-13"
+  },
+  "PXL_20260213_210915996.webp": {
+    "title": "Simcoe County Home Cabinet Doors Drying",
+    "alt": "Row of freshly sprayed white cabinet doors drying on rack in workshop",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "during",
+    "quality_score": 0.74,
+    "project_date": "2026-02-13"
+  },
+  "PXL_20260213_211346296.webp": {
+    "title": "Simcoe County Home Cabinet Reassembly",
+    "alt": "Freshly painted white cabinet doors being reinstalled on kitchen cabinet frames",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "after",
+    "quality_score": 0.85,
+    "project_date": "2026-02-13"
+  },
+  "PXL_20260313_212041611.webp": {
+    "title": "Vaughan Home Nursery Completed",
+    "alt": "Nursery room with soft pastel yellow walls and white painted ceiling and trim",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "after",
+    "quality_score": 0.87,
+    "project_date": "2026-03-13"
+  },
+  "PXL_20260313_212046509_video.webp": {
+    "title": "Vaughan Home Nursery Painting Process",
+    "alt": "Brush cutting in soft yellow paint along ceiling line in nursery room",
+    "category": "residential",
+    "room": "bedroom",
+    "service": "interior",
+    "phase": "during",
+    "quality_score": 0.65,
+    "project_date": "2026-03-13"
+  },
+  "VID-20260212-WA0034_video.webp": {
+    "title": "Innisfil Home Roller Technique Demo",
+    "alt": "Professional painter demonstrating smooth roller technique on open-concept wall",
+    "category": "residential",
+    "room": "living-room",
+    "service": "interior",
+    "phase": "during",
+    "quality_score": 0.62,
+    "project_date": "2026-02-12"
+  },
+  "VID-20260213-WA0004_video.webp": {
+    "title": "Cabinet Spraying Booth Behind the Scenes",
+    "alt": "Behind-the-scenes view of cabinet door spraying process with even paint coverage",
+    "category": "residential",
+    "room": "kitchen",
+    "service": "cabinet-painting",
+    "phase": "during",
+    "quality_score": 0.60,
+    "project_date": "2026-02-13"
+  }
+}

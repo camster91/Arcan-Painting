@@ -1,84 +1,51 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, Camera, Play } from "lucide-react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import LeadFormPopup from "./LeadFormPopup";
+import galleryTags from "@/data/gallery-tags.json";
 
-// ─── Real gallery data (65 images + 5 video stills, curated & deduplicated) ──
-const GALLERY_ITEMS = [
-  // Video stills (mid-frame thumbnails from real project videos)
-  { id: "v1", file: "PXL_20260313_212046509_video.webp", category: "Interior", title: "Painting in Progress", isVideo: true },
-  { id: "v2", file: "PXL_20260213_194740208_video.webp", category: "Interior", title: "Project Walkthrough", isVideo: true },
-  { id: "v3", file: "PXL_20251106_144856945_video.webp", category: "Interior", title: "Interior Painting", isVideo: true },
-  { id: "v4", file: "VID-20260212-WA0034_video.webp", category: "Interior", title: "Work in Progress", isVideo: true },
-  { id: "v5", file: "VID-20260213-WA0004_video.webp", category: "Interior", title: "Painting Detail", isVideo: true },
-  // 2025-2026 projects (newest work)
-  { id: 1, file: "IMG-20260212-WA0016.webp", category: "Interior", title: "Staircase Refinishing" },
-  { id: 2, file: "PXL_20260313_212041611.webp", category: "Interior", title: "Interior Painting" },
-  { id: 3, file: "PXL_20260213_210915996.webp", category: "Interior", title: "Interior Painting" },
-  { id: 4, file: "PXL_20260213_211346296.webp", category: "Interior", title: "Interior Painting" },
-  { id: 5, file: "IMG-20260210-WA0000.webp", category: "Interior", title: "Interior Painting" },
-  { id: 6, file: "IMG-20260210-WA0003.webp", category: "Interior", title: "Interior Painting" },
-  { id: 7, file: "IMG-20260212-WA0018.webp", category: "Interior", title: "Interior Painting" },
-  { id: 8, file: "IMG-20260212-WA0019.webp", category: "Interior", title: "Interior Painting" },
-  { id: 9, file: "IMG-20260212-WA0021.webp", category: "Interior", title: "Interior Painting" },
-  { id: 10, file: "IMG-20260212-WA0022.webp", category: "Interior", title: "Interior Painting" },
-  { id: 11, file: "IMG-20260212-WA0023.webp", category: "Interior", title: "Interior Painting" },
-  { id: 12, file: "IMG-20260212-WA0024.webp", category: "Interior", title: "Interior Painting" },
-  { id: 13, file: "IMG-20260217-WA0016.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 14, file: "IMG-20260217-WA0017.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 15, file: "IMG-20260217-WA0018.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 16, file: "IMG-20260217-WA0019.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 17, file: "IMG-20260217-WA0020.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 18, file: "IMG-20260217-WA0021.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 19, file: "IMG-20260217-WA0022.webp", category: "Commercial", title: "Commercial Space" },
-  { id: 20, file: "PXL_20251018_142500065.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 21, file: "PXL_20251016_201542360.webp", category: "Interior", title: "Interior Painting" },
-  { id: 22, file: "PXL_20251009_152611793.webp", category: "Interior", title: "Interior Painting" },
-  { id: 23, file: "PXL_20251009_164317186.webp", category: "Interior", title: "Interior Painting" },
-  { id: 24, file: "PXL_20251009_165546627.webp", category: "Interior", title: "Interior Painting" },
-  { id: 25, file: "PXL_20251009_180850831.webp", category: "Interior", title: "Interior Painting" },
-  { id: 26, file: "PXL_20251009_180904253.webp", category: "Interior", title: "Interior Painting" },
-  { id: 27, file: "PXL_20251009_184229024.webp", category: "Interior", title: "Interior Painting" },
-  { id: 28, file: "PXL_20251009_184239255.webp", category: "Interior", title: "Interior Painting" },
-  { id: 29, file: "PXL_20251009_200610576.webp", category: "Interior", title: "Interior Painting" },
-  { id: 30, file: "PXL_20251009_205103782.webp", category: "Interior", title: "Interior Painting" },
-  { id: 31, file: "PXL_20251009_213933435.webp", category: "Interior", title: "Interior Painting" },
-  { id: 32, file: "20251012_140909.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 33, file: "20251012_165336.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 34, file: "20251008_120210.webp", category: "Interior", title: "Interior Painting" },
-  { id: 35, file: "PXL_20250902_133955998.webp", category: "Interior", title: "Interior Painting" },
-  { id: 36, file: "PXL_20250902_134004778.webp", category: "Interior", title: "Interior Painting" },
-  { id: 37, file: "PXL_20250902_151308442.webp", category: "Interior", title: "Interior Painting" },
-  { id: 38, file: "PXL_20250902_151315576.webp", category: "Interior", title: "Interior Painting" },
-  { id: 39, file: "PXL_20250902_181230249.webp", category: "Interior", title: "Interior Painting" },
-  { id: 40, file: "PXL_20250902_181247007.webp", category: "Interior", title: "Interior Painting" },
-  { id: 41, file: "PXL_20250217_224338011_MP.webp", category: "Interior", title: "Interior Painting" },
-  // Older projects
-  { id: 42, file: "PXL_20240715_194939243_MP.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 43, file: "PXL_20240506_133509833_MP.webp", category: "Interior", title: "Interior Painting" },
-  { id: 44, file: "PXL_20240507_232710177_MP.webp", category: "Interior", title: "Interior Painting" },
-  { id: 45, file: "PXL_20230716_234552246_MP.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 46, file: "PXL_20220416_153255477.webp", category: "Interior", title: "Interior Painting" },
-  { id: 47, file: "PXL_20210109_221844861.webp", category: "Interior", title: "Interior Painting" },
-  { id: 48, file: "PXL_20200928_183711726.webp", category: "Interior", title: "Interior Painting" },
-  { id: 49, file: "IMG_20191201_125943_MP.webp", category: "Interior", title: "Interior Painting" },
-  { id: 50, file: "20180723_133033.webp", category: "Interior", title: "Interior Painting" },
-  { id: 51, file: "20180625_090401.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 52, file: "20180516_145706.webp", category: "Interior", title: "Interior Painting" },
-  { id: 53, file: "20170116_143904.webp", category: "Interior", title: "Interior Painting" },
-  { id: 54, file: "20170116_143917.webp", category: "Interior", title: "Interior Painting" },
-  { id: 55, file: "20170106_165738.webp", category: "Interior", title: "Interior Painting" },
-  { id: 56, file: "20161229_164826.webp", category: "Interior", title: "Interior Painting" },
-  { id: 57, file: "20161213_103137.webp", category: "Interior", title: "Interior Painting" },
-  { id: 58, file: "20161213_103144.webp", category: "Interior", title: "Interior Painting" },
-  { id: 59, file: "20160921_090451.webp", category: "Interior", title: "Interior Painting" },
-  { id: 60, file: "20160902_170415.webp", category: "Interior", title: "Interior Painting" },
-  { id: 61, file: "20160901_105150.webp", category: "Interior", title: "Interior Painting" },
-  { id: 62, file: "20160808_152240.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 63, file: "20160808_152306.webp", category: "Exterior", title: "Exterior Painting" },
-  { id: 64, file: "20160713_091616.webp", category: "Interior", title: "Interior Painting" },
-  { id: 65, file: "20160713_142534.webp", category: "Interior", title: "Interior Painting" },
-];
+// ─── Build gallery items from AI-generated tags ──────────────────────────────
+function buildGalleryItems() {
+  const entries = Object.entries(galleryTags).map(([file, tag], i) => {
+    const isVideo = file.includes("_video.webp");
+    // Map category: residential+exterior→Exterior, commercial→Commercial, else→Interior
+    let category = "Interior";
+    if (tag.category === "commercial") category = "Commercial";
+    else if (tag.service === "exterior") category = "Exterior";
 
+    return {
+      id: i + 1,
+      file,
+      category,
+      title: tag.title || "Painting Project",
+      altText: tag.alt || tag.alt_text || tag.title,
+      qualityScore: tag.quality_score || 0.5,
+      phase: tag.phase || "after",
+      projectDate: tag.project_date || file.substring(0, 8),
+      isVideo,
+    };
+  });
+
+  // Group by project date, keep best 4 per project
+  const byProject = {};
+  for (const item of entries) {
+    const key = item.projectDate;
+    if (!byProject[key]) byProject[key] = [];
+    byProject[key].push(item);
+  }
+
+  const curated = [];
+  for (const items of Object.values(byProject)) {
+    items.sort((a, b) => b.qualityScore - a.qualityScore);
+    curated.push(...items.slice(0, 4));
+  }
+
+  // Sort: highest quality first within each category, newest first for ties
+  curated.sort((a, b) => b.qualityScore - a.qualityScore || b.projectDate.localeCompare(a.projectDate));
+
+  return curated;
+}
+
+const GALLERY_ITEMS = buildGalleryItems();
 const CATEGORIES = ["All", "Interior", "Exterior", "Commercial"];
 
 export default function PortfolioSection() {
@@ -91,9 +58,20 @@ export default function PortfolioSection() {
   const carouselRef = useRef(null);
   const sectionRef = useRef(null);
 
-  const filtered = activeFilter === "All"
-    ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter(item => item.category === activeFilter);
+  const filtered = useMemo(
+    () => activeFilter === "All"
+      ? GALLERY_ITEMS
+      : GALLERY_ITEMS.filter(item => item.category === activeFilter),
+    [activeFilter]
+  );
+
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    for (const item of GALLERY_ITEMS) {
+      counts[item.category] = (counts[item.category] || 0) + 1;
+    }
+    return counts;
+  }, []);
 
   // Reveal on scroll
   useEffect(() => {
@@ -203,7 +181,7 @@ export default function PortfolioSection() {
                   : "bg-white text-slate-600 border border-slate-200 hover:border-amber-300 hover:text-amber-700",
               ].join(" ")}
             >
-              {cat} {cat !== "All" ? `(${GALLERY_ITEMS.filter(i => i.category === cat).length})` : ""}
+              {cat} {cat !== "All" ? `(${categoryCounts[cat] || 0})` : ""}
             </button>
           ))}
         </div>
@@ -242,22 +220,15 @@ export default function PortfolioSection() {
                 <div className="aspect-[3/4] relative">
                   <img
                     src={`/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`}
-                    alt={item.title}
+                    alt={item.altText}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                    style={{ imageOrientation: "from-image" }}
                   />
-                  {/* Video play icon */}
-                  {item.isVideo && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                        <Play size={22} className="text-slate-800 ml-1" fill="currentColor" />
-                      </div>
-                    </div>
-                  )}
                   {/* Category badge */}
                   <span className="absolute top-2 left-2 text-[11px] font-medium px-2.5 py-1 rounded-full bg-black/40 text-white backdrop-blur-sm">
-                    {item.isVideo ? "📹 Video" : item.category}
+                    {item.isVideo ? "📹 Video still" : item.category}
                   </span>
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-end p-3">
@@ -316,8 +287,9 @@ export default function PortfolioSection() {
           <div className="max-w-5xl w-full h-full flex items-center justify-center p-4">
             <img
               src={`/gallery/images/${currentItem.file}`}
-              alt={currentItem.title}
+              alt={currentItem.altText}
               className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              style={{ imageOrientation: "from-image" }}
             />
           </div>
           <div className="absolute bottom-4 left-4 text-white/70 text-sm">
