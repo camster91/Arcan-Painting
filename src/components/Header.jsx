@@ -25,7 +25,6 @@ export default function Header() {
     if (typeof document === "undefined") return;
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
-      // move focus to close button for accessibility
       setTimeout(() => closeBtnRef.current?.focus(), 0);
     } else {
       document.body.style.overflow = "";
@@ -34,6 +33,30 @@ export default function Header() {
       document.body.style.overflow = "";
     };
   }, [isMenuOpen]);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    const handler = (e) => {
+      if (e.matches && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [isMenuOpen]);
+
+  // Track if we're actually on mobile (for z-index guard)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    const mq = window.matchMedia("(max-width: 767px)");
+    mq.addEventListener("change", check);
+    return () => mq.removeEventListener("change", check);
+  }, []);
 
   // Don't render until mounted to avoid hydration mismatch
 
@@ -198,8 +221,8 @@ export default function Header() {
       </div>
 
       {/* Mobile Fullscreen Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[60] md:hidden">
+      {isMenuOpen && isMobile && (
+        <div className="fixed inset-0 z-[100] md:hidden">
           {/* Backdrop */}
           <div
             className="absolute inset-0 z-0"
