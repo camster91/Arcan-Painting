@@ -105,7 +105,7 @@ export default function AdminDashboard() {
 
       {/* Additional responsive sections demonstrating the layout system */}
       <div className="mt-8 text-sm text-slate-500 text-center">
-        <p>Last updated: {new Date().toLocaleDateString()}</p>
+        <p suppressHydrationWarning>Last updated: {new Date().toLocaleDateString()}</p>
       </div>
     </AdaptiveContentArea>
   );

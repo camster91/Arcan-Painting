@@ -132,7 +132,13 @@ export default function ChatWidget() {
     }
   };
 
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+  // Use mounted check to avoid SSR/client hydration mismatch (React #418).
+  // On the server, window is undefined so we can't check pathname — render null on both
+  // sides until mounted, then conditionally hide on admin pages.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  if (window.location.pathname.startsWith('/admin')) {
     return null;
   }
 
