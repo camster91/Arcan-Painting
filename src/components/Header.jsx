@@ -234,6 +234,15 @@ export default function Header() {
                 {item.label}
               </button>
             ))}
+            <a
+              href="/blog"
+              className="text-base font-medium transition-colors"
+              style={{ color: themeColors.textSecondary }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f59e0b")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = themeColors.textSecondary)}
+            >
+              Blog
+            </a>
           </nav>
 
           {/* Right side */}
@@ -387,6 +396,14 @@ export default function Header() {
                     {item.label}
                   </a>
                 ))}
+                <a
+                  href="/blog"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-3 py-4 rounded-lg font-medium text-base"
+                  style={{ color: themeColors.text }}
+                >
+                  Blog
+                </a>
               </nav>
 
               <div className="mt-4 p-4 rounded-xl border" style={{ borderColor: themeColors.border, backgroundColor: themeColors.bgSecondary }}>

@@ -1,7 +1,15 @@
+import { getAllPosts } from "../../lib/blog.js";
+
 // Generate dynamic sitemap.xml
 export async function GET() {
   const baseUrl = process.env.APP_URL || "https://arcanpainting.ca";
   const currentDate = new Date().toISOString().split("T")[0];
+  let blogPosts = [];
+  try {
+    blogPosts = getAllPosts().map(({ slug, date }) => ({ slug, date }));
+  } catch (e) {
+    blogPosts = [];
+  }
 
   const services = [
     "interior-painting",
@@ -96,6 +104,23 @@ export async function GET() {
   </url>
 
   <!-- 150 City × Service SEO Pages -->${cityServiceUrls}
+
+  <!-- Blog index -->
+  <url>
+    <loc>${baseUrl}/blog</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog posts -->
+  ${blogPosts.map(({ slug, date }) => `<url>
+    <loc>${baseUrl}/blog/${slug}</loc>
+    <lastmod>${date || currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("\n  ")}
+
 </urlset>`;
 
   return new Response(sitemap, {
