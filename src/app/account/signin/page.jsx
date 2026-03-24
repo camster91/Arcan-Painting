@@ -9,6 +9,7 @@ export default function SignInPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const codeInputRef = useRef(null);
 
   const callbackUrl = useMemo(() => {
@@ -34,7 +35,6 @@ export default function SignInPage() {
     },
     onSuccess: () => {
       setStep("code");
-      // Auto-focus code input
       setTimeout(() => codeInputRef.current?.focus(), 50);
     },
     onError: (e) => {
@@ -67,18 +67,29 @@ export default function SignInPage() {
     },
   });
 
-  // If already logged in, redirect
+  // If already logged in, redirect (show loading until resolved)
   useEffect(() => {
     const check = async () => {
       try {
         const res = await fetch("/api/local-auth/me");
         if (res.ok) {
           window.location.href = callbackUrl || "/admin";
+          return;
         }
       } catch {}
+      setIsCheckingAuth(false);
     };
     check();
   }, [callbackUrl]);
+
+  // Show loading while checking auth — prevents dashboard flash
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen h-dvh overflow-y-auto flex items-center justify-center bg-[#f5f4ef] px-4 py-8">
+        <div className="text-slate-500 text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   const handleCopyCode = () => {
     if (code) {
@@ -92,8 +103,8 @@ export default function SignInPage() {
   const isLoading = requestCodeMutation.isPending || verifyCodeMutation.isPending;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f4ef] px-4">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+    <div className="min-h-screen h-dvh overflow-y-auto flex items-center justify-center bg-[#f5f4ef] px-4 py-8">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl shadow-sm p-6 flex-shrink-0">
         <div className="flex items-center justify-center mb-4">
           <img
             src="/logo.png"
