@@ -10,7 +10,7 @@ function buildGalleryItems() {
     // Map category: residential+exterior→Exterior, commercial→Commercial, else→Interior
     let category = "Interior";
     if (tag.category === "commercial") category = "Commercial";
-    else if (tag.service === "exterior") category = "Exterior";
+    else if (tag.category === "exterior" || tag.service === "exterior" || tag.room === "exterior" || tag.room === "facade" || tag.room === "deck" || tag.room === "porch") category = "Exterior";
 
     return {
       id: i + 1,
