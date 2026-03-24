@@ -1,10 +1,11 @@
-import { MapPin, Car, Home, Brush, Star } from "lucide-react";
+import { MapPin, Car, Home, Brush, Star, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import LeadFormPopup from "./LeadFormPopup";
 
 export default function LocalAreaSection() {
   const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
+  const [activeRegion, setActiveRegion] = useState(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,7 +96,46 @@ export default function LocalAreaSection() {
           <h3 className="text-3xl font-bold text-white text-center mb-8">
             Areas We Serve
           </h3>
-          <div className="max-w-5xl mx-auto space-y-10">
+
+          {/* Mobile: collapsible region tabs */}
+          <div className="md:hidden space-y-3 max-w-2xl mx-auto px-2">
+            {serviceRegions.map((region, regionIndex) => (
+              <div key={regionIndex} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden">
+                <button
+                  className="w-full flex items-center justify-between px-5 py-4 text-left"
+                  onClick={() => setActiveRegion(activeRegion === regionIndex ? null : regionIndex)}
+                >
+                  <span className="text-amber-400 font-semibold text-base">
+                    {region.name}
+                  </span>
+                  <span className="text-white/60">
+                    {activeRegion === regionIndex ? (
+                      <ChevronUp size={18} />
+                    ) : (
+                      <ChevronDown size={18} />
+                    )}
+                  </span>
+                </button>
+                {activeRegion === regionIndex && (
+                  <div className="px-5 pb-5">
+                    <div className="flex flex-wrap gap-2">
+                      {region.cities.map((area, index) => (
+                        <span
+                          key={index}
+                          className="bg-white/10 border border-white/20 rounded-full px-3 py-1.5 text-white/90 text-sm"
+                        >
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: full grid */}
+          <div className="hidden md:block max-w-5xl mx-auto space-y-10">
             {serviceRegions.map((region, regionIndex) => (
               <div key={regionIndex}>
                 <h4 className="text-xl font-semibold text-amber-400 text-center mb-4">
@@ -122,6 +162,7 @@ export default function LocalAreaSection() {
               </div>
             ))}
           </div>
+
           <p className="text-slate-300 text-center mt-8 text-lg">
             Don't see your area?{" "}
             <button
