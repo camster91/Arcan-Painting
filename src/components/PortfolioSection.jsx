@@ -313,7 +313,7 @@ export default function PortfolioSection() {
           </h2>
           <p className="text-slate-500 text-base md:text-lg max-w-xl mx-auto">
             Browse real photos from our painting projects across the GTA.
-            Every project painted by the Cañabate family — no subcontractors, ever.
+            Delivered with quality and care by our experienced team of professionals.
           </p>
         </div>
 
