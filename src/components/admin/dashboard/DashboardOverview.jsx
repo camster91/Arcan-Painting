@@ -65,7 +65,8 @@ export default function DashboardOverview() {
       const response = await fetch("/api/estimates", { signal });
       if (response.ok) {
         const data = await response.json();
-        return data.filter((est) => est.status === "approved");
+        const list = Array.isArray(data) ? data : (data.estimates || []);
+        return list.filter((est) => est.status === "approved");
       }
       return [];
     },
