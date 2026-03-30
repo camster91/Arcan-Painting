@@ -204,7 +204,7 @@ Full digital marketing toolkit embedded in the admin backend, powered by Kimi K2
 
 - [ ] `/admin/marketing` — Hub dashboard (platform connection status, quick stats)
 - [ ] `/admin/marketing/ai-assistant` — Full chat with Kimi K2 (business-aware context)
-- [ ] `/admin/marketing/facebook` — FB/IG Ads: view campaigns, create ads, boost posts (Meta Marketing API)
+- [x] `/admin/marketing/facebook` — FB/IG Ads: view campaigns, create ads, boost posts (Meta Marketing API)
 - [ ] `/admin/marketing/google-ads` — Google Ads: dashboard, keyword performance, budget (Google Ads API)
 - [ ] `/admin/marketing/google-business` — GBP: post updates, respond to reviews, view insights (GBP API)
 - [ ] `/admin/marketing/email-outreach` — Cold email sequences: real estate agents, property managers (Mailgun)
@@ -216,7 +216,7 @@ Full digital marketing toolkit embedded in the admin backend, powered by Kimi K2
 ### API Routes to Build
 
 - [ ] `POST /api/marketing/generate` — AI content generation (proxies to Ollama, fallback Gemini)
-- [ ] `GET/POST /api/marketing/facebook` — Meta API proxy (campaigns, insights, boost)
+- [x] `GET/POST /api/marketing/facebook` — Meta API proxy (campaigns, insights, boost)
 - [ ] `GET/POST /api/marketing/google-ads` — Google Ads API proxy
 - [ ] `GET/POST /api/marketing/google-business` — GBP API proxy (posts, reviews)
 - [ ] `GET/POST /api/marketing/email-sequences` — Cold email sequence management
@@ -225,10 +225,10 @@ Full digital marketing toolkit embedded in the admin backend, powered by Kimi K2
 
 ### DB Tables to Add
 
-- [ ] `marketing_connections` — stores API keys/tokens per platform (encrypted)
+- [x] `marketing_connections` — stores API keys/tokens per platform (encrypted)
 - [ ] `email_sequences` — cold email sequence templates + send schedules
 - [ ] `outreach_contacts` — leads for cold email/LinkedIn outreach
-- [ ] `marketing_campaigns` — track cross-platform campaign performance
+- [x] `marketing_campaigns` — track cross-platform campaign performance
 
 ### Recovery & Resilience
 
