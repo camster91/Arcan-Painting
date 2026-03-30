@@ -9,7 +9,7 @@ This file tracks identified improvements and technical debt in the codebase.
 | Test Coverage | 4 test files (1.5%) | 80%+ |
 | TypeScript Usage | 12 files (4.6%) | 100% |
 | Security Issues | 1 critical remaining | 0 |
-| Large Components (500+ lines) | 9 | 0 |
+| Large Components (500+ lines) | 2 | 0 |
 | Console Statements in APIs | 112 (error logs only) | 0 |
 
 ---
@@ -170,7 +170,7 @@ Currently only 62 accessibility attributes (target: 500+)
 | `src/app/admin/scheduling/page.jsx` | Needs refactoring | High | ⚠️ Still large (931 lines) |
 | `src/components/admin/contracts/CreateContractModal.jsx` | Complex, 4 useEffects | High | ⚠️ Still complex (713 lines) |
 | All API routes | Console statements | High | ✅ Debug logs removed (error logs kept) |
-| `src/__create/@auth/create.js` | Missing `hono/context-storage` import | Critical | ⚠️ Broken import needs fixing |
+| `src/__create/@auth/create.js` | Missing `hono/context-storage` import | Critical | ✅ Fixed (import present and middleware active) |
 
 ---
 

@@ -41,6 +41,46 @@ function AdminLayoutContent({ children }) {
   const [isOffline, setIsOffline] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Command Bar state
+  const [commandInput, setCommandInput] = useState("");
+  const [commandLoading, setCommandLoading] = useState(false);
+  const [commandResult, setCommandResult] = useState(null);
+
+  const executeCommand = async () => {
+    if (!commandInput.trim() || commandLoading) return;
+    setCommandLoading(true);
+    try {
+      const res = await fetch("/api/admin/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: commandInput }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCommandResult(data);
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        }
+      }
+    } catch (e) {
+      console.error("Command error:", e);
+    } finally {
+      setCommandLoading(false);
+      setCommandInput("");
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        document.getElementById("global-command-bar")?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCurrentPath(window.location.pathname);
@@ -428,6 +468,36 @@ function AdminLayoutContent({ children }) {
                   className="w-[160px] h-[74px] lg:w-[180px] lg:h-[84px] object-contain"
                 />
               </a>
+            </div>
+
+            {/* AI Command Bar (Desktop) */}
+            <div className="hidden lg:flex flex-1 max-w-md mx-8">
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Sparkles className={`w-4 h-4 ${commandLoading ? "text-amber-500 animate-spin" : "text-slate-400"}`} />
+                </div>
+                <input
+                  id="global-command-bar"
+                  type="text"
+                  value={commandInput}
+                  onChange={(e) => setCommandInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && executeCommand()}
+                  placeholder="Ask AI or search... (Ctrl+K)"
+                  className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all shadow-sm"
+                  disabled={commandLoading}
+                />
+                {commandResult && (
+                  <div className="absolute top-12 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl p-4 z-50">
+                    <div className="flex items-start justify-between">
+                      <div className="text-sm text-slate-800">{commandResult.reply}</div>
+                      <button onClick={() => setCommandResult(null)} className="text-slate-400 hover:text-slate-600">&times;</button>
+                    </div>
+                    {commandResult.data && (
+                       <pre className="mt-2 text-[10px] bg-slate-50 p-2 rounded overflow-auto max-h-32">{JSON.stringify(commandResult.data, null, 2)}</pre>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Desktop actions */}

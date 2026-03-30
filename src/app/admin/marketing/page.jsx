@@ -34,6 +34,27 @@ const PLATFORMS = [
     connectUrl: "/api/marketing/facebook/connect",
   },
   {
+    id: "gemini_api",
+    name: "Gemini AI",
+    description: "Connect your Gemini API Key",
+    color: "bg-blue-600",
+    isApiKey: true,
+  },
+  {
+    id: "openai_api",
+    name: "ChatGPT (OpenAI)",
+    description: "Connect your OpenAI API Key",
+    color: "bg-green-600",
+    isApiKey: true,
+  },
+  {
+    id: "ollama_cloud",
+    name: "Ollama Cloud",
+    description: "Connect your Ollama endpoint",
+    color: "bg-teal-600",
+    isApiKey: true,
+  },
+  {
     id: "linkedin",
     name: "LinkedIn",
     description: "LinkedIn outreach & ads",
@@ -46,6 +67,13 @@ export default function MarketingPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
+
+  // API Key modal state
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [apiEmailInput, setApiEmailInput] = useState("");
+  const [savingApiKey, setSavingApiKey] = useState(false);
 
   // AI Chat state
   const [chatMessages, setChatMessages] = useState([]);
@@ -117,6 +145,33 @@ export default function MarketingPage() {
       fetchConnections();
     } catch (e) {
       console.error("Error disconnecting:", e);
+    }
+  };
+
+  const saveApiKey = async () => {
+    if (!apiKeyInput.trim() || savingApiKey) return;
+    try {
+      setSavingApiKey(true);
+      const res = await fetch("/api/marketing/connections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: selectedPlatform.id,
+          apiKey: apiKeyInput.trim(),
+          accountEmail: apiEmailInput.trim(),
+        }),
+      });
+      if (res.ok) {
+        showToast(`${selectedPlatform.name} key saved successfully!`);
+        setShowApiKeyModal(false);
+        setApiKeyInput("");
+        setApiEmailInput("");
+        fetchConnections();
+      }
+    } catch (e) {
+      showToast("Failed to save API key", "error");
+    } finally {
+      setSavingApiKey(false);
     }
   };
 
@@ -453,6 +508,17 @@ export default function MarketingPage() {
                               Disconnect
                             </button>
                           </>
+                        ) : platform.isApiKey ? (
+                          <button
+                            onClick={() => {
+                              setSelectedPlatform(platform);
+                              setShowApiKeyModal(true);
+                            }}
+                            className="flex items-center gap-1 text-xs text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                            Connect API
+                          </button>
                         ) : platform.connectUrl ? (
                           <a
                             href={platform.connectUrl}
@@ -583,6 +649,71 @@ export default function MarketingPage() {
           </div>
         )}
       </div>
+
+      {/* API Key Modal */}
+      {showApiKeyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">
+                Connect {selectedPlatform?.name}
+              </h3>
+              <button
+                onClick={() => setShowApiKeyModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  API Key or Endpoint
+                </label>
+                <input
+                  type="password"
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  placeholder={`Paste your ${selectedPlatform?.name} key here`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Account Email (Optional)
+                </label>
+                <input
+                  type="email"
+                  value={apiEmailInput}
+                  onChange={(e) => setApiEmailInput(e.target.value)}
+                  placeholder="e.g. gerardo@arcanpainting.ca"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-gray-500 bg-gray-50 p-3 rounded-lg">
+                <AlertCircle className="w-3 h-3 text-orange-500" />
+                Your keys are stored securely in your private database and used only for marketing tasks.
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => setShowApiKeyModal(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveApiKey}
+                disabled={!apiKeyInput.trim() || savingApiKey}
+                className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                {savingApiKey && <Loader2 className="w-3 h-3 animate-spin" />}
+                Save Connection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
