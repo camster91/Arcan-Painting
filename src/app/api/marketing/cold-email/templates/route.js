@@ -1,4 +1,4 @@
-import { getCurrentUser } from "../../utils/auth.js";
+import { getCurrentUser } from "../../../utils/auth.js";
 import sql from "../../../utils/sql.js";
 
 // GET - list templates
