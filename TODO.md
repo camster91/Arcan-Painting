@@ -205,20 +205,20 @@ Full digital marketing toolkit embedded in the admin backend, powered by Kimi K2
 - [ ] `/admin/marketing` — Hub dashboard (platform connection status, quick stats)
 - [ ] `/admin/marketing/ai-assistant` — Full chat with Kimi K2 (business-aware context)
 - [x] `/admin/marketing/facebook` — FB/IG Ads: view campaigns, create ads, boost posts (Meta Marketing API)
-- [ ] `/admin/marketing/google-ads` — Google Ads: dashboard, keyword performance, budget (Google Ads API)
-- [ ] `/admin/marketing/google-business` — GBP: post updates, respond to reviews, view insights (GBP API)
-- [ ] `/admin/marketing/email-outreach` — Cold email sequences: real estate agents, property managers (Mailgun)
-- [ ] `/admin/marketing/linkedin` — LinkedIn message drafts + outreach tracker
+- [x] `/admin/marketing/google-ads` — Google Ads: dashboard, keyword performance, budget (Google Ads API)
+- [x] `/admin/marketing/google-business` — GBP: post updates, respond to reviews, view insights (GBP API)
+- [x] `/admin/marketing/email-outreach` — Cold email sequences: real estate agents, property managers (Mailgun)
+- [x] `/admin/marketing/linkedin` — LinkedIn message drafts + outreach tracker
 - [ ] `/admin/marketing/email-triage` — Gmail inbox: AI reads, labels, drafts replies (Gmail API)
 - [ ] `/admin/marketing/reviews` — Review management: Google + Homestars (AI draft, Gerardo approves)
-- [ ] `/admin/system` — App control panel: health status, logs, restart services, env var manager
+- [x] `/admin/system` — App control panel: health status, logs, restart services, env var manager
 
 ### API Routes to Build
 
 - [ ] `POST /api/marketing/generate` — AI content generation (proxies to Ollama, fallback Gemini)
 - [x] `GET/POST /api/marketing/facebook` — Meta API proxy (campaigns, insights, boost)
-- [ ] `GET/POST /api/marketing/google-ads` — Google Ads API proxy
-- [ ] `GET/POST /api/marketing/google-business` — GBP API proxy (posts, reviews)
+- [x] `GET/POST /api/marketing/google-ads` — Google Ads API proxy
+- [x] `GET/POST /api/marketing/google-business` — GBP API proxy (posts, reviews)
 - [ ] `GET/POST /api/marketing/email-sequences` — Cold email sequence management
 - [ ] `GET /api/marketing/email-triage` — Gmail inbox fetch + AI draft
 - [ ] `POST /api/marketing/review-response` — Draft review reply with AI

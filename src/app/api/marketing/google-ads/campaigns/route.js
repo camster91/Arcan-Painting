@@ -145,12 +145,13 @@ export async function GET(request) {
             await sql(
               `UPDATE live_campaigns SET
                  impressions = $1, clicks = $2, conversions = $3,
-                 status = $4, updated_at = CURRENT_TIMESTAMP
-               WHERE platform_campaign_id = $5 AND platform = 'google_ads'`,
+                 spent = $4, status = $5, updated_at = CURRENT_TIMESTAMP
+               WHERE platform_campaign_id = $6 AND platform = 'google_ads'`,
               [
                 parseInt(metrics.impressions || 0, 10),
                 parseInt(metrics.clicks || 0, 10),
                 Math.round(parseFloat(metrics.conversions || 0)),
+                parseFloat(metrics.costMicros || 0) / 1_000_000,
                 camp.status?.toLowerCase() || "active",
                 String(camp.id),
               ]
@@ -204,6 +205,9 @@ export async function POST(request) {
     total_budget,
     start_date,
     end_date,
+    headline,
+    primary_text,
+    description,
     target_url = "https://arcanpainting.ca",
     targeting = {},
     campaign_type = "SEARCH",
@@ -211,6 +215,23 @@ export async function POST(request) {
 
   if (!campaign_name) {
     return Response.json({ error: "campaign_name is required" }, { status: 400 });
+  }
+
+  let finalCreativeId = creative_id;
+
+  // If no creative_id but fields are provided, create a new ad_creative
+  if (!finalCreativeId && (headline || primary_text || description)) {
+    try {
+      const creativeRes = await sql(
+        `INSERT INTO ad_creatives (campaign_name, platform, headline, primary_text, description, status)
+         VALUES ($1, 'google_ads', $2, $3, $4, 'active')
+         RETURNING id`,
+        [campaign_name, headline || null, primary_text || null, description || null]
+      );
+      finalCreativeId = creativeRes[0].id;
+    } catch (err) {
+      console.error("[google-ads/campaigns] Failed to create creative:", err);
+    }
   }
 
   const cleanId = customerId.replace(/-/g, "");
@@ -293,14 +314,14 @@ export async function POST(request) {
     const adGroupResource = adGroupData.results?.[0]?.resourceName;
 
     // Step 4: Create a responsive search ad (if creative content available)
-    let headline1 = "Professional Painting Services";
+    let headline1 = headline || "Professional Painting Services";
     let headline2 = "Free Estimates Available";
     let headline3 = "Licensed & Insured Painters";
-    let desc1 = "Transform your home with Arcan Painting. Quality workmanship, fully insured. Get a free estimate today!";
-    let desc2 = "Ottawa's trusted painting professionals. Interior, exterior, and commercial painting services.";
+    let desc1 = primary_text || "Transform your home with Arcan Painting. Quality workmanship, fully insured. Get a free estimate today!";
+    let desc2 = description || "Ottawa's trusted painting professionals. Interior, exterior, and commercial painting services.";
 
-    if (creative_id) {
-      const creativeRows = await sql`SELECT * FROM ad_creatives WHERE id = ${creative_id}`;
+    if (finalCreativeId) {
+      const creativeRows = await sql`SELECT * FROM ad_creatives WHERE id = ${finalCreativeId}`;
       if (creativeRows.length) {
         const c = creativeRows[0];
         if (c.headline) headline1 = c.headline.substring(0, 30);
@@ -389,7 +410,7 @@ export async function POST(request) {
        RETURNING *`,
       [
         campaignId,
-        creative_id || null,
+        finalCreativeId || null,
         campaign_name,
         daily_budget || null,
         total_budget || null,

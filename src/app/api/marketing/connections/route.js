@@ -18,16 +18,16 @@ export async function POST(request) {
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { platform, apiKey, accountEmail, metadata = {} } = await request.json();
-  if (!platform || !apiKey) return Response.json({ error: "Platform and API Key required" }, { status: 400 });
+  if (!platform) return Response.json({ error: "Platform required" }, { status: 400 });
 
   // Store API key in access_token column (encrypted in production, but plaintext for now as per schema)
   await sql`
     INSERT INTO marketing_connections (platform, access_token, account_email, metadata, is_active)
-    VALUES (${platform}, ${apiKey}, ${accountEmail}, ${JSON.stringify(metadata)}, true)
+    VALUES (${platform}, ${apiKey || null}, ${accountEmail || null}, ${JSON.stringify(metadata)}, true)
     ON CONFLICT (platform) DO UPDATE SET
-      access_token = EXCLUDED.access_token,
-      account_email = EXCLUDED.account_email,
-      metadata = EXCLUDED.metadata,
+      access_token = COALESCE(EXCLUDED.access_token, marketing_connections.access_token),
+      account_email = COALESCE(EXCLUDED.account_email, marketing_connections.account_email),
+      metadata = COALESCE(marketing_connections.metadata, '{}'::jsonb) || COALESCE(EXCLUDED.metadata, '{}'::jsonb),
       is_active = true,
       updated_at = CURRENT_TIMESTAMP
   `;
