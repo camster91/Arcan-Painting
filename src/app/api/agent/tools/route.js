@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+
 // import sql from '../../../utils/sql.js';
 
 export async function GET(request) {
@@ -24,14 +24,14 @@ export async function GET(request) {
       parameters: { type: "object", properties: { topic: { type: "string" }, scheduled_time: { type: "string" } }, required: ["topic"] }
     }
   ];
-  return NextResponse.json({ tools, status: "ok" });
+  return Response.json({ tools, status: "ok" });
 }
 
 export async function POST(request) {
   const { tool, params } = await request.json();
-  if (tool === "create_facebook_ad") return NextResponse.json({ success: true, message: `Facebook campaign '${params.campaign_name}' staged successfully with a budget of $${params.daily_budget}/day.` });
-  if (tool === "update_google_business") return NextResponse.json({ success: true, message: `GBP update posted: ${params.update_text}` });
-  if (tool === "send_cold_email_sequence") return NextResponse.json({ success: true, message: `Added ${params.emails?.length || 0} prospects to the ${params.target_role} Mailgun sequence.` });
-  if (tool === "generate_linkedin_post") return NextResponse.json({ success: true, message: `LinkedIn post drafted about '${params.topic}'.` });
-  return NextResponse.json({ error: "Unknown tool" }, { status: 400 });
+  if (tool === "create_facebook_ad") return Response.json({ success: true, message: `Facebook campaign '${params.campaign_name}' staged successfully with a budget of $${params.daily_budget}/day.` });
+  if (tool === "update_google_business") return Response.json({ success: true, message: `GBP update posted: ${params.update_text}` });
+  if (tool === "send_cold_email_sequence") return Response.json({ success: true, message: `Added ${params.emails?.length || 0} prospects to the ${params.target_role} Mailgun sequence.` });
+  if (tool === "generate_linkedin_post") return Response.json({ success: true, message: `LinkedIn post drafted about '${params.topic}'.` });
+  return Response.json({ error: "Unknown tool" }, { status: 400 });
 }
