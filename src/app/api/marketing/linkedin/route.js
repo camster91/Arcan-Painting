@@ -1,5 +1,5 @@
 import { getCurrentUser } from "../../utils/auth.js";
-import sql from "../../../utils/sql.js";
+import sql from "../../utils/sql.js";
 
 // GET - list outreach prospects
 export async function GET(request) {
