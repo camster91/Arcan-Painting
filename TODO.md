@@ -1,6 +1,6 @@
-# Arcan Painting - Improvements Todo
+# TODO
 
-This file tracks identified improvements and technical debt in the codebase.
+All previous tasks have been archived or completed during the 2026 consolidation and launch prep.
 
 ## Summary Statistics
 

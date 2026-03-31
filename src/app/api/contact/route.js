@@ -2,25 +2,9 @@ import { sendGmailEmail } from "@/lib/google.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
-import { calculateLeadScore } from "@/utils/leadScoring.js";
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
-  // Token efficiency: only use AI for high-potential leads (>50 score)
-  const localScore = calculateLeadScore(leadData);
-  if (localScore < 50) {
-    console.log(`[Lead Scoring] Local score ${localScore} is low. Skipping AI qualification to save tokens.`);
-    // Update lead with local score directly
-    try {
-      await fetch(`${baseUrl}/api/leads/${leadData.leadId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qualification_score: localScore }),
-      });
-    } catch (e) { /* ignore */ }
-    return;
-  }
-
   try {
     await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
       method: 'POST',

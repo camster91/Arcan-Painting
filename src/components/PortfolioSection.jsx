@@ -313,7 +313,7 @@ export default function PortfolioSection() {
           </h2>
           <p className="text-slate-500 text-base md:text-lg max-w-xl mx-auto">
             Browse real photos from our painting projects across the GTA.
-            Delivered with quality and care by our experienced team of professionals.
+            Every project is managed by our team — delivering consistent quality on every job.
           </p>
         </div>
 

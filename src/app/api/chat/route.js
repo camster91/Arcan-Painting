@@ -1,5 +1,6 @@
 import { chatWithGemini } from '../utils/gemini.js';
 import { createRateLimiter } from '../utils/rate-limit.js';
+import { notifyGerardo } from '../utils/telegram.js';
 
 const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 10, prefix: 'chat' });
 
@@ -45,6 +46,13 @@ export async function POST(request) {
     if (message.length > 10) {
       const baseUrl = request.url.split('/api/')[0];
       triggerCustomerSupportAgent(message, baseUrl);
+      
+      // Also notify Gerardo via Telegram about the chat message
+      try {
+        await notifyGerardo(`💬 <b>New Chat Message</b>\n\n<b>Customer asked:</b> ${message.substring(0, 200)}${message.length > 200 ? '...' : ''}\n\n<b>AI replied:</b> ${reply.substring(0, 200)}${reply.length > 200 ? '...' : ''}\n\n<i>From website chat widget</i>`);
+      } catch (err) {
+        console.error('Telegram notification failed:', err.message);
+      }
     }
 
     return Response.json({ reply });

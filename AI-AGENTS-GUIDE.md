@@ -271,19 +271,4 @@ Returns:
 
 ---
 
-## Marketing AI Assistant (NEW - 2026-03-30)
-**File:** `src/app/api/marketing/ai/route.js`
-**Context:** Dynamic (Loaded from `app_settings`, `leads`, `projects`, `live_campaigns`)
-
-**Trigger:** Admin UI — "Marketing > AI Assistant"
-
-**Capabilities:**
-- Specialized in GTA painting market (Toronto/Mississauga/Markham/etc.)
-- Multi-model support: Google Gemini (OAuth/API), OpenAI GPT-4o, Ollama Cloud
-- Deep business awareness: Knows about recent projects and active leads
-- Marketing execution: Drafts ads, posts, and email sequences
-
-**Setup Required:**
-- Connect Google account in Marketing Hub (OAuth)
-- OR Paste OpenAI API Key in Marketing Hub
-- OR Configure Ollama Cloud endpoint in Marketing Hub
+*Built March 2026 for Gerardo @ Arcan Painting*

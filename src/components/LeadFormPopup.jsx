@@ -352,17 +352,17 @@ export default function LeadFormPopup({ isOpen, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Dark semi-transparent overlay */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
         onClick={onClose}
       />
 
-      {/* Popup Container */}
+      {/* Centered modal box */}
       <div
-        className={`relative w-full max-w-2xl mx-4 mb-4 sm:mb-0 bg-white dark:bg-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl transform transition-all duration-500 ease-out max-h-[90vh] overflow-hidden ${
-          isOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        className={`relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl transform transition-all duration-300 ease-out max-h-[90vh] overflow-hidden ${
+          isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >
         {/* Header */}
