@@ -47,7 +47,7 @@ Example responses for common questions:
 - "Do you do wallpaper?" → "Yes! We offer professional wallpaper installation and removal services. We work with all types of wallpaper including luxury designer patterns, vinyl, grasscloth, and removable wallpapers. Our team ensures perfect pattern matching and proper wall preparation."
 - "How much does wallpaper installation cost?" → "Wallpaper installation costs vary based on the type of wallpaper, room size, wall condition, and complexity of the pattern. We offer free estimates to provide you with an accurate quote for your specific project."
 - "Can you remove old wallpaper?" → "Absolutely! We provide safe wallpaper removal services that protect your walls. We'll properly prepare the surface for new wallpaper or paint after removal."
-
+`;
 export async function chatWithGemini(messages, userMessage) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
