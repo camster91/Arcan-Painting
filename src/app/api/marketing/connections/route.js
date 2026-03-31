@@ -13,27 +13,6 @@ export async function GET(request) {
   return Response.json({ connections });
 }
 
-export async function POST(request) {
-  const user = await getCurrentUser(request);
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { platform, apiKey, accountEmail, metadata = {} } = await request.json();
-  if (!platform || !apiKey) return Response.json({ error: "Platform and API Key required" }, { status: 400 });
-
-  // Store API key in access_token column (encrypted in production, but plaintext for now as per schema)
-  await sql`
-    INSERT INTO marketing_connections (platform, access_token, account_email, metadata, is_active)
-    VALUES (${platform}, ${apiKey}, ${accountEmail}, ${JSON.stringify(metadata)}, true)
-    ON CONFLICT (platform) DO UPDATE SET
-      access_token = EXCLUDED.access_token,
-      account_email = EXCLUDED.account_email,
-      metadata = EXCLUDED.metadata,
-      is_active = true,
-      updated_at = CURRENT_TIMESTAMP
-  `;
-  return Response.json({ success: true });
-}
-
 export async function DELETE(request) {
   const user = await getCurrentUser(request);
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });

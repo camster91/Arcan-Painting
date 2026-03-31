@@ -1,43 +1,50 @@
-# Arcan Painting (Core Marketing Site)
+# Arcan Painting (Emotional Messaging)
 
-**A professional, responsive website serving as the primary digital hub for Arcan Painting.**
+**A highly optimized, conversion-focused landing page utilizing emotional messaging for the home service industry.**
 
-As part of the **Nexus AI Service Solutions** framework, this project establishes a robust online presence for local contractors, emphasizing clarity, local SEO, and rapid load times. It is a critical example of how high-quality Next.js development can scale local service businesses.
+Built for Arcan Painting, this project serves as a cornerstone template in the Nexus AI web development portfolio. It demonstrates how to leverage React Router 7 and tailored copywriting to drive significantly higher conversion rates for local service businesses.
 
-## 🚀 The Vision
+## 🚀 The Strategy
 
-While this repository represents the stable, core structure of the Arcan Painting brand, we are concurrently testing the highly successful `arcan-painting-emotional` conversion branch. 
-- **The Core Strategy:** Provides the authoritative SEO base and comprehensive service catalogs.
-- **The GlowOS Integration:** Scheduled to receive a Pi Chat Agent to handle immediate quote estimations based on user-provided room dimensions.
+Traditional contractor websites focus purely on features (e.g., "We paint houses"). This platform shifts the narrative to **emotional messaging** (e.g., "Transform the space you wake up in every day"). 
+
+**Key Objectives:**
+- Reduce bounce rates via immediate visual and emotional connection.
+- Streamline the booking funnel with localized, high-trust call-to-actions.
+- Serve as a highly performant, SEO-optimized template that can be scaled across other GlowOS and Nexus AI client builds.
 
 ## 🛠 Tech Stack
 
-- **Frontend:** Next.js (Static Site Generation / App Router)
-- **Styling:** Tailwind CSS + localized brand guidelines
-- **Forms/Leads:** Integrated API routes directly linked to Google Sheets/CRMs via webhook.
-- **CMS:** Headless architecture for easy content updates.
+- **Framework:** React Router 7 (Full-stack SSR)
+- **Styling:** Tailwind CSS + Radix Primitives
+- **Build/Bundle:** Vite
+- **Analytics:** Sentry (Performance & Error Tracking)
+- **Notifications:** Automated Telegram webhooks for instant lead alerts
 
 ## ⚡ Getting Started
 
 ```bash
 # Clone the repository
-git clone https://github.com/camster91/Arcan-Painting.git
-cd Arcan-Painting
+git clone https://github.com/camster91/arcan-painting-emotional.git
+cd arcan-painting-emotional
 
-# Install dependencies
+# Install dependencies (Bun recommended for speed)
+bun install
+# or
 npm install
 
-# Run the development server
-npm run dev
+# Setup environment
+cp .env.example .env
+
+# Run development server
+bun run dev
 ```
 
-Visit `http://localhost:3000` to preview the site.
+Visit `http://localhost:5173`.
 
-## 📈 Roadmap
+## 📈 Future Monetization
 
-- A/B test the core landing page against the new emotional messaging framework.
-- Consolidate the lead generation pipeline into the new GlowOS automated dispatcher system.
-- Extract common layout components into the `pi-website-builder` component bank for rapid contractor deployments.
+This exact architecture is being modularized so that the **Pi Website Builder** can generate "Emotional Messaging Home Service" templates automatically for mainstream users, establishing a new revenue vertical.
 
 ---
-*Designed & Developed by Cameron Ashley / Ashbi Design.*
+*Designed & Developed by Cameron Ashley / Nexus AI.*

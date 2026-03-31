@@ -2,18 +2,18 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export const metadata = {
-  title: "Interior Painting Toronto | Professional Interior Painters GTA | Arcan Painting",
+  title: "Create a Home You Love | Beautiful Interior Painting Toronto | Arcan Painting",
   description:
-    "Expert interior painting services in Toronto and the GTA. Premium low-VOC paints, flawless finishes, 2-year warranty. Residential & commercial interior painters serving Toronto since 1995. Free estimates.",
+    "Transform your Toronto home into a space you love. Beautiful painting for comfortable living, happy families, and homes that feel like home. Family-owned since 1995. Free design consultation.",
   keywords:
-    "interior painting toronto, interior painters toronto, interior painting GTA, residential interior painting, house painting Toronto, room painting Toronto, interior wall painting, professional interior painters",
+    "home painting toronto, beautiful homes toronto, comfortable living spaces, happy family home, interior design painting, home transformation toronto, dream home painting, emotional home design",
   alternates: {
     canonical: "https://arcanpainting.ca/interior-painting",
   },
   openGraph: {
-    title: "Interior Painting Toronto | Arcan Painting",
+    title: "Create a Home You Love | Arcan Painting Toronto",
     description:
-      "Expert interior painting services in Toronto and the GTA. Premium paints, flawless finishes, 2-year warranty. Free estimates.",
+      "Beautiful spaces for beautiful moments. Transform your Toronto home into a space you love with our family-owned painting services since 1995.",
     url: "https://arcanpainting.ca/interior-painting",
     siteName: "Arcan Painting",
     type: "website",
@@ -23,7 +23,7 @@ export const metadata = {
         url: "https://arcanpainting.ca/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Interior Painting Services Toronto - Arcan Painting",
+        alt: "Beautiful Home Transformation Toronto - Arcan Painting",
       },
     ],
   },
@@ -128,21 +128,21 @@ export default function InteriorPaintingPage() {
           <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 py-20 lg:py-32">
             <div className="max-w-5xl mx-auto px-6 text-center">
               <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 rounded-full px-5 py-2 mb-8">
-                <span className="text-amber-400 font-semibold text-sm uppercase tracking-wider">Interior Painting Toronto</span>
+                <span className="text-amber-400 font-semibold text-sm uppercase tracking-wider">Create the Home You Love</span>
               </div>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
-                Professional Interior Painting<br />
-                <span className="text-amber-400">Services in Toronto & GTA</span>
+                Beautiful Spaces for<br />
+                <span className="text-amber-400">Beautiful Moments</span>
               </h1>
               <p className="text-xl lg:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-10">
-                Transform every room with flawless finishes and premium paints. Family-owned interior painters trusted by Toronto homeowners since 1995.
+                Transform your Toronto home into a space you love. Comfortable living, happy families, and homes that feel like home. Family-owned since 1995.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/#contact"
                   className="inline-block bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-10 py-4 rounded-xl text-xl transition-all duration-300 hover:scale-105 shadow-lg"
                 >
-                  Get a Free Interior Quote
+                  Start Creating Your Dream Home
                 </a>
                 <a
                   href="tel:+14167272148"
@@ -158,36 +158,36 @@ export default function InteriorPaintingPage() {
           <section className="py-20 bg-white">
             <div className="max-w-5xl mx-auto px-6">
               <h2 className="text-4xl font-bold text-slate-900 text-center mb-4">
-                Why Choose Arcan for Interior Painting in Toronto
+                Create a Home You Love Coming Home To
               </h2>
               <p className="text-slate-600 text-center text-lg mb-14 max-w-3xl mx-auto">
-                When you hire interior painters in Toronto, you want a team that treats your home with the same care they'd treat their own. That's exactly what you get with Arcan Painting — a family-owned business serving the GTA since 1995 across three generations of the Cañabate family.
+                Your home should be your favorite place. A space for comfort, happiness, and beautiful moments. For three generations, our family has helped Toronto families create homes they love — where every room feels just right.
               </p>
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   {
-                    title: "Family-Owned Since 1995",
-                    desc: "Founded by Jose Cañabate, Arcan Painting has grown across three generations. No subcontractors — every project is completed by our family team, ensuring consistent quality on every residential interior painting job.",
+                    title: "Homes You Love",
+                    desc: "Transform your space into somewhere you can't wait to come home to. Beautiful painting creates the perfect backdrop for family gatherings, quiet evenings, and daily life.",
                   },
                   {
-                    title: "Premium Paints Only",
-                    desc: "We exclusively use Sherwin-Williams and Benjamin Moore premium low-VOC paints. These products are safe for your family and pets while delivering rich colour and exceptional durability.",
+                    title: "Comfort & Safety First",
+                    desc: "We use premium low-VOC paints that are safe for your family and pets. Create a healthy, beautiful home where everyone can breathe easy and feel comfortable.",
                   },
                   {
-                    title: "2-Year Workmanship Warranty",
-                    desc: "Every interior painting project is backed by our 2-year warranty. If any peeling, bubbling, or imperfections appear due to our work, we'll return and fix it — completely free of charge.",
+                    title: "Peace of Mind Guarantee",
+                    desc: "Every project is backed by our 2-year warranty. If any issues appear due to our work, we'll fix it — completely free. Your happiness is our priority.",
                   },
                   {
-                    title: "Licensed & Fully Insured",
-                    desc: "Arcan Painting is fully licensed, insured, and bonded. You can trust that your Toronto home is protected throughout the entire painting process.",
+                    title: "Family Care for Your Family",
+                    desc: "Family-owned since 1995, we treat your home with the same care we'd treat our own. Three generations of the Cañabate family ensuring your home feels just right.",
                   },
                   {
-                    title: "Meticulous Surface Preparation",
-                    desc: "Great interior painting starts with proper prep. We fill holes, sand surfaces, tape trim, and apply primer where needed — because preparation is what separates a good paint job from a great one.",
+                    title: "Attention to Every Detail",
+                    desc: "From wainscotting to accent walls, every detail matters. We prepare surfaces meticulously because beautiful spaces start with proper preparation.",
                   },
                   {
-                    title: "Free Estimates Within 24 Hours",
-                    desc: "We provide detailed, transparent quotes with no hidden fees. Contact us and we'll schedule a free in-home assessment — typically within 24 hours across the GTA.",
+                    title: "Your Vision, Realized",
+                    desc: "We listen to create spaces that reflect your style and bring you joy. Start with a free design consultation to bring your dream home to life.",
                   },
                 ].map((item, i) => (
                   <div key={i} className="bg-slate-50 rounded-2xl p-7 border border-slate-100">

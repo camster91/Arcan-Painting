@@ -48,14 +48,6 @@ async function getGoogleAccessToken() {
   return tokens.access_token;
 }
 
-async function getStoredApiKey(platform) {
-  const rows = await sql(
-    `SELECT access_token FROM marketing_connections WHERE platform = $1 AND is_active = true LIMIT 1`,
-    [platform]
-  );
-  return rows.length ? rows[0].access_token : null;
-}
-
 export async function POST(request) {
   const user = await getCurrentUser(request);
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -63,61 +55,37 @@ export async function POST(request) {
   const { message, sessionId, conversationHistory = [] } = await request.json();
   if (!message) return Response.json({ error: "Message required" }, { status: 400 });
 
-  // Load business context from app_settings, leads, and projects
+  // Load business context from app_settings
   let businessContext = "";
   try {
-    const [settings] = await sql`SELECT * FROM app_settings LIMIT 1`;
-    const recentProjects = await sql`SELECT name, status, total_amount FROM projects ORDER BY created_at DESC LIMIT 3`;
-    const recentLeads = await sql`SELECT name, service_type, status FROM leads ORDER BY created_at DESC LIMIT 3`;
-    const activeCampaigns = await sql`SELECT platform, campaign_name, spend FROM live_campaigns WHERE status = 'active' LIMIT 3`;
-
-    if (settings) {
+    const settings = await sql`SELECT * FROM app_settings LIMIT 1`;
+    if (settings.length > 0) {
+      const s = settings[0];
       businessContext = `
-Business: ${settings.company_name || "Arcan Painting"}
-Email: ${settings.company_email || "info@arcanpainting.ca"}
-Phone: ${settings.company_phone || ""}
-Address: ${settings.company_address || "Toronto, ON"}
+Business: ${s.company_name || "Arcan Painting"}
+Email: ${s.company_email || "info@arcanpainting.ca"}
+Phone: ${s.company_phone || ""}
+Address: ${s.company_address || "Toronto, ON"}
 Services: Residential interior painting, exterior painting, commercial painting, cabinet painting
 Service Area: Greater Toronto Area (GTA) - Toronto, Mississauga, Brampton, Markham, Richmond Hill, Vaughan, Oakville, Burlington
-
-Recent Projects:
-${recentProjects.map(p => `- ${p.name} (${p.status}, $${p.total_amount || 0})`).join('\n')}
-
-Recent Leads:
-${recentLeads.map(l => `- ${l.name} for ${l.service_type} (${l.status})`).join('\n')}
-
-Active Marketing:
-${activeCampaigns.map(c => `- ${c.platform}: ${c.campaign_name} ($${c.spend} spent)`).join('\n')}
 `;
     }
-  } catch (e) { 
-    console.error("[marketing/ai] Context fetch error:", e.message);
-  }
+  } catch (e) { /* ignore */ }
 
-  const systemPrompt = `You are a digital marketing AI assistant and business growth partner for Arcan Painting, a professional painting company in Toronto, Canada.
-
-CORE KNOWLEDGE BASE (Your Brain):
+  const systemPrompt = `You are a digital marketing AI assistant for a professional painting company in Toronto, Canada.
 ${businessContext}
 
-Your mission is to do "One Thing Very Well": Complete all marketing and growth tasks autonomously or by providing expert guidance.
+Your job is to help the business owner with:
+- Writing social media posts, Google Business posts, ad copy
+- Setting up and explaining digital marketing platforms (Facebook Ads, Google Ads, Google Business Profile)
+- Drafting email outreach sequences for real estate agents and property managers
+- Responding to Google reviews professionally
+- SEO blog post ideas and outlines
+- Explaining step-by-step how to connect and use each marketing platform
 
-Your capabilities:
-1.  **Lead Management**: Analyze recent leads, suggest follow-up scripts, and prioritize high-value prospects.
-2.  **Marketing Mastery**: Write high-converting Google Business posts, Facebook ads, and Instagram captions. 
-3.  **Strategic Outreach**: Draft email sequences for real estate agents and property managers based on their specific roles.
-4.  **Reputation Management**: Draft professional, brand-aligned responses to Google reviews.
-5.  **Technical Integration**: Provide step-by-step instructions for connecting Facebook, Google, and other platforms using the connection status data.
-
-PERSONALITY:
-- Professional, local (GTA-focused), proactive, and encouraging.
-- Refer to the business as "Arcan Painting" or "we/us" when appropriate.
-- When helping connect platforms, provide clear, actionable steps.
-- If you notice a high-value lead or a project status that needs attention, proactively mention it.
-
-TASK COMPLETION:
-- If asked to write something, provide the full text ready to be copy-pasted.
-- If asked "how are we doing", summarize the recent projects, leads, and active campaigns from your brain.
-- Always aim to be the "One Thing Very Well" agent for the current task.`;
+Be friendly, practical, and always tailor advice to the local Toronto/GTA painting market.
+When helping connect platforms, give clear step-by-step instructions.
+If something breaks or an error occurs, help diagnose and fix it.`;
 
   // Build messages array
   const messages = [
@@ -163,7 +131,7 @@ TASK COMPLETION:
   }
 
   // Strategy 2: Fall back to GEMINI_API_KEY if OAuth unavailable
-  const geminiKey = process.env.GEMINI_API_KEY || (await getStoredApiKey('gemini_api'));
+  const geminiKey = process.env.GEMINI_API_KEY;
   if (geminiKey && !reply) {
     try {
       const geminiMessages = messages.map((m) => ({
@@ -194,16 +162,9 @@ TASK COMPLETION:
   }
 
   // Strategy 3: Ollama Cloud fallback
-  let ollamaUrl = process.env.OLLAMA_CLOUD_URL;
-  let ollamaKey = process.env.OLLAMA_CLOUD_KEY;
-  
-  const storedOllama = await getStoredApiKey('ollama_cloud');
-  if (storedOllama) {
-    if (storedOllama.startsWith('http')) ollamaUrl = storedOllama;
-    else ollamaKey = storedOllama;
-  }
-
-  if (ollamaUrl && !reply) {
+  const ollamaUrl = process.env.OLLAMA_CLOUD_URL;
+  const ollamaKey = process.env.OLLAMA_CLOUD_KEY;
+  if (ollamaUrl && ollamaKey && !reply) {
     try {
       const res = await fetch(`${ollamaUrl}/api/chat`, {
         method: "POST",
@@ -224,33 +185,6 @@ TASK COMPLETION:
       }
     } catch (e) {
       console.error("[marketing/ai] Ollama Cloud error:", e.message);
-    }
-  }
-
-  // Strategy 4: OpenAI (ChatGPT) fallback
-  const openaiKey = process.env.OPENAI_API_KEY || (await getStoredApiKey('openai_api'));
-  if (openaiKey && !reply) {
-    try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${openaiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [{ role: "system", content: systemPrompt }, ...messages],
-          max_tokens: 1024,
-          temperature: 0.7,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        reply = data.choices?.[0]?.message?.content;
-        modelUsed = "gpt-4o";
-      }
-    } catch (e) {
-      console.error("[marketing/ai] OpenAI API error:", e.message);
     }
   }
 
