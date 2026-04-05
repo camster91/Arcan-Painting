@@ -147,11 +147,11 @@ export default function SystemHealthPage() {
                 <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center">
                   <Mail className="w-6 h-6 text-amber-600" />
                 </div>
-                <StatusBadge status={health?.mailgun?.status} />
+                <StatusBadge status={health?.email?.status} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Mailgun API</h3>
+              <h3 className="text-lg font-bold text-gray-900">Maton → Gmail</h3>
               <p className="text-sm text-gray-500 mt-1">Outbound Email & Sequences</p>
-              <p className="text-[10px] text-gray-400 mt-2 font-mono">{health?.mailgun?.domain}</p>
+              <p className="text-[10px] text-gray-400 mt-2 font-mono">{health?.env?.GOOGLE_EMAIL || "info@arcanpainting.ca"}</p>
             </div>
             <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Daily Limit: 500</span>

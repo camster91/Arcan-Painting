@@ -1,5 +1,25 @@
 import sql from "./sql.js";
 
+/**
+ * Build an RFC 2822 email message and base64url-encode it for the Gmail API.
+ */
+function buildRawMessage({ from, to, subject, html, text }) {
+  const headers = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/html; charset="UTF-8"`,
+  ];
+  const body = html || text || "";
+  const raw = [...headers, "", body].join("\r\n");
+  return Buffer.from(raw)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
 export async function sendEmail({
   to,
   from,
@@ -12,81 +32,73 @@ export async function sendEmail({
   userId,
   metadata = {},
 }) {
-  const apiKey = process.env.MAILGUN_API_KEY;
-  const domain = process.env.MAILGUN_DOMAIN || "ashbi.ca";
+  const matonKey = process.env.MATON_API_KEY;
 
-  if (!apiKey) {
+  if (!matonKey) {
     throw new Error(
-      "Mailgun API key is not configured. Please set MAILGUN_API_KEY in your project secrets.",
+      "Maton API key is not configured. Please set MATON_API_KEY in your project secrets.",
     );
   }
 
-  // Use Arcan Painting's domain email
-  const defaultFrom = "Arcan Painting <noreply@arcanpainting.ca>";
-
+  const defaultFrom = `Arcan Painting <${process.env.GOOGLE_EMAIL || "info@arcanpainting.ca"}>`;
   const finalFrom = from || defaultFrom;
   const toArray = Array.isArray(to) ? to : [to];
-  const finalTo = toArray[0]; // For logging, use first recipient
+  const finalTo = toArray[0];
 
   let status = "failed";
   let messageId = null;
   let errorMessage = null;
 
   try {
-    // Build multipart/form-data body for Mailgun API
-    const formData = new FormData();
-    formData.append("from", finalFrom);
-    toArray.forEach((recipient) => formData.append("to", recipient));
-    formData.append("subject", subject);
-    if (html) formData.append("html", html);
-    if (text) formData.append("text", text);
+    // Send each recipient via Maton → Gmail gateway
+    for (const recipient of toArray) {
+      const raw = buildRawMessage({ from: finalFrom, to: recipient, subject, html, text });
 
-    // Basic auth: api:MAILGUN_API_KEY
-    const credentials = btoa(`api:${apiKey}`);
-
-    const response = await fetch(
-      `https://api.mailgun.net/v3/${domain}/messages`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${credentials}`,
+      const response = await fetch(
+        "https://gateway.maton.ai/google-mail/gmail/v1/users/me/messages/send",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${matonKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ raw }),
         },
-        body: formData,
-      },
-    );
+      );
 
-    let data = null;
-    try {
-      data = await response.json();
-    } catch (e) {
-      // no-op: some error responses may not be JSON
-    }
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (e) {
+        // no-op
+      }
 
-    if (!response.ok) {
-      errorMessage =
-        data?.message ||
-        `Failed to send email [${response.status}] ${response.statusText}`;
-      throw new Error(errorMessage);
+      if (!response.ok) {
+        errorMessage =
+          data?.error?.message ||
+          `Failed to send email [${response.status}] ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      messageId = data?.id;
     }
 
     status = "sent";
-    messageId = data?.id;
 
     // Log successful email
     try {
       await sql`
         INSERT INTO email_logs (
-          to_email, from_email, subject, template_name, status, resend_id, 
+          to_email, from_email, subject, template_name, status, resend_id,
           related_type, related_id, user_id, metadata, sent_at
         ) VALUES (
-          ${finalTo}, ${finalFrom}, ${subject}, ${templateName}, ${status}, 
-          ${messageId}, ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)}, 
+          ${finalTo}, ${finalFrom}, ${subject}, ${templateName}, ${status},
+          ${messageId}, ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)},
           CURRENT_TIMESTAMP
         )
       `;
     } catch (logError) {
       console.error("Failed to log email send:", logError);
-      // Don't fail the email send if logging fails
     }
 
     return { id: messageId };
@@ -101,7 +113,7 @@ export async function sendEmail({
           related_type, related_id, user_id, metadata, sent_at
         ) VALUES (
           ${finalTo}, ${finalFrom}, ${subject}, ${templateName}, ${status}, ${errorMessage},
-          ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)}, 
+          ${relatedType}, ${relatedId}, ${userId}, ${JSON.stringify(metadata)},
           CURRENT_TIMESTAMP
         )
       `;

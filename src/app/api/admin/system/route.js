@@ -10,12 +10,11 @@ export async function GET(request) {
   const health = {
     database: { status: "unknown", message: "" },
     ollama: { status: "unknown", url: process.env.OLLAMA_URL || "http://localhost:11434" },
-    mailgun: { status: "unknown", domain: process.env.MAILGUN_DOMAIN },
+    email: { status: "unknown", provider: "maton" },
     env: {
       DATABASE_URL: !!process.env.DATABASE_URL,
-      GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
-      MAILGUN_API_KEY: !!process.env.MAILGUN_API_KEY,
+      MATON_API_KEY: !!process.env.MATON_API_KEY,
+      GOOGLE_EMAIL: process.env.GOOGLE_EMAIL || "info@arcanpainting.ca",
       META_APP_ID: !!process.env.META_APP_ID,
     }
   };
@@ -50,23 +49,22 @@ export async function GET(request) {
     health.ollama.message = err.message;
   }
 
-  // 3. Check Mailgun
-  if (process.env.MAILGUN_API_KEY) {
+  // 3. Check Maton → Gmail
+  if (process.env.MATON_API_KEY) {
     try {
-        const credentials = btoa(`api:${process.env.MAILGUN_API_KEY}`);
-        const res = await fetch(`https://api.mailgun.net/v3/domains/${process.env.MAILGUN_DOMAIN}`, {
-            headers: { Authorization: `Basic ${credentials}` }
+        const res = await fetch("https://gateway.maton.ai/google-mail/gmail/v1/users/me/labels", {
+            headers: { Authorization: `Bearer ${process.env.MATON_API_KEY}` }
         });
         if (res.ok) {
-            health.mailgun.status = "healthy";
+            health.email.status = "healthy";
         } else {
-            health.mailgun.status = "auth_error";
+            health.email.status = "auth_error";
         }
     } catch {
-        health.mailgun.status = "network_error";
+        health.email.status = "network_error";
     }
   } else {
-      health.mailgun.status = "missing_key";
+      health.email.status = "missing_key";
   }
 
   return Response.json({ health });

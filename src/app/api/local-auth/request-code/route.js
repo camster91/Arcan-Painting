@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { sendEmail } from "@/app/api/utils/send-email";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { ensureSchema } from "@/migrations/001-initial-schema";
@@ -11,60 +12,38 @@ function generateCode() {
 }
 
 async function sendCodeEmail(username, code) {
-  const mailgunDomain = process.env.MAILGUN_DOMAIN || "ashbi.ca";
-  const mailgunApiKey = process.env.MAILGUN_API_KEY;
-
-  if (!mailgunApiKey) {
-    console.warn("[auth] MAILGUN_API_KEY not set — skipping email send");
+  try {
+    await sendEmail({
+      to: username,
+      subject: "Your Arcan Painting login code",
+      text: `Hi,\n\nYour Arcan Painting admin login code is:\n\n${code}\n\nThis code expires in 15 minutes. If you did not request this, you can ignore this email.\n\nArcan Painting\nhttps://arcanpainting.ca`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <img src="https://arcanpainting.ca/logo.png" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
+          </div>
+          <h2 style="color: #1e293b; text-align: center;">Sign in to Arcan Painting</h2>
+          <p style="color: #475569; text-align: center;">Click the button below to sign in to your admin dashboard:</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="https://arcanpainting.ca/api/local-auth/magic-link?token=${code}&email=${encodeURIComponent(username)}"
+               style="background: #F59E0B; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block;">
+              Sign in to Arcan Painting &rarr;
+            </a>
+          </div>
+          <p style="color: #94a3b8; font-size: 13px; text-align: center;">Or enter this code manually:</p>
+          <div style="background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+            <span style="font-size: 40px; font-weight: bold; letter-spacing: 8px; color: #1e293b; font-family: monospace;">${code}</span>
+          </div>
+          <p style="color: #94a3b8; font-size: 13px; text-align: center;">Expires in 15 minutes. Do not share this code.</p>
+        </div>
+      `,
+      templateName: "login_code",
+    });
+    return true;
+  } catch (err) {
+    console.error("[auth] Email send error:", err.message);
     return false;
   }
-
-  const body = new URLSearchParams({
-    from: `Arcan Painting <noreply@arcanpainting.ca>`,
-    to: username,
-    subject: "Your Arcan Painting login code",
-    text: `Hi,\n\nYour Arcan Painting admin login code is:\n\n${code}\n\nThis code expires in 15 minutes. If you did not request this, you can ignore this email.\n\nArcan Painting\nhttps://arcanpainting.ca`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <img src="https://arcanpainting.ca/logo.png" alt="Arcan Painting" style="width: 64px; height: 64px; object-fit: contain;" />
-        </div>
-        <h2 style="color: #1e293b; text-align: center;">Sign in to Arcan Painting</h2>
-        <p style="color: #475569; text-align: center;">Click the button below to sign in to your admin dashboard:</p>
-        <div style="text-align: center; margin: 24px 0;">
-          <a href="https://arcanpainting.ca/api/local-auth/magic-link?token=${code}&email=${encodeURIComponent(username)}"
-             style="background: #F59E0B; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block;">
-            Sign in to Arcan Painting &rarr;
-          </a>
-        </div>
-        <p style="color: #94a3b8; font-size: 13px; text-align: center;">Or enter this code manually:</p>
-        <div style="background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
-          <span style="font-size: 40px; font-weight: bold; letter-spacing: 8px; color: #1e293b; font-family: monospace;">${code}</span>
-        </div>
-        <p style="color: #94a3b8; font-size: 13px; text-align: center;">Expires in 15 minutes. Do not share this code.</p>
-      </div>
-    `,
-  });
-
-  const response = await fetch(
-    `https://api.mailgun.net/v3/${mailgunDomain}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${btoa(`api:${mailgunApiKey}`)}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body.toString(),
-    }
-  );
-
-  if (!response.ok) {
-    const text = await response.text();
-    console.error("[auth] Mailgun error:", response.status, text);
-    return false;
-  }
-
-  return true;
 }
 
 export async function POST(request) {

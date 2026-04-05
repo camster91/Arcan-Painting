@@ -1,61 +1,32 @@
-import { google } from "googleapis";
-
-let _oauth2Client = null;
-
 /**
- * Returns a singleton OAuth2 client configured with credentials from env vars.
- * Automatically sets and refreshes the access token on first use.
+ * Google services via Maton.ai gateway.
+ * Replaces direct googleapis OAuth with Maton API key-based gateway calls.
  */
-export function getGoogleOAuth2Client() {
-  if (_oauth2Client) return _oauth2Client;
 
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+const MATON_GATEWAY = "https://gateway.maton.ai";
 
-  if (!clientId || !clientSecret || !refreshToken) {
+function getMatonKey() {
+  const key = process.env.MATON_API_KEY;
+  if (!key) {
     throw new Error(
-      "Missing Google OAuth credentials. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REFRESH_TOKEN.",
+      "Missing Maton API key. Set MATON_API_KEY in your project secrets.",
     );
   }
+  return key;
+}
 
-  _oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
-  _oauth2Client.setCredentials({ refresh_token: refreshToken });
-
-  // Auto-refresh: googleapis handles this internally when refresh_token is set,
-  // but we listen for new tokens to keep the singleton up to date.
-  _oauth2Client.on("tokens", (tokens) => {
-    if (tokens.access_token) {
-      _oauth2Client.setCredentials({
-        ...(_oauth2Client.credentials || {}),
-        ...tokens,
-      });
-    }
-  });
-
-  return _oauth2Client;
+function matonHeaders() {
+  return {
+    Authorization: `Bearer ${getMatonKey()}`,
+    "Content-Type": "application/json",
+  };
 }
 
 /**
- * Returns an authenticated Gmail API client.
- */
-export function getGmailClient() {
-  return google.gmail({ version: "v1", auth: getGoogleOAuth2Client() });
-}
-
-/**
- * Returns an authenticated Google Calendar API client.
- */
-export function getCalendarClient() {
-  return google.calendar({ version: "v3", auth: getGoogleOAuth2Client() });
-}
-
-/**
- * Sends an email via Gmail API using the raw RFC 2822 format.
+ * Sends an email via Maton → Gmail API using the raw RFC 2822 format.
  * @param {{ to: string, subject: string, body: string, replyTo?: string }} opts
  */
 export async function sendGmailEmail({ to, subject, body, replyTo }) {
-  const gmail = getGmailClient();
   const fromEmail = process.env.GOOGLE_EMAIL || "info@arcanpainting.ca";
 
   const headers = [
@@ -71,17 +42,123 @@ export async function sendGmailEmail({ to, subject, body, replyTo }) {
 
   const rawMessage = [...headers, "", body].join("\r\n");
 
-  // Base64url encode the message
   const encoded = Buffer.from(rawMessage)
     .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 
-  const result = await gmail.users.messages.send({
-    userId: "me",
-    requestBody: { raw: encoded },
-  });
+  const response = await fetch(
+    `${MATON_GATEWAY}/google-mail/gmail/v1/users/me/messages/send`,
+    {
+      method: "POST",
+      headers: matonHeaders(),
+      body: JSON.stringify({ raw: encoded }),
+    },
+  );
 
-  return result.data;
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(
+      `Gmail send failed: ${err?.error?.message || response.statusText}`,
+    );
+  }
+
+  return response.json();
+}
+
+/**
+ * Returns a calendar-like object that mimics the googleapis calendar interface,
+ * backed by Maton gateway.
+ */
+export function getCalendarClient() {
+  return {
+    events: {
+      async insert({ calendarId, requestBody }) {
+        const cid = calendarId || "primary";
+        const response = await fetch(
+          `${MATON_GATEWAY}/google-calendar/calendar/v3/calendars/${cid}/events`,
+          {
+            method: "POST",
+            headers: matonHeaders(),
+            body: JSON.stringify(requestBody),
+          },
+        );
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(
+            `Calendar insert failed: ${err?.error?.message || response.statusText}`,
+          );
+        }
+
+        const data = await response.json();
+        return { data };
+      },
+
+      async list({ calendarId, timeMin, timeMax, maxResults, singleEvents, orderBy }) {
+        const cid = calendarId || "primary";
+        const params = new URLSearchParams();
+        if (timeMin) params.set("timeMin", timeMin);
+        if (timeMax) params.set("timeMax", timeMax);
+        if (maxResults) params.set("maxResults", String(maxResults));
+        if (singleEvents != null) params.set("singleEvents", String(singleEvents));
+        if (orderBy) params.set("orderBy", orderBy);
+
+        const response = await fetch(
+          `${MATON_GATEWAY}/google-calendar/calendar/v3/calendars/${cid}/events?${params}`,
+          { headers: matonHeaders() },
+        );
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(
+            `Calendar list failed: ${err?.error?.message || response.statusText}`,
+          );
+        }
+
+        const data = await response.json();
+        return { data };
+      },
+    },
+  };
+}
+
+/**
+ * @deprecated No longer needed — Maton handles auth. Kept for compatibility.
+ */
+export function getGoogleOAuth2Client() {
+  return null;
+}
+
+/**
+ * @deprecated Use sendGmailEmail directly. Kept for compatibility.
+ */
+export function getGmailClient() {
+  return {
+    users: {
+      messages: {
+        async send({ userId, requestBody }) {
+          const response = await fetch(
+            `${MATON_GATEWAY}/google-mail/gmail/v1/users/me/messages/send`,
+            {
+              method: "POST",
+              headers: matonHeaders(),
+              body: JSON.stringify(requestBody),
+            },
+          );
+
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(
+              `Gmail send failed: ${err?.error?.message || response.statusText}`,
+            );
+          }
+
+          const data = await response.json();
+          return { data };
+        },
+      },
+    },
+  };
 }

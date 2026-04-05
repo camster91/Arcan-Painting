@@ -84,7 +84,7 @@ export async function POST(request) {
         .replace(/\{\{city\}\}/g, cityName)
         .replace(/\{\{company\}\}/g, companyName);
 
-      // Send via Mailgun
+      // Send via Maton → Gmail
       const emailResult = await sendEmail({
         to: prospect.email,
         from: fromEmail,
@@ -123,7 +123,7 @@ export async function POST(request) {
           email: prospect.email,
           name: prospect.name,
           status: "failed",
-          error: "Unknown Mailgun error",
+          error: "Unknown email send error",
         });
       }
 
