@@ -1,5 +1,5 @@
 (() => {
-  if (!import.meta.env.DEV) return; // skip in prod
+  if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') return; // skip in prod
 
   let panel = null; // active overlay element
   let lastError = null; // remember error for "Fix"

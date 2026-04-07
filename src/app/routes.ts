@@ -104,7 +104,7 @@ function generateRoutes(node: Tree): RouteConfigEntry[] {
 
 	return routes;
 }
-if (import.meta.env.DEV) {
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
 	import.meta.glob('./**/page.jsx', {});
 	if (import.meta.hot) {
 		import.meta.hot.accept((newSelf) => {
