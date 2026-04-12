@@ -1,12 +1,18 @@
 import Stripe from 'stripe';
 import { CREDIT_PACKAGES } from '../../utils/packages.js';
+import { requireAuth } from '../../utils/auth.js';
 
 const PACKAGES = Object.fromEntries(CREDIT_PACKAGES.map(p => [p.id, p]));
 
 export async function POST(request) {
   try {
+    const user = await requireAuth(request);
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const { packageId, userId } = await request.json();
+    const { packageId } = await request.json();
 
     const pkg = PACKAGES[packageId];
     if (!pkg) {
@@ -28,7 +34,7 @@ export async function POST(request) {
       success_url: `${origin}/admin?credits=success`,
       cancel_url: `${origin}/admin?credits=cancelled`,
       metadata: {
-        user_id: userId || 'gerardo',
+        user_id: user.username,
         package_id: packageId,
         credits: pkg.credits.toString(),
       },
