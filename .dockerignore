@@ -1,0 +1,17 @@
+node_modules
+.git
+.github
+.env
+.env.*
+*.md
+*.png
+*.jpg
+*.jpeg
+*.zip
+*.apk
+*.idsig
+test-results
+coverage
+.turbo
+.openclaw
+arcan-openclaw

@@ -769,9 +769,11 @@ Arcan Painting
     // ── Seed admin users ────────────────────────────────────────────────────
     const existingAdmins = await sql`SELECT COUNT(*) as count FROM auth_users WHERE username IN ('info@arcanpainting.ca', 'cameron@ashbi.ca')`;
     if (parseInt(existingAdmins[0].count) < 2) {
+      const adminPass = process.env.ADMIN_PASSWORD || (() => { throw new Error('ADMIN_PASSWORD env var required for seeding') })();
+      const ashbiPass = process.env.ASHBI_PASSWORD || (() => { throw new Error('ASHBI_PASSWORD env var required for seeding') })();
       const [hash1, hash2] = await Promise.all([
-        argon2Hash('Arcan2026!'),
-        argon2Hash('Ashbi2026!')
+        argon2Hash(adminPass),
+        argon2Hash(ashbiPass)
       ]);
       await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('info@arcanpainting.ca', ${hash1}, 'owner', true) ON CONFLICT (username) DO NOTHING`;
       await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('cameron@ashbi.ca', ${hash2}, 'admin', true) ON CONFLICT (username) DO NOTHING`;

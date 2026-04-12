@@ -3,6 +3,15 @@ import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
   try {
@@ -134,13 +143,13 @@ export async function POST(request) {
         subject: `New Lead: ${body.name} — ${body.serviceType}`,
         replyTo: hasEmail ? body.email : undefined,
         body: `<h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${body.name}</p>
-${hasEmail ? `<p><strong>Email:</strong> ${body.email}</p>` : ""}
-${hasPhone ? `<p><strong>Phone:</strong> ${body.phone}</p>` : ""}
-<p><strong>Service:</strong> ${body.serviceType}</p>
-<p><strong>Preferred Contact:</strong> ${preferredContact}</p>
-${body.address ? `<p><strong>Address:</strong> ${body.address}</p>` : ""}
-${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDescription}</p>` : ""}`,
+<p><strong>Name:</strong> ${escapeHtml(body.name)}</p>
+${hasEmail ? `<p><strong>Email:</strong> ${escapeHtml(body.email)}</p>` : ""}
+${hasPhone ? `<p><strong>Phone:</strong> ${escapeHtml(body.phone)}</p>` : ""}
+<p><strong>Service:</strong> ${escapeHtml(body.serviceType)}</p>
+<p><strong>Preferred Contact:</strong> ${escapeHtml(preferredContact)}</p>
+${body.address ? `<p><strong>Address:</strong> ${escapeHtml(body.address)}</p>` : ""}
+${body.projectDescription ? `<p><strong>Description:</strong> ${escapeHtml(body.projectDescription)}</p>` : ""}`,
       });
 
       // Send confirmation to customer if they provided email
@@ -148,8 +157,8 @@ ${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDesc
         await sendGmailEmail({
           to: body.email,
           subject: "We received your request — Arcan Painting",
-          body: `<p>Hi ${body.name},</p>
-<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${body.serviceType}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
+          body: `<p>Hi ${escapeHtml(body.name)},</p>
+<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${escapeHtml(body.serviceType)}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
 <p>Best regards,<br>The Arcan Painting Team</p>`,
         });
       }

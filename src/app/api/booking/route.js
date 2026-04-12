@@ -35,7 +35,7 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    // Parse date + time — accepts "HH:MM" (24hr) or "HH:MM AM/PM" (12hr)
+    // Parse date + time ï¿½ accepts "HH:MM" (24hr) or "HH:MM AM/PM" (12hr)
     let timeStr = body.time.trim();
     const ampmMatch = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     if (ampmMatch) {
@@ -77,15 +77,16 @@ export async function POST(request) {
 
     // Send confirmation email to the customer
     try {
+      const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       await sendGmailEmail({
         to: body.email,
         subject: "Booking Confirmed â€” Arcan Painting",
-        body: `<p>Hi ${body.name},</p>
+        body: `<p>Hi ${esc(body.name)},</p>
 <p>Your booking has been confirmed!</p>
 <ul>
-  <li><strong>Service:</strong> ${body.service}</li>
-  <li><strong>Date:</strong> ${body.date}</li>
-  <li><strong>Time:</strong> ${body.time}</li>
+  <li><strong>Service:</strong> ${esc(body.service)}</li>
+  <li><strong>Date:</strong> ${esc(body.date)}</li>
+  <li><strong>Time:</strong> ${esc(body.time)}</li>
 </ul>
 <p>We look forward to working with you. If you need to reschedule, please contact us.</p>
 <p>Best regards,<br>The Arcan Painting Team</p>`,
