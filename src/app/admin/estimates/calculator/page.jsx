@@ -99,7 +99,7 @@ export default function EstimateCalculatorPage() {
               error={calculator.error}
               notification={calculator.notification}
               onSave={calculator.onSave}
-              isLoading={calculator.isLoading}
+              isPending={calculator.isPending}
             />
           </div>
         </div>

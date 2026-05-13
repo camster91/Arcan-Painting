@@ -13,7 +13,7 @@ export function EstimateSummary({
   error,
   notification,
   onSave,
-  isLoading,
+  isPending,
 }) {
   const estimate = useMemo(
     () =>
@@ -116,11 +116,11 @@ export function EstimateSummary({
 
       <button
         onClick={onSave}
-        disabled={isLoading}
+        disabled={isPending}
         className="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
       >
         <Save size={16} />
-        {isLoading ? "Saving..." : "Save Estimate"}
+        {isPending ? "Saving..." : "Save Estimate"}
       </button>
 
       <div className="mt-4 text-xs text-slate-500 text-center leading-relaxed">
