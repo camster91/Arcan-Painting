@@ -29,9 +29,16 @@ const walk = (dir) => {
         const m = l.match(/(import|export).*from\s+['"](\/app\/src\/[^'"]+)['"]/);
         if (m) {
           const importPath = m[2];
-          if (!importPath.endsWith('.js') && !importPath.endsWith('.json') && !importPath.endsWith('.css')) {
+          if (!importPath.endsWith('.js') && !importPath.endsWith('.json') && !importPath.endsWith('.css') && !importPath.endsWith('.jsx')) {
+            // Check if .jsx version exists (don't double-suffix)
+            const jsxFile = importPath + '.jsx';
+            const jsFile = importPath + '.js';
+            if (fs.existsSync(jsxFile)) {
+              changed = true;
+              return l.replace(importPath, importPath + '.jsx');
+            }
             changed = true;
-            return l.replace(importPath, importPath + '.js');
+            return l.replace(importPath, jsFile);
           }
         }
         return l;
