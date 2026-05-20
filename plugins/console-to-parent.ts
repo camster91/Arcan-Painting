@@ -21,7 +21,7 @@ export default function consoleToParent(): Plugin {
   if (typeof window === 'undefined') return;
   if (!window || window.parent === window) return;
 
-  const allow = '*';
+  const allow = process.env.NODE_ENV === 'development' ? ['http://localhost:5173'] : [];
   const allowed = (origin) =>
     allow === '*' ||
     (Array.isArray(allow) ? allow.includes(origin) : allow === origin);
