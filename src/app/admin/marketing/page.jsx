@@ -17,6 +17,7 @@ import {
   ExternalLink,
   RefreshCw,
   MapPin,
+  Activity,
 } from "lucide-react";
 
 const PLATFORMS = [
@@ -335,66 +336,83 @@ export default function MarketingPage() {
             </div>
 
             {/* Marketing Dashboards */}
-            {(getConnectionStatus("google") || getConnectionStatus("facebook")) && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Active Dashboards
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getConnectionStatus("google") && (
-                    <>
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Active Dashboards
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a
+                  href="/admin/marketing/ads-launch"
+                  className="flex items-center justify-between p-4 rounded-xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 hover:border-orange-300 transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center text-white">
+                      <Activity className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">Ads Launch Health</p>
+                      <p className="text-xs text-gray-600">Pixel, CAPI, leads, campaigns, queue</p>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-orange-500 transition-colors" />
+                </a>
+                {(getConnectionStatus("google") || getConnectionStatus("facebook")) && (
+                  <>
+                    {getConnectionStatus("google") && (
+                      <>
+                        <a
+                          href="/admin/marketing/google-ads"
+                          className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white">
+                              <BarChart3 className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">Google Ads</p>
+                              <p className="text-xs text-gray-500">Manage search & display campaigns</p>
+                            </div>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                        </a>
+                        <a
+                          href="/admin/marketing/google-business"
+                          className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                              <MapPin className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">Google Business</p>
+                              <p className="text-xs text-gray-500">Manage reviews, posts & Map SEO</p>
+                            </div>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors" />
+                        </a>
+                      </>
+                    )}
+                    {getConnectionStatus("facebook") && (
                       <a
-                        href="/admin/marketing/google-ads"
-                        className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
+                        href="/admin/marketing/facebook"
+                        className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50 transition-all group"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white">
-                            <BarChart3 className="w-6 h-6" />
+                          <div className="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center text-white">
+                            <Megaphone className="w-6 h-6" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-gray-900">Google Ads</p>
-                            <p className="text-xs text-gray-500">Manage search & display campaigns</p>
+                            <p className="text-sm font-bold text-gray-900">Facebook Ads</p>
+                            <p className="text-xs text-gray-500">Manage FB & IG ad campaigns</p>
                           </div>
                         </div>
-                        <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                        <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
                       </a>
-                      <a
-                        href="/admin/marketing/google-business"
-                        className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white">
-                            <MapPin className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">Google Business</p>
-                            <p className="text-xs text-gray-500">Manage reviews, posts & Map SEO</p>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors" />
-                      </a>
-                    </>
-                  )}
-                  {getConnectionStatus("facebook") && (
-                    <a
-                      href="/admin/marketing/facebook"
-                      className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50 transition-all group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center text-white">
-                          <Megaphone className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">Facebook Ads</p>
-                          <p className="text-xs text-gray-500">Manage FB & IG ad campaigns</p>
-                        </div>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
-                    </a>
-                  )}
-                </div>
+                    )}
+                  </>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Quick Actions */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">

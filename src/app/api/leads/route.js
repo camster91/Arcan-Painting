@@ -49,11 +49,11 @@ export async function POST(request) {
     // Insert new lead into database
     const rows = await sql`
       INSERT INTO leads (
-        name, 
-        email, 
-        phone, 
-        service_type, 
-        project_description, 
+        name,
+        email,
+        phone,
+        service_type,
+        project_description,
         preferred_contact,
         status,
         lead_source,
@@ -67,11 +67,11 @@ export async function POST(request) {
         ${body.projectDescription || ""},
         ${body.preferredContact || "phone"},
         'new',
-        'website',
+        ${body.leadSource || "website"},
         ${followUpDate.toISOString().split("T")[0]},
         ${body.address || ""}
       )
-      RETURNING id, name, email, phone, service_type, status, created_at
+      RETURNING id, name, email, phone, service_type, status, lead_source, created_at
     `;
 
     const newLead = rows[0];
@@ -103,6 +103,7 @@ export async function POST(request) {
         phone: newLead.phone,
         serviceType: newLead.service_type,
         status: newLead.status,
+        leadSource: newLead.lead_source,
         createdAt: newLead.created_at,
       },
     });
@@ -126,6 +127,8 @@ export async function GET(request) {
     const url = new URL(request.url);
 
     const status = url.searchParams.get("status");
+    const source = url.searchParams.get("source");
+    const sort = url.searchParams.get("sort");
     const page = parseInt(url.searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(url.searchParams.get("limit")) || 20, 100); // cap at 100
     const search = url.searchParams.get("search");
@@ -147,18 +150,36 @@ export async function GET(request) {
       queryValues.push(status);
     }
 
+    if (source) {
+      paramCount++;
+      queryParts.push(`AND lead_source = $${paramCount}`);
+      queryValues.push(source);
+    }
+
+    // Build dynamic ORDER BY from sort param. Defaults to newest first.
+    let orderBy = "ORDER BY created_at DESC";
+    if (sort) {
+      const sortMap = {
+        created_desc: "created_at DESC",
+        created_asc: "created_at ASC",
+        name_asc: "name ASC",
+        name_desc: "name DESC",
+        status_asc: "status ASC",
+      };
+      orderBy = `ORDER BY ${sortMap[sort] || "created_at DESC"}`;
+    }
+    queryParts.push(orderBy);
+
     if (search) {
       paramCount++;
       queryParts.push(`AND (
-        LOWER(name) LIKE LOWER($${paramCount}) OR 
-        LOWER(email) LIKE LOWER($${paramCount}) OR 
+        LOWER(name) LIKE LOWER($${paramCount}) OR
+        LOWER(email) LIKE LOWER($${paramCount}) OR
         LOWER(phone) LIKE LOWER($${paramCount}) OR
         LOWER(service_type) LIKE LOWER($${paramCount})
       )`);
       queryValues.push(`%${search}%`);
     }
-
-    queryParts.push("ORDER BY created_at DESC");
 
     // Add pagination
     paramCount++;
@@ -186,11 +207,17 @@ export async function GET(request) {
       countValues.push(status);
     }
 
+    if (source) {
+      countParamCount++;
+      countQuery += ` AND lead_source = $${countParamCount}`;
+      countValues.push(source);
+    }
+
     if (search) {
       countParamCount++;
       countQuery += ` AND (
-        LOWER(name) LIKE LOWER($${countParamCount}) OR 
-        LOWER(email) LIKE LOWER($${countParamCount}) OR 
+        LOWER(name) LIKE LOWER($${countParamCount}) OR
+        LOWER(email) LIKE LOWER($${countParamCount}) OR
         LOWER(phone) LIKE LOWER($${countParamCount}) OR
         LOWER(service_type) LIKE LOWER($${countParamCount})
       )`;

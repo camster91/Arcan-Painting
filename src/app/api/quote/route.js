@@ -22,7 +22,8 @@ export async function POST(request) {
 
     // Save as lead via internal API
     try {
-      const leadResponse = await fetch(`${new URL(request.url).origin}/api/leads`, {
+      const baseUrl = process.env.APP_URL || new URL(request.url).origin;
+      const leadResponse = await fetch(`${baseUrl}/api/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, phone, serviceType, projectDescription: details, address }),

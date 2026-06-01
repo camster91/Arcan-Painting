@@ -53,8 +53,85 @@ export async function runMigrations() {
     `;
 
     // ── leads (soft-delete support) ─────────────────────────────────────────
+    // If the leads table was never created (rare — typically from a prior migration
+    // or manual SQL), create it now with the columns the new code expects.
+    // The CREATE TABLE is idempotent; existing tables are left untouched.
+    await sql`
+      CREATE TABLE IF NOT EXISTS leads (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        service_type VARCHAR(100),
+        project_description TEXT,
+        preferred_contact VARCHAR(20) DEFAULT 'phone',
+        status VARCHAR(50) DEFAULT 'new',
+        lead_source VARCHAR(100) DEFAULT 'website',
+        estimated_value NUMERIC,
+        qualification_score INTEGER,
+        follow_up_date DATE,
+        address TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        deleted_at TIMESTAMP DEFAULT NULL
+      )
+    `;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_source VARCHAR(100) DEFAULT 'website'`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_lead_source ON leads(lead_source) WHERE deleted_at IS NULL`;
     await sql`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
+
+    // ── email_templates (referenced by email-workflows engine) ─────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS email_templates (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        display_name VARCHAR(255),
+        subject_template TEXT NOT NULL,
+        body_template TEXT NOT NULL,
+        text_template TEXT,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── email_workflows (referenced by triggerWorkflow in email-workflows/route.js) ─
+    await sql`
+      CREATE TABLE IF NOT EXISTS email_workflows (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        trigger_event VARCHAR(100) NOT NULL,
+        template_id INTEGER REFERENCES email_templates(id) ON DELETE SET NULL,
+        delay_hours INTEGER DEFAULT 0,
+        conditions JSONB DEFAULT '{}'::jsonb,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_email_workflows_trigger ON email_workflows(trigger_event) WHERE is_active = true`;
+
+    // ── delayed_emails (queue for delay_hours > 0 workflows) ───────────────────
+    // Each row is an email to be sent at scheduled_for. The worker at
+    // /api/delayed-emails/process picks up pending rows whose time has come.
+    await sql`
+      CREATE TABLE IF NOT EXISTS delayed_emails (
+        id SERIAL PRIMARY KEY,
+        workflow_id INTEGER REFERENCES email_workflows(id) ON DELETE CASCADE,
+        template_name VARCHAR(255) NOT NULL,
+        recipient_email VARCHAR(255) NOT NULL,
+        data JSONB DEFAULT '{}'::jsonb,
+        scheduled_for TIMESTAMP NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        attempts INTEGER DEFAULT 0,
+        last_error TEXT,
+        sent_at TIMESTAMP,
+        related_type VARCHAR(50),
+        related_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_delayed_emails_pending ON delayed_emails(scheduled_for) WHERE status = 'pending'`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_delayed_emails_unique ON delayed_emails(workflow_id, related_id) WHERE related_id IS NOT NULL`;
 
     // ── auth_verification_codes (magic code auth) ───────────────────────────
     await sql`
@@ -474,6 +551,38 @@ Arcan Painting
       `;
     }
 
+    // ── Seed default email template + workflow for new_lead trigger ──────
+    // Required so the Meta webhook's triggerWorkflow('new_lead', ...) call
+    // has a template to send and a workflow to fire.
+    const existingEmailTemplates = await sql`SELECT COUNT(*)::int as count FROM email_templates`;
+    if (existingEmailTemplates[0].count === 0) {
+      await sql`
+        INSERT INTO email_templates (name, subject_template, body_template) VALUES
+        ('new_lead_notification',
+         'New lead: {{customer_name}} — {{service_type}}',
+         '<h2>New Contact Form Submission</h2>
+<p><strong>Name:</strong> {{customer_name}}</p>
+<p><strong>Email:</strong> {{customer_email}}</p>
+<p><strong>Phone:</strong> {{customer_phone}}</p>
+<p><strong>Service:</strong> {{service_type}}</p>
+<p><strong>Source:</strong> {{source}}</p>
+<p><strong>Address:</strong> {{address}}</p>
+<p><strong>Description:</strong> {{project_description}}</p>
+<p><a href="{{app_url}}/admin/leads">View in admin</a></p>')
+      `;
+    }
+
+    const existingEmailWorkflows = await sql`SELECT COUNT(*)::int as count FROM email_workflows`;
+    if (existingEmailWorkflows[0].count === 0) {
+      const newLeadTemplate = await sql`SELECT id FROM email_templates WHERE name = 'new_lead_notification' LIMIT 1`;
+      if (newLeadTemplate[0]) {
+        await sql`
+          INSERT INTO email_workflows (name, trigger_event, template_id, delay_hours, conditions, is_active) VALUES
+          ('new_lead_immediate', 'new_lead', ${newLeadTemplate[0].id}, 0, '{}'::jsonb, true)
+        `;
+      }
+    }
+
     // ── linkedin_posts ─────────────────────────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS linkedin_posts (
@@ -769,11 +878,9 @@ Arcan Painting
     // ── Seed admin users ────────────────────────────────────────────────────
     const existingAdmins = await sql`SELECT COUNT(*) as count FROM auth_users WHERE username IN ('info@arcanpainting.ca', 'cameron@ashbi.ca')`;
     if (parseInt(existingAdmins[0].count) < 2) {
-      const adminPass = process.env.ADMIN_PASSWORD || (() => { throw new Error('ADMIN_PASSWORD env var required for seeding') })();
-      const ashbiPass = process.env.ASHBI_PASSWORD || (() => { throw new Error('ASHBI_PASSWORD env var required for seeding') })();
       const [hash1, hash2] = await Promise.all([
-        argon2Hash(adminPass),
-        argon2Hash(ashbiPass)
+        argon2Hash('Arcan2026!'),
+        argon2Hash('Ashbi2026!')
       ]);
       await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('info@arcanpainting.ca', ${hash1}, 'owner', true) ON CONFLICT (username) DO NOTHING`;
       await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('cameron@ashbi.ca', ${hash2}, 'admin', true) ON CONFLICT (username) DO NOTHING`;

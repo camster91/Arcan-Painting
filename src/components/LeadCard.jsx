@@ -157,10 +157,29 @@ export default function LeadCard({ lead, onQuickView, onAction }) {
       </div>
 
       {/* Service & Value */}
-      <div className="flex items-center justify-between mb-4 relative z-10">
-        <span className="text-base font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">
-          {lead.service_type}
-        </span>
+      <div className="flex items-center justify-between mb-4 relative z-10 flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-base font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">
+            {lead.service_type}
+          </span>
+          {lead.lead_source && lead.lead_source.trim() && lead.lead_source !== "website" && (
+            <span
+              className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                lead.lead_source === "meta_lead_ad"
+                  ? "bg-indigo-100 text-indigo-700"
+                  : lead.lead_source === "google_ads"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-slate-200 text-slate-700"
+              }`}
+              title={`Lead source: ${lead.lead_source}`}
+            >
+              {lead.lead_source === "meta_lead_ad" ? "Meta" :
+               lead.lead_source === "google_ads" ? "Google" :
+               lead.lead_source === "referral" ? "Referral" :
+               lead.lead_source.trim() || "—"}
+            </span>
+          )}
+        </div>
         {lead.estimated_value && (
           <span className="text-base font-bold text-green-600 flex items-center gap-1 bg-green-50 px-3 py-1 rounded-lg">
             <DollarSign size={14} />

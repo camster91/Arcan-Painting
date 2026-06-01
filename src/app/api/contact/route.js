@@ -2,15 +2,7 @@ import { sendGmailEmail } from "@/lib/google.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+import { sendLeadEvent } from "../utils/meta-capi.js";
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
@@ -89,8 +81,9 @@ export async function POST(request) {
     // Try saving the lead only when both email and phone are present (DB currently requires both)
     try {
       if (hasEmail && hasPhone) {
+        const baseUrl = process.env.APP_URL || request.url.split("/api/")[0];
         const leadResponse = await fetch(
-          `${request.url.split("/api/")[0]}/api/leads`,
+          `${baseUrl}/api/leads`,
           {
             method: "POST",
             headers: {
@@ -104,6 +97,7 @@ export async function POST(request) {
               projectDescription: body.projectDescription,
               preferredContact: preferredContact,
               address: body.address,
+              leadSource: body.leadSource || "website",
             }),
           },
         );
@@ -125,6 +119,17 @@ export async function POST(request) {
             address: body.address,
             preferredContact,
           }, baseUrl);
+
+          // Fire-and-forget: Meta CAPI server-side Lead event for attribution
+          sendLeadEvent({
+            leadId,
+            email: body.email,
+            phone: body.phone,
+            name: body.name,
+            source: "website_contact",
+            serviceType: body.serviceType,
+            request,
+          });
         } else {
           const leadError = await leadResponse.json();
           console.error("Failed to save lead:", leadError.error);
@@ -143,13 +148,13 @@ export async function POST(request) {
         subject: `New Lead: ${body.name} — ${body.serviceType}`,
         replyTo: hasEmail ? body.email : undefined,
         body: `<h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${escapeHtml(body.name)}</p>
-${hasEmail ? `<p><strong>Email:</strong> ${escapeHtml(body.email)}</p>` : ""}
-${hasPhone ? `<p><strong>Phone:</strong> ${escapeHtml(body.phone)}</p>` : ""}
-<p><strong>Service:</strong> ${escapeHtml(body.serviceType)}</p>
-<p><strong>Preferred Contact:</strong> ${escapeHtml(preferredContact)}</p>
-${body.address ? `<p><strong>Address:</strong> ${escapeHtml(body.address)}</p>` : ""}
-${body.projectDescription ? `<p><strong>Description:</strong> ${escapeHtml(body.projectDescription)}</p>` : ""}`,
+<p><strong>Name:</strong> ${body.name}</p>
+${hasEmail ? `<p><strong>Email:</strong> ${body.email}</p>` : ""}
+${hasPhone ? `<p><strong>Phone:</strong> ${body.phone}</p>` : ""}
+<p><strong>Service:</strong> ${body.serviceType}</p>
+<p><strong>Preferred Contact:</strong> ${preferredContact}</p>
+${body.address ? `<p><strong>Address:</strong> ${body.address}</p>` : ""}
+${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDescription}</p>` : ""}`,
       });
 
       // Send confirmation to customer if they provided email
@@ -157,8 +162,8 @@ ${body.projectDescription ? `<p><strong>Description:</strong> ${escapeHtml(body.
         await sendGmailEmail({
           to: body.email,
           subject: "We received your request — Arcan Painting",
-          body: `<p>Hi ${escapeHtml(body.name)},</p>
-<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${escapeHtml(body.serviceType)}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
+          body: `<p>Hi ${body.name},</p>
+<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${body.serviceType}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
 <p>Best regards,<br>The Arcan Painting Team</p>`,
         });
       }

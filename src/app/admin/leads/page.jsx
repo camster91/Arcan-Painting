@@ -27,6 +27,7 @@ export default function LeadsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("created_desc");
   const [selectedLead, setSelectedLead] = useState(null);
@@ -52,10 +53,19 @@ export default function LeadsPage() {
     { label: "Lost", value: "lost" },
   ];
 
+  const sourceOptions = [
+    { label: "All Sources", value: "all" },
+    { label: "Website", value: "website" },
+    { label: "Meta Ads", value: "meta_lead_ad" },
+    { label: "Google Ads", value: "google_ads" },
+    { label: "Referral", value: "referral" },
+    { label: "Other", value: "other" },
+  ];
+
   useEffect(() => {
     fetchLeads();
     fetchAppointments();
-  }, [statusFilter, sortBy]);
+  }, [statusFilter, sourceFilter, sortBy]);
 
   const fetchLeads = async (isRefresh = false) => {
     try {
@@ -68,6 +78,9 @@ export default function LeadsPage() {
       const params = new URLSearchParams();
       if (statusFilter !== "all") {
         params.append("status", statusFilter);
+      }
+      if (sourceFilter !== "all") {
+        params.append("source", sourceFilter);
       }
       if (sortBy) {
         params.append("sort", sortBy);
@@ -416,6 +429,25 @@ export default function LeadsPage() {
                       ({statusCounts[status.value]})
                     </span>
                   )}
+                </button>
+              ))}
+            </div>
+
+            {/* Source Filter */}
+            <div
+              className={`lg:flex gap-2 ${showMobileFilters ? "flex flex-wrap" : "hidden"}`}
+            >
+              {sourceOptions.map((source) => (
+                <button
+                  key={source.value}
+                  onClick={() => setSourceFilter(source.value)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                    sourceFilter === source.value
+                      ? "bg-indigo-100 text-indigo-800 border border-indigo-200"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-transparent"
+                  }`}
+                >
+                  {source.label}
                 </button>
               ))}
             </div>

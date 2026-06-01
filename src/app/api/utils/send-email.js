@@ -147,8 +147,8 @@ export async function sendTemplatedEmail(
 
     // Simple variable replacement ({{variable}} format)
     let subject = tmpl.subject_template;
-    let html = tmpl.html_template;
-    let text = tmpl.text_template;
+    let html = tmpl.body_template || tmpl.html_template || '';
+    let text = tmpl.text_template || '';
 
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{{${key}}}`;

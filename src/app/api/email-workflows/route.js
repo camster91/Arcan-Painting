@@ -159,8 +159,8 @@ export async function triggerWorkflow(eventType, data) {
   try {
     // Get active workflows for this event
     const workflows = await sql`
-      SELECT w.*, t.name as template_name
-      FROM email_workflows w
+      SELECT w.*, t.display_name as template_name,
+        t.name as template_key
       JOIN email_templates t ON w.template_id = t.id
       WHERE w.trigger_event = ${eventType} 
         AND w.is_active = true
@@ -225,8 +225,18 @@ export async function triggerWorkflow(eventType, data) {
             delay_hours: 0,
           });
         } else {
-          // For delayed emails, you would typically schedule them using a job queue
-          // For now, we'll just log them
+          // Delayed emails: insert into delayed_emails queue. A scheduled worker
+          // (admin route + cron, see delayed-emails/route.js) processes them.
+          // For now, schedule relative to the moment this trigger fires.
+          const scheduledFor = new Date(Date.now() + workflow.delay_hours * 3600 * 1000);
+          await sql`
+            INSERT INTO delayed_emails
+              (workflow_id, template_name, recipient_email, data, scheduled_for, status, related_type, related_id, created_at)
+            VALUES
+              (${workflow.id}, ${workflow.template_name}, ${recipientEmail}, ${JSON.stringify({ ...data, app_url: process.env.APP_URL })},
+               ${scheduledFor.toISOString()}, 'pending', ${data.related_type || null}, ${data.related_id || null}, NOW())
+            ON CONFLICT (workflow_id, related_id) DO NOTHING
+          `;
 
           results.push({
             workflow_id: workflow.id,
@@ -234,6 +244,7 @@ export async function triggerWorkflow(eventType, data) {
             recipient: recipientEmail,
             status: "scheduled",
             delay_hours: workflow.delay_hours,
+            scheduled_for: scheduledFor.toISOString(),
           });
         }
       } catch (workflowError) {

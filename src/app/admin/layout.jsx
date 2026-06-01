@@ -283,6 +283,7 @@ function AdminLayoutContent({ children }) {
         entryHref: "/admin/marketing",
         tabs: [
           { label: "Overview", href: "/admin/marketing", description: "Marketing hub" },
+          { label: "Ads Launch", href: "/admin/marketing/ads-launch", description: "Launch health & lead KPIs" },
           { label: "AI Assistant", href: "/admin/marketing/ai-assistant", description: "AI marketing help" },
           { label: "Content Research", href: "/admin/marketing/research", description: "Keywords & ideas" },
           { label: "Social Scheduler", href: "/admin/marketing/social-scheduler", description: "Schedule posts" },

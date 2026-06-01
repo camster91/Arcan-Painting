@@ -44,7 +44,7 @@ export async function POST(request) {
     // Fire-and-forget: triage this message for customer support categorization
     // Only triage substantive messages (not one-word greetings)
     if (message.length > 10) {
-      const baseUrl = request.url.split('/api/')[0];
+      const baseUrl = process.env.APP_URL || request.url.split('/api/')[0];
       triggerCustomerSupportAgent(message, baseUrl);
       
       // Also notify Gerardo via Telegram about the chat message

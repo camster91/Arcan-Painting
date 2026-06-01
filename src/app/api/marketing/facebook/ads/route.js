@@ -113,6 +113,8 @@ export async function POST(request) {
     target_url = "https://arcanpainting.ca",
     targeting = {},
     objective = "OUTCOME_TRAFFIC",
+    lead_form_id = null,        // For LEAD_GEN campaigns: existing lead form ID
+    create_lead_form = null,    // For LEAD_GEN: inline form definition to create
   } = body;
 
   if (!campaign_name) {
@@ -146,7 +148,13 @@ export async function POST(request) {
       name: `${campaign_name} - Ad Set`,
       campaign_id: campaign.id,
       billing_event: "IMPRESSIONS",
-      optimization_goal: "LINK_CLICKS",
+      // For LEAD_GEN, optimize for leads. For TRAFFIC, optimize for link clicks.
+      optimization_goal: objective === "LEAD_GEN" ? "LEAD_GENERATION" : "LINK_CLICKS",
+      // For LEAD_GEN, set the destination type and lead form ref
+      ...(objective === "LEAD_GEN" && lead_form_id && {
+        destination_type: "ON_AD",
+        lead_form_id: String(lead_form_id),
+      }),
       status: "PAUSED",
       access_token: fb.accessToken,
       targeting: {
@@ -201,24 +209,43 @@ export async function POST(request) {
       }
     }
 
+    // Step 3: Build the ad creative. For LEAD_GEN campaigns with a lead_form_id,
+    // use the leadgen_template / object_story_spec with a lead_gen_form_id instead of link_data.
+    let adCreativeBody;
+    if (objective === "LEAD_GEN" && lead_form_id) {
+      adCreativeBody = {
+        name: `${campaign_name} - Creative`,
+        object_story_spec: {
+          page_id: undefined, // Set from the connected Facebook page; if not available, Meta will reject
+          lead_gen_data: {
+            lead_gen_form_id: String(lead_form_id),
+            call_to_action: { type: "SIGN_UP" },
+          },
+        },
+        access_token: fb.accessToken,
+      };
+    } else {
+      adCreativeBody = {
+        name: `${campaign_name} - Creative`,
+        object_story_spec: {
+          link_data: {
+            link: target_url,
+            message: primaryText,
+            name: headline,
+            description,
+            call_to_action: { type: callToAction },
+          },
+        },
+        access_token: fb.accessToken,
+      };
+    }
+
     const adCreativeRes = await fetch(
       `https://graph.facebook.com/v19.0/${fb.adAccountId}/adcreatives`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: `${campaign_name} - Creative`,
-          object_story_spec: {
-            link_data: {
-              link: target_url,
-              message: primaryText,
-              name: headline,
-              description,
-              call_to_action: { type: callToAction },
-            },
-          },
-          access_token: fb.accessToken,
-        }),
+        body: JSON.stringify(adCreativeBody),
       }
     );
     if (!adCreativeRes.ok) {
