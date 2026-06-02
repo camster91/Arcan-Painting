@@ -21,7 +21,7 @@ import {
   Sparkles,
   Trophy,
 } from "lucide-react";
-import Link from "next/link";
+
 
 export default function AdsLaunchPage() {
   const [data, setData] = useState(null);
@@ -105,9 +105,9 @@ export default function AdsLaunchPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/admin/marketing" className="text-gray-400 hover:text-gray-600">
+              <a href="/admin/marketing" className="text-gray-400 hover:text-gray-600">
                 <ChevronRight className="w-5 h-5 rotate-180" />
-              </Link>
+              </a>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Megaphone className="w-5 h-5 text-white" />
               </div>
@@ -160,12 +160,12 @@ export default function AdsLaunchPage() {
                 </p>
               </div>
             </div>
-            <Link
+            <a
               href="/admin/marketing"
               className="text-sm font-medium flex items-center gap-1 hover:underline"
             >
               Full marketing hub <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -247,12 +247,12 @@ export default function AdsLaunchPage() {
             <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
               <Users className="w-4 h-4" /> Lead Performance
             </h2>
-            <Link
+            <a
               href="/admin/leads"
               className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
             >
               All leads <ChevronRight className="w-3 h-3" />
-            </Link>
+            </a>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -358,12 +358,12 @@ export default function AdsLaunchPage() {
               />
             </div>
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <Link
+              <a
                 href={quickLinks.metaAds}
                 className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
               >
                 Manage Meta campaigns <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -379,7 +379,7 @@ export default function AdsLaunchPage() {
             ) : (
               <div className="space-y-2">
                 {leads.recentMeta?.map((l) => (
-                  <Link
+                  <a
                     key={l.id}
                     href={`/admin/leads?id=${l.id}`}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
@@ -406,17 +406,17 @@ export default function AdsLaunchPage() {
                     >
                       {l.status}
                     </span>
-                  </Link>
+                  </a>
                 ))}
               </div>
             )}
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <Link
+              <a
                 href={quickLinks.leads}
                 className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
               >
                 See all Meta leads <ChevronRight className="w-3 h-3" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -447,12 +447,12 @@ function HealthItem({ ok, title, detail, link, warn }) {
         <p className="text-xs text-gray-600 mt-0.5">{detail}</p>
       </div>
       {link && (
-        <Link
+        <a
           href={link}
           className={`text-xs ${color} hover:underline flex items-center gap-0.5 flex-shrink-0`}
         >
           Fix <ChevronRight className="w-3 h-3" />
-        </Link>
+        </a>
       )}
     </div>
   );
@@ -475,7 +475,7 @@ function Metric({ label, value, icon: Icon, color, subtitle, warn }) {
 
 function CampaignRow({ platform, icon: Icon, color, active, total, spend, link }) {
   return (
-    <Link
+    <a
       href={link}
       className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 transition-colors"
     >
@@ -490,6 +490,6 @@ function CampaignRow({ platform, icon: Icon, color, active, total, spend, link }
         <p className="text-sm font-semibold text-gray-900">${spend.toFixed(0)}/day</p>
       </div>
       <ChevronRight className="w-4 h-4 text-gray-400" />
-    </Link>
+    </a>
   );
 }
