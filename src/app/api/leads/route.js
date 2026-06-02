@@ -13,7 +13,7 @@ export async function POST(request) {
     const body = await request.json();
 
     // Validate required fields
-    const requiredFields = ["name", "email", "phone", "serviceType"];
+    const requiredFields = ["name", "email", "serviceType"]; // phone is optional — lead can have email-only
     for (const field of requiredFields) {
       if (!body[field] || body[field].trim() === "") {
         return Response.json(
@@ -29,13 +29,15 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    // Validate phone format
-    const phoneRegex = /^[\d\s\-\(\)\+]+$/;
-    if (!body.phone || !phoneRegex.test(body.phone)) {
-      return Response.json(
-        { error: "Invalid phone number format" },
-        { status: 400 },
-      );
+    // Validate phone format (only if provided)
+    if (body.phone && body.phone.trim() !== "") {
+      const phoneRegex = /^[\d\s\-\(\)\+]+$/;
+      if (!phoneRegex.test(body.phone)) {
+        return Response.json(
+          { error: "Invalid phone number format" },
+          { status: 400 },
+        );
+      }
     }
 
     // Sanitize lengths
