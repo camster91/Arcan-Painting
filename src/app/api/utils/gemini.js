@@ -49,7 +49,7 @@ Example responses for common questions:
 - "Can you remove old wallpaper?" → "Absolutely! We provide safe wallpaper removal services that protect your walls. We'll properly prepare the surface for new wallpaper or paint after removal."
 `;
 export async function chatWithGemini(messages, userMessage) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
   const contents = [];
 
@@ -69,10 +69,7 @@ export async function chatWithGemini(messages, userMessage) {
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': GEMINI_API_KEY,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,

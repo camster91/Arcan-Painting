@@ -286,6 +286,6 @@ export function useEstimateCalculator() {
 
     // Actions
     onSave,
-    isPending: createLead.isPending || createEstimate.isPending,
+    isLoading: createLead.isLoading || createEstimate.isLoading,
   };
 }

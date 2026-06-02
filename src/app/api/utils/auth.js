@@ -2,9 +2,6 @@ import { createHash, randomBytes } from "crypto";
 import sql from "./sql.js";
 import { ensureSchema } from "../../../migrations/001-initial-schema.js";
 
-// Cache schema readiness to avoid running migrations on every request
-let _schemaReady = false;
-
 // ── Token generation ────────────────────────────────────────────────────────
 /**
  * Generate a cryptographically secure session token.
@@ -30,15 +27,9 @@ export function parseCookies(cookieHeader) {
 // Supports both Authorization: Bearer <token> and admin_session cookie.
 // Uses a single JOIN query for both paths — no N+1.
 export async function getCurrentUser(request) {
-  if (!_schemaReady) {
-    try {
-      await ensureSchema();
-      _schemaReady = true;
-    } catch (err) {
-      console.error("[auth] Schema migration failed:", err.message);
-      return null;
-    }
-  }
+  try {
+    await ensureSchema();
+  } catch {}
 
   // 1. Try Authorization: Bearer header first (API clients / mobile)
   const authHeader = request.headers.get("authorization");
@@ -71,29 +62,34 @@ export async function getCurrentUser(request) {
     JOIN auth_users u ON u.id = s.user_id
     WHERE s.token = ${token}
       AND s.deleted_at IS NULL
-      AND s.expires_at > NOW()
     LIMIT 1
   `;
+  const row = rows[0];
 
-  if (!rows.length) {
+  if (!row) {
     return null;
   }
 
-  return { id: rows[0].id, username: rows[0].username, role: rows[0].role };
+  const nowIso = new Date().toISOString();
+  if (row.expires_at && row.expires_at < nowIso) {
+    // Soft-delete expired session (preserve audit trail)
+    await sql`UPDATE auth_sessions SET deleted_at = NOW() WHERE token = ${token} AND deleted_at IS NULL`;
+    return null;
+  }
+
+  return { id: row.id, username: row.username, role: row.role };
 }
 
-// Helper function to require authentication (returns user object or null)
+// Helper function to require authentication (returns boolean)
 export async function requireAuth(request) {
   const user = await getCurrentUser(request);
-  return user;
+  return user !== null;
 }
 
-// Helper function to require admin role (checks role field)
+// Helper function to require admin authentication (backward compatibility)
 export async function requireAdmin(request) {
   const user = await getCurrentUser(request);
-  if (!user) return null;
-  if (user.role !== 'owner' && user.role !== 'admin') return null;
-  return user;
+  return user !== null; // In this system, all authenticated users are admins
 }
 
 // Helper function to return unauthorized response

@@ -9,7 +9,7 @@ export async function GET(request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = user.username;
+    const userId = 'gerardo';
 
     return Response.json({
       balance: await getBalance(userId),

@@ -19,6 +19,7 @@ import { CreateEstimateModal } from "@/components/admin/estimates/CreateEstimate
 import CreateProjectModal from "@/components/admin/projects/CreateProjectModal";
 import { usePerformanceCache } from "@/hooks/usePerformanceCache";
 import EmailHealthWidget from "@/components/admin/EmailHealthWidget";
+import AdsKpiBar from "@/components/admin/dashboard/AdsKpiBar";
 
 export default function DashboardOverview() {
   // Modal states
@@ -212,6 +213,11 @@ export default function DashboardOverview() {
             </a>
           );
         })}
+      </div>
+
+      {/* Ads KPIs — shown on every page load, lightweight, auto-refreshing */}
+      <div className="mt-6">
+        <AdsKpiBar />
       </div>
 
       {/* Email Health Alert */}
