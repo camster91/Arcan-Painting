@@ -1,0 +1,25 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ContactSection from "@/components/ContactSection";
+
+export default function ContactPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  return (
+    <div className="min-h-screen bg-white transition-colors duration-300">
+      <Header />
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Free Estimate</h1>
+        <p className="text-gray-600 mb-8">
+          Tell us about your project and we'll get back to you within 24 hours.
+        </p>
+        {mounted && <ContactSection />}
+      </main>
+      <Footer />
+    </div>
+  );
+}
