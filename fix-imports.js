@@ -23,20 +23,13 @@ const walk = (dir) => {
       }
 
       // 3. Add .js extension to /app/src/ imports if missing
-      const lines = c.split('
-');
+      const lines = c.split('\n');
       const newLines = lines.map(l => {
         const m = l.match(/(import|export).*from\s+['"](\/app\/src\/[^'"]+)['"]/);
         if (m) {
           const importPath = m[2];
           if (!importPath.endsWith('.js') && !importPath.endsWith('.json') && !importPath.endsWith('.css') && !importPath.endsWith('.jsx')) {
-            // Check if .jsx version exists (don't double-suffix)
-            const jsxFile = importPath + '.jsx';
             const jsFile = importPath + '.js';
-            if (fs.existsSync(jsxFile)) {
-              changed = true;
-              return l.replace(importPath, importPath + '.jsx');
-            }
             changed = true;
             return l.replace(importPath, jsFile);
           }
@@ -45,8 +38,7 @@ const walk = (dir) => {
       });
       
       if (changed) {
-        fs.writeFileSync(p, newLines.join('
-'));
+        fs.writeFileSync(p, newLines.join('\n'));
         console.log('Fixed imports in:', p);
       }
     }
