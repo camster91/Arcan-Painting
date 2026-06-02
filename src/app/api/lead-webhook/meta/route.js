@@ -283,5 +283,15 @@ export async function POST(request) {
     }
   }
 
-  return Response.json({ received: results.length, results });
+  const succeeded = results.filter(r => r.ok && !r.duplicate).length;
+  const total = results.length;
+
+  // If every lead failed (server error, not a validation reject), return 500 so Meta retries.
+  // If all were duplicates, return 200 (Meta doesn't need to retry).
+  if (total > 0 && succeeded === 0 && !results.every(r => r.duplicate)) {
+    console.error("[meta-leads] all leads failed:", results.map(r => r.error || "unknown"));
+    return Response.json({ received: total, succeeded: 0, error: "all leads failed", results }, { status: 500 });
+  }
+
+  return Response.json({ received: total, succeeded, results });
 }
