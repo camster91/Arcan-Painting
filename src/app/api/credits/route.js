@@ -1,6 +1,7 @@
 import { getBalance, getTransactions } from '../utils/credits-db.js';
 import { CREDIT_PACKAGES } from '../utils/packages.js';
 import { requireAuth } from '../utils/auth.js';
+// NOTE: credits route is GET-only — no CSRF needed
 
 export async function GET(request) {
   try {

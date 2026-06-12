@@ -1,5 +1,6 @@
 import sql from "../utils/sql.js";
 import { requireAdmin } from "../utils/auth.js";
+import { requireCsrf } from "../utils/csrf.js";
 
 // Public: list available slots
 export async function GET(request) {
@@ -87,6 +88,9 @@ export async function GET(request) {
 
 // Admin: create a slot
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const authorized = await requireAdmin(request);
     if (!authorized) {
@@ -128,6 +132,9 @@ export async function POST(request) {
 
 // Admin: delete a slot
 export async function DELETE(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const authorized = await requireAdmin(request);
     if (!authorized) {

@@ -8,6 +8,7 @@ import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 import { generateSecureToken } from "@/app/api/utils/auth";
 import { ensureSchema } from "@/migrations/001-initial-schema";
+import { generateCsrfToken, makeCsrfCookie } from "@/app/api/utils/csrf";
 
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [
@@ -19,8 +20,13 @@ function makeCookie(name, value, maxAgeSeconds) {
   if (maxAgeSeconds !== undefined && maxAgeSeconds !== null) {
     parts.push(`Max-Age=${maxAgeSeconds}`);
   }
+  // Mark the cookie Secure whenever the app is served over HTTPS. The
+  // existing check looked for AUTH_URL which the project doesn't actually
+  // set; NEXTAUTH_URL is the env var the project uses.
   try {
-    if (process.env.AUTH_URL && process.env.AUTH_URL.startsWith("https")) {
+    const env = process.env;
+    const url = env.NEXTAUTH_URL || env.AUTH_URL || env.APP_URL || "";
+    if (url.startsWith("https")) {
       parts.push("Secure");
     }
   } catch {}
@@ -93,8 +99,10 @@ export async function POST(request) {
       status: "success",
     });
 
-    // Set token ONLY in httpOnly cookie — never expose in JSON response body
-    const cookie = makeCookie("admin_session", token, 90 * 24 * 60 * 60);
+    // Set session cookie (httpOnly) and CSRF cookie (readable by JS)
+    const csrfToken = generateCsrfToken();
+    const sessionCookie = makeCookie("admin_session", token, 90 * 24 * 60 * 60);
+    const csrfCookie = makeCsrfCookie(csrfToken, 90 * 24 * 60 * 60);
 
     return new Response(
       JSON.stringify({
@@ -104,7 +112,10 @@ export async function POST(request) {
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json", "Set-Cookie": cookie },
+        headers: {
+          "Content-Type": "application/json",
+          "Set-Cookie": `${sessionCookie}, ${csrfCookie}`,
+        },
       }
     );
   } catch (error) {

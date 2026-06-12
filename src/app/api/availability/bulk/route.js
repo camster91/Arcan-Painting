@@ -1,5 +1,6 @@
 import sql from "../../utils/sql.js";
 import { requireAdmin } from "../../utils/auth.js";
+import { requireCsrf } from "../../utils/csrf.js";
 
 function addDays(date, days) {
   const d = new Date(date.getTime());
@@ -20,6 +21,9 @@ function toDateStr(d) {
 
 // Admin: bulk generate weekday slots
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const authorized = await requireAdmin(request);
     if (!authorized) {

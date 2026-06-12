@@ -35,6 +35,25 @@ export async function sendEmail({
   const matonKey = process.env.MATON_API_KEY;
 
   if (!matonKey) {
+    // Log the failure to email_logs so it's visible in the admin UI even
+    // when the throw short-circuits the rest of the function. Without this,
+    // a missing key would produce zero log output.
+    try {
+      await sql`
+        INSERT INTO email_logs (
+          to_email, from_email, subject, template_name, status, error_message,
+          related_type, related_id, user_id, metadata, sent_at
+        ) VALUES (
+          ${Array.isArray(to) ? to[0] : (to || "")}, ${from || process.env.GOOGLE_EMAIL || "info@arcanpainting.ca"}, ${subject},
+          ${templateName || null}, "failed",
+          "Maton API key not configured. Set MATON_API_KEY in env.",
+          ${relatedType || null}, ${relatedId || null}, ${userId || null},
+          ${JSON.stringify(metadata || {})}, CURRENT_TIMESTAMP
+        )
+      `;
+    } catch (logError) {
+      // best-effort; don't mask the original error
+    }
     throw new Error(
       "Maton API key is not configured. Please set MATON_API_KEY in your project secrets.",
     );

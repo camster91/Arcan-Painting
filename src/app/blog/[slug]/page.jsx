@@ -1,18 +1,20 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Link } from "react-router";
 
 function formatDate(dateStr) {
+  if (!dateStr) return "";
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
 }
 
 function extractHeadings(markdown) {
+  if (!markdown) return [];
   const lines = markdown.split("\n");
   const headings = [];
   for (const line of lines) {
@@ -75,7 +77,6 @@ function TableOfContents({ headings }) {
   );
 }
 
-// Custom components to add IDs to headings
 function H2({ children }) {
   const text = typeof children === "string" ? children : String(children);
   const id = text.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -99,25 +100,47 @@ export default function BlogPost() {
   useEffect(() => {
     if (!slug) return;
     Promise.all([
-      fetch(`/api/posts/${slug}`).then((r) => r.ok ? r.json() : null),
-      fetch("/api/posts").then((r) => r.json()),
-    ]).then(([postData, allData]) => {
-      if (!postData) {
+      fetch(`/api/blog/${slug}`).then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/blog").then((r) => r.json()),
+    ])
+      .then(([postData, allData]) => {
+        if (!postData) {
+          setNotFound(true);
+        } else {
+          setPost(postData);
+          setAllPosts(Array.isArray(allData) ? allData : []);
+          const category = postData.tags?.[0] || "";
+          const rel = (Array.isArray(allData) ? allData : [])
+            .filter((p) => (p.tags?.[0] || "") === category && p.slug !== slug)
+            .slice(0, 3);
+          setRelated(rel);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
         setNotFound(true);
-      } else {
-        setPost(postData);
-        setAllPosts(allData);
-        const rel = allData
-          .filter((p) => p.category === postData.category && p.slug !== slug)
-          .slice(0, 3);
-        setRelated(rel);
-      }
-      setLoading(false);
-    }).catch(() => {
-      setNotFound(true);
-      setLoading(false);
-    });
+        setLoading(false);
+      });
   }, [slug]);
+
+  useEffect(() => {
+    if (!post) return;
+    document.title = post.meta_description
+      ? `${post.title} | Arcan Painting`
+      : `${post.title} | Arcan Painting Blog`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && post.meta_description) {
+      metaDesc.setAttribute("content", post.meta_description);
+    }
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", post.title);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc && post.meta_description) ogDesc.setAttribute("content", post.meta_description);
+    const ogImg = document.querySelector('meta[property="og:image"]');
+    if (ogImg && post.cover_image_url) ogDesc?.setAttribute("content", post.cover_image_url);
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) twitterTitle.setAttribute("content", post.title);
+  }, [post]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -153,32 +176,44 @@ export default function BlogPost() {
     );
   }
 
-  const headings = extractHeadings(post.content || "");
-
-  // Find prev/next
-  const sortedPosts = [...allPosts];
+  const headings = extractHeadings(post.body || "");
+  const sortedPosts = [...(Array.isArray(allPosts) ? allPosts : [])];
   const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
   const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
   const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 
   return (
     <>
+      <title>{post.meta_description ? `${post.title} | Arcan Painting` : `${post.title} | Arcan Painting Blog`}</title>
+      {post.meta_description && <meta name="description" content={post.meta_description} />}
+      <meta property="og:title" content={post.title} />
+      {post.meta_description && <meta property="og:description" content={post.meta_description} />}
+      {post.cover_image_url && <meta property="og:image" content={post.cover_image_url} />}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={post.title} />
+      {post.meta_description && <meta name="twitter:description" content={post.meta_description} />}
+      {post.cover_image_url && <meta name="twitter:image" content={post.cover_image_url} />}
+
       <Header />
       <main className="min-h-screen bg-white">
         {/* Hero */}
         <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gray-900">
-          {post.featuredImage && (
+          {post.cover_image_url ? (
             <img
-              src={post.featuredImage}
+              src={post.cover_image_url}
               alt={post.title}
               className="w-full h-full object-cover opacity-60"
             />
+          ) : (
+            <div className="w-full h-full bg-[#1a2744] opacity-60" />
           )}
           <div className="absolute inset-0 flex items-end">
             <div className="max-w-4xl mx-auto px-4 pb-8 w-full">
-              <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-900/50 px-3 py-1 rounded-full mb-3">
-                {post.category}
-              </span>
+              {post.tags?.[0] && (
+                <span className="inline-block text-xs font-semibold text-amber-400 bg-amber-900/50 px-3 py-1 rounded-full mb-3">
+                  {post.tags[0].replace(/-/g, " ")}
+                </span>
+              )}
               <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight max-w-3xl">
                 {post.title}
               </h1>
@@ -190,11 +225,9 @@ export default function BlogPost() {
         <div className="border-b border-gray-100">
           <div className="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center gap-4 justify-between">
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span>{formatDate(post.date)}</span>
+              <span>{formatDate(post.published_at)}</span>
               <span>·</span>
-              <span>{post.readTime}</span>
-              <span>·</span>
-              <span>By Arcan Painting Team</span>
+              <span>By {post.author_username || "Arcan Painting Team"}</span>
             </div>
             <button
               onClick={handleCopy}
@@ -209,11 +242,10 @@ export default function BlogPost() {
         <div className="max-w-5xl mx-auto px-4 py-10 flex gap-10">
           {/* Main content */}
           <article className="flex-1 min-w-0">
-            <div className="prose prose-lg max-w-none"
-              style={{
-                lineHeight: "1.8",
-                fontSize: "1.05rem",
-              }}>
+            <div
+              className="prose prose-lg max-w-none"
+              style={{ lineHeight: "1.8", fontSize: "1.05rem" }}
+            >
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -245,13 +277,9 @@ export default function BlogPost() {
                       <table className="w-full border-collapse text-sm">{children}</table>
                     </div>
                   ),
-                  thead: ({ children }) => (
-                    <thead className="bg-gray-50">{children}</thead>
-                  ),
+                  thead: ({ children }) => <thead className="bg-gray-50">{children}</thead>,
                   th: ({ children }) => (
-                    <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
-                      {children}
-                    </th>
+                    <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">{children}</th>
                   ),
                   td: ({ children }) => (
                     <td className="border border-gray-200 px-4 py-2 text-gray-600">{children}</td>
@@ -270,7 +298,7 @@ export default function BlogPost() {
                   hr: () => <hr className="my-8 border-gray-200" />,
                 }}
               >
-                {post.content}
+                {post.body}
               </ReactMarkdown>
             </div>
 
@@ -296,7 +324,7 @@ export default function BlogPost() {
                 🖌️
               </div>
               <div>
-                <p className="font-semibold text-gray-900">Arcan Painting Team</p>
+                <p className="font-semibold text-gray-900">{post.author_username || "Arcan Painting Team"}</p>
                 <p className="text-sm text-gray-600 mt-1">
                   Professional painting contractors serving Toronto and the GTA since 1995.
                   Family-owned across three generations. We write from real job-site experience —
@@ -365,16 +393,20 @@ export default function BlogPost() {
                     to={`/blog/${rp.slug}`}
                     className="group bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all"
                   >
-                    {rp.featuredImage && (
+                    {rp.cover_image_url && (
                       <img
-                        src={rp.featuredImage}
+                        src={rp.cover_image_url}
                         alt={rp.title}
                         className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                       />
                     )}
                     <div className="p-4">
-                      <span className="text-xs font-semibold text-amber-600">{rp.category}</span>
+                      {rp.tags?.[0] && (
+                        <span className="text-xs font-semibold text-amber-600">
+                          {rp.tags[0].replace(/-/g, " ")}
+                        </span>
+                      )}
                       <p className="text-sm font-semibold text-gray-800 mt-1 group-hover:text-amber-600 transition-colors line-clamp-2">
                         {rp.title}
                       </p>

@@ -237,7 +237,7 @@ export async function POST(request) {
           ${invoice_number}, ${contract_id}, ${project_id}, ${lead_id},
           ${title}, ${description}, ${invoice_type}, ${subtotal}, ${tax_rate},
           ${tax_amount}, ${total_amount}, ${total_amount}, ${issue_date}, ${due_date},
-          ${user.username}, ${notes}
+          ${user.id}, ${notes}
         ) RETURNING *
       `;
 

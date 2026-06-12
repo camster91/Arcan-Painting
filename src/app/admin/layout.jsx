@@ -22,6 +22,7 @@ import {
   MapPin,
   Mail,
   Zap,
+  Cpu,
 } from "lucide-react";
 import BottomTabNav from "@/components/BottomTabNav";
 import FloatingActionButton from "@/components/FloatingActionButton";
@@ -172,11 +173,17 @@ function AdminLayoutContent({ children }) {
             href: "/admin/contracts/templates",
             description: "Contract templates",
           },
+          {
+            label: "Prospects",
+            href: "/admin/prospects",
+            description: "B2B outreach pipeline",
+          },
         ],
         matchers: [
           "/admin/estimates",
           "/admin/contracts",
           "/admin/contracts/templates",
+          "/admin/prospects",
         ],
         description: "Quotes & agreements",
         showNotificationBadge: false,
@@ -293,6 +300,8 @@ function AdminLayoutContent({ children }) {
           { label: "LinkedIn", href: "/admin/marketing/linkedin", description: "B2B outreach" },
           { label: "Citations", href: "/admin/marketing/citations", description: "Local listings" },
           { label: "Cold Email", href: "/admin/marketing/cold-email", description: "Email outreach" },
+          { label: "Connections", href: "/admin/marketing/connections", description: "Meta/Google/LinkedIn" },
+          { label: "Campaigns", href: "/admin/marketing/campaigns", description: "Ad campaigns" },
           { label: "Workflows", href: "/admin/marketing/workflows", description: "Automation" },
           { label: "Gallery", href: "/admin/marketing/gallery", description: "Photo gallery" },
         ],
@@ -311,6 +320,19 @@ function AdminLayoutContent({ children }) {
         showNotificationBadge: false,
       },
       {
+        key: "agents",
+        label: "AI Agents",
+        icon: Cpu,
+        entryHref: "/admin/agents",
+        tabs: [
+          { label: "Dashboard", href: "/admin/agents", description: "Run history & stats" },
+          { label: "Run Agent", href: "/admin/agents/run", description: "Manual execution" },
+        ],
+        matchers: ["/admin/agents"],
+        description: "Agent monitoring & execution",
+        showNotificationBadge: false,
+      },
+      {
         key: "team",
         label: "Team & Settings",
         icon: Settings,
@@ -326,6 +348,7 @@ function AdminLayoutContent({ children }) {
             href: "/admin/settings",
             description: "System config",
           },
+          { label: "Blog", href: "/admin/blog", description: "Website blog posts" },
           { label: "Email", href: "/admin/email", description: "Email system" },
           {
             label: "Email Templates",
@@ -346,6 +369,7 @@ function AdminLayoutContent({ children }) {
         matchers: [
           "/admin/team",
           "/admin/settings",
+          "/admin/blog",
           "/admin/email",
           "/admin/email-templates",
           "/admin/email-workflows",

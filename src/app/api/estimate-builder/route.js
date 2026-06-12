@@ -1,95 +1,11 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 
-async function ensureEstimateBuilderTables() {
-  // Settings per estimate
-  await sql`
-    CREATE TABLE IF NOT EXISTS estimate_settings (
-      id SERIAL PRIMARY KEY,
-      estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
-      tax_rate NUMERIC(5,2),
-      overhead_pct NUMERIC(5,2),
-      markup_pct NUMERIC(5,2),
-      currency VARCHAR(10),
-      crew_hourly_cost NUMERIC(10,2),
-      billable_rate NUMERIC(10,2),
-      default_method VARCHAR(10),
-      default_coats INTEGER,
-      primer_on BOOLEAN,
-      waste_paint_pct NUMERIC(5,2),
-      waste_tape_pct NUMERIC(5,2),
-      waste_poly_pct NUMERIC(5,2),
-      setup_minutes_per_area INTEGER,
-      cleanup_buffer_pct NUMERIC(5,2),
-      travel_minutes INTEGER,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  // Areas under estimate
-  await sql`
-    CREATE TABLE IF NOT EXISTS estimate_areas (
-      id SERIAL PRIMARY KEY,
-      estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
-      name VARCHAR(255),
-      length NUMERIC(10,2),
-      width NUMERIC(10,2),
-      height NUMERIC(10,2),
-      wall_sqft NUMERIC(12,2),
-      ceiling_sqft NUMERIC(12,2),
-      notes TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  // Surface lines per area
-  await sql`
-    CREATE TABLE IF NOT EXISTS estimate_surfaces (
-      id SERIAL PRIMARY KEY,
-      area_id INTEGER REFERENCES estimate_areas(id) ON DELETE CASCADE,
-      surface_type VARCHAR(50), -- walls, ceiling, trim, door
-      measurement NUMERIC(12,2),
-      unit VARCHAR(10), -- sqft, lf, count
-      method VARCHAR(10), -- roll, spray
-      coats INTEGER,
-      primer BOOLEAN,
-      production_rate NUMERIC(12,2),
-      coverage_rate NUMERIC(12,2),
-      door_sides INTEGER,
-      profile_type VARCHAR(50),
-      opening_sqft NUMERIC(12,2),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  // Prep line items per area
-  await sql`
-    CREATE TABLE IF NOT EXISTS estimate_prep_items (
-      id SERIAL PRIMARY KEY,
-      area_id INTEGER REFERENCES estimate_areas(id) ON DELETE CASCADE,
-      prep_type VARCHAR(50),
-      quantity NUMERIC(12,2),
-      unit VARCHAR(10),
-      rate NUMERIC(12,2), -- capacity (e.g. lf/hr or sqft/hr) or minutes per item depending on type
-      hours NUMERIC(12,2),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  // Materials (optional manual overrides)
-  await sql`
-    CREATE TABLE IF NOT EXISTS estimate_materials (
-      id SERIAL PRIMARY KEY,
-      estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
-      item_name TEXT,
-      quantity NUMERIC(12,2),
-      unit VARCHAR(10),
-      unit_cost NUMERIC(10,2),
-      total_cost NUMERIC(12,2),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-}
+// (estimate_settings / estimate_areas / estimate_surfaces /
+// estimate_prep_items / estimate_materials are now created by
+// src/migrations/001-initial-schema.js — not at runtime. The old
+// `ensureEstimateBuilderTables` function was removed in 2026-06-11 to
+// eliminate the first-request race and the duplicate schema definitions.)
 
 // NEW: load latest app settings to use as defaults
 async function getAppSettings() {
@@ -294,12 +210,13 @@ export async function POST(request) {
   try {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-    const allowed = ["owner", "lead_painter", "supervisor", "admin"];
-    if (!allowed.includes(user.role)) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
 
-    await ensureEstimateBuilderTables();
+    // estimate_settings / estimate_areas / estimate_surfaces /
+    // estimate_prep_items / estimate_materials are created in
+    // src/migrations/001-initial-schema.js — the old runtime ensure function
+    // was removed; the migration is the single source of truth for these
+    // tables. If you re-deployed an old container and hit "relation does not
+    // exist" here, restart with the new image after `ensureSchema()` runs.
 
     const body = await request.json();
     const {

@@ -1,3 +1,13 @@
+// Generate a unique payment number like PAY-YYYYMMDD-XXXX
+function generatePaymentNumber() {
+  const date = new Date();
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `PAY-${y}${m}${d}-${rand}`;
+}
+
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
@@ -206,6 +216,7 @@ export async function POST(request) {
     } = body;
 
     const paymentAmount = parseFloat(amount);
+    const payment_number = generatePaymentNumber();
 
     // Verify invoice and contract exist if provided
     if (invoice_id) {
@@ -226,10 +237,10 @@ export async function POST(request) {
     const { payment, updatedInvoice } = await sql.transaction(async (txSql) => {
       const [payment] = await txSql`
         INSERT INTO payments (
-          invoice_id, contract_id, payment_method, payment_reference,
+          payment_number, invoice_id, contract_id, payment_method, payment_reference,
           amount, payment_date, status, notes, processed_by
         ) VALUES (
-          ${invoice_id || null}, ${contract_id || null}, ${payment_method}, ${payment_reference || null},
+          ${payment_number}, ${invoice_id || null}, ${contract_id || null}, ${payment_method}, ${payment_reference || null},
           ${paymentAmount}, ${payment_date}, ${status}, ${notes || null},
           ${processed_by || user.username}
         ) RETURNING *

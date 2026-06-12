@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { parseCookies } from "@/app/api/utils/auth";
+import { clearCsrfCookie } from "@/app/api/utils/csrf";
 
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [
@@ -47,12 +48,13 @@ export async function POST(request) {
       } catch {}
     }
 
-    const clearCookie = makeCookie("admin_session", "", 0);
+    const clearSessionCookie = makeCookie("admin_session", "", 0);
+    const clearCsrf = clearCsrfCookie();
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Set-Cookie": clearCookie,
+        "Set-Cookie": `${clearSessionCookie}, ${clearCsrf}`,
       },
     });
   } catch (error) {

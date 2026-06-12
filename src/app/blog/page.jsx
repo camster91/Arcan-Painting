@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Link } from "react-router";
 
 const CATEGORIES = [
@@ -20,6 +20,7 @@ const CATEGORIES = [
 const POSTS_PER_PAGE = 12;
 
 function formatDate(dateStr) {
+  if (!dateStr) return "";
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
 }
@@ -31,19 +32,20 @@ export default function BlogIndex() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/posts")
+    fetch("/api/blog")
       .then((r) => r.json())
       .then((data) => {
-        setPosts(data);
+        setPosts(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
+  // Tag-based category matching (tags[0] as category)
   const filtered =
     activeCategory === "All"
       ? posts
-      : posts.filter((p) => p.category === activeCategory);
+      : posts.filter((p) => (p.tags?.[0] || "") === activeCategory.toLowerCase().replace(/\s+/g, "-"));
 
   const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
@@ -111,19 +113,26 @@ export default function BlogIndex() {
                   className="group bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
                 >
                   <Link to={`/blog/${post.slug}`} className="block overflow-hidden aspect-[16/9]">
-                    <img
-                      src={post.featuredImage}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
+                    {post.cover_image_url ? (
+                      <img
+                        src={post.cover_image_url}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-4xl">🎨</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
-                        {post.category}
-                      </span>
-                      <span className="text-xs text-gray-400">{post.readTime}</span>
+                      {post.tags?.[0] && (
+                        <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
+                          {post.tags[0].replace(/-/g, " ")}
+                        </span>
+                      )}
                     </div>
                     <Link to={`/blog/${post.slug}`}>
                       <h2 className="text-lg font-bold text-gray-900 leading-snug mb-2 group-hover:text-amber-600 transition-colors line-clamp-3">
@@ -134,7 +143,7 @@ export default function BlogIndex() {
                       {post.excerpt}
                     </p>
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                      <span className="text-xs text-gray-400">{formatDate(post.date)}</span>
+                      <span className="text-xs text-gray-400">{formatDate(post.published_at)}</span>
                       <Link
                         to={`/blog/${post.slug}`}
                         className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"

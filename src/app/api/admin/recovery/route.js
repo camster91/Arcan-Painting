@@ -7,6 +7,7 @@
 import sql from "@/app/api/utils/sql";
 import { requireAdmin } from "@/app/api/utils/auth";
 import { auditLog } from "@/app/api/utils/audit";
+import { requireCsrf } from "@/app/api/utils/csrf";
 
 export async function GET(request) {
   const authorized = await requireAdmin(request);
@@ -44,6 +45,9 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   const authorized = await requireAdmin(request);
   if (!authorized) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

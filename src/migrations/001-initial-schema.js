@@ -4,7 +4,6 @@
  * Idempotent — safe to re-run (uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
  */
 import sql from "@/app/api/utils/sql.js";
-import { hash as argon2Hash } from "argon2";
 
 let migrationRun = false;
 
@@ -80,6 +79,15 @@ export async function runMigrations() {
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_source VARCHAR(100) DEFAULT 'website'`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS meta_lead_id VARCHAR(100)`;
+    // Columns referenced by the leads PUT/POST route that the original
+    // CREATE TABLE didn't include. Safe to re-run; each is a no-op if it
+    // already exists.
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS notes TEXT`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]'::jsonb`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS contact_method VARCHAR(20)`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS qualification_notes TEXT`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_contact_method VARCHAR(20)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_lead_source ON leads(lead_source) WHERE deleted_at IS NULL`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_meta_lead_id ON leads(meta_lead_id) WHERE deleted_at IS NULL`;
     await sql`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
@@ -163,6 +171,16 @@ export async function runMigrations() {
         completed_at TIMESTAMP
       )
     `;
+    // Columns the admin UI / store.js expect. The original table was
+    // missing these — the in-memory store carried them, and we want DB
+    // rows to look the same to callers.
+    await sql`ALTER TABLE agent_runs ADD COLUMN IF NOT EXISTS agent_name VARCHAR(255)`;
+    await sql`ALTER TABLE agent_runs ADD COLUMN IF NOT EXISTS reference_type VARCHAR(50)`;
+    await sql`ALTER TABLE agent_runs ADD COLUMN IF NOT EXISTS reference_id VARCHAR(50)`;
+    await sql`ALTER TABLE agent_runs ADD COLUMN IF NOT EXISTS started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+    await sql`ALTER TABLE agent_runs ADD COLUMN IF NOT EXISTS duration_ms INTEGER`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_agent_id_created ON agent_runs(agent_id, created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_agent_runs_status ON agent_runs(status)`;
 
     // ── audit_logs ──────────────────────────────────────────────────────────
     await sql`
@@ -178,6 +196,331 @@ export async function runMigrations() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+
+    // ── estimates (added 2026-06-11 — bootstrap, was missing from this migration) ──
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimates (
+        id SERIAL PRIMARY KEY,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+        estimate_number VARCHAR(50) UNIQUE NOT NULL,
+        project_title VARCHAR(255) NOT NULL,
+        project_description TEXT,
+        labor_cost DECIMAL(12, 2) DEFAULT 0,
+        material_cost DECIMAL(12, 2) DEFAULT 0,
+        total_cost DECIMAL(12, 2) DEFAULT 0,
+        estimated_duration_days INTEGER,
+        status VARCHAR(50) DEFAULT 'draft',
+        valid_until DATE,
+        notes TEXT,
+        created_by INTEGER REFERENCES auth_users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── projects (added 2026-06-11 — bootstrap, was missing from this migration) ──
+    await sql`
+      CREATE TABLE IF NOT EXISTS projects (
+        id SERIAL PRIMARY KEY,
+        estimate_id INTEGER REFERENCES estimates(id) ON DELETE SET NULL,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+        project_name VARCHAR(255) NOT NULL,
+        start_date DATE,
+        end_date DATE,
+        status VARCHAR(50) DEFAULT 'scheduled',
+        final_cost DECIMAL(12, 2),
+        completion_percentage INTEGER DEFAULT 0,
+        assigned_painter_id INTEGER,
+        crew_assigned TEXT,
+        notes TEXT,
+        site_lat DECIMAL(10, 7),
+        site_lng DECIMAL(10, 7),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── follow_ups (added 2026-06-11 — bootstrap, was missing from this migration) ──
+    await sql`
+      CREATE TABLE IF NOT EXISTS follow_ups (
+        id SERIAL PRIMARY KEY,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+        follow_up_date DATE NOT NULL,
+        follow_up_type VARCHAR(50) DEFAULT 'call',
+        status VARCHAR(50) DEFAULT 'pending',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── contracts (added 2026-06-11) ─────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS contracts (
+        id SERIAL PRIMARY KEY,
+        contract_number VARCHAR(50) UNIQUE NOT NULL,
+        estimate_id INTEGER REFERENCES estimates(id) ON DELETE SET NULL,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+        project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        scope_of_work TEXT,
+        terms_and_conditions TEXT,
+        payment_terms TEXT,
+        warranty_terms TEXT,
+        total_amount DECIMAL(12, 2) DEFAULT 0,
+        deposit_amount DECIMAL(12, 2),
+        deposit_percentage DECIMAL(5, 2),
+        status VARCHAR(50) DEFAULT 'draft',
+        start_date DATE,
+        completion_date DATE,
+        estimated_duration_days INTEGER,
+        signed_at TIMESTAMP,
+        signed_by_name VARCHAR(255),
+        client_signed_at TIMESTAMP,
+        client_signature_data TEXT,
+        contractor_signed_at TIMESTAMP,
+        contractor_signature_data TEXT,
+        sent_at TIMESTAMP,
+        viewed_at TIMESTAMP,
+        contract_pdf_url TEXT,
+        signed_contract_pdf_url TEXT,
+        created_by INTEGER REFERENCES auth_users(id),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── invoices (added 2026-06-11) ──────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS invoices (
+        id SERIAL PRIMARY KEY,
+        invoice_number VARCHAR(50) UNIQUE NOT NULL,
+        contract_id INTEGER REFERENCES contracts(id) ON DELETE SET NULL,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+        project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
+        title VARCHAR(255),
+        description TEXT,
+        invoice_type VARCHAR(50) DEFAULT 'progress',
+        status VARCHAR(50) DEFAULT 'draft',
+        payment_status VARCHAR(50) DEFAULT 'unpaid',
+        issue_date DATE,
+        due_date DATE,
+        subtotal DECIMAL(12, 2) DEFAULT 0,
+        tax_rate DECIMAL(5, 2) DEFAULT 0,
+        tax_amount DECIMAL(12, 2) DEFAULT 0,
+        total_amount DECIMAL(12, 2) DEFAULT 0,
+        amount_paid DECIMAL(12, 2) DEFAULT 0,
+        amount_due DECIMAL(12, 2) DEFAULT 0,
+        notes TEXT,
+        sent_at TIMESTAMP,
+        sent_date DATE,
+        paid_at TIMESTAMP,
+        created_by INTEGER REFERENCES auth_users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── invoice_line_items (added 2026-06-11) ────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS invoice_line_items (
+        id SERIAL PRIMARY KEY,
+        invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
+        description TEXT NOT NULL,
+        quantity DECIMAL(12, 2) DEFAULT 1,
+        unit_price DECIMAL(12, 2) DEFAULT 0,
+        line_total DECIMAL(12, 2) DEFAULT 0,
+        category VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── payments (added 2026-06-11) ──────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS payments (
+        id SERIAL PRIMARY KEY,
+        payment_number VARCHAR(50) UNIQUE NOT NULL,
+        invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
+        contract_id INTEGER REFERENCES contracts(id) ON DELETE SET NULL,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+        amount DECIMAL(12, 2) DEFAULT 0,
+        payment_method VARCHAR(50),
+        payment_reference VARCHAR(255),
+        payment_date DATE,
+        status VARCHAR(50) DEFAULT 'pending',
+        stripe_payment_intent_id VARCHAR(255),
+        notes TEXT,
+        processed_by VARCHAR(255),
+        recorded_by INTEGER REFERENCES auth_users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── team_members (added 2026-06-11) ──────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS team_members (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        phone VARCHAR(50),
+        role VARCHAR(50) DEFAULT 'painter',
+        status VARCHAR(50) DEFAULT 'active',
+        hire_date DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── email_logs (added 2026-06-11) ────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS email_logs (
+        id SERIAL PRIMARY KEY,
+        to_email VARCHAR(255) NOT NULL,
+        from_email VARCHAR(255) NOT NULL,
+        subject VARCHAR(500),
+        template_name VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'failed',
+        resend_id VARCHAR(255),
+        error_message TEXT,
+        related_type VARCHAR(50),
+        related_id INTEGER,
+        user_id INTEGER,
+        metadata JSONB DEFAULT '{}'::jsonb,
+        sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── estimate_settings (added 2026-06-11) ─────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimate_settings (
+        id SERIAL PRIMARY KEY,
+        estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
+        tax_rate NUMERIC(5,2),
+        overhead_pct NUMERIC(5,2),
+        markup_pct NUMERIC(5,2),
+        currency VARCHAR(10),
+        crew_hourly_cost NUMERIC(10,2),
+        billable_rate NUMERIC(10,2),
+        default_method VARCHAR(10),
+        default_coats INTEGER,
+        primer_on BOOLEAN,
+        waste_paint_pct NUMERIC(5,2),
+        waste_tape_pct NUMERIC(5,2),
+        waste_poly_pct NUMERIC(5,2),
+        setup_minutes_per_area INTEGER,
+        cleanup_buffer_pct NUMERIC(5,2),
+        travel_minutes INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── estimate_areas (added 2026-06-11) ────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimate_areas (
+        id SERIAL PRIMARY KEY,
+        estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
+        name VARCHAR(255),
+        length NUMERIC(10,2),
+        width NUMERIC(10,2),
+        height NUMERIC(10,2),
+        wall_sqft NUMERIC(12,2),
+        ceiling_sqft NUMERIC(12,2),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── estimate_surfaces (added 2026-06-11) ────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimate_surfaces (
+        id SERIAL PRIMARY KEY,
+        area_id INTEGER REFERENCES estimate_areas(id) ON DELETE CASCADE,
+        surface_type VARCHAR(50),
+        measurement NUMERIC(12,2),
+        unit VARCHAR(10),
+        method VARCHAR(10),
+        coats INTEGER,
+        primer BOOLEAN,
+        production_rate NUMERIC(12,2),
+        coverage_rate NUMERIC(12,2),
+        door_sides INTEGER,
+        profile_type VARCHAR(50),
+        opening_sqft NUMERIC(12,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── estimate_prep_items (added 2026-06-11) ──────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimate_prep_items (
+        id SERIAL PRIMARY KEY,
+        area_id INTEGER REFERENCES estimate_areas(id) ON DELETE CASCADE,
+        prep_type VARCHAR(50),
+        quantity NUMERIC(12,2),
+        unit VARCHAR(10),
+        rate NUMERIC(12,2),
+        hours NUMERIC(12,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── estimate_materials (added 2026-06-11) ───────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS estimate_materials (
+        id SERIAL PRIMARY KEY,
+        estimate_id INTEGER REFERENCES estimates(id) ON DELETE CASCADE,
+        item_name TEXT,
+        quantity NUMERIC(12,2),
+        unit VARCHAR(10),
+        unit_cost NUMERIC(10,2),
+        total_cost NUMERIC(12,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // ── Fix audit_logs (added 2026-06-11) ──────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER,
+        username VARCHAR(255),
+        action VARCHAR(255) NOT NULL,
+        resource VARCHAR(255),
+        resource_id VARCHAR(255),
+        ip VARCHAR(64),
+        user_agent TEXT,
+        changes JSONB,
+        status VARCHAR(50) DEFAULT 'success',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS resource VARCHAR(255)`;
+    await sql`ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS resource_id VARCHAR(255)`;
+    await sql`ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS ip VARCHAR(64)`;
+
+    // ── Add deleted_at to follow_ups (added 2026-06-11) ─────────────────────
+    await sql`ALTER TABLE follow_ups ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP`;
+
+    // ── Seed initial team_members from existing auth_users (added 2026-06-11)
+    const existingTeamMembers = await sql`SELECT COUNT(*)::int as count FROM team_members`;
+    if (existingTeamMembers[0].count === 0) {
+      const users = await sql`SELECT username, role FROM auth_users`;
+      for (const user of users) {
+        const namePart = user.username.split('@')[0];
+        const displayName = namePart.split(/[._-]/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+        await sql`
+          INSERT INTO team_members (name, email, role)
+          VALUES (${displayName}, ${user.username}, ${user.role || 'painter'})
+          ON CONFLICT (email) DO NOTHING
+        `;
+      }
+    }
 
     // ── Performance indexes ──────────────────────────────────────────────────
     // leads table
@@ -823,6 +1166,23 @@ Arcan Painting
       `;
     }
 
+    // ── app_settings (added 2026-06-11 — bootstrap, was missing from this migration) ──
+    await sql`
+      CREATE TABLE IF NOT EXISTS app_settings (
+        id SERIAL PRIMARY KEY,
+        company_name VARCHAR(255),
+        company_phone VARCHAR(50),
+        company_email VARCHAR(255),
+        company_address TEXT,
+        company_tagline VARCHAR(255),
+        onboarding_step INTEGER DEFAULT 1,
+        onboarding_completed BOOLEAN DEFAULT false,
+        google_prompted_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
     // ── Onboarding columns on app_settings ──────────────────────────────────
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false`;
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS google_prompted_at TIMESTAMP`;
@@ -878,15 +1238,18 @@ Arcan Painting
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_prospect_id ON cold_email_sends(prospect_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_cold_email_sends_sent_at ON cold_email_sends(sent_at DESC)`;
 
-    // ── Seed admin users ────────────────────────────────────────────────────
-    const existingAdmins = await sql`SELECT COUNT(*) as count FROM auth_users WHERE username IN ('info@arcanpainting.ca', 'cameron@ashbi.ca')`;
-    if (parseInt(existingAdmins[0].count) < 2) {
-      const [hash1, hash2] = await Promise.all([
-        argon2Hash('Arcan2026!'),
-        argon2Hash('Ashbi2026!')
-      ]);
-      await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('info@arcanpainting.ca', ${hash1}, 'owner', true) ON CONFLICT (username) DO NOTHING`;
-      await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES ('cameron@ashbi.ca', ${hash2}, 'admin', true) ON CONFLICT (username) DO NOTHING`;
+    // ── Bootstrap admin (only runs on fresh DBs with no users) ──────────────
+    // Set BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD in env to enable.
+    const bootstrapEmail = process.env.BOOTSTRAP_ADMIN_EMAIL;
+    const bootstrapPassword = process.env.BOOTSTRAP_ADMIN_PASSWORD;
+    if (bootstrapEmail && bootstrapPassword) {
+      const existing = await sql`SELECT COUNT(*) as count FROM auth_users`;
+      if (parseInt(existing[0]?.count) === 0) {
+        const { hash: bootstrapHash } = await import("argon2");
+        const hash = await bootstrapHash(bootstrapPassword);
+        await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES (${bootstrapEmail}, ${hash}, 'owner', true)`;
+        console.log(`[bootstrap] Created initial owner account: ${bootstrapEmail}`);
+      }
     }
 
     // Citation indexes
@@ -896,6 +1259,34 @@ Arcan Painting
     await sql`CREATE INDEX IF NOT EXISTS idx_citation_status_directory_id ON citation_status(directory_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_citation_status_status ON citation_status(status)`;
 
+    // ── blog_posts ────────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS blog_posts (
+        id SERIAL PRIMARY KEY,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(500) NOT NULL,
+        excerpt TEXT,
+        body TEXT,
+        cover_image_url TEXT,
+        author_id INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+        status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
+        published_at TIMESTAMP,
+        meta_description TEXT,
+        tags TEXT[] DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts(published_at DESC) WHERE status = 'published'`;
+
+    // Seed starter posts (only runs on fresh tables with no rows)
+    const postCount = await sql`SELECT COUNT(*) as count FROM blog_posts`;
+    if (parseInt(postCount[0]?.count) === 0) {
+      await seedBlogPosts(sql);
+    }
+
     console.log("[migrations] 001-initial-schema: complete");
   } catch (err) {
     // Reset flag so next request retries
@@ -903,6 +1294,403 @@ Arcan Painting
     console.error("[migrations] 001-initial-schema: FAILED", err.message);
     throw err;
   }
+}
+
+// ── Blog post seeder ────────────────────────────────────────────────────────
+async function seedBlogPosts(sql) {
+  const authorRes = await sql`SELECT id FROM auth_users ORDER BY id LIMIT 1`;
+  const authorId = authorRes[0]?.id || null;
+
+  const posts = [
+    {
+      slug: "choosing-right-paint-finish-toronto-home",
+      title: "Choosing the Right Paint Finish for Your Toronto Home",
+      excerpt:
+        "Eggshell, satin, semi-gloss — the terminology trips up even seasoned homeowners. Here's the honest breakdown from a crew that's painted thousands of GTA rooms.",
+      body: `## Why Finish Matters More Than Color
+
+Walk into any GTA paint store and you'll see hundreds of color chips. But ask most homeowners what finish they want, and you'll get a blank stare. That's a mistake — the wrong sheen ages a room badly and costs you money.
+
+## The Main Players
+
+### Eggshell (Our Most-Recommended Interior Finish)
+
+Eggshell sits between flat and satin on the sheen scale — roughly 10-25% gloss. It's the workhorse of residential interiors for good reason:
+
+- **Hides minor wall imperfections** better than higher sheens
+- **Cleans up easily** with a damp cloth — critical in Toronto's climate where salt and grime track in from November to April
+- **No shine hotspots** under the harsh fluorescent lighting common in newer GTA homes
+- **Works in every room** except kitchens and bathrooms
+
+**Best for:** Living rooms, bedrooms, dining rooms, hallways, offices.
+
+### Satin (High-Traffic and Kids' Zones)
+
+Satin has about 25-35% gloss — enough to notice, not enough to be garish. It's more washable than eggshell:
+
+- **Stands up to scrubbing** — great for households with kids or pets
+- **Slight warm glow** that flat paint simply doesn't have
+- **Shows wall prep flaws** more than eggshell, so factor that in
+
+**Best for:** Kids' bedrooms, playrooms, mudrooms, high-traffic hallways.
+
+### Semi-Gloss (Kitchens, Bathrooms, Trim)
+
+Semi-gloss (55-65% gloss) is the traditional choice for:
+
+- **Kitchen cabinets** — grease wipes off easily
+- **Bathroom walls** — moisture resistance
+- **Baseboards, door frames, and window trim** — scuffs and marks clean up without refinishing
+- **Ceilings in moisture-prone areas** — bathrooms, above kitchen stoves
+
+**Caution:** Semi-gloss on large wall areas creates visual noise. The reflection draws your eye to every bump and tape seam.
+
+### Flat / Matte (Ceilings and Low-Traffic Areas)
+
+Flat paint has 0-10% gloss. It hides imperfections brilliantly but:
+
+- **Does not wash** — marks just smear
+- **Absorbs stains** — kitchen splatter can permanently discolor
+
+**Best for:** Ceilings (where you never touch the walls), adult bedrooms with perfect drywall.
+
+## The Toronto Climate Factor
+
+GTA homes swing from humid summers to dry winters. That affects paint performance:
+
+- **Basements:** Use eggshell or satin with a mold-inhibiting primer. Toronto's older homes (Riverside, Leslieville, the Junction) often have damp foundation issues.
+- **Attached garages:** Cold in winter, hot in summer. Semi-gloss on garage interior walls handles temperature swings better.
+- **Sun-facing rooms:** High-gloss sheens amplify UV fading on dark colors. Stick to eggshell in south-facing rooms.
+
+## The One Rule That Never Fails
+
+**Lower sheen on large surfaces, higher sheen on trim and details.** Ceilings = flat. Walls = eggshell. Trim = semi-gloss. Cabinets = satin or semi-gloss.
+
+Follow that framework and you'll never regret a paint job.`,
+      cover_image_url: "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
+      meta_description:
+        "Eggshell vs satin vs semi-gloss: a Toronto painter's guide to choosing the right paint finish for every room in your GTA home.",
+      tags: ["interior-painting", "toronto", "paint-finish", "guide"],
+    },
+    {
+      slug: "exterior-paint-prep-toronto-winter",
+      title: "Why Skipping Prep Work Is the Costliest Mistake in Exterior Painting",
+      excerpt:
+        "Pressure washing, scraping, priming — every step that gets skipped shows up 18 months later. Here's exactly what our crews do before the first brush stroke.",
+      body: `## The Horror Story We Clean Up Every Spring
+
+Every April, we get calls from homeowners who hired the cheapest bid last fall. The paint is peeling. Blistering. Fading in irregular patches. The quote they got was $2,000 less than ours — and the remediation costs $8,000.
+
+The failure mode is almost always the same: inadequate prep.
+
+## What Proper Exterior Prep Looks Like
+
+### 1. Pressure Washing (Non-Negotiable)
+
+Dirt, chalk, mildew, and loose paint must come off before anything else touches the surface. We use 2,500-3,000 PSI on vinyl and aluminum siding, being careful around:
+- Windows and doors (never aim a pressure washer at seals)
+- Soffit vents (water driven into attics causes mold)
+- Old wood clapboard (too much pressure splinters the grain)
+
+After washing, the house must dry for 24-48 hours. Painting over a damp surface = instant adhesion failure.
+
+### 2. Scraping and Sanding
+
+Loose paint bonds to nothing. We scrape every square inch where paint is lifting, then feather-sand the edges so the new coat transitions smoothly. This step alone can add hours to a job — which is why the $2,000-cheaper bidder skips it.
+
+### 3. Caulking Gaps and Joints
+
+Toronto's freeze-thaw cycle is brutal on exterior joints. Water gets into cracks, expands when it freezes, and pops caulking — and eventually paint — off entirely. We:
+- Remove all failing caulking
+- Re-caulk with a paintable silicone-latex hybrid (Dap 3.0 or equivalent)
+- Prime any exposed bare wood
+
+### 4. Priming Bare Spots
+
+Bare wood, sponged metal, patches — these need primer before topcoat. Without it, the topcoat soaks in unevenly and the color looks blotchy within one season.
+
+### 5. Protection of Plants and Hardscaping
+
+We cover landscaping with breathable tarps, lay down drop cloths on patios and walkways, and remove or mask any lighting fixtures. A gallon of paint on a hosta kills it. We've seen it happen on jobs we didn't do — but we've never had a callback for it.
+
+## Timeline for a Typical GTA Exterior
+
+For a 2,000 sq ft GTA home:
+- Prep (wash, scrape, caulk): 1-2 days
+- Drying time: 1-2 days (if weather cooperates)
+- Priming bare spots: half day
+- First coat: 1 day
+- Second coat: 1 day
+- Touch-up and cleanup: half day
+
+**Total: 4-6 days of actual work**, not including weather delays.
+
+## What a Proper Quote Should Include
+
+Ask any exterior painter to walk you through their prep process before signing. If they can't describe it in detail, move on. The price difference between a proper prep and a shortcut job shows up in 18 months — and the cost to fix it is always more than the original difference.
+
+## Weather Windows in Toronto
+
+The ideal painting window in the GTA:
+- **May through mid-June** — temperatures 10-25°C, low humidity
+- **Late August through September** — same range, but you're racing against October frosts
+- **Never** below 10°C or above 35°C
+- **Never** when rain is forecast within 24 hours
+
+The most common failure we see from other companies: painting in October because "the customer wanted it done." The paint didn't fully cure before the first frost. Result: complete peel job the following spring.`,
+      cover_image_url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",
+      meta_description:
+        "Pressure washing, scraping, priming — every skipped prep step shows up within 18 months. Here's exactly what proper exterior paint prep looks like.",
+      tags: ["exterior-painting", "prep", "toronto", "guide"],
+    },
+    {
+      slug: "color-trends-gta-2026",
+      title: "The 5 Paint Colors GTA Homeowners Are Actually Choosing in 2026",
+      excerpt:
+        "We pulled the color data from 200+ Arcan projects completed in 2025-2026. Here's what's working in Riverdale, High Park, and Bay Street penthouses alike.",
+      body: `## What 200+ Projects Tell Us
+
+We're not trend forecasters — we're painters. But we see color in ways that showrooms and swatches can't replicate. When you see the same navy front door on a 1920s semi in Riverdale and a modern condo in Liberty Village, you start to notice patterns.
+
+## The Five Colors That Won 2025-2026
+
+### 1. Uppity Blue (Sherwin-Williams 7106 / BM HC-190)
+
+A mid-tone blue that works on exteriors and interiors. On brick, it reads as traditional without being colonial. On interior accent walls, it pairs with warm oak floors better than gray ever did.
+
+**Where we used it:** Three full-exterior repaints, two feature walls, one set of built-in bookshelves.
+
+### 2. Urbane Bronze (Benjamin Moore 2115-10)
+
+A dark warm brown that's replacing black as the go-to exterior trim color in the GTA. Where charcoal and black read as stark against red brick, bronze flows. It's especially effective on:
+- Front doors
+- Porch columns
+- Garage doors on mid-century homes
+
+### 3. Pale Silver (Sherwin-Williams 7641)
+
+The gray cycle is over, but gray's gentler cousin is still going strong. Pale silver reads as neutral without the coldness of pure gray. Toronto developers have been painting walls this color for a decade — and homeowners are now following.
+
+**Works in:** North-facing rooms (where warmer tones look dingy), open-concept main floors, condo interiors.
+
+### 4. Raindrift (Benjamin Moore OC-52)
+
+A blue-gray with more blue than gray. It's the default answer to "I want something calming but not boring." We've specified it in:
+- Master bedrooms (it reads as spa-like in the right light)
+- Bathrooms (more interesting than white, still clean)
+- Ceilings in basements (where flat paint is appropriate but white feels clinical)
+
+### 5. Manchester Tan (Benjamin Moore OC-51)
+
+The "greige" category has been diluted by thousands of variants, but Manchester Tan is the original. It works on every wall, in every light, in every room type. If a homeowner can't commit to a color direction, this is our default recommendation.
+
+**Note:** This color has been in the BM palette for over a decade. It reads as timeless rather than trendy — which is the goal for most of our clients.
+
+## What We're Painting Over
+
+### What's Declining
+
+- **Alabaster White (SW 7011)** — Too stark. Replaced by warmer off-whites.
+- **Charcoal front doors** — Still popular but being replaced by deep greens and navy.
+- **All-gray-everything** — The gray wave is done. Warm neutrals are the replacement.
+
+### What's Still Going Strong
+
+- **Black exterior trim** — Works on modern and contemporary architecture. Traditional homes look better in bronze.
+- **Dark green** — All shades, from deep forest to sage. Specifically popular in the Junction, Leslieville, and Riverdale.
+- **Warm white walls** — Not pure white, but cream, ivory, and warm off-white. Pure white reads as commercial.
+
+## Our Recommendation
+
+If you're stuck, start with one of the five above. They're proven in GTA conditions, work with the architectural stock we have in this city, and won't look dated in five years.`,
+      cover_image_url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      meta_description:
+        "We painted 200+ GTA homes in 2025-2026. These are the five colors that showed up most often — and why they work in Toronto's climate and architecture.",
+      tags: ["color-guide", "toronto", "trends", "interior-painting"],
+    },
+    {
+      slug: "interior-painting-cost-toronto-2026",
+      title: "What Interior Painting Actually Costs in the GTA in 2026",
+      excerpt:
+        "A room-by-room breakdown based on real Arcan quotes issued in 2025. We include what other contractors hide: the variables that make your quote $2,000 or $12,000 for the same square footage.",
+      body: `## Why Interior Painting Quotes Vary by 4x for the Same Space
+
+We quote a 400 sq ft basement apartment at $3,200. Another contractor quotes $7,800. Same layout. Same paint. The difference is prep — and it's not even the main variable.
+
+Here's the real breakdown.
+
+## Per-Square-Foot Numbers (What We're Actually Charging in 2026)
+
+### Ceilings
+**$1.50–$2.50 per sq ft** (paint and labor)
+
+Most GTA painters charge by the room or by the job, not by the sq ft — but when we break it down, ceilings run $1.50-2.50/sq ft because:
+- Popcorn ceilings (common in GTA high-rises and 1970s-80s semis) require either sealing or removal
+- Vaulted ceilings need staging equipment
+- Insurance requirements for WSIB coverage on ladder work add overhead
+
+### Walls
+**$2.50–$4.00 per sq ft**
+
+This is where the range gets wide. Factors that push to the high end:
+- **Number of coats** — Covering a dark color with light requires three coats minimum. Two coats is only possible with similar colors.
+- **Patch and repair** — Bare drywall paper showing through requires skim-coating. Bare plaster in older homes (Parkdale, Bloor West Village) requires different treatment entirely.
+- **Texture** — Skip-triple, orange peel, and knockdown textures are common in GTA homes built between 1960-1990. They need to be dealt with before painting.
+
+### Trim (Baseboards, Door Frames, Window Casings)
+**$3.00–$6.00 per linear ft**
+
+Trim is priced per linear foot because the prep-to-paint ratio is higher than walls. Cutting in around trim takes significantly more time than rolling walls.
+
+### Closets and Utility Rooms
+**$300–$600 flat rate**
+
+These are often treated as add-on work. We typically price them at $300-600 depending on size because they're simple — one color, minimal prep.
+
+## The Variables That Affect Your Quote
+
+### 1. Number of Colors
+Every color change requires:
+- Taping adjacent surfaces (30-60 min per wall)
+- Tinting the paint (when using custom colors, small batches take time)
+- Drying time between coats (30-60 min in a heated space)
+
+Three colors in a kitchen/dining/living open concept can add $400-800 to a job.
+
+### 2. Condition of Walls
+New drywall (condos, new builds): Minimal prep. One coat of primer, two coats of finish.
+Repaint (existing walls): Assess for nail holes, cracks, scuffs. Expect $0.15-0.30/sq ft in patch costs if we're doing it right.
+Older plaster: Entirely different skill set. Potentially $1.00+/sq ft.
+
+### 3. Access
+- Condo/apartment: Elevator requirements, building rules about hallway use, parking for crew
+- House with contents: Furniture moving is a variable. We charge $200-400 for full packing/unpacking of a room.
+- Multi-level: Staging requirements on stairs above 12 ft
+
+### 4. Ceiling Height
+Standard 8 ft: Normal rolling. Included in standard rates.
+9-10 ft: Added time for extension poles, potential staging. Add 15-20%.
+11+ ft: Requires scaffolding or lifts. Significant cost increase.
+
+## What a Typical GTA Interior Costs
+
+### 2-Bedroom Condo (800 sq ft interior)
+- Full walls, two coats, one color: **$2,800–$3,800**
+- Add ceilings: **+$1,200–$1,600**
+- Add trim (all baseboards, door frames): **+$1,500–$2,200**
+- **Total: $5,500–$7,600**
+
+### 3-Bedroom Semi-Detached (1,400 sq ft interior)
+- Full walls, two coats, one color: **$4,800–$6,200**
+- Add ceilings: **+$2,100–$2,800**
+- Add trim: **+$2,800–$4,000**
+- **Total: $9,700–$13,000**
+
+### 4-Bedroom Detached (2,200 sq ft interior)
+- Full walls, two coats, one color: **$6,800–$8,800**
+- Add ceilings: **+$3,300–$4,400**
+- Add trim: **+$4,200–$6,000**
+- **Total: $14,300–$19,200**
+
+## What You Should Demand from Any Quote
+
+1. **Per-room or per-area breakdown** — Not just a lump sum
+2. **Number of coats per surface** — Should be specified
+3. **Paint brand and line** — Budget paints (Behr, some Home Depot brands) are explicitly excluded in quality contractor quotes
+4. **Prep description** — Ask "what will you do about the cracks in the corners?"
+5. **Furniture moving terms** — Who moves what, and what happens if something is damaged?
+
+A quote that doesn't answer these questions is a quote you shouldn't sign.`,
+      cover_image_url: "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
+      meta_description:
+        "What interior painting actually costs in the GTA in 2026. Room-by-room breakdown from real Arcan quotes. Includes the variables that make quotes vary by 4x.",
+      tags: ["cost-guide", "toronto", "interior-painting", "guide"],
+    },
+    {
+      slug: "diy-vs-hire-professional-painter",
+      title: "DIY vs. Hiring a Pro: An Honest Cost-Benefit Analysis for GTA Homeowners",
+      excerpt:
+        "We get calls from people who just want a quote — and then they disappear for three months and come back frustrated. Here's the math, without the sales pitch.",
+      body: `## Why We Write This Honestly
+
+We're painters. Every job we don't quote is a job we don't get. So writing this means some homeowners will choose the DIY route. That's fine. We want homeowners to make an informed decision — even if it's not the one that fills our calendar.
+
+## The DIY Math (Real Numbers)
+
+### Paint and Materials for a 400 sq ft Basement Apartment
+
+- **Paint:** 2 gallons @ $60/gallon (good quality, BM or SW) = $120
+- **Primer:** 1 gallon = $40
+- **Supplies (tape, brushes, rollers, trays, drop cloths):** $80-120
+- **Patch compound:** $20
+- **Total materials: $260–$280**
+
+That's for a single room, single color, no unusual conditions.
+
+### The Hidden Costs Most DIY Budgets Miss
+
+1. **Your time:** A 400 sq ft room takes 6-10 hours to paint properly (prep + two coats + drying time between coats). At $30/hr opportunity cost, that's $180-300 in time.
+2. **Equipment rental:** Extension ladder if you don't own one ($50-80/day)
+3. **Touch-up paint:** You'll buy more than you need. Leftover partial cans aren't returnable.
+4. **Mistakes:** A visible lap mark, inconsistent coverage, or paint on the ceiling = either living with it or hiring someone to fix it ($400-800 minimum for a room)
+
+### DIY Realistic Total: $500–$700 for a Simple Room
+
+For a straightforward repaint in good condition, with no major prep, the DIY cost is roughly 20-30% of a professional quote. The math works — **if** nothing goes wrong.
+
+## When DIY Makes Sense
+
+- **You're painting a single room, one color, with no major prep needed**
+- **You're experienced with a roller and brush** — cutting in cleanly takes practice
+- **You have a weekend to dedicate** — professional crews do in one day what DIY takes a weekend
+- **The walls are in good condition** — no cracks, holes, or patches
+- **You're using the same or very similar color** — less prep, fewer coats
+
+## When You Should Hire Out
+
+- **More than two rooms** — The time investment multiplies. Three rooms = a full week of evenings and weekend.
+- **Color change (dark to light or vice versa)** — Requires three coats minimum. The cost of materials and time exceeds the professional quote difference.
+- **Prep-heavy walls** — Cracks, holes, textured surfaces, water damage. These require skills that aren't YouTube-learnable in an afternoon.
+- **High-visibility areas** — Front entrance, living room, kitchen. The cost of a visible mistake is higher than the painting cost.
+- **Rental properties** — Speed matters. A professional crew does in a day what takes a DIYer a week. Time = money you could be earning elsewhere.
+- **Any exterior work above one storey** — Falls and ladder accidents are the leading cause of DIY painting failures. Not just paint failures — actual injuries.
+
+## The Three Questions That Should Determine Your Decision
+
+1. **How many hours will this take?** If the answer is more than 16 hours total (two rooms, two coats each), the time cost alone may exceed the professional quote.
+2. **How visible is this area?** A hallway is forgiving. A kitchen with open shelving is not.
+3. **What happens if I get it wrong?** If the answer is "I hire someone to fix it," you've already spent the professional rate — plus the DIY materials.
+
+## Our Bias
+
+We think professional painting is worth it for most interior work above 600 sq ft, any exterior work, and any situation where the walls need more than minor patching. We also think DIY is completely reasonable for a single room refresh with similar colors and good wall conditions.
+
+The homeowners who get frustrated are the ones who underestimate the time and skill required, and overestimate their ability to fix mistakes once made. If you're honest with yourself about your skill level and available time, you'll make the right call — whether that's calling us or doing it yourself.`,
+      cover_image_url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80",
+      meta_description:
+        "An honest cost-benefit analysis of DIY vs. hiring a professional painter in the GTA. Real numbers, no sales pitch. When it's worth it to DIY and when it isn't.",
+      tags: ["diy-vs-pro", "toronto", "guide", "cost-guide"],
+    },
+  ];
+
+  for (const post of posts) {
+    await sql`
+      INSERT INTO blog_posts (slug, title, excerpt, body, cover_image_url, author_id, status, published_at, meta_description, tags)
+      VALUES (
+        ${post.slug},
+        ${post.title},
+        ${post.excerpt},
+        ${post.body},
+        ${post.cover_image_url},
+        ${authorId},
+        'published',
+        CURRENT_TIMESTAMP,
+        ${post.meta_description},
+        ${post.tags}
+      )
+    `;
+  }
+  console.log("[seed] blog_posts: inserted", posts.length, "starter posts");
 }
 
 // Cached promise — run once, share across concurrent startup callers

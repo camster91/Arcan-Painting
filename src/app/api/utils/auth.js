@@ -86,10 +86,18 @@ export async function requireAuth(request) {
   return user !== null;
 }
 
-// Helper function to require admin authentication (backward compatibility)
+// Helper function to require admin authentication
 export async function requireAdmin(request) {
   const user = await getCurrentUser(request);
-  return user !== null; // In this system, all authenticated users are admins
+  if (!user) return false;
+  return user.role === 'owner' || user.role === 'admin';
+}
+
+// Helper function to require owner-only authentication
+export async function requireOwner(request) {
+  const user = await getCurrentUser(request);
+  if (!user) return false;
+  return user.role === 'owner';
 }
 
 // Helper function to return unauthorized response

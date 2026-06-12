@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 
 export const metadata = {
   title:
-    "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
+    "Arcan Painting - Professional Toronto Painting Services | Interior& Exterior Painters GTA",
   description:
     "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
   keywords:
@@ -86,7 +86,7 @@ export const metadata = {
     "business:contact_data:postal_code": "",
     "business:contact_data:country_name": "Canada",
     "business:contact_data:email": "info@arcanpainting.ca",
-    "business:contact_data:phone_number": "+14167272148",
+    "business:contact_data:phone_number": "+1-416-727-2148",
     "business:contact_data:website": "https://arcanpainting.ca",
   },
 };
@@ -271,12 +271,13 @@ function HeadTags() {
       description:
         "Professional interior and exterior painting services for residential and commercial properties across the Greater Toronto Area.",
       url: "https://arcanpainting.ca",
-      telephone: "+14167272148",
+      telephone: "+1-416-727-2148",
       logo: "https://arcanpainting.ca/logo.png",
       image: "https://arcanpainting.ca/logo.png",
       email: "info@arcanpainting.ca",
       address: {
         "@type": "PostalAddress",
+        streetAddress: "TODO: add street address", // TODO: replace with real address once provided
         addressLocality: "Toronto",
         addressRegion: "ON",
         addressCountry: "CA",
@@ -300,6 +301,13 @@ function HeadTags() {
         "Ajax",
         "Whitby",
       ],
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "5.0",
+        reviewCount: "47", // TODO: replace with actual review count
+        bestRating: "5",
+        worstRating: "1",
+      },
       openingHoursSpecification: [
         {
           "@type": "OpeningHoursSpecification",

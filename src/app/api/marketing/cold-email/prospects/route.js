@@ -9,7 +9,14 @@ export async function GET(request) {
   const url = new URL(request.url);
   const status = url.searchParams.get("status") || "new";
   const role = url.searchParams.get("role");
+  const prospectId = url.searchParams.get("prospect_id");
   const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 200);
+
+  // Single prospect lookup
+  if (prospectId) {
+    const prospects = await sql`SELECT * FROM cold_email_prospects WHERE id = ${prospectId}`;
+    return Response.json({ prospects, stats: null });
+  }
 
   // Build dynamic query using string-based sql() call
   let query = "SELECT * FROM cold_email_prospects";
@@ -63,6 +70,9 @@ export async function POST(request) {
   }
   if (action === "update_status") {
     return handleUpdateStatus(body);
+  }
+  if (action === "update_prospect") {
+    return handleUpdateProspect(body);
   }
 
   return Response.json({ error: "Invalid action" }, { status: 400 });
@@ -170,4 +180,23 @@ async function handleUpdateStatus({ prospectId, status }) {
     WHERE id = ${prospectId}
   `;
   return Response.json({ success: true });
+}
+
+async function handleUpdateProspect({ prospectId, name, email, company, role, city, status, sequence_step, notes }) {
+  const updated = await sql`
+    UPDATE cold_email_prospects
+    SET
+      name = ${name},
+      email = ${email},
+      company = ${company},
+      role = ${role},
+      city = ${city},
+      status = ${status},
+      sequence_step = ${sequence_step},
+      notes = ${notes},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ${prospectId}
+    RETURNING *
+  `;
+  return Response.json({ success: true, prospect: updated[0] });
 }

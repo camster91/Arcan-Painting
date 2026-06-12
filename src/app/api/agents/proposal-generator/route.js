@@ -12,10 +12,15 @@ import sql from '../../utils/sql.js';
 import { spawnAgent, parseAgentJSON } from '../openclaw.js';
 import { requireAdmin } from '../../utils/auth.js';
 import { notifyGerardo } from '../../utils/telegram.js';
+import { requireCsrf } from '../../utils/csrf.js';
+import { logAgentRun, updateAgentRun } from '../store.js';
 
 const CONTEXT_FILE = 'agents/arcan-proposal-generator.md';
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     // Admin-only endpoint
     const authorized = await requireAdmin(request);
@@ -92,6 +97,16 @@ Please generate a complete professional proposal for this painting estimate.
 Generate the full proposal with HTML document, client email, and internal notes. Return JSON per your instructions.
 `.trim();
 
+    // Log the agent run
+    const runRecord = await logAgentRun({
+      agent_id: 'proposal-generator',
+      agent_name: 'Proposal Generator',
+      status: 'running',
+      input: { estimateId },
+      reference_type: 'estimate',
+      reference_id: estimateId,
+    });
+
     // Spawn the proposal generator agent
     const agentResult = await spawnAgent({
       task,
@@ -108,6 +123,13 @@ Generate the full proposal with HTML document, client email, and internal notes.
       agentError = agentResult.error;
       console.error('Proposal generator agent failed:', agentError);
     }
+
+    // Update run record
+    await updateAgentRun(runRecord.id, {
+      status: agentResult.success ? 'success' : 'failure',
+      output: proposal,
+      error: agentError,
+    });
 
     // Update estimate record with proposal status
     let dbUpdated = false;

@@ -8,8 +8,8 @@ RUN npm run build
 # Create structure for Hono
 RUN mkdir -p /app/build/server/src/app && \
     cp -r /app/src/app/api /app/build/server/src/app/api && \
-    mkdir -p /app/build/server/src/migrations && \
-    cp -r /app/src/migrations /app/build/server/src/migrations
+    mkdir -p /app/build/server/migrations && \
+    cp /app/src/migrations/*.js /app/build/server/migrations/
 # Transform imports
 RUN node fix-imports.js
 EXPOSE 3000

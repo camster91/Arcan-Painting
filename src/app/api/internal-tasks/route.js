@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { requireAdmin } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
 // Using local admin session cookie like other admin APIs
 
 async function ensureSchema() {
@@ -112,6 +113,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
@@ -142,6 +145,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
@@ -190,6 +195,8 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {

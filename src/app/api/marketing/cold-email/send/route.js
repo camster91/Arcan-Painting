@@ -153,6 +153,18 @@ export async function GET(request) {
 
   const url = new URL(request.url);
   const days = parseInt(url.searchParams.get("days") || "30");
+  const prospectId = url.searchParams.get("prospect_id");
+
+  // Prospect-specific send history
+  if (prospectId) {
+    const sends = await sql`
+      SELECT * FROM cold_email_sends
+      WHERE prospect_id = ${prospectId}
+      ORDER BY sent_at DESC
+      LIMIT 50
+    `;
+    return Response.json({ sends, dailyStats: [] });
+  }
 
   const sends = await sql`
     SELECT s.*, p.name as prospect_name, p.email as prospect_email, p.role, p.city

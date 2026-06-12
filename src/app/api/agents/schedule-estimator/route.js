@@ -12,10 +12,15 @@
 import sql from '../../utils/sql.js';
 import { spawnAgent, parseAgentJSON } from '../openclaw.js';
 import { requireAdmin } from '../../utils/auth.js';
+import { requireCsrf } from '../../utils/csrf.js';
+import { logAgentRun, updateAgentRun } from '../store.js';
 
 const CONTEXT_FILE = 'agents/arcan-estimator-scheduler.md';
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     // Admin-only endpoint
     const authorized = await requireAdmin(request);
@@ -83,6 +88,16 @@ Please:
 Return the full JSON response per your instructions.
 `.trim();
 
+    // Log the agent run
+    const runRecord = await logAgentRun({
+      agent_id: 'schedule-estimator',
+      agent_name: 'Schedule Estimator',
+      status: 'running',
+      input: { leadId },
+      reference_type: 'lead',
+      reference_id: leadId,
+    });
+
     // Spawn the scheduler agent
     const agentResult = await spawnAgent({
       task,
@@ -99,6 +114,13 @@ Return the full JSON response per your instructions.
       agentError = agentResult.error;
       console.error('Estimator scheduler agent failed:', agentError);
     }
+
+    // Update run record
+    await updateAgentRun(runRecord.id, {
+      status: agentResult.success ? 'success' : 'failure',
+      output: schedule,
+      error: agentError,
+    });
 
     // Update lead status to estimate_scheduled if we got results
     let dbUpdated = false;

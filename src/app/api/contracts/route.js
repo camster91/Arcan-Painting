@@ -227,14 +227,14 @@ export async function POST(request) {
         contract_number, estimate_id, lead_id, project_id,
         title, description, scope_of_work, terms_and_conditions,
         payment_terms, warranty_terms, total_amount, deposit_amount,
-        deposit_percentage, start_date, completion_date, 
+        deposit_percentage, start_date, completion_date,
         estimated_duration_days, created_by, notes
       ) VALUES (
         ${contract_number}, ${estimate_id}, ${lead_id}, ${project_id},
         ${title}, ${description}, ${scope_of_work}, ${terms_and_conditions},
         ${payment_terms}, ${warranty_terms}, ${total_amount}, ${deposit_amount},
         ${deposit_percentage}, ${start_date}, ${completion_date},
-        ${estimated_duration_days}, ${user.username || user.email}, ${notes}
+        ${estimated_duration_days}, ${user.id}, ${notes}
       ) RETURNING *
     `;
 

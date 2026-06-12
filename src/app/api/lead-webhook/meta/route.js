@@ -274,7 +274,7 @@ export async function POST(request) {
           console.error("[meta-leads] lead-qualifier failed:", agentErr.message);
         }
         try {
-          await auditLog("meta_lead", saved.lead?.id, { source: "meta", adId: lead.meta.adId });
+          await auditLog({ request, action: "meta_lead.received", resource: "lead", resourceId: saved.lead?.id, changes: { source: "meta", adId: lead.meta.adId } });
         } catch {}
       } catch (err) {
         console.error("[meta-leads] save failed:", err.message);

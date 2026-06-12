@@ -3,6 +3,7 @@ import { generalLimiter, authLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
 import { validateBody, schemas } from "../utils/validate.js";
+import { requireCsrf } from "../utils/csrf.js";
 
 // Create a new lead (public endpoint — used by contact form)
 export async function POST(request) {
@@ -253,6 +254,9 @@ export async function GET(request) {
 
 // Update a lead (ADMIN ONLY) — with full yup validation
 export async function PUT(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const authorized = await requireAdmin(request);
     if (!authorized) {
@@ -372,6 +376,9 @@ export async function PUT(request) {
 
 // Soft-delete a lead (ADMIN ONLY) — sets deleted_at, recoverable via /api/admin/recovery
 export async function DELETE(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const authorized = await requireAdmin(request);
     if (!authorized) {

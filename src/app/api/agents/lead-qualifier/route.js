@@ -11,6 +11,7 @@
 import sql from '../../utils/sql.js';
 import { spawnAgent, parseAgentJSON } from '../openclaw.js';
 import { notifyGerardo } from '../../utils/telegram.js';
+import { logAgentRun, updateAgentRun } from '../store.js';
 
 const CONTEXT_FILE = 'agents/arcan-lead-qualifier.md';
 
@@ -40,6 +41,16 @@ Please qualify this new lead for Arcan Painting.
 Analyze this lead and return a JSON qualification report per your instructions.
 `.trim();
 
+    // Log the agent run
+    const runRecord = await logAgentRun({
+      agent_id: 'lead-qualifier',
+      agent_name: 'Lead Qualifier',
+      status: 'running',
+      input: { leadId, name, email, phone, serviceType, projectDescription, address, preferredContact },
+      reference_type: 'lead',
+      reference_id: leadId || null,
+    });
+
     // Spawn the qualification agent
     const agentResult = await spawnAgent({
       task,
@@ -56,6 +67,13 @@ Analyze this lead and return a JSON qualification report per your instructions.
       agentError = agentResult.error;
       console.error('Lead qualifier agent failed:', agentError);
     }
+
+    // Update run record
+    await updateAgentRun(runRecord.id, {
+      status: agentResult.success ? 'success' : 'failure',
+      output: qualification ? { qualification } : null,
+      error: agentError,
+    });
 
     // Update lead in DB if we have an ID and a score
     let dbUpdated = false;

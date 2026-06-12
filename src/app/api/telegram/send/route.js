@@ -1,7 +1,11 @@
 import { sendTelegramMessage } from '../../utils/telegram.js';
 import { requireAuth } from '../../utils/auth.js';
+import { requireCsrf } from '../../utils/csrf.js';
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const user = await requireAuth(request);
     if (!user) {

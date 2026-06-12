@@ -25,6 +25,52 @@ if (typeof window !== 'undefined') {
   }).catch(() => {});
 }
 
+// CSRF: inject x-csrf-token from the arcan_csrf cookie on every state-changing
+// /api/* request. Patched once on module load so we don't need to touch 50+
+// fetch call sites. Public/unauthenticated endpoints (login, contact, quote,
+// webhook) are skipped so they don't carry a stale token.
+if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
+  window.__arcanCsrfPatched = true;
+  const originalFetch = window.fetch.bind(window);
+  const CSRF_EXEMPT_PREFIXES = [
+    '/api/local-auth/login',
+    '/api/local-auth/logout',
+    '/api/contact',
+    '/api/quote',
+    '/api/lead-webhook/',
+    '/api/stripe-webhook',
+    '/api/health',
+  ];
+  const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+  window.fetch = function patchedFetch(input, init) {
+    try {
+      const url = typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input?.url ?? '';
+      const method = (init?.method || (input && input.method) || 'GET').toUpperCase();
+      const isApi = url.startsWith('/api/') || url.includes('://') && url.includes('/api/');
+      const isExempt = CSRF_EXEMPT_PREFIXES.some((p) => url.includes(p));
+      if (isApi && !SAFE_METHODS.has(method) && !isExempt) {
+        const cookieMatch = document.cookie.match(/(?:^|;\s*)arcan_csrf=([^;]+)/);
+        const token = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+        if (token) {
+          init = init || {};
+          const headers = new Headers(init.headers || (input && input.headers) || undefined);
+          if (!headers.has('x-csrf-token')) {
+            headers.set('x-csrf-token', token);
+          }
+          init.headers = headers;
+        }
+      }
+    } catch {
+      // never let the patch itself break a request
+    }
+    return originalFetch(input, init);
+  };
+}
+
 // @ts-ignore
 import { SessionProvider } from '@auth/create/react';
 import { serializeError } from 'serialize-error';
