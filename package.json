@@ -11,13 +11,10 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@auth/core": "^0.37.2",
 		"@babel/generator": "^7.27.1",
 		"@chakra-ui/react": "2.8.2",
 		"@emotion/react": "11.11.4",
 		"@emotion/styled": "11.11.0",
-		"@hono/auth-js": "^1.0.15",
-		"@neondatabase/serverless": "^0.10.4",
 		"@react-router/fs-routes": "^7.15.0",
 		"@react-router/node": "^7.15.0",
 		"@react-router/serve": "^7.15.0",
@@ -53,7 +50,6 @@
 		"stripe": "^18.2.1",
 		"styled-jsx": "^5.1.7",
 		"tailwind-merge": "^3.2.0",
-		"ws": "^8.18.2",
 		"yup": "^1.6.1",
 		"zustand": "^5.0.3"
 	},
@@ -73,7 +69,6 @@
 		"@types/node": "^20",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.1",
-		"@types/ws": "^8.18.1",
 		"autoprefixer": "^10.4.21",
 		"babel-plugin-react-require": "^4.0.3",
 		"fast-glob": "^3.3.3",

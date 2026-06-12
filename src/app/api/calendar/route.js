@@ -55,7 +55,7 @@ export async function GET(request) {
   } catch (error) {
     console.error("Calendar fetch error:", error.message);
 
-    if (error.message?.includes("Missing Google OAuth")) {
+    if (error.message?.includes("Missing Google OAuth") || error.message?.includes("Missing Maton API key")) {
       return Response.json(
         { error: "Google Calendar is not configured" },
         { status: 503 },

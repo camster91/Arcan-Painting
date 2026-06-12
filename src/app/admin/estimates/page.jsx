@@ -24,7 +24,10 @@ import { useMutation } from "@tanstack/react-query";
 import { EstimateBuilder } from "@/components/admin/estimates/EstimateBuilder";
 import { EstimatesTable } from "@/components/admin/estimates/EstimatesTable";
 import { EstimateDetailModal } from "@/components/admin/estimates/EstimateDetailModal";
-import AIProposalModal from "@/components/admin/estimates/AIProposalModal";
+// AIProposalModal was removed in the v53 strip — the AI proposal generator
+// was an LLM-driven estimator that lived in src/components/admin/estimates/.
+// The page keeps all the rest of the CRM flow; the AI button is just gone
+// for now. Re-add by restoring the modal + its trigger button.
 
 export default function EstimatesPage() {
   const [activeTab, setActiveTab] = useState("builder"); // builder, list
@@ -495,21 +498,7 @@ export default function EstimatesPage() {
         />
       )}
 
-      {/* AI Proposal Generator Modal */}
-      {showAIProposal && aiProposalEstimate && (
-        <AIProposalModal
-          estimate={aiProposalEstimate}
-          onClose={() => {
-            setShowAIProposal(false);
-            setAIProposalEstimate(null);
-          }}
-          onProposalGenerated={(proposal) => {
-            setNotification("✅ Proposal generated! Review it in the modal.");
-            setTimeout(() => setNotification(null), 5000);
-            fetchData(); // Refresh estimates list (proposal_status updated)
-          }}
-        />
-      )}
+      {/* AI Proposal Generator Modal — removed in v53 strip */}
     </div>
   );
 }

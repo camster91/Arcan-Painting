@@ -93,7 +93,7 @@ export default function HeroSection() {
               alt=""
               aria-hidden="true"
               loading={i === 0 ? "eager" : "lazy"}
-              fetchPriority={i === 0 ? "high" : "low"}
+              fetchpriority={i === 0 ? "high" : "low"}
               decoding="async"
               style={{
                 width: "100%",
@@ -387,7 +387,7 @@ export default function HeroSection() {
                   width="800"
                   height="520"
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                 />
               </picture>

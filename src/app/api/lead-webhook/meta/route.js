@@ -1,8 +1,8 @@
 import { notifyGerardo } from "../../utils/telegram.js";
 import { auditLog } from "../../utils/audit.js";
-import { authLimiter } from "../../utils/rate-limit.js";
+import { generalLimiter } from "../../utils/rate-limit.js";
 import { sendLeadEvent } from "../../utils/meta-capi.js";
-import { triggerWorkflow } from "../../email-workflows/route.js";
+import { insertLead } from "../../utils/insert-lead.js";
 import sql from "../../utils/sql.js";
 
 // Meta Lead Ads webhook receiver.
@@ -118,27 +118,22 @@ function normaliseMetaLead(entry) {
   };
 }
 
+// Save a normalized lead to the DB. Was an internal fetch to /api/leads,
+// but /api/leads POST now requires CSRF + admin session, which a
+// server-to-server call (no cookies) cannot satisfy. Use the shared
+// insertLead helper instead.
 async function saveLead(baseUrl, lead) {
-  const resp = await fetch(`${baseUrl}/api/leads`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      serviceType: lead.serviceType,
-      projectDescription: lead.projectDescription,
-      preferredContact: lead.preferredContact,
-      address: lead.address,
-      leadSource: lead.source || "meta_lead_ad",
-      meta_lead_id: lead.meta?.leadId || null,
-    }),
+  return insertLead({
+    name: lead.name,
+    email: lead.email,
+    phone: lead.phone,
+    serviceType: lead.serviceType,
+    projectDescription: lead.projectDescription,
+    preferredContact: lead.preferredContact,
+    address: lead.address,
+    leadSource: lead.source || "meta_lead_ad",
+    metaLeadId: lead.meta?.leadId || null,
   });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(`leads insert failed: ${resp.status} ${err.error || ""}`);
-  }
-  return resp.json();
 }
 
 // GET — Meta webhook verification challenge
@@ -156,7 +151,9 @@ export async function GET(request) {
 
 // POST — Meta Lead Ads delivery
 export async function POST(request) {
-  const limited = authLimiter(request);
+  // Public Meta Lead Ads webhook — uses generalLimiter (100/min/IP) because
+  // it is not an auth flow. Meta batches can hit the same IP rapidly.
+  const limited = generalLimiter(request);
   if (limited) return limited;
 
   // Reject large payloads (DoS protection)

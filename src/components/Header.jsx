@@ -141,7 +141,7 @@ export default function Header() {
               width="170"
               height="95"
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               className={`transition-all duration-300 object-contain ${isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"}`}
             />

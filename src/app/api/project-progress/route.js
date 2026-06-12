@@ -39,7 +39,7 @@ export async function GET(request) {
         tm.name as reported_by_name
       FROM project_progress pp
       JOIN projects p ON pp.project_id = p.id
-      LEFT JOIN team_members tm ON pp.reported_by = tm.id
+      LEFT JOIN team_members tm ON pp.reported_by = tm.name::text OR pp.reported_by = tm.id::text
       ${whereClause}
       ORDER BY pp.report_date DESC, pp.created_at DESC
     `,

@@ -1,8 +1,9 @@
 import { sendGmailEmail } from "@/lib/google.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
-import { authLimiter } from "../utils/rate-limit.js";
+import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { sendLeadEvent } from "../utils/meta-capi.js";
+import { insertLead } from "../utils/insert-lead.js";
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
@@ -18,7 +19,7 @@ async function spawnLeadQualifierAsync(leadData, baseUrl) {
 }
 
 export async function POST(request) {
-  const limited = authLimiter(request);
+  const limited = generalLimiter(request);
   if (limited) return limited;
 
   try {
@@ -78,37 +79,29 @@ export async function POST(request) {
     let leadId = null;
     let leadSaved = false;
 
-    // Try saving the lead (accepts email-only or phone-only leads; DB requires both for validation but accepts either if the other is an empty string)
+    // Save the lead directly via the shared insertLead helper — the
+    // previous implementation POSTed to /api/leads as an internal fetch,
+    // which both (a) hit a second rate-limit bucket and (b) bypassed CSRF
+    // because this server-to-server call has no cookies. Inlining the
+    // INSERT removes both problems.
     try {
-      const baseUrl = process.env.APP_URL || request.url.split("/api/")[0];
-      const leadResponse = await fetch(
-        `${baseUrl}/api/leads`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: body.name,
-            email: body.email || "",
-            phone: body.phone || "",
-            serviceType: body.serviceType,
-            projectDescription: body.projectDescription,
-            preferredContact: preferredContact,
-            address: body.address,
-            leadSource: body.leadSource || "website",
-          }),
-        },
-      );
+      leadId = await insertLead({
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        serviceType: body.serviceType,
+        projectDescription: body.projectDescription,
+        preferredContact: preferredContact,
+        address: body.address,
+        leadSource: body.leadSource || "website",
+      });
+      leadSaved = leadId != null;
 
-        if (leadResponse.ok) {
-          const leadData = await leadResponse.json();
-          leadId = leadData.lead?.id;
-          leadSaved = true;
-
-          // Fire-and-forget: spawn AI lead qualifier in background
-          const baseUrl = request.url.split("/api/")[0];
-          spawnLeadQualifierAsync({
+      if (leadSaved) {
+        // Fire-and-forget: spawn AI lead qualifier in background
+        const baseUrl = request.url.split("/api/")[0];
+        spawnLeadQualifierAsync(
+          {
             leadId,
             name: body.name,
             email: body.email,
@@ -117,22 +110,21 @@ export async function POST(request) {
             projectDescription: body.projectDescription,
             address: body.address,
             preferredContact,
-          }, baseUrl);
+          },
+          baseUrl,
+        );
 
-          // Fire-and-forget: Meta CAPI server-side Lead event for attribution
-          sendLeadEvent({
-            leadId,
-            email: body.email,
-            phone: body.phone,
-            name: body.name,
-            source: "website_contact",
-            serviceType: body.serviceType,
-            request,
-          });
-        } else {
-          const leadError = await leadResponse.json();
-          console.error("Failed to save lead:", leadError.error);
-        }
+        // Fire-and-forget: Meta CAPI server-side Lead event for attribution
+        sendLeadEvent({
+          leadId,
+          email: body.email,
+          phone: body.phone,
+          name: body.name,
+          source: "website_contact",
+          serviceType: body.serviceType,
+          request,
+        });
+      }
     } catch (dbError) {
       console.error("Database error (continuing with email):", dbError);
     }

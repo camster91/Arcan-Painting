@@ -1693,15 +1693,189 @@ The homeowners who get frustrated are the ones who underestimate the time and sk
   console.log("[seed] blog_posts: inserted", posts.length, "starter posts");
 }
 
+// ── v2: add the tables that routes query but v1 forgot. These were
+// extracted from the INSERT/SELECT statements in the corresponding API
+// route files. If a route adds a new column, mirror it here. All CREATE
+// statements are idempotent (IF NOT EXISTS), so re-running the migration
+// is safe.
+async function ensureMissingTables() {
+  // Availability slots (admin can publish bookable time windows)
+  await sql`
+    CREATE TABLE IF NOT EXISTS availability_slots (
+      id SERIAL PRIMARY KEY,
+      slot_date DATE NOT NULL,
+      start_time TIME NOT NULL,
+      end_time TIME NOT NULL,
+      capacity INTEGER NOT NULL DEFAULT 1,
+      status VARCHAR(50) NOT NULL DEFAULT 'open',
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_availability_slots_date ON availability_slots(slot_date)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_availability_slots_status ON availability_slots(status)`;
+
+  // Appointments (a booking against an availability slot)
+  await sql`
+    CREATE TABLE IF NOT EXISTS appointments (
+      id SERIAL PRIMARY KEY,
+      slot_id INTEGER REFERENCES availability_slots(id) ON DELETE CASCADE,
+      lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+      name VARCHAR(255),
+      email VARCHAR(255),
+      phone VARCHAR(50),
+      address TEXT,
+      notes TEXT,
+      status VARCHAR(50) DEFAULT 'booked',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_appointments_slot ON appointments(slot_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_appointments_lead ON appointments(lead_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status)`;
+
+  // Notifications (admin inbox)
+  await sql`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      type VARCHAR(50) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      user_id INTEGER,
+      email VARCHAR(255),
+      related_id INTEGER,
+      related_type VARCHAR(50),
+      is_read BOOLEAN DEFAULT FALSE,
+      send_email BOOLEAN DEFAULT FALSE,
+      data JSONB DEFAULT '{}'::jsonb,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(created_at DESC)`;
+
+  // Completion workflows (per-project checklist)
+  await sql`
+    CREATE TABLE IF NOT EXISTS completion_workflows (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      step_title VARCHAR(255) NOT NULL,
+      step_description TEXT,
+      step_order INTEGER DEFAULT 1,
+      is_required BOOLEAN DEFAULT TRUE,
+      estimated_hours NUMERIC,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_completion_workflows_project ON completion_workflows(project_id)`;
+
+  // Project progress (daily site reports)
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_progress (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      report_date DATE NOT NULL,
+      work_description TEXT,
+      progress_percentage INTEGER,
+      hours_worked NUMERIC,
+      team_members_present JSONB DEFAULT '[]'::jsonb,
+      materials_used TEXT,
+      challenges_faced TEXT,
+      next_steps TEXT,
+      weather_conditions VARCHAR(255),
+      client_interaction TEXT,
+      quality_notes TEXT,
+      photos JSONB DEFAULT '[]'::jsonb,
+      reported_by VARCHAR(255),
+      is_milestone BOOLEAN DEFAULT FALSE,
+      milestone_description TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
+
+  // Time tracking (clock-in/clock-out against a project or task)
+  await sql`
+    CREATE TABLE IF NOT EXISTS time_tracking (
+      id SERIAL PRIMARY KEY,
+      team_member_id INTEGER REFERENCES team_members(id) ON DELETE CASCADE,
+      project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
+      internal_task_id INTEGER,
+      clock_in_time TIMESTAMP NOT NULL,
+      clock_out_time TIMESTAMP,
+      break_duration_minutes INTEGER DEFAULT 0,
+      total_hours NUMERIC,
+      hourly_rate NUMERIC,
+      total_cost NUMERIC,
+      work_description TEXT,
+      location VARCHAR(255),
+      notes TEXT,
+      status VARCHAR(50) DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_time_tracking_member ON time_tracking(team_member_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_time_tracking_project ON time_tracking(project_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_time_tracking_status ON time_tracking(status)`;
+
+  // Contract templates (reusable contract boilerplate)
+  await sql`
+    CREATE TABLE IF NOT EXISTS contract_templates (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      scope_template TEXT,
+      terms_template TEXT,
+      payment_terms_template TEXT,
+      warranty_template TEXT,
+      default_deposit_percentage NUMERIC DEFAULT 25,
+      is_active BOOLEAN DEFAULT TRUE,
+      is_default BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_contract_templates_active ON contract_templates(is_active)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_contract_templates_default ON contract_templates(is_default)`;
+
+  // Internal tasks (admin's private to-do list; time-tracking JOINs to it)
+  await sql`
+    CREATE TABLE IF NOT EXISTS internal_tasks (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      status VARCHAR(20) DEFAULT 'todo',
+      priority VARCHAR(20) DEFAULT 'medium',
+      assignee_id INTEGER REFERENCES team_members(id) ON DELETE SET NULL,
+      due_date DATE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_internal_tasks_status ON internal_tasks(status)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_internal_tasks_priority ON internal_tasks(priority)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_internal_tasks_assignee ON internal_tasks(assignee_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_internal_tasks_due_date ON internal_tasks(due_date)`;
+
+  console.log("[migrations] v2 tables: complete");
+}
+
 // Cached promise — run once, share across concurrent startup callers
 let _migrationPromise = null;
 
 export function ensureSchema() {
   if (!_migrationPromise) {
-    _migrationPromise = runMigrations().catch((err) => {
-      _migrationPromise = null; // Allow retry on next call
-      throw err;
-    });
+    _migrationPromise = runMigrations()
+      .then(() => ensureMissingTables())
+      .catch((err) => {
+        _migrationPromise = null; // Allow retry on next call
+        throw err;
+      });
   }
   return _migrationPromise;
 }

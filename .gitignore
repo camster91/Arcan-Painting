@@ -15,3 +15,7 @@
 *.log
 dev-server*.log
 
+
+# Bun lockfile — npm only
+bun.lock
+bun.lockb

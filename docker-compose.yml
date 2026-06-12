@@ -1,0 +1,78 @@
+# docker-compose.yml — local development stack for Arcan Painting.
+#
+# Usage:
+#   docker compose up --build          # build + start in foreground
+#   docker compose up -d --build       # detached
+#   docker compose down -v             # stop + remove volumes (wipes DB)
+#   docker compose logs -f app         # follow app logs
+#   docker compose exec app sh         # shell into the app container
+#   docker compose exec db psql -U arcan -d arcan_painting   # psql into DB
+#
+# The `app` service waits for `db` to be healthy before starting.
+# The first time you boot, migrations run automatically and the app is
+# reachable at http://localhost:3000. The admin user is NOT auto-created;
+# see "First-time setup" in CLAUDE.md for the SQL one-liner to seed one.
+
+name: arcan-painting
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: arcan-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arcan
+      POSTGRES_PASSWORD: arcan_dev_password
+      POSTGRES_DB: arcan_painting
+    ports:
+      - "5432:5432"
+    volumes:
+      - arcan_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # pg_isready is the right tool — returns 0 only when PG can accept
+      # actual connections, not just when the socket is up.
+      test: ["CMD-SHELL", "pg_isready -U arcan -d arcan_painting"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arcan-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://arcan:arcan_dev_password@db:5432/arcan_painting"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "dev-only-do-not-use-in-prod"
+      NODE_ENV: "development"
+      PORT: "3000"
+      # OPENCLAW_URL is read by /api/agents/* and /api/admin/chat. Pointing at
+      # an empty host means the agents degrade to a no-op (no crash).
+      OPENCLAW_URL: "http://localhost:18789"
+      # Sentry is no-op when DSN is empty.
+      SENTRY_DSN: ""
+      NEXT_PUBLIC_SENTRY_DSN: ""
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source for hot-reload during dev. Comment out for a clean
+      # production-like run. Note: HMR needs the dev server (npm run dev),
+      # not the built server, so this is mostly useful for inspecting files.
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+      # Persist the build/ output if you want fast container restarts.
+      - arcan_build:/app/build
+    # Override the CMD to start the dev server with HMR. Default CMD is the
+    # production server. Comment this out to run the production build.
+    # command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+volumes:
+  arcan_pgdata:
+    name: arcan_pgdata
+  arcan_build:
+    name: arcan_build

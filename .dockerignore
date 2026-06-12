@@ -3,15 +3,21 @@ node_modules
 .github
 .env
 .env.*
+.env.local
 *.md
-*.png
-*.jpg
-*.jpeg
-*.zip
-*.apk
-*.idsig
+!README.md
 test-results
 coverage
-.turbo
-.openclaw
-arcan-openclaw
+.vitest
+.react-router
+build
+*.log
+dev-server*.log
+.DS_Store
+bun.lock
+# Gallery is 107MB. Exclude from the build context; deploy pattern is to
+# rsync it onto the host separately, or mount it as a volume in compose.
+public/gallery/images
+public/gallery/thumbnails
+public/sw.js
+public/sw.js.map

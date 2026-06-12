@@ -19,7 +19,11 @@ import LeadCard from "@/components/LeadCard";
 import LeadQuickView from "@/components/LeadQuickView";
 import LeadsTable from "@/components/admin/leads/LeadsTable";
 import LeadEditModal from "@/components/admin/leads/LeadEditModal";
-import AIScheduleModal from "@/components/admin/leads/AIScheduleModal";
+// AIScheduleModal was removed in the v53 strip — the AI scheduling flow
+// was an LLM-driven booking assistant that lived in
+// src/components/admin/leads/. The page keeps all the rest of the CRM
+// flow; the AI button is just gone for now. Re-add by restoring the
+// modal + its trigger button.
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState([]);
@@ -617,25 +621,7 @@ export default function LeadsPage() {
         </div>
       )}
 
-      {/* AI Schedule Estimate Modal */}
-      {showAISchedule && aiScheduleLead && (
-        <AIScheduleModal
-          lead={aiScheduleLead}
-          onClose={() => {
-            setShowAISchedule(false);
-            setAIScheduleLead(null);
-          }}
-          onSlotSelected={(slot, schedule) => {
-            // Navigate to appointments with pre-filled data
-            const params = new URLSearchParams({
-              lead_id: aiScheduleLead.id,
-              date: slot.date,
-              time: slot.time,
-            });
-            window.location.href = `/admin/appointments?${params}`;
-          }}
-        />
-      )}
+      {/* AI Schedule Estimate Modal — removed in v53 strip */}
     </div>
   );
 }

@@ -7,24 +7,15 @@ initSentryServer();
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { migratePasswords } from '../src/app/api/utils/migrate-passwords.js';
-import { skipCSRFCheck } from '@auth/core';
-import Credentials from '@auth/core/providers/credentials';
-import { authHandler, initAuthConfig } from '@hono/auth-js';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { hash, verify } from 'argon2';
+import { ensureSchema } from '../src/migrations/001-initial-schema.js';
 import { Hono } from 'hono';
-import { contextStorage, getContext } from 'hono/context-storage';
+import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
-import { proxy } from 'hono/proxy';
 import { requestId } from 'hono/request-id';
 import { createHonoServer } from 'react-router-hono-server/node';
 import { serializeError } from 'serialize-error';
-import ws from 'ws';
-import NeonAdapter from './adapter';
 import { getHTMLForErrorPage } from './get-html-for-error-page';
-import { isAuthAction } from './is-auth-action';
 import { API_BASENAME, api } from './route-builder';
-neonConfig.webSocketConstructor = ws;
 
 const als = new AsyncLocalStorage<{ requestId: string }>();
 
@@ -40,11 +31,6 @@ for (const method of ['log', 'info', 'warn', 'error', 'debug'] as const) {
     }
   };
 }
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-const adapter = NeonAdapter(pool);
 
 const app = new Hono();
 
@@ -92,162 +78,12 @@ if (process.env.CORS_ORIGINS) {
   );
 }
 
-if (process.env.AUTH_SECRET) {
-  app.use(
-    '*',
-    initAuthConfig((c) => ({
-      secret: c.env.AUTH_SECRET,
-      pages: {
-        signIn: '/account/signin',
-        signOut: '/account/logout',
-      },
-      skipCSRFCheck,
-      session: {
-        strategy: 'jwt',
-      },
-      callbacks: {
-        session({ session, token }) {
-          if (token.sub) {
-            session.user.id = token.sub;
-          }
-          return session;
-        },
-      },
-      cookies: {
-        csrfToken: {
-          options: {
-            secure: true,
-            sameSite: 'none',
-          },
-        },
-        sessionToken: {
-          options: {
-            secure: true,
-            sameSite: 'none',
-          },
-        },
-        callbackUrl: {
-          options: {
-            secure: true,
-            sameSite: 'none',
-          },
-        },
-      },
-      providers: [
-        Credentials({
-          id: 'credentials-signin',
-          name: 'Credentials Sign in',
-          credentials: {
-            email: {
-              label: 'Email',
-              type: 'email',
-            },
-            password: {
-              label: 'Password',
-              type: 'password',
-            },
-          },
-          authorize: async (credentials) => {
-            const { email, password } = credentials;
-            if (!email || !password) {
-              return null;
-            }
-            if (typeof email !== 'string' || typeof password !== 'string') {
-              return null;
-            }
+// Note: the previous @auth/core + @hono/auth-js + @neondatabase/serverless
+// stack (public OAuth + Anythings Neon adapter) was removed in 2026-06-12.
+// The CRM uses its own local-auth flow at /api/local-auth/* (argon2id + pg),
+// which is fully working. This app no longer references the deleted
+// __create/adapter.ts, src/auth.js, src/app/account/*, or src/app/api/auth/*.
 
-            // logic to verify if user exists
-            const user = await adapter.getUserByEmail(email);
-            if (!user) {
-              return null;
-            }
-            const matchingAccount = user.accounts.find(
-              (account) => account.provider === 'credentials'
-            );
-            const accountPassword = matchingAccount?.password;
-            if (!accountPassword) {
-              return null;
-            }
-
-            const isValid = await verify(accountPassword, password);
-            if (!isValid) {
-              return null;
-            }
-
-            // return user object with the their profile data
-            return user;
-          },
-        }),
-        Credentials({
-          id: 'credentials-signup',
-          name: 'Credentials Sign up',
-          credentials: {
-            email: {
-              label: 'Email',
-              type: 'email',
-            },
-            password: {
-              label: 'Password',
-              type: 'password',
-            },
-          },
-          authorize: async (credentials) => {
-            const { email, password } = credentials;
-            if (!email || !password) {
-              return null;
-            }
-            if (typeof email !== 'string' || typeof password !== 'string') {
-              return null;
-            }
-
-            // logic to verify if user exists
-            const user = await adapter.getUserByEmail(email);
-            if (!user) {
-              const newUser = await adapter.createUser({
-                id: crypto.randomUUID(),
-                emailVerified: null,
-                email,
-              });
-              await adapter.linkAccount({
-                extraData: {
-                  password: await hash(password),
-                },
-                type: 'credentials',
-                userId: newUser.id,
-                providerAccountId: newUser.id,
-                provider: 'credentials',
-              });
-              return newUser;
-            }
-            return null;
-          },
-        }),
-      ],
-    }))
-  );
-}
-app.all('/integrations/:path{.+}', async (c, next) => {
-  const queryParams = c.req.query();
-  const url = `${process.env.NEXT_PUBLIC_CREATE_BASE_URL ?? 'https://www.create.xyz'}/integrations/${c.req.param('path')}${Object.keys(queryParams).length > 0 ? `?${new URLSearchParams(queryParams).toString()}` : ''}`;
-
-  return proxy(url, {
-    method: c.req.method,
-    body: c.req.raw.body ?? null,
-    // @ts-ignore - this key is accepted even if types not aware and is
-    // required for streaming integrations
-    duplex: 'half',
-    redirect: 'manual',
-    headers: {
-      ...c.req.header(),
-      'X-Forwarded-For': process.env.NEXT_PUBLIC_CREATE_HOST,
-      'x-createxyz-host': process.env.NEXT_PUBLIC_CREATE_HOST,
-      Host: process.env.NEXT_PUBLIC_CREATE_HOST,
-      'x-createxyz-project-group-id': process.env.NEXT_PUBLIC_PROJECT_GROUP_ID,
-    },
-  });
-});
-
-// Serve robots.txt and sitemap.xml with correct Content-Type before React Router catch-all
 app.get('/robots.txt', (c) => {
   const baseUrl = process.env.APP_URL || 'https://arcanpainting.ca';
   const robotsTxt = `User-agent: *
@@ -262,10 +98,6 @@ Allow: /#contact
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /api/*
-Disallow: /account/
-Disallow: /account/*
-Disallow: /_next/
-Disallow: /static/
 
 # Block specific files
 Disallow: *.json$
@@ -359,15 +191,16 @@ app.get('/sitemap.xml', (c) => {
   });
 });
 
-app.use('/api/auth/*', async (c, next) => {
-  if (isAuthAction(c.req.path)) {
-    return authHandler()(c, next);
-  }
-  return next();
-});
 app.route(API_BASENAME, api);
 
-// Run password migration on startup (hash any remaining plain-text passwords)
+// Run password migration on startup (hash any remaining plain-text passwords).
+// IMPORTANT: ensureSchema() must run first so the `auth_users` table exists;
+// otherwise the migration tries to ALTER a non-existent table and the boot
+// log gets an ugly "relation does not exist" error. Schema is idempotent
+// (CREATE TABLE IF NOT EXISTS) so calling it on every boot is safe.
+await ensureSchema().catch((err) => {
+  console.error('[startup] ensureSchema failed:', err?.message || err);
+});
 migratePasswords().catch((err) =>
   console.error('[startup] Password migration failed:', err)
 );

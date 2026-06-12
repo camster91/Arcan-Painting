@@ -1,14 +1,33 @@
 import sql from "../utils/sql.js";
-import { generalLimiter, authLimiter } from "../utils/rate-limit.js";
+import { appendFileSync as dbgLog } from "node:fs";
+import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
 import { validateBody, schemas } from "../utils/validate.js";
 import { requireCsrf } from "../utils/csrf.js";
 
-// Create a new lead (public endpoint — used by contact form)
+// Create a new lead (admin/CRM endpoint — requires CSRF + admin session).
+// The public contact form goes through /api/contact (exempt) which inserts
+// directly via SQL, NOT through this route. This handler is for the admin
+// "create lead" UI which has a session + CSRF cookie.
 export async function POST(request) {
-  const limited = authLimiter(request); // tight limit — public endpoint
-  if (limited) return limited;
+  dbgLog("/tmp/leads-post.log", `[${new Date().toISOString()}] hit\n`);
+  console.log("[leads/POST] hit");
+
+  const limitado = generalLimiter(request);
+  if (limitado) return limitado;
+
+  // CSRF protection. The /api/contact public route is exempt (see
+  // CSRF_EXEMPT_PREFIXES in src/app/root.tsx), but a state-changing call
+  // here requires a valid session + matching x-csrf-token header.
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
+  // Auth: admin only
+  const user = await getCurrentUser(request);
+  if (!user || (user.role !== "owner" && user.role !== "admin")) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const body = await request.json();
@@ -66,7 +85,7 @@ export async function POST(request) {
       ) VALUES (
         ${body.name.trim()},
         ${body.email.trim().toLowerCase()},
-        ${body.phone.trim()},
+        ${body.phone ? body.phone.trim() : ""},
         ${body.serviceType},
         ${body.projectDescription || ""},
         ${body.preferredContact || "phone"},

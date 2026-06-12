@@ -2,80 +2,45 @@ import path from 'node:path';
 import { reactRouter } from '@react-router/dev/vite';
 import { reactRouterHonoServer } from 'react-router-hono-server/dev';
 import { defineConfig } from 'vite';
-import babel from 'vite-plugin-babel';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { aliases } from './plugins/aliases';
-import { layoutWrapperPlugin } from './plugins/layouts';
-import { loadFontsFromTailwindSource } from './plugins/loadFontsFromTailwindSource';
-import { nextPublicProcessEnv } from './plugins/nextPublicProcessEnv';
-import { sentrySourceMaps } from './plugins/sentrySourceMaps';
 
 export default defineConfig({
-  // Keep them available via import.meta.env.NEXT_PUBLIC_*
   envPrefix: 'NEXT_PUBLIC_',
   optimizeDeps: {
-    // Explicitly include fast-glob, since it gets dynamically imported and we
-    // don't want that to cause a re-bundle.
     include: ['fast-glob', 'lucide-react'],
     exclude: [
-      '@hono/auth-js/react',
-      '@hono/auth-js',
-      '@auth/core',
-      '@hono/auth-js',
       'hono/context-storage',
-      '@auth/core/errors',
       'fsevents',
       'lightningcss',
     ],
   },
   logLevel: 'info',
   plugins: [
-    nextPublicProcessEnv(),
     reactRouterHonoServer({
       serverEntryPoint: './__create/index.ts',
       runtime: 'node',
     }),
-    babel({
-      include: ['src/**/*.{js,jsx,ts,tsx}'], // or RegExp: /src\/.*\.[tj]sx?$/
-      exclude: /node_modules/, // skip everything else
-      babelConfig: {
-        babelrc: false, // don't merge other Babel files
-        configFile: false,
-        presets: [
-          ['@babel/preset-typescript', { allowDeclareFields: true }],
-          ['@babel/preset-react', { runtime: 'automatic' }],
-        ],
-        plugins: ['styled-jsx/babel'],
-      },
-    }),
-    loadFontsFromTailwindSource(),
     reactRouter(),
     tsconfigPaths(),
-    aliases(),
-    layoutWrapperPlugin(),
-    sentrySourceMaps(),
   ],
   resolve: {
     alias: {
       lodash: 'lodash-es',
       'npm:stripe': 'stripe',
       stripe: path.resolve(__dirname, './src/__create/stripe'),
-      '@auth/create/react': '@hono/auth-js/react',
-      '@auth/create': path.resolve(__dirname, './src/__create/@auth/create'),
       '@': path.resolve(__dirname, 'src'),
     },
     dedupe: ['react', 'react-dom'],
   },
   build: {
     target: 'es2022',
-    // Generate source maps for Sentry stack trace readability
     sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : false,
     rollupOptions: {
-      // Externalize Node-only / native server packages so neither the client
-      // nor the SSR bundle tries to inline them.
       external: (id) => {
         const serverOnlyPkgs = [
-          'pg', 'pg-native', 'pg-pool',
+          'pg',
+          'pg-native',
+          'pg-pool',
           'argon2',
           'ws',
           'sql.js',
@@ -84,14 +49,8 @@ export default defineConfig({
           'better-sqlite3',
         ];
         if (serverOnlyPkgs.some((pkg) => id === pkg || id.startsWith(pkg + '/'))) return true;
-        // Sentry has internal circular deps that crash Vite's bundler; no DSN configured so skip client bundle
         if (id.startsWith('@sentry/') || id.startsWith('node_modules/@sentry/')) return true;
         return false;
-      },
-      output: {
-        // manualChunks removed - was causing circular dep TDZ crashes
-        // (vendor-react and vendor-misc imported from each other)
-        // Vite's automatic code splitting handles this correctly
       },
     },
   },

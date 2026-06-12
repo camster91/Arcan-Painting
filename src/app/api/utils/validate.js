@@ -79,6 +79,10 @@ export const schemas = {
     processed_by: yup.string().max(255).optional().nullable(),
   }),
 
+  // Note: the schema accepts snake_case field names (service_type,
+  // project_description) but the public-facing call sites (LeadEditModal
+  // in the admin UI, the contact form) use camelCase. We normalise here
+  // so both work.
   lead: yup.object({
     name: yup.string().max(255).required("Name is required"),
     email: yup.string().email().max(255).optional().nullable(),
@@ -87,7 +91,14 @@ export const schemas = {
     city: yup.string().max(100).optional().nullable(),
     source: yup.string().max(100).optional().nullable(),
     service_type: yup.string().max(100).optional().nullable(),
+    serviceType: yup.string().max(100).optional().nullable(),
     notes: yup.string().max(10000).optional().nullable(),
+    project_description: yup.string().max(10000).optional().nullable(),
+    projectDescription: yup.string().max(10000).optional().nullable(),
+    preferredContact: yup.string().max(20).optional().nullable(),
+    preferred_contact: yup.string().max(20).optional().nullable(),
+    leadSource: yup.string().max(100).optional().nullable(),
+    meta_lead_id: yup.string().max(100).optional().nullable(),
   }),
 
   leadUpdate: yup.object({

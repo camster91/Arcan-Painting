@@ -72,11 +72,13 @@ if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
 }
 
 // @ts-ignore
-import { SessionProvider } from '@auth/create/react';
-import { serializeError } from 'serialize-error';
+// LoadFonts was provided by the deleted plugins/loadFontsFromTailwindSource
+// virtual module. Stripped in v53: the project now uses Tailwind's font-sans
+// utility (which maps to Fredoka, Inter, etc. via tailwind.config.js), and
+// the explicit Google Fonts preload component was a build-time optimization
+// the SPA doesn't need at our scale.
+// import { LoadFonts } from 'virtual:load-fonts.jsx';
 import { Toaster } from 'sonner';
-// @ts-ignore
-import { LoadFonts } from 'virtual:load-fonts.jsx';
 import type { Route } from './+types/root';
 
 export const links = () => [];
@@ -132,7 +134,12 @@ function InternalErrorBoundary({ error: errorArg }: Route.ErrorBoundaryProps) {
   }, []);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(JSON.stringify(serializeError(error)));
+    try {
+      const message = error instanceof Error ? `${error.name}: ${error.message}\n\n${error.stack || ''}` : JSON.stringify(error, null, 2);
+      navigator.clipboard.writeText(message);
+    } catch {
+      // clipboard not available
+    }
   }, [error]);
 
   return (
@@ -289,7 +296,6 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         <Meta />
         <Links />
-        <LoadFonts />
       </head>
       <body suppressHydrationWarning>
         {/* SSR SEO Block — visible to Google crawlers, hidden after React hydration */}
@@ -354,8 +360,6 @@ export function Layout({ children }: { children: ReactNode }) {
 
 export default function App() {
   return (
-    <SessionProvider>
-      <Outlet />
-    </SessionProvider>
+    <Outlet />
   );
 }
