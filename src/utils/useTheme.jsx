@@ -1,6 +1,22 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const ThemeContext = createContext();
+// The default context matches the value that ThemeProvider publishes. The
+// hook used to throw when called outside a provider; that crashed SSR for
+// any component that hit useTheme() in a loader (e.g. a route that
+// renders <Header /> at the top of its tree). Because the theme system
+// is light-only (toggleTheme is a no-op, isDark is always false), the
+// "default" and "inside provider" values are identical — the only
+// difference is `mounted`, which is used to skip hydration-mismatched
+// animations on the first client render.
+const DEFAULT_THEME_VALUE = Object.freeze({
+  theme: "light",
+  toggleTheme: () => {},
+  isDark: false,
+  isLight: true,
+  mounted: false,
+});
+
+const ThemeContext = createContext(DEFAULT_THEME_VALUE);
 
 export function ThemeProvider({ children }) {
   const [mounted, setMounted] = useState(false);
@@ -24,11 +40,13 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
+  // Return the default value when no provider is in scope. This is safe
+  // because the theme system is light-only and the no-provider case
+  // matches the post-mount provider case. The only visible difference
+  // is the `mounted` flag, which downstream code uses to skip hydration
+  // mismatches; consumers that need that should still wrap with a
+  // provider, but a missing provider is no longer fatal.
+  return useContext(ThemeContext) || DEFAULT_THEME_VALUE;
 }
 
 // Theme color utilities - only light mode colors
