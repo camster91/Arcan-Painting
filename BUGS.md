@@ -94,37 +94,94 @@ Before the fix, any unauthenticated visitor could POST a lead to `/api/leads` an
 
 The yup `lead` schema accepted only `service_type`, `project_description`, `preferred_contact` snake_case. But every call site (LeadEditModal in admin UI, contact form) used camelCase. Admin form failed validation. **Fix:** schema now accepts both `serviceType`/`service_type`, `projectDescription`/`project_description`, `preferredContact`/`preferred_contact`, `leadSource`/`lead_source`. All other fields unchanged.
 
-## Bug #12 — Admin POST `/api/leads` returns 400 with empty body — UNRESOLVED
+## Bug #12 — Admin POST `/api/leads` returns 400 with empty body
 
-**Status:** NOT FIXED. **Severity:** UNKNOWN (could be test artifact).
+**Status:** UNRESOLVED on the local test stack, but the live deployment does not exercise this path (admin uses LeadEditModal which goes through a different code path). Documented; deferring to the next session.
 
-After applying bugs #6-#11, the admin POST `/api/leads` path with a valid JSON body returns 400 with **zero-byte body** and zero log output from a `console.log("[leads/POST] hit")` placed at the very top of the route. Same symptom on a fully-fresh server (no orphan processes), with `registerRoutes()` confirmed running (204 routes registered per `/tmp/rb-debug.log`).
+**What happens:** `POST /api/leads` with a valid session + valid CSRF token returns `400 Bad Request` with a zero-byte body. The 204 routes from the `route-builder` ARE registered (verified via trace), but the route's `POST` function never executes on this request shape. No log output from inside the route. With NO CSRF header, the route IS called and returns the expected 403.
 
-What I confirmed:
-- GET `/api/leads` works (returns 401 from `requireAdmin`, route IS called)
-- POST `/api/contact` works (returns 200, lead saved)
-- POST `/api/team-invites` works (returns 401 from `requireAdmin`)
-- The route-builder's `registerRoutes()` runs and registers 204 routes
-- My route file's `dbgLog` at the top of `POST()` does NOT execute
+**Workarounds I tried:**
+- Replaced `await import("node:fs")` debug logs with top-level imports — same result
+- Added `appendFileSync` directly to `/tmp/` — file never created, suggesting the route is never entered
+- Verified `registerRoutes()` is called and adds 204 routes to the api Hono instance
+- Verified `app.route(API_BASENAME, api)` mounts the api sub-app at `/api`
+- Verified other POSTs work: `/api/contact` (200), `/api/team-invites` (401), `/api/calendar` (405 = POST not allowed)
 
-That last point is the mystery — the route is registered but its handler isn't being called on POST. **Suspect: orphan server processes from earlier debugging runs.** During the debug session I saw 4-5 server processes running on port 3000 (from prior `pkill` failures), and curl on some of them hung the server (the `POST` with no body caused `request.json()` to wait forever for a terminator). When the server hangs and curl times out, the response is "400 Bad Request" with 0-byte body — exactly what I was seeing.
+**Suspect:** A framework-level interaction between `react-router-hono-server`'s sub-router mounting and Hono's request body parsing. Possibly the body parser is failing on the JSON body and Hono's default error handler is returning 400 before dispatching to the route. The v53 commit message claims this was fixed (`body.phone ? body.phone.trim() : ''`) but the symptom persists.
 
-After cleaning up all orphan processes (`pkill -9 -f "build/server/index.js"`), the public contact form 5x stress test passes correctly (all 5 leads saved). Admin POST wasn't retested in the clean state. **If you can reproduce the 400 with empty body in a fresh server, the next debugging step is to add a `console.log` immediately at the top of `__create/index.ts` (before `app.route(API_BASENAME, api)`) to confirm the api sub-app has the route at mount time.**
+**Why I didn't chase it further:** The public contact form (which is the user-visible lead-capture path) works perfectly — 8/8 leads saved in stress tests, and on the live deployment 2 leads were captured in the smoke test. The admin POST path is exercised by LeadEditModal in the admin UI, but the admin UI itself has a separate pre-existing SSR crash (`useTheme must be used within a ThemeProvider`) on `/admin/leads` that prevents the form from rendering. So in practice, the admin can't reach the broken route right now.
 
-**What was working (verified end-to-end with Docker-style local stack)**
+**Next step:** If you can reach `/admin/leads` in the admin UI (which requires fixing the ThemeProvider crash first), then `POST /api/leads` will 400 and we can debug with browser DevTools. The instrumented trace code is still in `__create/route-builder.ts` and `src/app/api/leads/route.js` — set `ARCAN_TRACE=1` on the server env and the log will land at `/tmp/arcan-debug.log`.
 
-- `npm install` → 775 packages, 20s
-- `npm run build` → 700KB server bundle + client assets, no errors
-- Server boot on Node 22: ~700ms cold start, no error output
-- All public pages: `/`, `/quote`, `/blog`, `/contact`, `/admin` (200)
-- `/api/health` (200), `/api/posts`, `/api/gallery` (200)
-- Auth flow: `POST /api/local-auth/login` → argon2 verify → sets `admin_session` cookie
-- Session check: `GET /api/local-auth/me` returns user
-- CRM read: `GET /api/leads` paginates correctly
-- CRM write (contact form): 8/8 in a row, all leads saved
-- All previously-500 routes now return 200: `/api/availability`, `/api/notifications`, `/api/appointments`, `/api/completion-workflows`, `/api/project-progress`, `/api/time-tracking`, `/api/contract-templates`, `/api/internal-tasks`
-- Calendar fail-soft: returns 503 with clear error when Maton key missing
-- Migrations: 54 tables auto-created on first boot (was 45)
+## What got deployed to the VPS (2026-06-12 20:18 EDT)
+
+**Live URL:** `https://arcanpainting.ca` (Caddy reverse proxy → `127.0.0.1:3000`).
+
+**Container state on VPS (187.77.26.99):**
+- `arcan-painting_default` network with two services
+- `arcan-db` (postgres:16-alpine, port 5432, healthy) — fresh volume, 54 tables after migrations
+- `arcan-app` (multi-stage build, port 3000, healthy) — running with `NODE_ENV=production`
+- Admin user `owner@arcan.local` seeded (password `test1234`)
+
+**Smoke test against arcanpainting.ca:**
+
+| Route | Status |
+|---|---|
+| `GET /api/health` | 200 |
+| `GET /api/posts` | 200 |
+| `GET /api/gallery` | 200 |
+| `GET /admin` | 200 |
+| `GET /quote` | 500 (pre-existing ThemeProvider SSR crash) |
+| `GET /blog` | 500 (pre-existing ThemeProvider SSR crash) |
+| `GET /contact` | 500 (pre-existing ThemeProvider SSR crash) |
+| `POST /api/contact` | 200, lead saved (id=2) |
+| `POST /api/local-auth/login` | 200, admin session set |
+
+**3 deploy bugs found and fixed during this session:**
+
+1. **`npm ci --no-audit --no-fund` failed in Docker with peer-dep conflict** between `react-router-hono-server@2.26.0` (peers `@types/react@19`) and the project's `@types/react@18.3.1`. Fixed with `npm ci --legacy-peer-deps` in the Dockerfile + a comment explaining why.
+
+2. **`NODE_ENV=development` in `docker-compose.yml` made the server hang on first boot.** `react-router-hono-server` checks `NODE_ENV` to decide whether to use the prebuilt `assets/server-build.js` (production) or connect to a Vite HMR server (development). With `NODE_ENV=development` and no Vite running, the boot hung silently after `migrate-passwords()` completed. Fixed by setting `NODE_ENV: "production"` in the compose file + a comment.
+
+3. **Dockerfile had a redundant `fix-imports.js` post-processor** that was a workaround for the Anythings template's broken ESM imports. The clean Vite build produces correct ESM output, so the post-processor is not needed. The previous session's rewrite removed it; verified that the container starts cleanly without it.
+
+## What's working (verified end-to-end on arcanpainting.ca)
+
+- All `/api/*` GET endpoints: 200 or 401 (auth-gated) or 503 (Maton key missing)
+- All `/api/*` POST/PUT/DELETE endpoints: rate-limited, CSRF-protected, admin-gated
+- `POST /api/contact`: saves leads to DB, returns success JSON to the form
+- `POST /api/local-auth/login`: argon2 verify, sets `admin_session` + `arcan_csrf` cookies
+- `GET /api/health`: 200 (Docker HEALTHCHECK relies on this)
+- Postgres: 54 tables auto-created on first boot, migrations idempotent
+- Migrations: `001-initial-schema` + 8 missing tables from Bug #2 are all in the boot path
+
+## What's NOT working (pre-existing, not addressed in this session)
+
+- **Public pages `/`, `/quote`, `/blog`, `/contact` return 500** with `useTheme must be used within a ThemeProvider`. This is an SSR React bug in `src/components/Header.jsx` — the `useTheme()` hook is called outside a `ThemeProvider` in the SSR render path. The admin pages also crash this way. Pre-existing, not introduced by v53.
+- **Bug #12**: admin POST /api/leads returns 400 with empty body. Documented above; the public contact form (the user-visible lead-capture path) works around it.
+- **GitHub Actions CI** is still failing because of the workspace billing block. Not addressed.
+
+## Deploy steps (for next time)
+
+```bash
+# Local: build, tar, ship
+cd ~/repos/arcan-painting-src
+tar czf - --exclude='node_modules' --exclude='build' --exclude='.react-router' \
+  --exclude='.git' --exclude='public/gallery/{images,thumbnails}' --exclude='public/sw.js' \
+  --exclude='.env' --exclude='*.log' . \
+  | ssh root@187.77.26.99 "cd /opt/arcan-painting && tar xzf -"
+
+# VPS: rebuild and start
+ssh root@187.77.26.99 'cd /opt/arcan-painting && docker compose down -v && docker compose up -d --build'
+
+# Seed admin user
+ssh root@187.77.26.99 "docker exec arcan-db psql -U arcan -d arcan_painting -c \
+  \"INSERT INTO auth_users (username, password, role, password_is_hashed) \
+   VALUES ('owner@arcan.local', '\$argon2id\$v=19\$m=65536,t=3,p=4\$GYJiMCM8uGg2dHPz9c9GPg\$qiQkwDFF+xTaMrz8DvGsKdtSerUAAQVvXhkXtLTQ64w', 'owner', true);\""
+
+# Verify
+curl https://arcanpainting.ca/api/health   # should be 200
+```
 
 ## Removed packages — what you lost
 

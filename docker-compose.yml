@@ -49,7 +49,11 @@ services:
       DATABASE_URL: "postgresql://arcan:arcan_dev_password@db:5432/arcan_painting"
       NEXTAUTH_URL: "http://localhost:3000"
       NEXTAUTH_SECRET: "dev-only-do-not-use-in-prod"
-      NODE_ENV: "development"
+      # IMPORTANT: NODE_ENV=production is what makes react-router-hono-server
+      # use the prebuilt assets/build/server/index.js. With NODE_ENV=development
+      # it tries to connect to a Vite HMR server that isn't running, and the
+      # boot hangs forever after migrate-passwords() runs.
+      NODE_ENV: "production"
       PORT: "3000"
       # OPENCLAW_URL is read by /api/agents/* and /api/admin/chat. Pointing at
       # an empty host means the agents degrade to a no-op (no crash).
