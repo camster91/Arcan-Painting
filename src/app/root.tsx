@@ -13,9 +13,11 @@ import {
   useCallback,
   useEffect,
   useState,
+  useMemo,
   type ReactNode,
   Component,
 } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './global.css';
 
 // Sentry client init — lazy to avoid bundle circular dep issues
@@ -359,7 +361,17 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
+  // QueryClient lives at the App root so every route gets a client in scope.
+  // The file-based router in src/app/routes.ts only mounts page.jsx (not
+  // layout.jsx), so the QueryClientProvider that previously lived in
+  // layout.jsx was never being mounted. Components like <ContactSection>
+  // call useMutation from TanStack Query and crash with "No QueryClient
+  // set" if the provider is missing. Mounting here is cheap (one client
+  // per session) and fixes the home page 500.
+  const queryClient = useMemo(() => new QueryClient(), []);
   return (
-    <Outlet />
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
   );
 }
