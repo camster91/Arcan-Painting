@@ -14,8 +14,12 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Install with devDeps so we have Vite, TypeScript, etc.
+# --legacy-peer-deps: react-router-hono-server@2.26.0 peers @types/react@19,
+# but the project is locked to React 18. Older versions of the plugin work
+# fine with React 18 types — this just suppresses the version-mismatch
+# warning that npm 10+ treats as a hard error.
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+RUN npm ci --no-audit --no-fund --legacy-peer-deps
 
 # Bring in source + config.
 COPY . .

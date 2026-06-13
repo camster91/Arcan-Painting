@@ -34,7 +34,12 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
-    sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : false,
+    // Sourcemaps were causing Vite to abort the build with a circular
+    // error message ("Can't resolve original location of error") on
+    // react-router 7.17. Disabled. The prod bundle is minified and
+    // un-sourcemapped; re-enable when upstream fixes the RR7 dev-build
+    // chain.
+    sourcemap: false,
     rollupOptions: {
       external: (id) => {
         const serverOnlyPkgs = [

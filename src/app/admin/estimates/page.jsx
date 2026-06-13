@@ -37,8 +37,13 @@ export default function EstimatesPage() {
   const [viewMode, setViewMode] = useState("table");
   const [notification, setNotification] = useState(null);
   const [editingEstimate, setEditingEstimate] = useState(null);
-  const [showAIProposal, setShowAIProposal] = useState(false);
-  const [aiProposalEstimate, setAIProposalEstimate] = useState(null);
+
+  // AI proposal generator was removed in the v53 strip — the LLM
+  // estimator modal lived in src/components/admin/estimates/ and the
+  // dedicated trigger button in <EstimatesTable> went with it. State
+  // (showAIProposal/aiProposalEstimate) was deleted in the same commit.
+  // Re-add by restoring the modal + the case branch in the action
+  // dispatcher below.
 
   const { estimates, leads, loading, error, fetchData } = useEstimates();
 
@@ -204,11 +209,7 @@ export default function EstimatesPage() {
         }
         break;
       }
-      case "generate_proposal": {
-        setAIProposalEstimate(estimate);
-        setShowAIProposal(true);
-        break;
-      }
+      // "generate_proposal" case removed in v53 strip — see state-decl block above.
       default:
         console.log("Unknown action:", action);
     }

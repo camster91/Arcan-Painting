@@ -43,8 +43,13 @@ export default function LeadsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [showAISchedule, setShowAISchedule] = useState(false);
-  const [aiScheduleLead, setAIScheduleLead] = useState(null);
+
+  // AI schedule estimate was removed in the v53 strip — the LLM booking
+  // assistant modal lived in src/components/admin/leads/ and the dedicated
+  // trigger button in <LeadsTable> went with it. State
+  // (showAISchedule/aiScheduleLead) was deleted in the same commit.
+  // Re-add by restoring the modal + the case branch in the action
+  // dispatcher below.
 
   const statusOptions = [
     { label: "All Leads", value: "all" },
@@ -198,10 +203,7 @@ export default function LeadsPage() {
       case "schedule":
         window.location.href = `/admin/appointments?lead_id=${lead.id}`;
         break;
-      case "ai_schedule":
-        setAIScheduleLead(lead);
-        setShowAISchedule(true);
-        break;
+      // "ai_schedule" case removed in v53 strip — see state-decl block above.
       case "edit":
         setShowEdit(true);
         break;

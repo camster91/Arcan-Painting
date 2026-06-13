@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
 import type { Handler } from 'hono/types';
-import { appendFileSync } from 'node:fs';
 import updatedFetch from '../src/__create/fetch';
 
 const API_BASENAME = '/api';
@@ -9,8 +8,6 @@ const api = new Hono();
 if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production' && globalThis.fetch) {
   globalThis.fetch = updatedFetch;
 }
-
-appendFileSync("/tmp/rb-debug.log", `[${new Date().toISOString()}] route-builder.ts loaded\n`);
 
 // Transform a file path from `import.meta.glob('../src/app/api/**/route.{...}')`
 // into a Hono route path. Examples:
@@ -40,7 +37,7 @@ function getHonoPath(routeFile: string): string {
 // Use Vite's import.meta.glob to statically analyze and bundle every route
 // file under src/app/api/**. Eager mode means the routes are imported
 // up-front, so registerRoutes() can wire them onto the Hono instance
-// before createHonoServer() runs.
+// Use Vite's import.meta.glob to statically analyze and bundle API routes
 const apiRouteModules = import.meta.glob(
   '../src/app/api/**/route.{js,ts,jsx,tsx}',
   { eager: true }
@@ -86,6 +83,5 @@ function registerRoutes() {
 }
 
 registerRoutes();
-appendFileSync("/tmp/rb-debug.log", `[${new Date().toISOString()}] registerRoutes() returned, api has ${api.routes.length} routes\n`);
 
 export { api, API_BASENAME };

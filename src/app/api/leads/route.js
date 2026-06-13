@@ -1,5 +1,4 @@
 import sql from "../utils/sql.js";
-import { appendFileSync as dbgLog } from "node:fs";
 import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
@@ -11,9 +10,6 @@ import { requireCsrf } from "../utils/csrf.js";
 // directly via SQL, NOT through this route. This handler is for the admin
 // "create lead" UI which has a session + CSRF cookie.
 export async function POST(request) {
-  dbgLog("/tmp/leads-post.log", `[${new Date().toISOString()}] hit\n`);
-  console.log("[leads/POST] hit");
-
   const limitado = generalLimiter(request);
   if (limitado) return limitado;
 
