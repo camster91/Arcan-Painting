@@ -188,4 +188,15 @@ Before committing:
 npm run build && npm test
 ```
 
-The dev server has known pre-existing issues (the dev mode SSR render fails on `useTheme must be used within a ThemeProvider` because `ThemeProvider` is in the inner `src/app/layout.jsx`, not the root `src/app/root.tsx`). **The production build is correct**; only the dev server is broken. This is tracked under issue #15/#16 follow-ups. For dev, you can work around by accessing the API endpoints directly with curl — the Hono routes are unaffected.
+Both gates pass on v55 (post-deploy, 2026-06-12). `npm test` runs the vitest suite (50 cases, ~1s); `npm run build` produces `build/{client,server}`. If either fails the commit is blocked. The apex TLS layer is covered by the infra caddy unit (see `infra/caddy/Caddyfile` — `arcanpainting.ca` block).
+
+## Known Caveats
+
+The two SSR provider bugs that were tracked during the v53→v55 cycle are **both fixed** as of 2026-06-12:
+
+- **ThemeProvider / useTheme crash on SSR — fixed in v55 (commit `5569352`).** The `useTheme` hook now has a defensive SSR fallback that returns a sane default when `ThemeProvider` is absent in the render tree, so the page no longer throws `useTheme must be used within a ThemeProvider` during server rendering. The live site at `https://arcanpainting.ca` was crashing in production SSR before this fix; the v55 deploy proved the production build was *not* unaffected (the earlier CLAUDE.md note that "the production build is correct" was wrong).
+- **QueryClientProvider missing at the React Router 7 root — fixed in v55 sibling commit `7c9a200`.** `QueryClientProvider` was previously mounted inside `src/app/layout.jsx`, but `layout.jsx` is never rendered in RR7 file-based routing (the root is `src/app/root.tsx`). `QueryClientProvider` is now correctly mounted inside `App()` in `src/app/root.tsx`, alongside `ThemeProvider`, so all routes — including the admin CRM pages that depend on TanStack Query — get a working QueryClient.
+
+Remaining **non-blocking** known issues, tracked as future-sprint work:
+- **#15 Accessibility: missing `alt` attributes on ~13 `<img>` tags** across public marketing pages and admin panels. A11y is a known-good backlog item; will be addressed in a dedicated accessibility sprint with `jest-axe` regression coverage.
+- **#16 No linting config + ~50 `console.log`/`TODO`/`FIXME` in `src/`.** Lint was intentionally removed in the v53 strip (along with the babel pipeline). If/when it comes back, the plan is a one-step `eslint.config.js` flat-config preset with no babel intermediate (per the v53 dep notes above).

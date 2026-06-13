@@ -64,13 +64,13 @@ services:
     ports:
       - "3000:3000"
     volumes:
+      # DEV ONLY — remove these mount lines before prod deploy (they shadow
+      # the image's versions). See CLAUDE.md Known Caveats.
       # Mount source for hot-reload during dev. Comment out for a clean
       # production-like run. Note: HMR needs the dev server (npm run dev),
       # not the built server, so this is mostly useful for inspecting files.
       - ./src:/app/src:ro
       - ./public:/app/public:ro
-      # Persist the build/ output if you want fast container restarts.
-      - arcan_build:/app/build
     # Override the CMD to start the dev server with HMR. Default CMD is the
     # production server. Comment this out to run the production build.
     # command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
@@ -78,5 +78,3 @@ services:
 volumes:
   arcan_pgdata:
     name: arcan_pgdata
-  arcan_build:
-    name: arcan_build

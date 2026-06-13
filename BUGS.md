@@ -221,3 +221,120 @@ If you ever need to put any of these back, see the GitHub history (pre-fix commi
 - `ws` — used by Neon serverless for WebSocket support
 
 The Anythings-template intended for these to power a public auth UI. The codebase never actually used any of it correctly (the schema mismatch in `__create/adapter.ts` would have failed on first signup attempt). If you want to add a real public auth later, the path is: pick a real OAuth provider (Auth0, Clerk, Supabase Auth), add a proper `auth_users` column migration (UUID id, snake_case), wire up via the existing Hono server.
+
+
+---
+
+## Outstanding tasks — 2026-06-13 (post-deploy audit)
+
+The v55 + sibling-commit `7c9a200` fixes the immediate 500-on-public-pages by
+moving `QueryClientProvider` into `App()` in `root.tsx`. The remaining work,
+ranked by risk × impact:
+
+### K1 — `useTheme` SSR + `useMutation` SSR pattern is repo-wide
+**Status:** partially fixed (one componente each)
+**Remaining:** audit the rest of `src/components/**` and `src/app/**` for
+the same anti-pattern (`useX()` that throws when called without a
+provider). The known callers in the wild that need the same defensive
+fallback are `useTheme` (done, v55) and `useMutation` (rooted via
+`App()` move in `7c9a200`). The `LeadFormPopup`, `LeadsTable`,
+`EstimatesTable`, and `useUpload` hooks all may have the same shape.
+**Fix:** audit the 50+ `src/components/**` and admin pages, document any
+throw-on-miss hooks, wrap them in the same defensive-default pattern.
+**Estimated work:** 1-3 hours of mechanical audit.
+
+### K2 — `arcan_build` volume is back in the host's docker-compose.yml
+**Status:** partially fixed (volume mount removed, but the volume
+declaration in the `volumes:` block was just removed — Cam's
+deploys may add it back). 
+**Remaining:** make the deploy script idempotent against this
+class of footgun. The `scripts/deploy-vps.sh` written this session
+doesn't wipe the build/ dir before re-extracting, which is how
+the v55 fix got shadowed by stale v54 build artifacts. The
+`arcan_build` volume + `./src`/`./public` bind mounts in
+`docker-compose.yml` are dev-mode conveniences that should not be
+in the prod compose. The simplest fix: add a `docker-compose.prod.yml`
+without the bind mounts, and have the deploy script copy it into
+place before `docker compose up -d`. Or add a top-of-file comment
+in `docker-compose.yml` warning that those mounts are dev-only.
+**Estimated work:** 30 min.
+
+### K3 — `infra/caddy/Caddyfile` keeps getting overwritten by concurrent deploys
+**Status:** the apex block is in place (and the file is now in the
+repo), but Cam re-overwrites `/opt/caddy/Caddyfile` during other
+projects' deploys (alinenasseh, jwhabits, tkd), wiping the apex
+block.
+**Remaining:** a wrapper script that runs `caddy validate` after
+every `systemctl restart caddy` and re-asserts the apex block if
+it's missing. The right fix is to make all the other projects'
+deploys include the apex block (or not touch the global Caddyfile).
+A short-term fix: a cron job that re-asserts the apex block from
+`infra/caddy/Caddyfile` on the host every 5 minutes.
+**Estimated work:** 1 hour.
+
+### K4 — deploy-vps.sh is broken (build/ not wiped, image not rebuilt)
+**Status:** the script exists at `scripts/deploy-vps.sh` but the
+deploy I ran with it (in this session) shipped the same image the
+host already had, not a fresh v55. The script does not wipe
+`build/` before re-extracting, so old artifacts shadow new ones.
+**Remaining:** add a `rm -rf build/ && docker build ...` step, and
+use `docker build` directly (not `docker compose build`) to avoid
+the layer-cache pinning bug. This is a one-liner fix but it's
+blocked the entire v55 deploy for the last hour.
+**Estimated work:** 15 min.
+
+### K5 — Repo hygiene: 6 open issues, some now stale
+**Status:** issues #15, #16, #60 are open. #60 was closed in
+this session. The remaining two are future-sprint work.
+**Remaining:** close #15/#16 with a status note (or triage what
+sub-tasks would actually move them forward). Issue #15 is a11y
+(images without alt), #16 is ESLint config + console.log
+cleanup. Both are out of scope for the v55 deploy.
+**Estimated work:** 10 min for status comments.
+
+### K6 — `scripts/sync-caddy.sh` not yet integrated into the deploy recipe
+**Status:** the script exists at `scripts/sync-caddy.sh` but the
+deploy-vps.sh doesn't call it.
+**Remaining:** add a `bash scripts/sync-caddy.sh` step at the end of
+`scripts/deploy-vps.sh`, so every deploy syncs the Caddyfile from
+the repo to the host and restarts Caddy if it changed.
+**Estimated work:** 5 min.
+
+### K7 — `useUpload` and admin hooks may have the same SSR pattern
+**Status:** unverified. The public site is now loading (K1 fixed),
+but admin pages still need to be smoke-tested for the same family
+of bug. The `useUpload` hook (file upload) may also have a
+provider dep.
+**Remaining:** boot the dev server locally, walk through
+`/admin/leads`, `/admin/clients`, `/admin/blog/new`, and check for
+"must be used within a XProvider" errors in the server log. Apply
+the same defensive-default pattern if needed.
+**Estimated work:** 1 hour.
+
+### K8 — Apex apex is finally live but the response is 200-with-html-500
+**Status:** K1's root.tsx fix should make this go away. The
+ContactSection changes I made in this session are an over-correction;
+the sibling commit supersedes them.
+**Remaining:** verify the live site (after deploying the v55 +
+7c9a200 commits + a fresh build) returns 200 with no body error
+chunk. If the 500 is still there, the next suspect is the
+Layout() function in root.tsx (line 361) which does the <head> and
+PWAInstaller — it might be calling something that throws.
+**Estimated work:** 30 min to verify + fix the next 500.
+
+### K9 — The `useTheme` defensive-default may hide bugs in new components
+**Status:** the new `DEFAULT_THEME_VALUE` returns `{ mounted: false, ... }`
+when no provider is in scope. A new component that calls `useTheme`
+and uses the `mounted` flag to skip an animation may silently
+skip the animation forever if no provider is in scope. That's the
+opposite of what the defensive default was trying to do. Document
+in CLAUDE.md that `useTheme` returns a default when no provider is
+in scope, and add a small dev-mode warning when this happens.
+**Estimated work:** 30 min.
+
+### K10 — Dev server's known ThemeProvider bug from CLAUDE.md is now fixed
+**Status:** the CLAUDE.md still says "production build is unaffected"
+under Known Caveats — that was wrong, the production SSR also
+crashed. Now fixed by the v55 useTheme defensive default. Update
+CLAUDE.md to reflect the actual state.
+**Estimated work:** 5 min.

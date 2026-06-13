@@ -51,6 +51,10 @@ ssh "${VPS}" "
   # Wipe everything except the backup
   find . -mindepth 1 -maxdepth 1 ! -name '.env.bak' ! -name '${NAME}.tar.gz' -exec rm -rf {} +
   tar -xzf ${NAME}.tar.gz
+  # Wipe any stale build/ that may have shipped in the tarball — the
+  # Dockerfile's COPY --from=build must not be shadowed by a local
+  # build/ directory on the host bind mount.
+  rm -rf build/
   # Restore the env
   [ -f .env.bak ] && mv .env.bak .env || true
   rm -f ${NAME}.tar.gz
@@ -71,6 +75,9 @@ for i in {1..30}; do
   fi
   sleep 1
 done
+
+echo "[deploy] syncing Caddyfile (idempotent — skipped if unchanged)…"
+bash "$(dirname "$0")/sync-caddy.sh"
 
 echo "[deploy] live check…"
 curl -sI -m 10 https://arcanpainting.ca/ 2>&1 | head -3
