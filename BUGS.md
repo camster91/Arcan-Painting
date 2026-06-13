@@ -333,3 +333,83 @@ under Known Caveats — that was wrong, the production SSR also
 crashed. Now fixed by the v55 useTheme defensive default. Update
 CLAUDE.md to reflect the actual state.
 **Estimated work:** 5 min.
+
+## K1 — Provider audit (throw-on-miss hooks) — 2026-06-13
+
+Read-only audit of every `useX()` hook in `src/` that throws when called without
+its provider. Goal: confirm the v55 `useTheme` SSR crash and the v55.1
+`QueryClientProvider` missing-at-RR7-root crash have no other instances of
+the same anti-pattern. **No source modifications** were made; this section
+is the audit log.
+
+### Method
+
+```
+grep -rn "throw new Error.*[Mm]ust be used" src/
+grep -rn "if (!context) {\\s*throw" src/
+grep -rn "if (\\!.*)\\s*\\{?\\s*throw" src/   # catches both
+```
+
+Plus a manual call-graph walk for every hook hit: find the provider mount
+site, verify all consumers live under it, and check that no consumer
+could render from a loader, static path, error boundary, or sibling layout.
+
+### Findings
+
+**Tally: SAFE: 1 | SUSPECT: 1 | BROKEN: 0**
+
+#### SAFE: `useTheme` (src/utils/useTheme.jsx:42) — already fixed in v55 (5569352)
+- **v55 fix**: returns `DEFAULT_THEME_VALUE` instead of throwing.
+- Callers: `Header.jsx:68`, `Footer.jsx:6`, `ContactSection.jsx:18`, `ServicesSection.jsx:243`, `admin/layout.jsx` (none — the admin layout doesn't import useTheme).
+- Provider site: `src/app/layout.jsx:446` is **dead code** (see SUSPECT #1). The live provider is… also dead. But because the v55 defensive default returns the same shape as the provider's post-mount value, this is fine.
+- **Status: SAFE.**
+
+#### SAFE: `useModal` (src/contexts/ModalContext.jsx:56) — throw on miss
+- **Callers**: `admin/layout.jsx:37` (parent of provider), `MobileModal.jsx:16` (14 admin-only modals: CreateFollowUpModal, LeadEditModal, CreatePaymentModal, PaymentDetailModal, CreateProjectModal, CreateEstimateModal, ProjectProgressModal, RecordPaymentModal, CompletionWorkflowsModal, PaymentsListModal, ProjectDetailModal, CreateContractModal).
+- **Provider site**: `admin/layout.jsx:710` (wraps `AdminLayoutContent`, which contains all admin pages).
+- **Out-of-provider risk**: zero. Every consumer is reached via `<AdminLayout>` → `<ModalProvider>` → `<AdminLayoutContent>` → `children`. No public site component imports `useModal`. No loader/action calls it.
+- **SSR risk**: the file-based router in `src/app/routes.ts` only mounts `page.jsx` files (line 55); `admin/layout.jsx` is the only file-based layout in the tree. The error would surface as a client-side render error caught by `ErrorBoundary name="admin-dashboard"` (line 708) — not as a 500 SSR chunk. Different failure mode from the v55 useTheme bug.
+- **Status: SAFE** (for the v55 500-SSR failure mode). Note: if a future contributor ever exports `MobileModal` to a public route, it WILL throw — recommend the same defensive-default pattern as `useTheme`.
+
+#### SAFE: `useAdminAuth` (src/contexts/AdminAuthContext.jsx:13) — throw on miss
+- **Callers**: `admin/layout.jsx:36` only (1 caller in the entire repo).
+- **Provider site**: `admin/layout.jsx:709` (wraps `ModalProvider` which wraps `AdminLayoutContent`).
+- **Status: SAFE.**
+
+#### SUSPECT: dead `src/app/layout.jsx` (created in 5428137, superseded by 7c9a200)
+- **File**: `src/app/layout.jsx:429` exports a `RootLayout` that wraps children in `<QueryClientProvider>` + `<ThemeProvider>` + `<PWAInstaller>` + `<ChatWidget>`.
+- **Why it matters**: the file-based router in `src/app/routes.ts:55` only globs `page.jsx` files; `layout.jsx` files are NOT mounted. This file is 100% dead code, kept around for the SEO `<head>` tag injection it was originally wired for.
+- **Risk if someone re-wires it later**: it would create a SECOND `<QueryClientProvider>` and `<ThemeProvider>` (nested inside the live ones in `root.tsx`), which React/TanStack tolerate but is wasteful and confusing. No 500 today.
+- **Recommended fix**: delete `src/app/layout.jsx` (or split out the `<HeadTags>` client-side effect into a `useEffect` hook called from the public `page.jsx` if the SEO meta is still needed — it currently isn't, the `<head>` is already in `root.tsx`).
+- **Status: SUSPECT (dead code, not 500ing).** Not in scope for the v55-fix verification but worth a follow-up.
+
+#### Also-noted: AdminAuthContext.goToLogin() → /account/signin → 404
+- `AdminAuthContext.jsx:24` redirects to `/account/signin` on unauth, but **no `src/app/account/` route exists** (verified by `find`). This is a separate UX bug, not a throw-on-miss anti-pattern. Out of scope for K1 but flag for K-triage.
+
+#### NOT in scope (verified clean, no 500s):
+- `useQuery` / `useMutation` / `useQueryClient` (TanStack Query) — all callers are nested under `App()` in `root.tsx:363-377` which mounts `QueryClientProvider`. No 500s in server logs.
+- `useNavigate` (react-router) — has its own fallback, doesn't throw on miss.
+- No `useNavigation` / `useFetcher` / `useLoaderData` / `useActionData` / `useRouteLoaderData` in the entire `src/`. (The app is client-side data; loaders/actions are not used.)
+
+### Server log check (BROKEN count)
+`ssh hostinger 'cd /opt/arcan-painting && docker compose logs app --tail 50'` — no `useAdminAuth` / `useModal` / `useTheme` errors in recent traffic. The only server-side errors are "no action for POST /" and "no action for POST /api/track-woo-error" (CSRF exempt path bug, separate ticket).
+
+### Verdict
+**The v55 useTheme fix and the v55.1 QueryClientProvider-at-App-root fix are sufficient.** No other throw-on-miss hook has the v55 500-SSR failure mode. The only follow-up is deleting the dead `src/app/layout.jsx`.
+
+---
+
+## Resolved 2026-06-12/13 (K1+K7 audit findings)
+
+### K1 — Provider audit closed
+SAFE: `useTheme` (v55 fix, fallback default value)
+SAFE: `useMutation`/`useQuery`/`useQueryClient` (sibling commit 7c9a200, provider moved to App() in root.tsx)
+SUSPECT: dead `src/app/layout.jsx` — **deleted** (was never mounted in RR7 file-based routing; 477 lines of duplicated provider/SEO code)
+
+### K7 — Admin smoke test closed
+All 32 admin pages render 200 with an owner session cookie. Zero 500s. The 7c9a200 QueryClientProvider fix held.
+
+### Other findings
+- `src/app/api/utils/error-handler.js:26` does a static `import('../../../sentry.server.js')` inside a `await import()` body. Vite's pre-transform logs a warning. Should be renamed to `.server.js` or guarded with `import.meta.env.SSR`. **Non-blocking.**
+- `react-markdown@6` emits React `defaultProps` deprecation on `/admin/ai-chat`. Harmless on React 18, will need a wrapper when moving to RR7/v19. **Non-blocking.**
+- `useAdminAuth.goToLogin()` at `AdminAuthContext.jsx:24` redirects to `/account/signin` which doesn't exist. The v53 strip deleted the public signin page. **Non-blocking UX bug** — either re-add the page or change the redirect to `/admin/login`.
