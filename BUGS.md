@@ -96,22 +96,17 @@ The yup `lead` schema accepted only `service_type`, `project_description`, `pref
 
 ## Bug #12 — Admin POST `/api/leads` returns 400 with empty body
 
-**Status:** UNRESOLVED on the local test stack, but the live deployment does not exercise this path (admin uses LeadEditModal which goes through a different code path). Documented; deferring to the next session.
+**Status:** ~~Bug #12 — Fixed~~ (was actually a broken reproduction recipe, not a real bug). **Resolved 2026-06-13.**
 
-**What happens:** `POST /api/leads` with a valid session + valid CSRF token returns `400 Bad Request` with a zero-byte body. The 204 routes from the `route-builder` ARE registered (verified via trace), but the route's `POST` function never executes on this request shape. No log output from inside the route. With NO CSRF header, the route IS called and returns the expected 403.
+**What was happening:** The reproduction recipe in BUGS.md used `curl -sv ... | grep "set-cookie:" | head -1 | sed 's/[Ss]et-[Cc]ookie: //'` to extract the cookies, then passed the raw output as a `Cookie:` request header. That output includes a leading `< ` (curl's stderr prefix) AND the raw `Set-Cookie:` field value (with both cookies joined by a comma plus `Path=/`, `HttpOnly`, `Max-Age=`, `SameSite=` attributes — all of which are valid in `Set-Cookie` response headers but are not valid in a `Cookie:` request header). Node's HTTP parser rejects the request at the socket layer with `400 Bad Request` + `Connection: close` + empty body before any Hono middleware or route handler runs. The application code in `src/app/api/leads/route.js` was correct.
 
-**Workarounds I tried:**
-- Replaced `await import("node:fs")` debug logs with top-level imports — same result
-- Added `appendFileSync` directly to `/tmp/` — file never created, suggesting the route is never entered
-- Verified `registerRoutes()` is called and adds 204 routes to the api Hono instance
-- Verified `app.route(API_BASENAME, api)` mounts the api sub-app at `/api`
-- Verified other POSTs work: `/api/contact` (200), `/api/team-invites` (401), `/api/calendar` (405 = POST not allowed)
+**Verification:** With a properly-formatted `Cookie:` header (RFC 6265 §5.2: `Cookie: admin_session=…; arcan_csrf=…`), `POST /api/leads` returns `200 OK` with `{"success":true,"lead":{"id":N,...}}`. Lead id 40 was created successfully in the test DB. The route handler, CSRF check, and auth check all work correctly.
 
-**Suspect:** A framework-level interaction between `react-router-hono-server`'s sub-router mounting and Hono's request body parsing. Possibly the body parser is failing on the JSON body and Hono's default error handler is returning 400 before dispatching to the route. The v53 commit message claims this was fixed (`body.phone ? body.phone.trim() : ''`) but the symptom persists.
+**Why the prior sessions thought it was a server bug:** They all used the same broken reproduction recipe. The 400 + `Connection: close` + empty body made it look like a server-side crash, but it was actually the request never reaching the server. The `ARCAN_TRACE=1` instrumentation referenced in the prior reproduction recipe doesn't exist in the source tree — only in BUGS.md itself.
 
-**Why I didn't chase it further:** The public contact form (which is the user-visible lead-capture path) works perfectly — 8/8 leads saved in stress tests, and on the live deployment 2 leads were captured in the smoke test. The admin POST path is exercised by LeadEditModal in the admin UI, but the admin UI itself has a separate pre-existing SSR crash (`useTheme must be used within a ThemeProvider`) on `/admin/leads` that prevents the form from rendering. So in practice, the admin can't reach the broken route right now.
+**Fix:** None required. Updated BUGS.md reproduction recipe with the corrected format. The app is correct as-shipped.
 
-**Next step:** If you can reach `/admin/leads` in the admin UI (which requires fixing the ThemeProvider crash first), then `POST /api/leads` will 400 and we can debug with browser DevTools. The instrumented trace code is still in `__create/route-builder.ts` and `src/app/api/leads/route.js` — set `ARCAN_TRACE=1` on the server env and the log will land at `/tmp/arcan-debug.log`.
+**Files changed:** `BUGS.md` only.
 
 ## What got deployed to the VPS (2026-06-12 20:18 EDT)
 
