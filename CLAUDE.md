@@ -91,7 +91,7 @@ The `docker-compose.yml` runs app + postgres:16-alpine with the same env.
 │   │   ├── admin/                  Admin CRM pages (no AI modals, no agent routes)
 │   │   │   ├── page.jsx, leads/  clients/  estimates/  contracts/  invoices/  payments/
 │   │   │   ├── projects/  scheduling/  calendar/  tasks/  messages/  follow-ups/
-│   │   │   ├── availability/  team/  settings/  email/  email-logs/  blog/  notifications/
+│   │   │   ├── availability/  team/  settings/  blog/  notifications/
 │   │   │   ├── onboarding/  system/  today/
 │   │   ├── api/                    Server route handlers (auto-mounted at /api)
 │   │   │   ├── contact/  quote/  booking/  health/
@@ -100,10 +100,10 @@ The `docker-compose.yml` runs app + postgres:16-alpine with the same env.
 │   │   │   ├── projects/  scheduling/  calendar/  tasks/  messages/  follow-ups/
 │   │   │   ├── availability/  team/  settings/  blog/  posts/  notifications/
 │   │   │   ├── lead-webhook/meta/  onboarding/  completion-workflows/  project-progress/
-│   │   │   ├── admin/  estimate-builder/  contract-templates/  email/  email-templates/  email-logs/
+│   │   │   ├── admin/  estimate-builder/  contract-templates/
 │   │   │   ├── gallery/  team-invites/  team-members/  team-availability/  time-tracking/
 │   │   │   ├── agent/tools/  stripe-webhook/  credits/  ← most are dead-code subtrees
-│   │   │   └── utils/              Shared: auth, sql, csrf, audit, rate-limit, telegram, send-email, insert-lead
+│   │   │   └── utils/              Shared: auth, sql, csrf, audit, rate-limit, insert-lead, send-email (now a no-op stub)
 │   │   ├── blog/  contact/  quote/  thank-you/  sitemap.xml/
 │   │   ├── [service]/[city]/  interior-painting/  exterior-painting/  commercial-painting/  wallpaper-services/  specialty-finishes/
 │   │   └── __create/not-found.tsx

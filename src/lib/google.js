@@ -1,164 +1,32 @@
-/**
- * Google services via Maton.ai gateway.
- * Replaces direct googleapis OAuth with Maton API key-based gateway calls.
- */
+// Google services via Maton.ai gateway — stripped in 2026-06-13 per
+// "Remove maton and telegram we stripped those out". Replaced with no-ops
+// so the routes that import these still build and run, they just don't
+// talk to Google anymore.
+//
+// If Maton/Google services come back: the original code used sendGmailEmail
+// (via Maton gateway), getCalendarClient (Google Calendar), sendEmail
+// (via Maton). The export signatures below match what callers expect, so
+// the real impl is a drop-in replacement.
 
-const MATON_GATEWAY = "https://gateway.maton.ai";
-
-function getMatonKey() {
-  const key = process.env.MATON_API_KEY;
-  if (!key) {
-    throw new Error(
-      "Missing Maton API key. Set MATON_API_KEY in your project secrets.",
-    );
-  }
-  return key;
+// sendGmailEmail({to, subject, body, ...}) — was Maton-gated Gmail send
+export async function sendGmailEmail(_opts = {}) {
+  console.log('[google-stub] sendGmailEmail called but Maton integration was removed — no-op');
+  return { ok: false, reason: 'maton-removed' };
 }
 
-function matonHeaders() {
-  return {
-    Authorization: `Bearer ${getMatonKey()}`,
-    "Content-Type": "application/json",
-  };
-}
-
-/**
- * Sends an email via Maton → Gmail API using the raw RFC 2822 format.
- * @param {{ to: string, subject: string, body: string, replyTo?: string }} opts
- */
-export async function sendGmailEmail({ to, subject, body, replyTo }) {
-  const fromEmail = process.env.GOOGLE_EMAIL || "info@arcanpainting.ca";
-
-  const headers = [
-    `From: Arcan Painting <${fromEmail}>`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    `MIME-Version: 1.0`,
-    `Content-Type: text/html; charset="UTF-8"`,
-  ];
-  if (replyTo) {
-    headers.push(`Reply-To: ${replyTo}`);
-  }
-
-  const rawMessage = [...headers, "", body].join("\r\n");
-
-  const encoded = Buffer.from(rawMessage)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-
-  const response = await fetch(
-    `${MATON_GATEWAY}/google-mail/gmail/v1/users/me/messages/send`,
-    {
-      method: "POST",
-      headers: matonHeaders(),
-      body: JSON.stringify({ raw: encoded }),
-    },
-  );
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(
-      `Gmail send failed: ${err?.error?.message || response.statusText}`,
-    );
-  }
-
-  return response.json();
-}
-
-/**
- * Returns a calendar-like object that mimics the googleapis calendar interface,
- * backed by Maton gateway.
- */
+// getCalendarClient() — was Google Calendar API client. The original
+// Maton/Google integration was stripped 2026-06-13. The stub throws
+// so the caller's catch block returns 503 (Calendar not configured)
+// instead of silently returning an empty array. That matches the
+// pre-strip behavior when MATON_API_KEY was missing.
 export function getCalendarClient() {
-  return {
-    events: {
-      async insert({ calendarId, requestBody }) {
-        const cid = calendarId || "primary";
-        const response = await fetch(
-          `${MATON_GATEWAY}/google-calendar/calendar/v3/calendars/${cid}/events`,
-          {
-            method: "POST",
-            headers: matonHeaders(),
-            body: JSON.stringify(requestBody),
-          },
-        );
-
-        if (!response.ok) {
-          const err = await response.json().catch(() => ({}));
-          throw new Error(
-            `Calendar insert failed: ${err?.error?.message || response.statusText}`,
-          );
-        }
-
-        const data = await response.json();
-        return { data };
-      },
-
-      async list({ calendarId, timeMin, timeMax, maxResults, singleEvents, orderBy }) {
-        const cid = calendarId || "primary";
-        const params = new URLSearchParams();
-        if (timeMin) params.set("timeMin", timeMin);
-        if (timeMax) params.set("timeMax", timeMax);
-        if (maxResults) params.set("maxResults", String(maxResults));
-        if (singleEvents != null) params.set("singleEvents", String(singleEvents));
-        if (orderBy) params.set("orderBy", orderBy);
-
-        const response = await fetch(
-          `${MATON_GATEWAY}/google-calendar/calendar/v3/calendars/${cid}/events?${params}`,
-          { headers: matonHeaders() },
-        );
-
-        if (!response.ok) {
-          const err = await response.json().catch(() => ({}));
-          throw new Error(
-            `Calendar list failed: ${err?.error?.message || response.statusText}`,
-          );
-        }
-
-        const data = await response.json();
-        return { data };
-      },
-    },
-  };
+  throw new Error('Missing Maton API key. Set MATON_API_KEY in your project secrets. (Integration was removed 2026-06-13.)');
 }
 
-/**
- * @deprecated No longer needed — Maton handles auth. Kept for compatibility.
- */
-export function getGoogleOAuth2Client() {
-  return null;
-}
-
-/**
- * @deprecated Use sendGmailEmail directly. Kept for compatibility.
- */
-export function getGmailClient() {
-  return {
-    users: {
-      messages: {
-        async send({ userId, requestBody }) {
-          const response = await fetch(
-            `${MATON_GATEWAY}/google-mail/gmail/v1/users/me/messages/send`,
-            {
-              method: "POST",
-              headers: matonHeaders(),
-              body: JSON.stringify(requestBody),
-            },
-          );
-
-          if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(
-              `Gmail send failed: ${err?.error?.message || response.statusText}`,
-            );
-          }
-
-          const data = await response.json();
-          return { data };
-        },
-      },
-    },
-  };
+// sendEmail({to, subject, html/text, ...}) — was Maton-gated Gmail send (used by
+// the cold-email send/send-next routes, payment receipts, password reset, magic
+// link, etc.). All those callers now no-op too.
+export async function sendEmail(_opts = {}) {
+  console.log('[google-stub] sendEmail called but Maton integration was removed — no-op');
+  return { ok: false, reason: 'maton-removed' };
 }

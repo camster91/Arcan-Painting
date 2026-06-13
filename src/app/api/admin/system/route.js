@@ -1,22 +1,25 @@
 import { getCurrentUser } from "../../utils/auth.js";
 import sql from "../../utils/sql.js";
 
+// System admin health page. Maton (email + Google Calendar) was stripped
+// 2026-06-13 — the email integration shows "removed" instead of "missing_key".
+// The Ollama + DB + Meta probes are still live.
+
 export async function GET(request) {
   const user = await getCurrentUser(request);
-  if (!user || user.role !== 'owner') {
+  if (!user || user.role !== "owner") {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const health = {
     database: { status: "unknown", message: "" },
     ollama: { status: "unknown", url: process.env.OLLAMA_URL || "http://localhost:11434" },
-    email: { status: "unknown", provider: "maton" },
+    email: { status: "removed", provider: "none", note: "Maton integration was stripped 2026-06-13 — outbound email no longer sends" },
     env: {
       DATABASE_URL: !!process.env.DATABASE_URL,
-      MATON_API_KEY: !!process.env.MATON_API_KEY,
       GOOGLE_EMAIL: process.env.GOOGLE_EMAIL || "info@arcanpainting.ca",
       META_APP_ID: !!process.env.META_APP_ID,
-    }
+    },
   };
 
   // 1. Check DB
@@ -49,30 +52,12 @@ export async function GET(request) {
     health.ollama.message = err.message;
   }
 
-  // 3. Check Maton → Gmail
-  if (process.env.MATON_API_KEY) {
-    try {
-        const res = await fetch("https://gateway.maton.ai/google-mail/gmail/v1/users/me/labels", {
-            headers: { Authorization: `Bearer ${process.env.MATON_API_KEY}` }
-        });
-        if (res.ok) {
-            health.email.status = "healthy";
-        } else {
-            health.email.status = "auth_error";
-        }
-    } catch {
-        health.email.status = "network_error";
-    }
-  } else {
-      health.email.status = "missing_key";
-  }
-
   return Response.json({ health });
 }
 
 export async function POST(request) {
     const user = await getCurrentUser(request);
-    if (!user || user.role !== 'owner') {
+    if (!user || user.role !== "owner") {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 

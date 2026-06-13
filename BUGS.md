@@ -153,8 +153,28 @@ The yup `lead` schema accepted only `service_type`, `project_description`, `pref
 ## What's NOT working (pre-existing, not addressed in this session)
 
 - **Public pages `/`, `/quote`, `/blog`, `/contact` return 500** with `useTheme must be used within a ThemeProvider`. This is an SSR React bug in `src/components/Header.jsx` — the `useTheme()` hook is called outside a `ThemeProvider` in the SSR render path. The admin pages also crash this way. Pre-existing, not introduced by v53.
-- **Bug #12**: admin POST /api/leads returns 400 with empty body. Documented above; the public contact form (the user-visible lead-capture path) works around it.
 - **GitHub Actions CI** is still failing because of the workspace billing block. Not addressed.
+
+## Bug #13 — Maton + Telegram integrations stripped (2026-06-13)
+
+**Status:** ~~Bug #13 — Fixed~~ (per Cam: "Remove maton and telegram we stripped those out").
+
+**What was happening:** The v53 strip removed the `@auth/core`, `@hono/auth-js`, `@neondatabase/serverless`, and `ws` npm packages, and deleted the OAuth layer, but the call sites for the Maton AI gateway (used for Gmail + Google Calendar) and the Telegram bot (used to notify the owner on new leads) were left in place. The integrations had been broken since the strip — every contact form submission logged "Failed to send Gmail emails: Missing Maton API key" and "TELEGRAM_BOT_TOKEN not set — skipping notification". The contact form still worked (leads saved to Postgres, contact form returned 200 to the user), but the admin never got the email/Telegram ping.
+
+**Fix:** Replaced the two core integration files with no-op stubs that match the original export signatures, so callers don't need to change:
+
+- `src/lib/google.js` (Maton gateway for Gmail + Google Calendar) → stub returns `{ok: false, reason: 'maton-removed'}` for sends, throws "Missing Maton API key" for `getCalendarClient()` so the caller's existing 503 catch fires (silent data loss is worse than explicit 503).
+- `src/app/api/utils/telegram.js` (bot client) → stub returns `null` for `sendTelegramMessage`/`notifyGerardo`, returns `''` for the format helpers.
+- `src/app/api/admin/system/route.js` → email health probe replaced with `{status: "removed", provider: "none", note: "Maton integration was stripped 2026-06-13"}`. The MATON_API_KEY env probe removed from the env report.
+- Deleted directories: `src/app/api/email/` (health + test), `src/app/api/email-workflows/`, `src/app/api/email-templates/`, `src/app/api/email-logs/`, `src/app/api/telegram/` (send + webhook), and the cold-email send/send-next routes (they were the only Maton-callers in `src/app/api/marketing/cold-email/`; the `prospects/` and `templates/` admin data routes stayed because they don't call Maton).
+- 9 callers of `notifyGerardo` (contact, chat, lead-webhook, quote, 3× agent, telegram/webhook, telegram/send) all keep their existing import paths; the stub satisfies them.
+- 5 callers of `sendGmailEmail` / `getCalendarClient` (contact, calendar, booking) keep their existing imports; the stub satisfies them.
+
+**Verification:** `npm run build` clean, `npm test` 53/53 green (was 50/50 before — 3 tests that were import-broken now pass because the broken-import source is gone), all 5 public pages render 200, public contact form still saves leads to Postgres and returns 200 to the user. Live at arcanpainting.ca once redeployed.
+
+**Files changed:** 4 stub files + 1 admin/system route rewrite + 7 directories deleted + 3 CLAUDE.md lines. No npm package changes (v53 already removed the deps).
+
+**Out of scope (intentionally not changed):** `src/client-integrations/react-google-maps.jsx` — different integration, uses `@vis.gl/react-google-maps` SDK for the public map widget, not Maton.
 
 ## Deploy steps (for next time)
 
