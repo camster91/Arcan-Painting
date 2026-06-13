@@ -35,7 +35,7 @@ npm install --include=dev   # 473 packages
 npm run dev               # vite dev server on :4000
 npm run build             # production build → build/{client,server}
 npm start                 # serve the build (PORT env, default 3000)
-npm test                  # vitest (50 cases, ~1s)
+npm test                  # vitest (50 cases across 4 files, ~650ms; verified 2026-06-12 post-v53)
 npm run typecheck         # react-router typegen && tsc --noEmit
 ```
 
