@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 // The default context matches the value that ThemeProvider publishes. The
 // hook used to throw when called outside a provider; that crashed SSR for
@@ -8,12 +8,17 @@ import { createContext, useContext, useEffect, useState } from "react";
 // "default" and "inside provider" values are identical — the only
 // difference is `mounted`, which is used to skip hydration-mismatched
 // animations on the first client render.
+//
+// `_isDefault` is an internal sentinel used by useTheme() to detect the
+// "no provider in scope" case at dev time and warn. Provider values do
+// NOT include it; the default value does. Consumers should ignore it.
 const DEFAULT_THEME_VALUE = Object.freeze({
   theme: "light",
   toggleTheme: () => {},
   isDark: false,
   isLight: true,
   mounted: false,
+  _isDefault: true,
 });
 
 const ThemeContext = createContext(DEFAULT_THEME_VALUE);
@@ -40,13 +45,47 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  // Detect the "no ThemeProvider in scope" case. useContext returns the
+  // context's defaultValue (the frozen DEFAULT_THEME_VALUE) when no
+  // provider is above this component in the tree. Provider values never
+  // carry the `_isDefault` sentinel, so this comparison is reliable.
+  const isDefault = ctx == null || ctx._isDefault === true;
+
+  // Warn exactly once per component instance (i.e. per call site that
+  // invokes useTheme), not once per render — otherwise a frequently
+  // re-rendering component floods the console with the same warning.
+  // useRef gives us a stable slot that persists across renders for the
+  // lifetime of this component instance.
+  const hasWarnedRef = useRef(false);
+  if (
+    isDefault &&
+    !hasWarnedRef.current &&
+    typeof process !== "undefined" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    hasWarnedRef.current = true;
+    // Defer the actual warn to a microtask so it isn't tied to the
+    // current render's frame, and so a burst of mounts (e.g. during
+    // SSR streaming) doesn't synchronously flood the console.
+    Promise.resolve().then(() => {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[useTheme] called outside <ThemeProvider> — returning default. " +
+          "This component is rendering without a theme provider in scope; " +
+          "check the component tree. Default value has `mounted: false`, " +
+          "which can cause hydration-skip logic to never fire."
+      );
+    });
+  }
+
   // Return the default value when no provider is in scope. This is safe
   // because the theme system is light-only and the no-provider case
   // matches the post-mount provider case. The only visible difference
   // is the `mounted` flag, which downstream code uses to skip hydration
   // mismatches; consumers that need that should still wrap with a
   // provider, but a missing provider is no longer fatal.
-  return useContext(ThemeContext) || DEFAULT_THEME_VALUE;
+  return ctx && !isDefault ? ctx : DEFAULT_THEME_VALUE;
 }
 
 // Theme color utilities - only light mode colors
