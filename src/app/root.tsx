@@ -202,7 +202,25 @@ export function Layout({ children }: { children: ReactNode }) {
   // with the same description (duplicate-content signal that hurts ranking).
   // Map is keyed on the leading URL segment after the slash.
   const pageMeta = (() => {
-    const seg = (pathname || "/").split("/").filter(Boolean)[0] || "";
+    const segs = (pathname || "/").split("/").filter(Boolean);
+    const seg = segs[0] || "";
+    const sub = segs[1] || "";
+    // Two-segment routes (admin/leads, admin/calendar, etc.) get the
+    // most specific title.
+    if (seg === "admin" && sub) {
+      const subTitle = sub.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      return {
+        title: `${subTitle} | Arcan Painting Admin`,
+        description: `Arcan Painting admin ${subTitle.toLowerCase()} page.`,
+      };
+    }
+    // /admin (no sub) is the dashboard.
+    if (seg === "admin") {
+      return {
+        title: "Admin Dashboard | Arcan Painting",
+        description: "Arcan Painting internal CRM dashboard.",
+      };
+    }
     switch (seg) {
       case "quote":
         return {
@@ -218,11 +236,6 @@ export function Layout({ children }: { children: ReactNode }) {
         return {
           title: "Contact Arcan Painting | Free Painting Estimate",
           description: "Get a free painting estimate in 24 hours. Call (416) 727-2148 or send a quick message — we serve Toronto, Mississauga, Brampton, Markham, and the GTA.",
-        };
-      case "admin":
-        return {
-          title: "Admin Dashboard | Arcan Painting",
-          description: "Arcan Painting internal CRM dashboard.",
         };
       case "thank-you":
         return {
