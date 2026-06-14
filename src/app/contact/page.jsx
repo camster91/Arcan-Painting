@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 
 export default function ContactPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
+  // Removed the page-level `mounted` gate (was: const [mounted, setMounted] =
+  // useState(false); useEffect(() => setMounted(true), []); {mounted &&
+  // <ContactSection />}). That gate was breaking SSR — `mounted` is always
+  // false during streaming SSR, so the page rendered an empty <main>.
+  // ContactSection is SSR-safe on its own (v55's defensive useTheme).
   return (
     <div className="min-h-screen bg-white transition-colors duration-300">
       <Header />
@@ -17,7 +18,7 @@ export default function ContactPage() {
         <p className="text-gray-600 mb-8">
           Tell us about your project and we'll get back to you within 24 hours.
         </p>
-        {mounted && <ContactSection />}
+        <ContactSection />
       </main>
       <Footer />
     </div>

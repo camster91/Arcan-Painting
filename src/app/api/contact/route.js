@@ -19,11 +19,55 @@ async function spawnLeadQualifierAsync(leadData, baseUrl) {
 }
 
 export async function POST(request) {
-  const limited = generalLimiter(request);
-  if (limited) return limited;
+  const limitado = generalLimiter(request);
+  if (limitado) return limitado;
 
+  // Parse the body. Accept both application/json (the API default) AND
+  // application/x-www-form-urlencoded / multipart/form-data (what HTML
+  // <form> elements POST by default). If the Content-Type isn't one of
+  // those we recognize, return a clear 415 — do NOT swallow the parse
+  // error in a generic 502 with the misleading "your info was received"
+  // message, which lied to the user and lost their submission.
+  const contentType = (request.headers.get("content-type") || "").toLowerCase();
+  let body;
   try {
-    const body = await request.json();
+    if (contentType.includes("application/json")) {
+      body = await request.json();
+    } else if (
+      contentType.includes("application/x-www-form-urlencoded") ||
+      contentType.includes("multipart/form-data")
+    ) {
+      const form = await request.formData();
+      body = Object.fromEntries(form.entries());
+    } else if (contentType === "") {
+      // Some browsers + the curl-without-Content-Type case: try JSON first,
+      // then form-encoded as a fallback. This keeps the API forgiving for
+      // unauthenticated site visitors hitting /api/contact.
+      const text = await request.text();
+      try {
+        body = JSON.parse(text);
+      } catch {
+        const params = new URLSearchParams(text);
+        body = Object.fromEntries(params.entries());
+      }
+    } else {
+      return Response.json(
+        {
+          error: `Unsupported Content-Type: ${contentType || "(none)"}. Use application/json, application/x-www-form-urlencoded, or multipart/form-data.`,
+        },
+        { status: 415 },
+      );
+    }
+  } catch (parseError) {
+    console.error("[contact] failed to parse body:", parseError?.message);
+    return Response.json(
+      {
+        error: `Could not parse request body as ${contentType || "JSON"}. ${parseError?.message || ""}`.trim(),
+      },
+      { status: 400 },
+    );
+  }
+
 
     // Validate required minimal fields
     const requiredFields = ["name", "serviceType"]; // email/phone collected conditionally
@@ -176,15 +220,4 @@ ${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDesc
       lead_saved: leadSaved,
       lead_id: leadId,
     });
-  } catch (error) {
-    console.error("Error processing contact form:", error?.message || error);
-    // Return a graceful error instead of a generic 500 to avoid dead ends in the UI
-    return Response.json(
-      {
-        error:
-          "We couldn't complete your request right now, but your info was received. Please expect a follow-up soon or call us directly at (555) PAINT-US.",
-      },
-      { status: 502 },
-    );
-  }
 }

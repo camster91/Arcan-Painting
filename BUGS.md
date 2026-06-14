@@ -155,6 +155,46 @@ The yup `lead` schema accepted only `service_type`, `project_description`, `pref
 - **Public pages `/`, `/quote`, `/blog`, `/contact` return 500** with `useTheme must be used within a ThemeProvider`. This is an SSR React bug in `src/components/Header.jsx` — the `useTheme()` hook is called outside a `ThemeProvider` in the SSR render path. The admin pages also crash this way. Pre-existing, not introduced by v53.
 - **GitHub Actions CI** is still failing because of the workspace billing block. Not addressed.
 
+## Bug #14 — Router dispatching every URL to the home page (FIXED 2026-06-13)
+
+**Status:** ~~Bug #14 — Fixed~~.
+
+**What was happening:** Every URL on the live site — `/quote`, `/blog`, `/contact`, `/admin`, `/admin/leads`, `/thank-you` — rendered the home page's content even though the route manifest was correct per URL. The route modules were correctly loaded (the streamed HTML's `window.__reactRouterRouteModules` was `{"root", "admin/leads/page"}` for `/admin/leads`), but the SSR'd body was the home page's JSX for every page.
+
+Two distinct bugs were stacked:
+
+1. **`react-router.config.ts` had `routeDiscovery: { mode: "initial" }`** (added 2026-06-12 with a comment saying "fixes SSR hydration crash"). In `initial` mode, React Router 7 only statically discovers the routes known at build time. With the dynamic file-tree router in `src/app/routes.ts`, this caused route mismatches in the SSR pass. Default mode (`lazy`) is correct.
+
+2. **Page-level `mounted` gates in `src/app/quote/page.jsx` and `src/app/contact/page.jsx`**:
+   ```jsx
+   const [mounted, setMounted] = useState(false);
+   useEffect(() => { setMounted(true); }, []);
+   return ( ... {mounted && <QuoteCalculatorSection />} ... );
+   ```
+   `mounted` is always `false` during streaming SSR, so the `<main>` rendered empty. The section components are SSR-safe on their own (v55's defensive `useTheme()` returns a safe default). The page-level gate was the wrong abstraction — `mounted` should be inside the section component, not at the page level.
+
+**Fix:**
+- `react-router.config.ts`: removed `routeDiscovery: { mode: "initial" }`. Default is `lazy`.
+- `src/app/quote/page.jsx`: removed the `mounted` state + the `mounted && <QuoteCalculatorSection />` gate. The section now renders during SSR.
+- `src/app/contact/page.jsx`: same fix.
+- `src/app/admin/page.jsx`, `src/app/thank-you/page.jsx`: did NOT have a `mounted` gate, so no fix needed there.
+
+**Also fixed in this batch:**
+- `src/app/api/contact/route.js`: the route only accepted `application/json`. HTML `<form>` elements POST `application/x-www-form-urlencoded` by default — the route would throw a parse error and return a misleading 502 with "your info was received" (the user was told their submission was received when nothing was saved). Now accepts `application/json`, `application/x-www-form-urlencoded`, and `multipart/form-data`. Returns 415 with a clear error for unknown Content-Types, 400 with a real parse error if the body is malformed.
+- `src/app/api/calendar/route.js`: the 503 response message said "Google Calendar is not configured" but the server log kept saying "Set MATON_API_KEY" — confusing. Updated to "Google Calendar is not configured (Maton integration was removed 2026-06-13)".
+- `src/app/root.tsx`: meta description was hardcoded to one value for all 6 public pages, which is a Google duplicate-content signal. Added a per-page description map (quote, blog, contact, admin, thank-you each get a unique description) using `useLocation()` to pick the right one at SSR time.
+
+**Verification on the local stack:**
+- All 5 public pages (`/`, `/quote`, `/blog`, `/contact`, `/thank-you`) return 200 with the correct page-specific H1 in the body
+- `/admin/leads` returns 200 with the loading skeleton (data fetch is client-side; admin can see leads after login)
+- 53/53 vitest cases pass
+- Form-encoded POST saves a lead (lead_id:42)
+- Empty form-encoded POST returns 400 "name is required" (was 502)
+- Unknown Content-Type returns 415
+- `/api/calendar` returns 503 with the new "Maton integration was removed" message
+
+**Files changed:** 6 files, +115/-32 lines.
+
 ## Bug #13 — Maton + Telegram integrations stripped (2026-06-13)
 
 **Status:** ~~Bug #13 — Fixed~~ (per Cam: "Remove maton and telegram we stripped those out").

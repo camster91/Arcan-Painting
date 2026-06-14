@@ -197,10 +197,50 @@ export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location?.pathname;
 
+  // Per-page meta description. Default is the home/company-wide description;
+  // specific routes get a route-specific one so Google doesn't see four pages
+  // with the same description (duplicate-content signal that hurts ranking).
+  // Map is keyed on the leading URL segment after the slash.
+  const pageMeta = (() => {
+    const seg = (pathname || "/").split("/").filter(Boolean)[0] || "";
+    switch (seg) {
+      case "quote":
+        return {
+          title: "Get a Free Painting Quote | Arcan Painting",
+          description: "Free instant painting quote for your Toronto or GTA project. Interior, exterior, commercial. Get a detailed estimate in 24 hours.",
+        };
+      case "blog":
+        return {
+          title: "Painting Tips & Guides | Arcan Painting Blog",
+          description: "Expert painting advice, color guides, and how-tos for homeowners and businesses in Toronto and the GTA. From the Arcan Painting team.",
+        };
+      case "contact":
+        return {
+          title: "Contact Arcan Painting | Free Painting Estimate",
+          description: "Get a free painting estimate in 24 hours. Call (416) 727-2148 or send a quick message — we serve Toronto, Mississauga, Brampton, Markham, and the GTA.",
+        };
+      case "admin":
+        return {
+          title: "Admin Dashboard | Arcan Painting",
+          description: "Arcan Painting internal CRM dashboard.",
+        };
+      case "thank-you":
+        return {
+          title: "Thank You | Arcan Painting",
+          description: "We received your request and will be in touch within 24 hours. Book your free painting estimate online or call (416) 727-2148.",
+        };
+      default:
+        return {
+          title: "Arcan Painting | Professional Interior & Exterior Painting Services",
+          description: "Expert painting services for residential & commercial properties in Toronto and the GTA. Free estimates. Licensed & insured.",
+        };
+    }
+  })();
+
   // Hide SSR SEO block once React has hydrated — the interactive app takes over
   useEffect(() => {
-    const ssrBlock = document.getElementById('ssr-seo-block');
-    if (ssrBlock) ssrBlock.style.display = 'none';
+    const ssrBlock = document.getElementById("ssr-seo-block");
+    if (ssrBlock) ssrBlock.style.display = "none";
   }, []);
 
   return (
@@ -208,9 +248,9 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* SEO: Title & Description */}
-        <title>Arcan Painting | Professional Interior &amp; Exterior Painting Services</title>
-        <meta name="description" content="Expert painting services for residential &amp; commercial properties. Free estimates. Licensed &amp; insured." />
+        {/* SEO: Title & Description (per-page) */}
+        <title>{pageMeta.title}</title>
+        <meta name="description" content={pageMeta.description} />
         <meta name="geo.region" content="CA-ON" />
         <meta name="geo.position" content="43.6532;-79.3832" />
         <meta name="ICBM" content="43.6532, -79.3832" />

@@ -57,7 +57,7 @@ export async function GET(request) {
 
     if (error.message?.includes("Missing Google OAuth") || error.message?.includes("Missing Maton API key")) {
       return Response.json(
-        { error: "Google Calendar is not configured" },
+        { error: "Google Calendar is not configured (Maton integration was removed 2026-06-13)" },
         { status: 503 },
       );
     }
