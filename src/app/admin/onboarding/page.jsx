@@ -325,16 +325,6 @@ function StepDone() {
             Schedule a site visit
           </div>
         </a>
-        <a
-          href="/admin/marketing/ai-assistant"
-          className="block p-4 bg-white border border-gray-200 rounded-xl hover:border-amber-300 hover:shadow-md transition-all"
-        >
-          <div className="text-2xl mb-2">🤖</div>
-          <div className="font-semibold text-gray-900 text-sm">Try AI</div>
-          <div className="text-xs text-gray-500 mt-1">
-            Generate content or get ideas
-          </div>
-        </a>
       </div>
       <button
         onClick={handleFinish}

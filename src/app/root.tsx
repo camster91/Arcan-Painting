@@ -227,11 +227,6 @@ export function Layout({ children }: { children: ReactNode }) {
           title: "Get a Free Painting Quote | Arcan Painting",
           description: "Free instant painting quote for your Toronto or GTA project. Interior, exterior, commercial. Get a detailed estimate in 24 hours.",
         };
-      case "blog":
-        return {
-          title: "Painting Tips & Guides | Arcan Painting Blog",
-          description: "Expert painting advice, color guides, and how-tos for homeowners and businesses in Toronto and the GTA. From the Arcan Painting team.",
-        };
       case "contact":
         return {
           title: "Contact Arcan Painting | Free Painting Estimate",

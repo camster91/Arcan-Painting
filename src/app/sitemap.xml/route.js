@@ -1,15 +1,7 @@
-import { getAllPosts } from "../../lib/blog.js";
-
-// Generate dynamic sitemap.xml
+// Generate dynamic sitemap.xml — blog index + posts removed 2026-06-14.
 export async function GET() {
   const baseUrl = process.env.APP_URL || "https://arcanpainting.ca";
   const currentDate = new Date().toISOString().split("T")[0];
-  let blogPosts = [];
-  try {
-    blogPosts = getAllPosts().map(({ slug, date }) => ({ slug, date }));
-  } catch (e) {
-    blogPosts = [];
-  }
 
   const services = [
     "interior-painting",
@@ -43,9 +35,9 @@ export async function GET() {
   ).join("");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  
+
   <!-- Homepage -->
   <url>
     <loc>${baseUrl}/</loc>
@@ -102,24 +94,7 @@ export async function GET() {
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <!-- 150 City × Service SEO Pages -->${cityServiceUrls}
-
-  <!-- Blog index -->
-  <url>
-    <loc>${baseUrl}/blog</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Blog posts -->
-  ${blogPosts.map(({ slug, date }) => `<url>
-    <loc>${baseUrl}/blog/${slug}</loc>
-    <lastmod>${date || currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>`).join("\n  ")}
 
 </urlset>`;
 
