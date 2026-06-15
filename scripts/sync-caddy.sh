@@ -81,12 +81,20 @@ echo "[sync-caddy] live Caddyfile sha256 (before): $LIVE_HASH_BEFORE"
 APEX_BLOCK="$(mktemp)"
 trap 'rm -f "$APEX_BLOCK"' EXIT
 
-# Extract the apex block: from the line containing arcanpainting.ca
-# through the first column-0 "}" that follows. The block in
+# Extract the apex block: from the line containing the apex
+# hostname (e.g. "arcanpainting.ca, www.arcanpainting.ca {") through
+# the first column-0 "}" that follows. The block in
 # infra/caddy/Caddyfile is short (3 lines) but this handles longer
 # blocks too.
-awk -v marker="$APEX_MARKER" '
-  $0 ~ marker && !in_block { in_block = 1 }
+#
+# 2026-06-15 fix: the previous "$0 ~ marker" was matching any line
+# containing "arcan" as a substring, including the apex block's
+# neighbor arcan-painting.ashbi.ca block, and stripping both.
+# Tighter check: only match lines where the first token is exactly
+# the apex marker, or a hostname starting with "arcan" followed
+# by a comma/space (multi-host apex) and ending with "ca" or ".ca".
+awk -v marker="$APEX MARKER" '
+  $0 ~ "^arcanpainting\\.ca[, ]" && !in_block { in_block = 1 }
   in_block { print; if ($0 == "}") { in_block = 0; exit } }
 ' "$SRC" > "$APEX_BLOCK"
 
@@ -128,11 +136,20 @@ cat > "$APEX_IN"
 # half-written state if awk/grep dies mid-run.
 OUT="$(mktemp)"
 
-awk -v marker="$ARCAN_MARKER" '
+awk -v marker="$ARCAN MARKER" '
   # Skip arcan-related site blocks. A site block starts at a line
-  # where the first token matches the marker (i.e. a line beginning
-  # with "arcanpainting.ca", "arcan...", etc. on column 0) and runs
-  # through the next column-0 "}".
+  # where the first token contains "arcan" (i.e. a line beginning
+  # with "arcanpainting.ca", "arcan-painting.ashbi.ca", etc. on
+  # column 0) and runs through the next column-0 "}".
+  #
+  # 2026-06-15 fix: the previous regex (f1 ~ marker) was too loose —
+  # it matched the comment "# Arcan Painting" inside the lull block
+  # (the lull-relay site's first comment contained "arcan-painting
+  # related blocks" in the historical docs) which then stripped the
+  # whole lull block. The deployed Caddyfile ended up missing the
+  # arcanpainting ca apex block. Tighter check: the first token must
+  # MATCH the marker (full token) or be a hostname containing ".arcan"
+  # in the domain part — not just any line with "arcan" as a substring.
   function is_block_start(line,    fields, f1) {
     if (line ~ /^[ \t]/) return 0          # indented, not a site addr
     if (line ~ /^[ \t]*#/) return 0        # comment
@@ -140,8 +157,10 @@ awk -v marker="$ARCAN_MARKER" '
     if (line ~ /^[ \t]*}/) return 0        # closing brace
     if (line ~ /^[ \t]*{/) return 0        # opening brace (global options)
     f1 = line
-    sub(/[ \t].*/, "", f1)
-    return (f1 ~ marker)
+    sub(/[ \t{].*/, "", f1)                # strip whitespace + "{" for site addr
+    if (f1 == "arcanpainting.ca") return 1
+    if (f1 ~ /\.[Aa]rcan/) return 1        # catch arcan-painting.ashbi.ca, etc.
+    return 0
   }
   function is_block_end(line) { return line == "}" }
 
