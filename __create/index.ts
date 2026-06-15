@@ -148,7 +148,24 @@ migratePasswords().catch((err) =>
   console.error('[startup] Password migration failed:', err)
 );
 
+// Override the publicAssets root. The upstream library defaults to
+// `${BUILD_DIR}/client` (same as clientAssets) for the public assets
+// directory. But our public/ (which holds /gallery/, /favicon.ico, the
+// 108MB of webp photos) lives in the source tree, not the build output.
+// Without this override, the serveStatic middleware can't find
+// /gallery/images/*.webp and falls through to the React Router
+// catch-all — which returns 200 with the home page HTML body and
+// text/html content-type. This was a regression caught in the
+// 2026-06-14 audit (F4 — webp MIME). Fixed by pointing publicAssets
+// at ./public in production (matches dev behavior).
+const publicAssetsRoot = process.env.NODE_ENV === "production"
+  ? "./public"
+  : "./public";
+
 export default await createHonoServer({
   app,
   defaultLogger: false,
+  serveStaticOptions: {
+    publicAssets: { root: publicAssetsRoot },
+  },
 });
