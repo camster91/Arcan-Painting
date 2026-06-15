@@ -250,12 +250,16 @@ function StepConnectGoogle({ onNext, onBack }) {
                   Checking connection...
                 </div>
               ) : (
-                <a
-                  href="/api/marketing/google/connect"
+                <button
+                  onClick={() => {
+                    // The Google OAuth onboarding flow was stripped with
+                    // the marketing integration. Skip the connect step.
+                    onNext();
+                  }}
                   className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-center py-3 rounded-xl transition-colors"
                 >
-                  Connect Google Account
-                </a>
+                  Skip Google Connect
+                </button>
               )}
             </>
           )}

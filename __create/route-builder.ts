@@ -84,4 +84,17 @@ function registerRoutes() {
 
 registerRoutes();
 
+// Soft-404 antipattern fix: when no API route matches the path, return
+// 404 JSON instead of falling through to the React Router SSR catch-all
+// (which would render the homepage HTML with the homepage's <title> and
+// canonical, telling crawlers "this is a duplicate of the homepage").
+// Memory: per the 2026-06-14 audit, /api/blog, /api/posts, /api/ads/*
+// were the worst offenders. Now: every /api/* miss returns 404 JSON.
+api.notFound((c) => {
+  return c.json(
+    { error: 'Not Found', path: c.req.path, method: c.req.method },
+    404,
+  );
+});
+
 export { api, API_BASENAME };

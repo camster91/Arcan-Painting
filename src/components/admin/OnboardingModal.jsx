@@ -27,7 +27,9 @@ export default function OnboardingModal({ onComplete, onSkip }) {
     } catch {
       // Non-critical, continue with connect
     }
-    window.location.href = "/api/marketing/google/connect?from=onboarding";
+    // The Google OAuth onboarding flow was stripped with the marketing
+    // integration. Skip straight to the dashboard.
+    window.location.href = "/admin";
   };
 
   const handleSkip = async () => {

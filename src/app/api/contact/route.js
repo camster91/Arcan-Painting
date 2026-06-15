@@ -5,8 +5,17 @@ import { auditLog } from "../utils/audit.js";
 import { sendLeadEvent } from "../utils/meta-capi.js";
 import { insertLead } from "../utils/insert-lead.js";
 
-// Spawn lead qualifier agent in background (fire-and-forget, non-blocking)
+// Spawn lead qualifier agent in background (fire-and-forget, non-blocking).
+// Gated on OPENCLAW_URL being set — when the local OpenClaw instance is
+// not deployed, the fetch hits a dead upstream and the container log
+// fills with "Lead qualifier spawn failed: fetch failed" lines. The
+// qualification agent feature is preserved in code (the route at
+// /api/agents/lead-qualifier still exists) so when OpenClaw is wired
+// up later, the gating is a one-line revert.
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
+  if (!process.env.OPENCLAW_URL) {
+    return; // OpenClaw is not deployed — skip the qualifier agent.
+  }
   try {
     await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
       method: 'POST',

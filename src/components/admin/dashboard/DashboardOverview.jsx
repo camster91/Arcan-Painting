@@ -19,7 +19,10 @@ import { CreateEstimateModal } from "@/components/admin/estimates/CreateEstimate
 import CreateProjectModal from "@/components/admin/projects/CreateProjectModal";
 import { usePerformanceCache } from "@/hooks/usePerformanceCache";
 import EmailHealthWidget from "@/components/admin/EmailHealthWidget";
-import AdsKpiBar from "@/components/admin/dashboard/AdsKpiBar";
+// AdsKpiBar stripped 2026-06-15: it fetched /api/ads/dashboard-summary
+// (deleted in the 5b22bee marketing cut). Both the component file and
+// the import here are gone. The dashboard continues with the rest of
+// its KPI widgets + the email health widget.
 
 export default function DashboardOverview() {
   // Modal states
@@ -213,11 +216,6 @@ export default function DashboardOverview() {
             </a>
           );
         })}
-      </div>
-
-      {/* Ads KPIs — shown on every page load, lightweight, auto-refreshing */}
-      <div className="mt-6">
-        <AdsKpiBar />
       </div>
 
       {/* Email Health Alert */}

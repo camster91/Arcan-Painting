@@ -84,114 +84,19 @@ if (process.env.CORS_ORIGINS) {
 // which is fully working. This app no longer references the deleted
 // __create/adapter.ts, src/auth.js, src/app/account/*, or src/app/api/auth/*.
 
-app.get('/robots.txt', (c) => {
-  const baseUrl = process.env.APP_URL || 'https://arcanpainting.ca';
-  const robotsTxt = `User-agent: *
-Allow: /
-Allow: /thank-you
-Allow: /#services
-Allow: /#portfolio
-Allow: /#about
-Allow: /#contact
+// The /sitemap.xml and /robots.txt routes live in src/app/sitemap.xml/route.js
+// and src/app/robots.txt/route.js. They're file-based GET handlers that get
+// auto-mounted by the same import.meta.glob that handles /api/* routes, but
+// the API glob is rooted at src/app/api/** so the top-level routes never
+// get auto-mounted. Mount them here explicitly so the file-based versions
+// win over the hardcoded fallbacks below. The file-based versions are
+// always fresher and reflect the live route table.
+import * as sitemapRoute from '../src/app/sitemap.xml/route.js';
+import * as robotsRoute from '../src/app/robots.txt/route.js';
+app.get('/sitemap.xml', (c) => sitemapRoute.GET(c.req.raw));
+app.get('/robots.txt', (c) => robotsRoute.GET(c.req.raw));
 
-# Block admin areas from search engines
-Disallow: /admin
-Disallow: /admin/*
-Disallow: /api/*
 
-# Block specific files
-Disallow: *.json$
-Disallow: /favicon.ico
-
-# Allow specific crawlers better access
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-# Sitemap location
-Sitemap: ${baseUrl}/sitemap.xml
-
-# Crawl delay for non-major search engines
-User-agent: *
-Crawl-delay: 1`;
-
-  return c.text(robotsTxt, 200, {
-    'Content-Type': 'text/plain; charset=utf-8',
-    'Cache-Control': 'public, max-age=86400',
-  });
-});
-
-app.get('/sitemap.xml', (c) => {
-  const baseUrl = process.env.APP_URL || 'https://arcanpainting.ca';
-  const currentDate = new Date().toISOString().split('T')[0];
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-
-  <!-- Homepage -->
-  <url>
-    <loc>${baseUrl}/</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://arcanpainting.ca/logo.png</image:loc>
-      <image:caption>Arcan and Sons Professional Toronto Painting Services</image:caption>
-      <image:title>Professional Painting Services GTA</image:title>
-    </image:image>
-  </url>
-
-  <!-- Thank you page -->
-  <url>
-    <loc>${baseUrl}/thank-you</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- Services section -->
-  <url>
-    <loc>${baseUrl}/#services</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Portfolio section -->
-  <url>
-    <loc>${baseUrl}/#portfolio</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- About section -->
-  <url>
-    <loc>${baseUrl}/#about</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Contact section -->
-  <url>
-    <loc>${baseUrl}/#contact</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-</urlset>`;
-
-  return c.text(sitemap, 200, {
-    'Content-Type': 'application/xml; charset=utf-8',
-    'Cache-Control': 'public, max-age=86400',
-  });
-});
-
-app.route(API_BASENAME, api);
 
 // Run password migration on startup (hash any remaining plain-text passwords).
 // IMPORTANT: ensureSchema() must run first so the `auth_users` table exists;

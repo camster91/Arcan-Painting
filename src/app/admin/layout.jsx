@@ -161,29 +161,23 @@ function AdminLayoutContent({ children }) {
           {
             label: "Estimates",
             href: "/admin/estimates",
-            description: "Price quotes",
+            description: "Quote builder",
           },
           {
             label: "Contracts",
             href: "/admin/contracts",
-            description: "Active agreements",
+            description: "Signed agreements",
           },
           {
             label: "Templates",
             href: "/admin/contracts/templates",
             description: "Contract templates",
           },
-          {
-            label: "Prospects",
-            href: "/admin/prospects",
-            description: "B2B outreach pipeline",
-          },
         ],
         matchers: [
           "/admin/estimates",
           "/admin/contracts",
           "/admin/contracts/templates",
-          "/admin/prospects",
         ],
         description: "Quotes & agreements",
         showNotificationBadge: false,
