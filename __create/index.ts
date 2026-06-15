@@ -84,17 +84,55 @@ if (process.env.CORS_ORIGINS) {
 // which is fully working. This app no longer references the deleted
 // __create/adapter.ts, src/auth.js, src/app/account/*, or src/app/api/auth/*.
 
-// The /sitemap.xml and /robots.txt routes live in src/app/sitemap.xml/route.js
-// and src/app/robots.txt/route.js. They're file-based GET handlers that get
-// auto-mounted by the same import.meta.glob that handles /api/* routes, but
-// the API glob is rooted at src/app/api/** so the top-level routes never
-// get auto-mounted. Mount them here explicitly so the file-based versions
-// win over the hardcoded fallbacks below. The file-based versions are
-// always fresher and reflect the live route table.
+// Re-mount the /api sub-app. The previous version of this file (before
+// the 2026-06-15 sitemap-fix patch) had app.route(API_BASENAME, api) at
+// the bottom of the file. The patch's old_string match consumed it as
+// a tail of the deleted app.get() blocks, so the line is back here as
+// part of the new patch. Without this, /api/* routes (contact, leads,
+// auth, etc.) stop matching and the SSR catch-all serves a 200 HTML
+// body with status 200 — which is exactly the bug we hit on first
+// re-verify after F1.
+//
+// The /api sub-app MUST be mounted BEFORE the /sitemap.xml and
+// /robots.txt inline routes. When a request comes in for /api/*, the
+// api sub-app processes it and returns 404 JSON (via api.notFound) if
+// the route is unknown. By mounting the api sub-app first, we ensure
+// api.notFound fires before the React Router catch-all mounted later
+// in createHonoServer can take over. If we mount the api sub-app AFTER
+// the top-level routes, the top-level routes win on prefix match, but
+// since they don't match /api/* the request falls through to the
+// React Router catch-all instead of to the api sub-app — which is
+// exactly the bug that surfaced on first re-verify after the F1
+// patch landed in the source.
+//
+// The file-based /sitemap.xml and /robots.txt routes live in
+// src/app/sitemap.xml/route.js and src/app/robots.txt/route.js. The
+// API glob is rooted at src/app/api/** so the top-level routes never
+// get auto-mounted. Mount them here explicitly.
 import * as sitemapRoute from '../src/app/sitemap.xml/route.js';
 import * as robotsRoute from '../src/app/robots.txt/route.js';
+app.route(API_BASENAME, api);
 app.get('/sitemap.xml', (c) => sitemapRoute.GET(c.req.raw));
 app.get('/robots.txt', (c) => robotsRoute.GET(c.req.raw));
+
+// Soft-404 antipattern — second line of defense. Even though
+// api.notFound() in route-builder.ts returns 404 JSON, the api sub-app
+// doesn't always catch the request (depends on Hono's middleware
+// matching semantics — confirmed by 2026-06-15 local re-verify where
+// /api/blog fell through to the React Router catch-all). This direct
+// catch-all on the parent app runs BEFORE the api sub-app, so any
+// /api/* path that isn't matched returns 404 JSON. The api sub-app's
+// own notFound still works for the cases it does match.
+app.all('/api/*', (c) => {
+  return c.json(
+    {
+      error: 'Not Found',
+      path: c.req.path,
+      method: c.req.method,
+    },
+    404,
+  );
+});
 
 
 
