@@ -47,7 +47,7 @@
     "isbot": "^5"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.15.0",
+    "@react-router/dev": "^7.18.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
