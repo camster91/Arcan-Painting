@@ -7,7 +7,6 @@ on:
 
 concurrency:
   group: deploy-production
-  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
