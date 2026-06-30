@@ -723,7 +723,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
             </button>
             <img
               src={lightboxSrc}
-              alt="Preview"
+              alt="Full-size progress photo preview"
               className="max-h-[85vh] max-w-[90vw] object-contain rounded"
             />
             <button
