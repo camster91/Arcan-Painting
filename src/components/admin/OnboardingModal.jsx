@@ -54,7 +54,7 @@ export default function OnboardingModal({ onComplete, onSkip }) {
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <img
               src="/logo.png"
-              alt="Arcan Painting"
+              alt="Arcan Painting logo"
               className="w-12 h-12 object-contain"
             />
           </div>
