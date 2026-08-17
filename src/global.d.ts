@@ -1,4 +1,11 @@
 import 'react-router';
+
+declare global {
+	interface Window {
+		__arcanCsrfPatched?: boolean;
+	}
+}
+
 module 'virtual:load-fonts.jsx' {
 	export function LoadFonts(): null;
 }

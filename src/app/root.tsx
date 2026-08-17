@@ -51,7 +51,7 @@ if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
         : input instanceof URL
           ? input.toString()
           : input?.url ?? '';
-      const method = (init?.method || (input && input.method) || 'GET').toUpperCase();
+      const method = (init?.method || (input instanceof Request ? input.method : undefined) || 'GET').toUpperCase();
       const isApi = url.startsWith('/api/') || url.includes('://') && url.includes('/api/');
       const isExempt = CSRF_EXEMPT_PREFIXES.some((p) => url.includes(p));
       if (isApi && !SAFE_METHODS.has(method) && !isExempt) {
@@ -59,7 +59,7 @@ if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
         const token = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
         if (token) {
           init = init || {};
-          const headers = new Headers(init.headers || (input && input.headers) || undefined);
+          const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
           if (!headers.has('x-csrf-token')) {
             headers.set('x-csrf-token', token);
           }
