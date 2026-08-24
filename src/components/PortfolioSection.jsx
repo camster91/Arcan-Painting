@@ -47,9 +47,11 @@ const CATEGORIES = ["All", "Interior", "Exterior", "Commercial"];
 // Two-row scrolling gallery component (mirrors GoogleReviewsSection pattern)
 function GalleryCard({ item, onClick }) {
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card"
+      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
+      aria-label={`Open project photo: ${item.title}`}
       style={{
         width: "clamp(140px, 28vw, 260px)",
         height: "clamp(140px, 28vw, 260px)",
@@ -63,7 +65,7 @@ function GalleryCard({ item, onClick }) {
         className="gallery-img w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover/card:scale-105"
         style={{ imageOrientation: "from-image" }}
       />
-    </div>
+    </button>
   );
 }
 
@@ -110,6 +112,7 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
 
   // Mouse drag for desktop
   const handleMouseDown = (e) => {
+    if (e.target.closest("button")) return;
     // Only start drag if it's a primary mouse button (left click)
     if (e.button !== 0) return;
     isDragging.current = true;
@@ -130,6 +133,7 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
 
   // Natural touch scroll + drag for mobile/tablet
   const handleTouchStart = (e) => {
+    if (e.target.closest("button")) return;
     touchStartX.current = e.touches[0].clientX;
     dragStartPos.current = posRef.current;
     touchMoved.current = false;
@@ -323,6 +327,7 @@ export default function PortfolioSection() {
             <button
               key={cat}
               onClick={() => setActiveFilter(cat)}
+              aria-pressed={activeFilter === cat}
               className={[
                 "min-h-[44px] px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200",
                 activeFilter === cat
@@ -375,6 +380,9 @@ export default function PortfolioSection() {
       {/* Lightbox — full screen immersive overlay */}
       {lightboxOpen && currentItem && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Project photo viewer"
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
           onClick={closeLightbox}
           onTouchStart={handleTouchStart}

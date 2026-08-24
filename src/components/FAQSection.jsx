@@ -147,6 +147,8 @@ export default function FAQSection() {
                 <button
                   className="w-full px-8 py-6 text-left flex items-center justify-between group-hover:bg-white/5 transition-colors duration-200"
                   onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                  aria-expanded={openFAQ === index}
+                  aria-controls={`faq-answer-${index}`}
                 >
                   <span className="font-semibold text-white text-lg lg:text-xl pr-8 leading-relaxed">
                     {faq.question}
@@ -161,7 +163,7 @@ export default function FAQSection() {
                 </button>
 
                 {openFAQ === index && (
-                  <div className="px-8 pb-6">
+                  <div id={`faq-answer-${index}`} className="px-8 pb-6">
                     <div className="pt-4 border-t border-white/10">
                       <p className="text-slate-300 leading-relaxed text-base lg:text-lg">
                         {faq.answer}

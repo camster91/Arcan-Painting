@@ -10,6 +10,13 @@ import { generateSecureToken } from "@/app/api/utils/auth";
 import { ensureSchema } from "@/migrations/001-initial-schema";
 import { generateCsrfToken, makeCsrfCookie } from "@/app/api/utils/csrf";
 
+export function createLoginHeaders(sessionCookie, csrfCookie) {
+  const headers = new Headers({ "Content-Type": "application/json" });
+  headers.append("Set-Cookie", sessionCookie);
+  headers.append("Set-Cookie", csrfCookie);
+  return headers;
+}
+
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [
     `${name}=${encodeURIComponent(value)}`,
@@ -82,7 +89,7 @@ export async function POST(request) {
       return Response.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    // Create a cryptographically secure session token valid for 7 days
+    // Create a cryptographically secure session token valid for 90 days.
     const token = generateSecureToken();
     const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
@@ -112,10 +119,7 @@ export async function POST(request) {
       }),
       {
         status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Set-Cookie": `${sessionCookie}, ${csrfCookie}`,
-        },
+        headers: createLoginHeaders(sessionCookie, csrfCookie),
       }
     );
   } catch (error) {

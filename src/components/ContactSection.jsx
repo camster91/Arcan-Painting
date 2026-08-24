@@ -294,11 +294,6 @@ export default function ContactSection() {
           rows={4}
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit(e);
-            }
-          }}
           className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-slate-900 transition-all duration-150 text-base resize-none"
           placeholder="Tell us about your project, size, timing, or any special requests..."
         />

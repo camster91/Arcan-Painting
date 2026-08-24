@@ -317,16 +317,16 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_CA" />
-        <meta property="og:image" content="https://arcanpainting.ca/logo.png" />
+        <meta property="og:image" content="https://arcanpainting.ca/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
-        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@arcanpainting" />
         <meta name="twitter:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
         <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
-        <meta name="twitter:image" content="https://arcanpainting.ca/logo.png" />
+        <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
         <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         {/* SEO: Robots meta */}
         <meta name="robots" content="index, follow" />
@@ -338,12 +338,6 @@ export function Layout({ children }: { children: ReactNode }) {
           type="image/webp"
           imageSrcSet="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&q=80&fm=webp 600w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp 1200w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80&fm=webp 1920w"
           imageSizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="https://raw.createusercontent.com/bf59fc7f-c2f3-4eee-adaa-a7482b62994f/-/format/webp/-/resize/1920x/"
-          type="image/webp"
         />
         <Meta />
         <Links />
