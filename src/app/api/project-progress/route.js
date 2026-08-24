@@ -1,6 +1,13 @@
 import sql from "@/app/api/utils/sql";
+import { createNotification } from "@/app/api/notifications/route";
+import { requireAdmin } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
 
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const project_id = searchParams.get("project_id");
@@ -57,6 +64,12 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
     const {
@@ -130,10 +143,7 @@ export async function POST(request) {
 
       if (project.client_email) {
         try {
-          await fetch(`${process.env.APP_URL}/api/notifications`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          await createNotification({
               type: "project",
               title: is_milestone
                 ? "Project Milestone Reached"
@@ -150,7 +160,6 @@ export async function POST(request) {
                 progress_percentage,
                 photos: photos.slice(0, 3), // Include up to 3 photos in email
               },
-            }),
           });
         } catch (notificationError) {
           console.error(
@@ -172,6 +181,12 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
     const { id, ...updateFields } = body;
@@ -257,6 +272,12 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

@@ -1,7 +1,68 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
+import { requireAdmin } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
+
+// Server-only entry point for trusted business workflows. Public HTTP callers
+// must go through the authenticated handlers below.
+export async function createNotification({
+  type,
+  title,
+  message,
+  user_id,
+  email,
+  related_id,
+  related_type,
+  send_email = false,
+  data = {},
+}) {
+  const notification = await sql`
+    INSERT INTO notifications (
+      type, title, message, user_id, email, related_id, related_type,
+      is_read, send_email, data, created_at
+    ) VALUES (
+      ${type}, ${title}, ${message}, ${user_id}, ${email}, ${related_id},
+      ${related_type}, false, ${send_email}, ${JSON.stringify(data)},
+      CURRENT_TIMESTAMP
+    )
+    RETURNING *
+  `;
+
+  if (send_email && email) {
+    try {
+      await sendEmail({
+        to: email,
+        subject: title,
+        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #f59e0b; color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0;">Arcan Painting & Sons</h1>
+          </div>
+          <div style="padding: 20px; background: #ffffff;">
+            <h2 style="color: #334155; margin-bottom: 16px;">${title}</h2>
+            <div style="color: #475569; line-height: 1.6;">${message.replace(/\n/g, "<br>")}</div>
+            ${data.action_url ? `<div style="margin-top: 24px; text-align: center;">
+              <a href="${data.action_url}" style="background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">${data.action_text || "View Details"}</a>
+            </div>` : ""}
+          </div>
+          <div style="background: #f8fafc; padding: 16px; text-align: center; font-size: 14px; color: #64748b;">
+            <p>Thank you for choosing Arcan Painting & Sons</p>
+            <p>If you have any questions, please contact us at info@arcanpainting.com</p>
+          </div>
+        </div>`,
+      });
+    } catch (emailError) {
+      console.error("Error sending notification email:", emailError);
+    }
+  }
+
+  return notification[0];
+}
 
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -79,6 +140,12 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
     const {
@@ -102,63 +169,11 @@ export async function POST(request) {
       );
     }
 
-    // Create notification record
-    const notification = await sql`
-      INSERT INTO notifications (
-        type, title, message, user_id, email, related_id, related_type, 
-        is_read, send_email, data, created_at
-      ) VALUES (
-        ${type}, ${title}, ${message}, ${user_id}, ${email}, ${related_id}, 
-        ${related_type}, false, ${send_email}, ${JSON.stringify(data)}, 
-        CURRENT_TIMESTAMP
-      )
-      RETURNING *
-    `;
+    const notification = await createNotification({
+      type, title, message, user_id, email, related_id, related_type, send_email, data,
+    });
 
-    // Send email if requested
-    if (send_email && email) {
-      try {
-        await sendEmail({
-          to: email,
-          subject: title,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: #f59e0b; color: white; padding: 20px; text-align: center;">
-                <h1 style="margin: 0;">Arcan Painting & Sons</h1>
-              </div>
-              <div style="padding: 20px; background: #ffffff;">
-                <h2 style="color: #334155; margin-bottom: 16px;">${title}</h2>
-                <div style="color: #475569; line-height: 1.6;">
-                  ${message.replace(/\n/g, "<br>")}
-                </div>
-                ${
-                  data.action_url
-                    ? `
-                  <div style="margin-top: 24px; text-align: center;">
-                    <a href="${data.action_url}" 
-                       style="background: #f59e0b; color: white; padding: 12px 24px; 
-                              text-decoration: none; border-radius: 6px; display: inline-block;">
-                      ${data.action_text || "View Details"}
-                    </a>
-                  </div>
-                `
-                    : ""
-                }
-              </div>
-              <div style="background: #f8fafc; padding: 16px; text-align: center; font-size: 14px; color: #64748b;">
-                <p>Thank you for choosing Arcan Painting & Sons</p>
-                <p>If you have any questions, please contact us at info@arcanpainting.com</p>
-              </div>
-            </div>
-          `,
-        });
-      } catch (emailError) {
-        console.error("Error sending notification email:", emailError);
-        // Don't fail the notification creation if email fails
-      }
-    }
-
-    return Response.json({ notification: notification[0] }, { status: 201 });
+    return Response.json({ notification }, { status: 201 });
   } catch (error) {
     console.error("Error creating notification:", error);
     return Response.json(
@@ -169,6 +184,12 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
     const { id, is_read } = body;
@@ -333,11 +354,7 @@ export async function sendAutomatedNotification(eventType, data) {
 
     // Send each notification
     for (const notification of notifications) {
-      await fetch(`${process.env.APP_URL}/api/notifications`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(notification),
-      });
+      await createNotification(notification);
     }
 
     return notifications;
