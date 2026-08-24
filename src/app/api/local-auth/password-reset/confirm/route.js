@@ -4,6 +4,7 @@ import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 import { ensureSchema } from "@/migrations/001-initial-schema";
+import { isExpiredAt } from "@/app/api/utils/auth";
 
 export async function POST(request) {
   // Rate limiting
@@ -22,6 +23,7 @@ export async function POST(request) {
       SELECT t.id, t.user_id, t.expires_at, t.used
       FROM password_reset_tokens t
       WHERE t.token = ${token}
+        AND t.expires_at > NOW()
       LIMIT 1
     `;
     const row = rows[0];
@@ -33,8 +35,7 @@ export async function POST(request) {
       return Response.json({ error: "This reset link has already been used" }, { status: 400 });
     }
 
-    const nowIso = new Date().toISOString();
-    if (row.expires_at < nowIso) {
+    if (isExpiredAt(row.expires_at)) {
       return Response.json({ error: "This reset link has expired" }, { status: 400 });
     }
 

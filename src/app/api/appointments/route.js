@@ -1,5 +1,6 @@
 import sql from "../utils/sql.js";
 import { sendEmail } from "../utils/send-email.js";
+import { requireAdmin } from "../utils/auth.js";
 
 // helper to format datetimes for calendar URLs
 function toCalendarStamp(date) {
@@ -14,6 +15,10 @@ function toCalendarStamp(date) {
 
 // List upcoming appointments (ADMIN)
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const url = new URL(request.url);
     const from = url.searchParams.get("from");

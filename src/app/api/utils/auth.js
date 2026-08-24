@@ -11,6 +11,14 @@ export function generateSecureToken() {
   return randomBytes(32).toString("hex");
 }
 
+// PostgreSQL returns timestamp columns as Date objects. Comparing them to an
+// ISO string coerces the Date to a non-chronological string, which can leave
+// expired credentials valid.
+export function isExpiredAt(expiresAt, now = new Date()) {
+  const expiresAtMs = new Date(expiresAt).getTime();
+  return Number.isNaN(expiresAtMs) || expiresAtMs <= now.getTime();
+}
+
 // Helper function to parse cookies
 export function parseCookies(cookieHeader) {
   const cookies = {};
@@ -62,6 +70,7 @@ export async function getCurrentUser(request) {
     JOIN auth_users u ON u.id = s.user_id
     WHERE s.token = ${token}
       AND s.deleted_at IS NULL
+      AND s.expires_at > NOW()
     LIMIT 1
   `;
   const row = rows[0];
@@ -70,8 +79,7 @@ export async function getCurrentUser(request) {
     return null;
   }
 
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
+  if (isExpiredAt(row.expires_at)) {
     // Soft-delete expired session (preserve audit trail)
     await sql`UPDATE auth_sessions SET deleted_at = NOW() WHERE token = ${token} AND deleted_at IS NULL`;
     return null;
