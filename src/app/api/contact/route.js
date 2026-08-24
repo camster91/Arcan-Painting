@@ -182,7 +182,11 @@ export async function POST(request) {
         });
       }
     } catch (dbError) {
-      console.error("Database error (continuing with email):", dbError);
+      console.error("Database error while saving lead:", dbError);
+      return Response.json(
+        { error: "We couldn't save your request. Please try again or call us directly." },
+        { status: 503 },
+      );
     }
 
     // Send notification + confirmation emails via Gmail

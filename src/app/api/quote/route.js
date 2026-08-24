@@ -41,6 +41,10 @@ export async function POST(request) {
       });
     } catch (e) {
       console.error('Failed to save quote as lead:', e.message);
+      return Response.json(
+        { error: "We couldn't save your quote request. Please try again or call us directly." },
+        { status: 503 },
+      );
     }
 
     // Notify Gerardo via Telegram

@@ -49,7 +49,7 @@ function GalleryCard({ item, onClick }) {
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(event) => onClick(event)}
       className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
       aria-label={`Open project photo: ${item.title}`}
       style={{
@@ -183,12 +183,12 @@ function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
           <GalleryCard
             key={`${item.id}-${i}`}
             item={item}
-            onClick={() => {
+            onClick={(event) => {
               // items is the original array (index 0 to items.length-1 in the middle copy)
               // Middle copy starts at index items.length
               const midStart = items.length;
               const idx = i < midStart ? i : (i < midStart + items.length ? i - midStart : i - midStart * 2);
-              onItemClick(idx);
+              onItemClick(idx, event.currentTarget);
             }}
           />
         ))}
@@ -206,6 +206,9 @@ export default function PortfolioSection() {
   const [hovered, setHovered] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const sectionRef = useRef(null);
+  const lightboxRef = useRef(null);
+  const closeLightboxButtonRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
 
   const filtered = useMemo(
     () => activeFilter === "All"
@@ -240,27 +243,14 @@ export default function PortfolioSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Keyboard nav for lightbox
-  useEffect(() => {
-    if (!lightboxOpen) return;
-    const handler = (e) => {
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowLeft") prevLightbox();
-      if (e.key === "ArrowRight") nextLightbox();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [lightboxOpen, lightboxIndex, filtered.length]);
-
-  const openLightbox = useCallback((idx) => {
+  const openLightbox = useCallback((idx, trigger) => {
+    previouslyFocusedElement.current = trigger || document.activeElement;
     setLightboxIndex(idx);
     setLightboxOpen(true);
-    document.body.style.overflow = "hidden";
   }, []);
 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
-    document.body.style.overflow = "";
   }, []);
 
   const prevLightbox = useCallback(() => {
@@ -270,6 +260,57 @@ export default function PortfolioSection() {
   const nextLightbox = useCallback(() => {
     setLightboxIndex(i => (i + 1) % filtered.length);
   }, [filtered.length]);
+
+  // Keep focus in the gallery dialog and return it to the selected photo.
+  useEffect(() => {
+    if (!lightboxOpen) return undefined;
+
+    document.body.style.overflow = "hidden";
+    closeLightboxButtonRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeLightbox();
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        prevLightbox();
+        return;
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        nextLightbox();
+        return;
+      }
+      if (event.key !== "Tab" || !lightboxRef.current) return;
+
+      const elements = Array.from(lightboxRef.current.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ));
+      if (elements.length === 0) return;
+
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+      if (previouslyFocusedElement.current instanceof HTMLElement) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [lightboxOpen, closeLightbox, nextLightbox, prevLightbox]);
 
   // Lightbox swipe
   const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
@@ -283,12 +324,12 @@ export default function PortfolioSection() {
   };
 
   // For row click: map row-local index back to filtered index
-  const handleRow1Click = useCallback((rowIdx) => {
-    openLightbox(rowIdx);
+  const handleRow1Click = useCallback((rowIdx, trigger) => {
+    openLightbox(rowIdx, trigger);
   }, [openLightbox]);
 
-  const handleRow2Click = useCallback((rowIdx) => {
-    openLightbox(ROW_1.length + rowIdx);
+  const handleRow2Click = useCallback((rowIdx, trigger) => {
+    openLightbox(ROW_1.length + rowIdx, trigger);
   }, [openLightbox, ROW_1.length]);
 
   const currentItem = filtered[lightboxIndex];
@@ -380,6 +421,7 @@ export default function PortfolioSection() {
       {/* Lightbox — full screen immersive overlay */}
       {lightboxOpen && currentItem && (
         <div
+          ref={lightboxRef}
           role="dialog"
           aria-modal="true"
           aria-label="Project photo viewer"
@@ -390,7 +432,11 @@ export default function PortfolioSection() {
         >
           {/* Close button */}
           <button
-            onClick={closeLightbox}
+            ref={closeLightboxButtonRef}
+            onClick={(event) => {
+              event.stopPropagation();
+              closeLightbox();
+            }}
             className="absolute top-4 right-4 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
             aria-label="Close"
           >
