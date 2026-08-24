@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { hash } from "argon2";
 
 async function ensureTables() {
   await sql`
@@ -9,6 +10,7 @@ async function ensureTables() {
       role VARCHAR(50) DEFAULT 'owner',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
+  await sql`ALTER TABLE auth_users ADD COLUMN IF NOT EXISTS password_is_hashed BOOLEAN NOT NULL DEFAULT FALSE`;
   await sql`
     CREATE TABLE IF NOT EXISTS team_members (
       id SERIAL PRIMARY KEY,
@@ -52,6 +54,8 @@ export async function POST(request) {
       );
     }
 
+    const hashedPassword = await hash(password);
+
     const invites =
       await sql`SELECT * FROM team_invites WHERE token = ${token} LIMIT 1`;
     const invite = invites[0];
@@ -81,11 +85,11 @@ export async function POST(request) {
     let userId;
     if (existingUsers.length) {
       userId = existingUsers[0].id;
-      await sql`UPDATE auth_users SET password = ${password}, role = ${invite.role} WHERE id = ${userId}`;
+      await sql`UPDATE auth_users SET password = ${hashedPassword}, password_is_hashed = TRUE, role = ${invite.role} WHERE id = ${userId}`;
     } else {
       const inserted = await sql`
-        INSERT INTO auth_users (username, password, role)
-        VALUES (${invite.email}, ${password}, ${invite.role})
+        INSERT INTO auth_users (username, password, password_is_hashed, role)
+        VALUES (${invite.email}, ${hashedPassword}, TRUE, ${invite.role})
         RETURNING id
       `;
       userId = inserted[0].id;
