@@ -31,18 +31,6 @@ jobs:
         env:
           CI: true
 
-      - name: Cancel stuck Coolify deploys
-        run: |
-          mkdir -p ~/.ssh
-          echo "$COOLIFY_SSH_KEY" > ~/.ssh/coolify_key
-          chmod 600 ~/.ssh/coolify_key
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/coolify_key root@187.77.26.99 \
-            "docker exec coolify-db psql -U coolify -c \"UPDATE application_deployment_queues SET status='cancelled' WHERE status IN ('queued','in_progress');\""
-          echo "Cleared stuck deploy queue"
-          rm -f ~/.ssh/coolify_key
-        env:
-          COOLIFY_SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
-
       - name: Trigger Coolify Deployment
         id: deploy
         run: |
