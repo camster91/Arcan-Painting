@@ -1,6 +1,7 @@
 import { notifyGerardo, formatQuoteNotification } from '../utils/telegram.js';
 import { chatWithGemini } from '../utils/gemini.js';
 import { createRateLimiter } from '../utils/rate-limit.js';
+import { insertLead } from '../utils/insert-lead.js';
 
 const quoteLimiter = createRateLimiter({ windowMs: 60_000, max: 5, prefix: 'quote' });
 
@@ -20,13 +21,23 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
-    // Save as lead via internal API
+    // Save through the server-only helper. The CRM HTTP endpoint is protected
+    // for admin users and must not be used by a public quote submission.
     try {
-      const baseUrl = process.env.APP_URL || new URL(request.url).origin;
-      const leadResponse = await fetch(`${baseUrl}/api/leads`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, serviceType, projectDescription: details, address }),
+      await insertLead({
+        name,
+        email,
+        phone,
+        serviceType,
+        projectDescription: [
+          details,
+          scope && `Scope: ${scope}`,
+          timeline && `Timeline: ${timeline}`,
+          budget && `Budget: ${budget}`,
+        ].filter(Boolean).join('\n'),
+        preferredContact: email ? 'email' : 'phone',
+        address,
+        leadSource: 'website_quote',
       });
     } catch (e) {
       console.error('Failed to save quote as lead:', e.message);
