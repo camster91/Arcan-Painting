@@ -1,31 +1,15 @@
+import { CITY_SLUGS, SERVICE_SLUGS } from "../[service]/[city]/page";
+
 // Generate dynamic sitemap.xml — blog index + posts removed 2026-06-14.
 export async function GET() {
   const baseUrl = process.env.APP_URL || "https://arcanpainting.ca";
   const currentDate = new Date().toISOString().split("T")[0];
 
-  const services = [
-    "interior-painting",
-    "exterior-painting",
-    "commercial-painting",
-    "wallpaper-services",
-    "specialty-finishes",
-  ];
+  const services = Object.keys(SERVICE_SLUGS);
 
-  const cities = [
-    // GTA
-    "toronto", "mississauga", "brampton", "oakville", "burlington",
-    "milton", "pickering", "ajax", "whitby", "oshawa",
-    // York Region
-    "newmarket", "aurora", "richmond-hill", "markham", "vaughan",
-    "king-city", "stouffville", "georgina", "east-gwillimbury",
-    // Simcoe County
-    "barrie", "orillia", "innisfil", "bradford", "alliston",
-    "collingwood", "wasaga-beach", "midland", "penetanguishene",
-  ];
-
-  // Generate all 150 city × service combinations
+  // The route data is the only source of valid city/service combinations.
   const cityServiceUrls = services.flatMap((service) =>
-    cities.map((city) => `
+    CITY_SLUGS.map((city) => `
   <url>
     <loc>${baseUrl}/${service}/${city}</loc>
     <lastmod>${currentDate}</lastmod>
@@ -94,7 +78,7 @@ export async function GET() {
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  <!-- 150 City × Service SEO Pages -->${cityServiceUrls}
+  <!-- City × service SEO pages -->${cityServiceUrls}
 
 </urlset>`;
 
