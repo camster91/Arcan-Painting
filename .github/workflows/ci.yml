@@ -36,13 +36,11 @@ jobs:
 
       - name: Type check
         run: npm run typecheck
-        continue-on-error: true
 
       - name: Test
         run: npm test -- --run
         env:
           CI: true
-        continue-on-error: true
 
       - name: Build
         run: npm run build
