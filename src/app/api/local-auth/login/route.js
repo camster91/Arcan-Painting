@@ -9,13 +9,7 @@ import { validateBody, schemas } from "@/app/api/utils/validate";
 import { generateSecureToken } from "@/app/api/utils/auth";
 import { ensureSchema } from "@/migrations/001-initial-schema";
 import { generateCsrfToken, makeCsrfCookie } from "@/app/api/utils/csrf";
-
-export function createLoginHeaders(sessionCookie, csrfCookie) {
-  const headers = new Headers({ "Content-Type": "application/json" });
-  headers.append("Set-Cookie", sessionCookie);
-  headers.append("Set-Cookie", csrfCookie);
-  return headers;
-}
+import { createLoginHeaders } from "@/app/api/utils/login-cookies";
 
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [

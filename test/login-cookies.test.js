@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createLoginHeaders } from "@/app/api/local-auth/login/route";
+import { createLoginHeaders } from "@/app/api/utils/login-cookies";
 
 describe("createLoginHeaders", () => {
   it("sends the session and CSRF cookies as separate Set-Cookie headers", () => {
