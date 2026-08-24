@@ -60,14 +60,6 @@ export default defineConfig({
     },
   },
   clearScreen: false,
-  test: {
-    // One worker avoids the intermittent process-channel shutdown seen in
-    // rootless CI after all assertions have completed.
-    pool: 'threads',
-    poolOptions: {
-      threads: { singleThread: true },
-    },
-  },
   server: {
     allowedHosts: true,
     host: '0.0.0.0',

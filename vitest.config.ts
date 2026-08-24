@@ -1,22 +1,26 @@
-import { defineConfig } from 'vitest/config';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import path from "node:path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './test/setupTests.ts',
+  esbuild: {
+    jsx: "automatic",
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "src"),
+      lodash: "lodash-es",
+      "npm:stripe": "stripe",
+      stripe: path.resolve(__dirname, "./src/__create/stripe"),
+    },
+    dedupe: ["react", "react-dom"],
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./test/setupTests.ts"],
+    pool: "threads",
+    poolOptions: {
+      threads: { singleThread: true },
     },
   },
-  esbuild: {
-    jsx: 'automatic',
-  },
-  cacheDir: './.vitest',
 });
