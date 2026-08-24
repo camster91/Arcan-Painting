@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { isRouteErrorResponse, useParams, useRouteError } from "react-router";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import LeadFormPopup from "../../../components/LeadFormPopup";
@@ -508,6 +508,27 @@ export function meta({ params }) {
     { property: "og:image", content: "https://arcanpainting.ca/og-image.png" },
     { tagName: "link", rel: "canonical", href: url },
   ];
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 text-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">404</p>
+          <h1 className="mt-2 text-4xl font-bold text-slate-900">Page Not Found</h1>
+          <p className="mt-4 text-slate-600">The painting service area you requested is not available.</p>
+          <a href="/" className="mt-6 inline-block rounded-full bg-amber-500 px-6 py-3 font-semibold text-slate-900 hover:bg-amber-400">
+            Back to Home
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  throw error;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────────
