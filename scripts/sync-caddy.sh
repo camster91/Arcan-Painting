@@ -93,7 +93,7 @@ trap 'rm -f "$APEX_BLOCK"' EXIT
 # Tighter check: only match lines where the first token is exactly
 # the apex marker, or a hostname starting with "arcan" followed
 # by a comma/space (multi-host apex) and ending with "ca" or ".ca".
-awk -v marker="$APEX MARKER" '
+awk -v marker="$APEX_MARKER" '
   $0 ~ "^arcanpainting\\.ca[, ]" && !in_block { in_block = 1 }
   in_block { print; if ($0 == "}") { in_block = 0; exit } }
 ' "$SRC" > "$APEX_BLOCK"
@@ -136,7 +136,7 @@ cat > "$APEX_IN"
 # half-written state if awk/grep dies mid-run.
 OUT="$(mktemp)"
 
-awk -v marker="$ARCAN MARKER" '
+awk -v marker="$ARCAN_MARKER" '
   # Skip arcan-related site blocks. A site block starts at a line
   # where the first token contains "arcan" (i.e. a line beginning
   # with "arcanpainting.ca", "arcan-painting.ashbi.ca", etc. on

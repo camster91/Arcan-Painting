@@ -32,11 +32,9 @@ npm run build >/dev/null 2>&1 || {
 }
 
 echo "[deploy] bundling source (no node_modules / no dist)…"
-tar -czf "${TMP_TARBALL}" \
-  --exclude=node_modules --exclude=build --exclude=dist \
-  --exclude=.data --exclude=.git --exclude=android \
-  --exclude='*.tar.gz' --exclude='.DS_Store' \
-  -C "$(pwd)" .
+# Archive the requested Git object, not the files checked out in the current
+# working directory. This makes rollbacks and revision-specific releases real.
+git archive --format=tar "${SHA}" | gzip -c > "${TMP_TARBALL}"
 
 echo "[deploy] uploading to ${VPS}:${PROJECT_DIR}/…"
 ssh "${VPS}" "mkdir -p ${PROJECT_DIR}"
@@ -67,14 +65,21 @@ echo "[deploy] swapping container…"
 ssh "${VPS}" "cd ${PROJECT_DIR} && docker compose up -d --force-recreate 2>&1 | tail -3"
 
 echo "[deploy] waiting for /api/health…"
+healthy=false
 for i in {1..30}; do
   if ssh "${VPS}" "cd ${PROJECT_DIR} && docker compose exec -T app wget -q -O - http://127.0.0.1:3000/api/health 2>/dev/null" 2>/dev/null; then
     echo ""
     echo "[deploy] container is healthy"
+    healthy=true
     break
   fi
   sleep 1
 done
+
+if [ "$healthy" != true ]; then
+  echo "[deploy] container did not become healthy after 30 seconds — aborting before proxy sync" >&2
+  exit 1
+fi
 
 echo "[deploy] syncing Caddyfile (idempotent — skipped if unchanged)…"
 bash "$(dirname "$0")/sync-caddy.sh"
