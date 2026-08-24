@@ -299,9 +299,7 @@ export default function ContactSection() {
         />
         <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-lg p-3 mt-3 text-sm">
           <CheckCircle2 size={18} />
-          <span>
-            Your info is secure and only used to contact you about this request.
-          </span>
+          <span>Your details are used to respond to this request. See our <a href="/privacy" className="underline font-medium">Privacy Notice</a>.</span>
         </div>
       </div>
     );

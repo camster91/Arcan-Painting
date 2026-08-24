@@ -99,6 +99,7 @@ export default function Footer() {
                 { href: "#portfolio", label: "Our Work" },
                 { href: "#about", label: "About Us" },
                 { href: "#contact", label: "Get Estimate" },
+                { href: "/privacy", label: "Privacy Notice" },
                 { href: "/admin", label: "Admin" },
               ].map((link, index) => (
                 <li key={index}>
