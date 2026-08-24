@@ -18,9 +18,13 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./test/setupTests.ts"],
-    pool: "threads",
+    pool: "forks",
     poolOptions: {
-      threads: { singleThread: true },
+      // CI runs in a constrained rootless container. A single fork preserves
+      // per-file isolation without using the worker-thread shutdown path that
+      // crashes there after otherwise-successful runs.
+      forks: { singleFork: true, isolate: true },
     },
+    fileParallelism: false,
   },
 });
