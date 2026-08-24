@@ -474,10 +474,22 @@ export const CITY_SLUGS = Object.keys(CITIES);
 
 // ─── Meta ───────────────────────────────────────────────────────────────────────
 
+export function loader({ params }) {
+  if (!SERVICES[params.service] || !CITIES[params.city]) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return null;
+}
+
 export function meta({ params }) {
   const service = SERVICES[params.service];
   const city = CITIES[params.city];
-  if (!service || !city) return [{ title: "Page Not Found | Arcan Painting" }];
+  if (!service || !city) {
+    return [
+      { title: "Page Not Found | Arcan Painting" },
+      { name: "robots", content: "noindex, nofollow" },
+    ];
+  }
 
   const title = `${service.name} in ${city.name}, Ontario | Arcan Painting`;
   const description = `Professional ${service.name.toLowerCase()} services in ${city.name}, ${city.province}. ${service.tagline} — ${service.description}. ${service.warranty}. Free estimates for ${city.name} homeowners.`;
