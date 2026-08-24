@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes, timingSafeEqual } from "crypto";
 import sql from "./sql.js";
 import { ensureSchema } from "../../../migrations/001-initial-schema.js";
 
@@ -17,6 +17,16 @@ export function generateSecureToken() {
 export function isExpiredAt(expiresAt, now = new Date()) {
   const expiresAtMs = new Date(expiresAt).getTime();
   return Number.isNaN(expiresAtMs) || expiresAtMs <= now.getTime();
+}
+
+export function isTrustedInternalRequest(request) {
+  const expectedToken = process.env.INTERNAL_API_TOKEN;
+  const receivedToken = request.headers.get("x-internal-api-token");
+  if (!expectedToken || !receivedToken) return false;
+
+  const expected = Buffer.from(expectedToken);
+  const received = Buffer.from(receivedToken);
+  return expected.length === received.length && timingSafeEqual(expected, received);
 }
 
 // Helper function to parse cookies

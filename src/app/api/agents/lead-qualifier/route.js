@@ -12,10 +12,15 @@ import sql from '../../utils/sql.js';
 import { spawnAgent, parseAgentJSON } from '../openclaw.js';
 import { notifyGerardo } from '../../utils/telegram.js';
 import { logAgentRun, updateAgentRun } from '../store.js';
+import { isTrustedInternalRequest } from '../../utils/auth.js';
 
 const CONTEXT_FILE = 'agents/arcan-lead-qualifier.md';
 
 export async function POST(request) {
+  if (!isTrustedInternalRequest(request)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { leadId, name, email, phone, serviceType, projectDescription, address, preferredContact } = body;

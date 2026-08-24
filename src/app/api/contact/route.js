@@ -13,13 +13,16 @@ import { insertLead } from "../utils/insert-lead.js";
 // /api/agents/lead-qualifier still exists) so when OpenClaw is wired
 // up later, the gating is a one-line revert.
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
-  if (!process.env.OPENCLAW_URL) {
+  if (!process.env.OPENCLAW_URL || !process.env.INTERNAL_API_TOKEN) {
     return; // OpenClaw is not deployed — skip the qualifier agent.
   }
   try {
     await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-api-token': process.env.INTERNAL_API_TOKEN,
+      },
       body: JSON.stringify(leadData),
     });
   } catch (err) {
