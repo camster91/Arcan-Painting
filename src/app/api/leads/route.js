@@ -188,8 +188,6 @@ export async function GET(request) {
       };
       orderBy = `ORDER BY ${sortMap[sort] || "created_at DESC"}`;
     }
-    queryParts.push(orderBy);
-
     if (search) {
       paramCount++;
       queryParts.push(`AND (
@@ -200,6 +198,8 @@ export async function GET(request) {
       )`);
       queryValues.push(`%${search}%`);
     }
+
+    queryParts.push(orderBy);
 
     // Add pagination
     paramCount++;
