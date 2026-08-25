@@ -65,7 +65,7 @@ export default function Header() {
   const [mobileExpanded, setMobileExpanded] = useState(null); // 'services' | 'locations' | region name | null
   const closeBtnRef = useRef(null);
   const dropdownRef = useRef(null);
-  const { mounted } = useTheme();
+  useTheme();
   const themeColors = getThemeColors(false);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function Header() {
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-4 py-3">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Brand */}
           <a href="/" className="block flex-shrink-0">
@@ -143,7 +143,7 @@ export default function Header() {
               loading="eager"
               fetchpriority="high"
               decoding="async"
-              className={`transition-all duration-300 object-contain ${isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"}`}
+              className={`transition-all duration-300 object-contain ${isScrolled ? "w-[112px] h-[62px] sm:w-[145px] sm:h-[75px]" : "w-[120px] h-[66px] sm:w-[170px] sm:h-[95px]"}`}
             />
           </a>
 
@@ -249,13 +249,13 @@ export default function Header() {
             </a>
 
             <button
-              className="font-semibold text-lg px-6 py-3 rounded-lg transition-all duration-300 active:scale-[0.98] shadow-lg hover:shadow-xl group relative overflow-hidden"
+              className="font-semibold text-sm sm:text-lg px-3 sm:px-6 py-2 sm:py-3 rounded-lg transition-all duration-300 active:scale-[0.98] shadow-lg hover:shadow-xl group relative overflow-hidden"
               style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
               onClick={() => setIsLeadFormOpen(true)}
             >
               <span className="relative z-10 inline-flex items-center gap-2">
                 <span className="hidden sm:inline">Get Free Estimate</span>
-                <span className="sm:hidden">Get Quote</span>
+                <span className="sm:hidden whitespace-nowrap">Get Quote</span>
                 <ChevronRight size={18} className="hidden sm:inline" aria-hidden="true" />
               </span>
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(to right, #fbbf24, #f59e0b)" }} />
