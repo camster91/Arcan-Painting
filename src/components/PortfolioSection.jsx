@@ -357,8 +357,7 @@ export default function PortfolioSection() {
             Real Projects, Real Results
           </h2>
           <p className="text-slate-500 text-base md:text-lg max-w-xl mx-auto">
-            Browse real photos from our painting projects across the GTA.
-            Every project is managed by our team — delivering consistent quality on every job.
+            Browse project photos and contact the team to discuss your own space.
           </p>
         </div>
 
@@ -407,13 +406,13 @@ export default function PortfolioSection() {
         {/* CTA */}
         <div className="mt-12 text-center">
           <p className="text-slate-500 text-base mb-4">
-            Like what you see? Get a free, no-obligation estimate.
+            Like what you see? Tell us about your project.
           </p>
           <button
             onClick={() => setIsLeadFormOpen(true)}
             className="btn-primary inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-base rounded-full shadow-lg shadow-amber-200 transition-all duration-200"
           >
-            Get Your Free Quote
+            Discuss Your Project
           </button>
         </div>
       </div>

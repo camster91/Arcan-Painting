@@ -3,10 +3,10 @@ import { MessageCircle, X, Send } from 'lucide-react';
 
 const WELCOME = {
   role: 'assistant',
-  content: "Hi! 👋 Welcome to Arcan Painting — Toronto's trusted painters since 1995. How can I help you today?",
+  content: "Hi! Welcome to Arcan Painting. How can I help you today?",
   showChips: true,
   chips: [
-    { label: "Get a Free Quote", action: "quote" },
+    { label: "Discuss a Project", action: "quote" },
     { label: "📞 Call Us", action: "call" },
     { label: "Talk to a Human", action: "human" },
     { label: "View Our Pricing", action: "pricing" },
@@ -231,7 +231,7 @@ export default function ChatWidget() {
                     onClick={() => { handleSkipEmail(); setMessages([WELCOME]); window.location.href = '#quote'; }}
                     className="px-3 py-2 border border-amber-400 text-amber-600 rounded-full text-xs font-medium hover:bg-amber-500 hover:text-white transition-colors"
                   >
-                    Get a Free Quote
+                    Discuss a Project
                   </button>
                   <a
                     href="tel:+14167272148"
