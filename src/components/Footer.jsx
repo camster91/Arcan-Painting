@@ -1,9 +1,9 @@
-import { Mail, MapPin, Phone, Facebook, Instagram, Linkedin } from "lucide-react";
+import { Mail, Phone, Facebook, Instagram, Linkedin } from "lucide-react";
 import { useTheme, getThemeColors } from "@/utils/useTheme";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const { mounted } = useTheme();
+  useTheme();
   const themeColors = getThemeColors(false); // Always use light mode colors
 
   // Don't render until mounted to avoid hydration mismatch
@@ -39,8 +39,7 @@ export default function Footer() {
               className="text-sm mb-4"
               style={{ color: themeColors.textSecondary }}
             >
-              Professional painting services across the Greater Toronto Area.
-              Family-owned business with generations of craftsmanship.
+              Contact Arcan Painting to discuss your project.
             </p>
             <div className="flex items-center gap-2 mb-2">
               <Mail size={16} style={{ color: themeColors.primary }} />
@@ -73,15 +72,6 @@ export default function Footer() {
               >
                 +1 (416) 727-2148
               </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin size={16} style={{ color: themeColors.primary }} />
-              <span
-                className="text-sm"
-                style={{ color: themeColors.textSecondary }}
-              >
-                Greater Toronto Area
-              </span>
             </div>
           </div>
 
@@ -168,9 +158,7 @@ export default function Footer() {
               className="space-y-1 text-xs"
               style={{ color: themeColors.textMuted }}
             >
-              <div>✓ Licensed & Insured</div>
-              <div>✓ Quality Guaranteed</div>
-              <div>✓ Local Business</div>
+              <div>Project details confirmed with the team</div>
             </div>
           </div>
         </div>

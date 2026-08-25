@@ -11,51 +11,7 @@ const SERVICES_NAV = [
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
 ];
 
-const LOCATIONS_NAV = [
-  {
-    region: "Greater Toronto Area",
-    cities: [
-      { name: "Toronto", slug: "toronto" },
-      { name: "Mississauga", slug: "mississauga" },
-      { name: "Brampton", slug: "brampton" },
-      { name: "Oakville", slug: "oakville" },
-      { name: "Burlington", slug: "burlington" },
-      { name: "Milton", slug: "milton" },
-      { name: "Pickering", slug: "pickering" },
-      { name: "Ajax", slug: "ajax" },
-      { name: "Whitby", slug: "whitby" },
-      { name: "Oshawa", slug: "oshawa" },
-    ],
-  },
-  {
-    region: "York Region",
-    cities: [
-      { name: "Newmarket", slug: "newmarket" },
-      { name: "Aurora", slug: "aurora" },
-      { name: "Richmond Hill", slug: "richmond-hill" },
-      { name: "Markham", slug: "markham" },
-      { name: "Vaughan", slug: "vaughan" },
-      { name: "King City", slug: "king-city" },
-      { name: "Stouffville", slug: "stouffville" },
-      { name: "Georgina", slug: "georgina" },
-      { name: "East Gwillimbury", slug: "east-gwillimbury" },
-    ],
-  },
-  {
-    region: "Simcoe County",
-    cities: [
-      { name: "Barrie", slug: "barrie" },
-      { name: "Orillia", slug: "orillia" },
-      { name: "Innisfil", slug: "innisfil" },
-      { name: "Bradford", slug: "bradford" },
-      { name: "Alliston", slug: "alliston" },
-      { name: "Collingwood", slug: "collingwood" },
-      { name: "Wasaga Beach", slug: "wasaga-beach" },
-      { name: "Midland", slug: "midland" },
-      { name: "Penetanguishene", slug: "penetanguishene" },
-    ],
-  },
-];
+const LOCATIONS_NAV = [];
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
