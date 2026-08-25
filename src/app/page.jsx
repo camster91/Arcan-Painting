@@ -13,14 +13,6 @@ import Footer from "../components/Footer";
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300">
-      {/* Skip to content link for accessibility */}
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
-      >
-        Skip to content
-      </a>
-
       {/* Header - critical path, loaded synchronously */}
       <Header />
 

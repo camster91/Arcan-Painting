@@ -23,7 +23,7 @@ export default function ThankYouPage() {
     <div className="min-h-screen h-dvh overflow-y-auto bg-white">
       <Header />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
+      <main id="main" tabIndex={-1} className="max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
         {/* Thank You Section */}
         <div className="text-center mb-12">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">

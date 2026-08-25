@@ -28,6 +28,7 @@ describe("Header mobile layout", () => {
   it("uses compact mobile dimensions and keeps the primary action on one line", () => {
     render(<Header />);
 
+    expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute("href", "#main");
     expect(screen.getByAltText("Arcan Painting logo"))
       .toHaveClass("w-[120px]", "h-[66px]", "sm:w-[170px]", "sm:h-[95px]");
     expect(screen.getByRole("button", { name: /Discuss Your Project Contact/ }))

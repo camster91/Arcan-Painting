@@ -13,7 +13,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300">
       <Header />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <main id="main" tabIndex={-1} className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Arcan Painting</h1>
         <p className="text-gray-600 mb-8">
           Tell us about your project and a team member can review the details with you.

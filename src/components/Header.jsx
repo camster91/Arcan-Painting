@@ -85,6 +85,12 @@ export default function Header() {
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
+      >
+        Skip to content
+      </a>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Brand */}
