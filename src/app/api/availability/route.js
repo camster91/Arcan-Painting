@@ -11,7 +11,7 @@ export async function GET(request) {
     const end = url.searchParams.get("end");
     const includeAll = url.searchParams.get("all") === "1"; // admin only
 
-    const isAdmin = includeAll && (await requireAdmin(request));
+    const isAdmin = Boolean(includeAll && (await requireAdmin(request)));
 
     // Build query for slots with remaining capacity
     let params = [];
@@ -76,7 +76,20 @@ export async function GET(request) {
       ? slots
       : slots.filter((r) => Number(r.remaining) > 0);
 
-    return Response.json({ success: true, slots: result });
+    // Public scheduling needs a slot identifier, time window, and remaining
+    // capacity only. Keep staff notes and internal capacity/status metadata
+    // within the explicitly-admin `?all=1` response.
+    const publicSlots = result.map(
+      ({ id, slot_date, start_time, end_time, remaining }) => ({
+        id,
+        slot_date,
+        start_time,
+        end_time,
+        remaining,
+      }),
+    );
+
+    return Response.json({ success: true, slots: isAdmin ? result : publicSlots });
   } catch (error) {
     console.error("Error fetching availability:", error);
     return Response.json(

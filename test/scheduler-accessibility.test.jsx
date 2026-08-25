@@ -1,0 +1,52 @@
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import SchedulerSection from "@/components/SchedulerSection";
+
+vi.mock("@tanstack/react-query", () => ({
+  useMutation: () => ({ isLoading: false, mutate: vi.fn() }),
+  useQuery: () => ({
+    data: {
+      slots: [
+        {
+          id: 7,
+          slot_date: "2030-01-02",
+          start_time: "10:00:00",
+          end_time: "11:00:00",
+          remaining: 2,
+        },
+      ],
+    },
+    isLoading: false,
+  }),
+  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+}));
+
+describe("SchedulerSection accessibility", () => {
+  it("connects every booking input to a label and exposes the selected time", () => {
+    render(<SchedulerSection />);
+
+    expect(screen.getByLabelText("Full name")).toHaveAttribute("required");
+    expect(screen.getByLabelText("Email (or Phone)")).toHaveAttribute(
+      "name",
+      "email",
+    );
+    expect(screen.getByLabelText("Phone (or Email)")).toHaveAttribute(
+      "name",
+      "tel",
+    );
+    expect(screen.getByLabelText("Meeting address")).toHaveAttribute(
+      "required",
+    );
+    expect(screen.getByLabelText("Notes (optional)")).toHaveAttribute(
+      "name",
+      "notes",
+    );
+
+    const time = screen.getByRole("button", { name: /10:00 - 11:00.*2 left/i });
+    expect(time).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(time);
+
+    expect(time).toHaveAttribute("aria-pressed", "true");
+  });
+});

@@ -109,7 +109,7 @@ export default function SchedulerSection() {
     },
   });
 
-  const slots = availabilityData?.slots || [];
+  const slots = useMemo(() => availabilityData?.slots ?? [], [availabilityData]);
 
   const bookMutation = useMutation({
     mutationFn: async (payload) => {
@@ -266,6 +266,8 @@ export default function SchedulerSection() {
                       <button
                         key={d.toISOString()}
                         onClick={() => setSelectedDate(d)}
+                        aria-pressed={isActive}
+                        aria-label={`${dow}, ${mon} ${dateNum}`}
                         className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-xl border text-sm transition-all flex-shrink-0 ${
                           isActive
                             ? "bg-amber-500 border-amber-600 text-white shadow"
@@ -313,6 +315,7 @@ export default function SchedulerSection() {
                     <button
                       key={t.id}
                       onClick={() => setSelectedSlotId(t.id)}
+                      aria-pressed={selectedSlotId === t.id}
                       className={`px-4 py-3 rounded-lg border text-base font-medium transition-all ${
                         selectedSlotId === t.id
                           ? "bg-amber-500 border-amber-600 text-white shadow"
@@ -337,9 +340,12 @@ export default function SchedulerSection() {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="text-sm text-slate-700">Full name</label>
+                <label htmlFor="scheduler-name" className="text-sm text-slate-700">Full name</label>
                 <input
+                  id="scheduler-name"
+                  name="name"
                   type="text"
+                  required
                   autoComplete="name"
                   value={form.name}
                   onChange={(e) =>
@@ -350,10 +356,12 @@ export default function SchedulerSection() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">
+                <label htmlFor="scheduler-email" className="text-sm text-slate-700">
                   Email (or Phone)
                 </label>
                 <input
+                  id="scheduler-email"
+                  name="email"
                   type="email"
                   autoComplete="email"
                   value={form.email}
@@ -365,10 +373,12 @@ export default function SchedulerSection() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">
+                <label htmlFor="scheduler-phone" className="text-sm text-slate-700">
                   Phone (or Email)
                 </label>
                 <input
+                  id="scheduler-phone"
+                  name="tel"
                   type="tel"
                   autoComplete="tel"
                   value={form.phone}
@@ -380,11 +390,14 @@ export default function SchedulerSection() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-sm text-slate-700">
+                <label htmlFor="scheduler-address" className="text-sm text-slate-700">
                   Meeting address
                 </label>
                 <input
+                  id="scheduler-address"
+                  name="address"
                   type="text"
+                  required
                   autoComplete="street-address"
                   value={form.address}
                   onChange={(e) =>
@@ -395,10 +408,12 @@ export default function SchedulerSection() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-sm text-slate-700">
+                <label htmlFor="scheduler-notes" className="text-sm text-slate-700">
                   Notes (optional)
                 </label>
                 <textarea
+                  id="scheduler-notes"
+                  name="notes"
                   value={form.notes}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, notes: e.target.value }))
@@ -410,12 +425,12 @@ export default function SchedulerSection() {
               </div>
             </div>
             {error && (
-              <div className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2">
+              <div id="scheduler-form-error" role="alert" className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2">
                 {error}
               </div>
             )}
             {message && (
-              <div className="mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
+              <div role="status" className="mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
                 {message}
               </div>
             )}
