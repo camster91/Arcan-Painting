@@ -122,7 +122,7 @@ function normaliseMetaLead(entry) {
 // but /api/leads POST now requires CSRF + admin session, which a
 // server-to-server call (no cookies) cannot satisfy. Use the shared
 // insertLead helper instead.
-async function saveLead(baseUrl, lead) {
+async function saveLead(lead) {
   return insertLead({
     name: lead.name,
     email: lead.email,
@@ -215,7 +215,7 @@ export async function POST(request) {
       }
 
       try {
-        const saved = await saveLead(baseUrl, lead);
+        const saved = await saveLead(lead);
         results.push({ ok: true, leadId: saved.lead?.id, meta: lead.meta });
         try {
           await notifyGerardo(
