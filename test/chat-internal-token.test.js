@@ -16,6 +16,7 @@ const originalToken = process.env.INTERNAL_API_TOKEN;
 const originalAppUrl = process.env.APP_URL;
 
 afterEach(() => {
+  vi.clearAllMocks();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   if (originalToken === undefined) delete process.env.INTERNAL_API_TOKEN;
@@ -63,5 +64,29 @@ describe("public chat handoff", () => {
     expect(response.status).toBe(200);
     expect(internalFetch).not.toHaveBeenCalled();
     expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("INTERNAL_API_TOKEN"));
+  });
+
+  test("bounds untrusted conversation history before sending it to Gemini", async () => {
+    chatWithGemini.mockResolvedValue("Thanks, we can help.");
+    const history = Array.from({ length: 20 }, (_, index) => ({
+      role: index % 2 === 0 ? "user" : "assistant",
+      content: `${index}:${"x".repeat(3_000)}`,
+    }));
+
+    const response = await POST(new Request("https://arcanpainting.ca/api/chat", {
+      method: "POST",
+      body: JSON.stringify({ message: "Can you help me?", history }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(chatWithGemini).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ content: expect.stringMatching(/^8:x+/) }),
+      ]),
+      "Can you help me?",
+    );
+    const [sentHistory] = chatWithGemini.mock.calls[0];
+    expect(sentHistory).toHaveLength(12);
+    expect(sentHistory.every((entry) => entry.content.length <= 2_000)).toBe(true);
   });
 });

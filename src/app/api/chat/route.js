@@ -3,6 +3,23 @@ import { createRateLimiter } from '../utils/rate-limit.js';
 import { notifyGerardo } from '../utils/telegram.js';
 
 const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 10, prefix: 'chat' });
+const MAX_HISTORY_MESSAGES = 12;
+const MAX_HISTORY_MESSAGE_LENGTH = 2_000;
+
+function normalizeHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  return history.slice(-MAX_HISTORY_MESSAGES).flatMap((entry) => {
+    if (!entry || (entry.role !== "user" && entry.role !== "assistant")) {
+      return [];
+    }
+    if (typeof entry.content !== "string") return [];
+    return [{
+      role: entry.role,
+      content: entry.content.slice(0, MAX_HISTORY_MESSAGE_LENGTH),
+    }];
+  });
+}
 
 // Fire-and-forget: triage new chat messages via AI customer support agent
 async function triggerCustomerSupportAgent(message, baseUrl) {
@@ -52,7 +69,7 @@ export async function POST(request) {
     // const userId = 'gerardo';
     // deductCredits(userId, CREDITS_PER_CHAT, 'chat_message');
 
-    const reply = await chatWithGemini(history || [], message);
+    const reply = await chatWithGemini(normalizeHistory(history), message);
 
     // Fire-and-forget: triage this message for customer support categorization
     // Only triage substantive messages (not one-word greetings)
