@@ -151,6 +151,7 @@ export default function SettingsPage() {
                   Company Name
                 </label>
                 <input
+                  aria-label="Company name"
                   defaultValue={settings.company_name || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_name: e.target.value })
@@ -164,6 +165,7 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="email"
+                  aria-label="Company email"
                   defaultValue={settings.company_email || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_email: e.target.value })
@@ -176,6 +178,7 @@ export default function SettingsPage() {
                   Phone
                 </label>
                 <input
+                  aria-label="Company phone"
                   defaultValue={settings.company_phone || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_phone: e.target.value })

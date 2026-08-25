@@ -326,6 +326,7 @@ function TaskModal({ title, onClose, onSave, teamMembers, initial }) {
                 Title
               </label>
               <input
+                aria-label="Task title"
                 value={form.title}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, title: e.target.value }))

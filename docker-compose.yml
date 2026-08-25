@@ -20,12 +20,13 @@ services:
     image: postgres:16-alpine
     container_name: arcan-db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: arcan
-      POSTGRES_PASSWORD: arcan_dev_password
-      POSTGRES_DB: arcan_painting
+      POSTGRES_USER: ${POSTGRES_USER:-arcan}
+      POSTGRES_DB: ${POSTGRES_DB:-arcan_painting}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - arcan_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -42,13 +43,12 @@ services:
       dockerfile: Dockerfile
     container_name: arcan-app
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: "postgresql://arcan:arcan_dev_password@db:5432/arcan_painting"
-      NEXTAUTH_URL: "http://localhost:3000"
-      NEXTAUTH_SECRET: "dev-only-do-not-use-in-prod"
       # IMPORTANT: NODE_ENV=production is what makes react-router-hono-server
       # use the prebuilt assets/build/server/index.js. With NODE_ENV=development
       # it tries to connect to a Vite HMR server that isn't running, and the

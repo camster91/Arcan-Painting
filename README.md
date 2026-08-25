@@ -12,7 +12,11 @@ Built on React Router 7 + Hono + Postgres.
 
 Requires Docker + Docker Compose. The stack brings up Postgres 16 + the app, waits for the DB to be healthy, runs the idempotent migrations during app startup, and serves the app at <http://localhost:3000>.
 
+Copy `.env.example` to `.env`, set a unique local-only `POSTGRES_PASSWORD`, and update `DATABASE_URL` to use that same password before starting. The database port is bound to localhost only.
+
 ```bash
+cp .env.example .env
+# Edit .env and set POSTGRES_PASSWORD, then:
 docker compose up --build
 ```
 
@@ -31,7 +35,7 @@ Requires Node 20+ and a local Postgres 16.
 
 ```bash
 npm install
-DATABASE_URL="postgresql://arcan:arcan_dev_password@localhost:5432/arcan_painting" npm run dev
+DATABASE_URL="postgresql://arcan:YOUR_LOCAL_PASSWORD@localhost:5432/arcan_painting" npm run dev
 ```
 
 The dev server is on `http://localhost:4000`. With `DATABASE_URL` configured, migrations run at startup and are also safely retried by database-backed API routes.

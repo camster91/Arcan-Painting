@@ -236,6 +236,7 @@ export default function TodayOperationsPage() {
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                 />
                 <input
+                  aria-label="Search today's projects"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search projects, customers, address..."

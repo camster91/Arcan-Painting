@@ -16,6 +16,7 @@ export default function ProjectsFilters({
           />
           <input
             type="text"
+            aria-label="Search projects"
             placeholder="Search projects by name, crew, or customer..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

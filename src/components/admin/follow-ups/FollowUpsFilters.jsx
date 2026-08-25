@@ -19,6 +19,7 @@ export function FollowUpsFilters({
           />
           <input
             type="text"
+            aria-label="Search follow-ups"
             placeholder="Search by customer name, email, or notes..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}

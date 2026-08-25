@@ -335,6 +335,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
               />
               <input
                 type="text"
+                aria-label="Search reports"
                 placeholder="Search reports..."
                 value={filters.search}
                 onChange={(e) =>

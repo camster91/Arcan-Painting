@@ -138,6 +138,7 @@ export default function AdminMessagesPage() {
         <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
           <div className="flex flex-col md:flex-row gap-3">
             <input
+              aria-label="Search messages"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search subject, client, message..."

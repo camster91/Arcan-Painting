@@ -300,6 +300,7 @@ export default function InvoicesPage() {
                 />
                 <input
                   type="text"
+                  aria-label="Search invoices"
                   placeholder="Search invoices by number, title, or client..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

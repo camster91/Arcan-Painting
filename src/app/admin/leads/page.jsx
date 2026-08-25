@@ -407,6 +407,7 @@ export default function LeadsPage() {
                 />
                 <input
                   type="text"
+                  aria-label="Search leads"
                   placeholder="Search by name, email, phone, or service..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

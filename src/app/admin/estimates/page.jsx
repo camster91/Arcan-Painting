@@ -409,6 +409,7 @@ export default function EstimatesPage() {
                     />
                     <input
                       type="text"
+                      aria-label="Search estimates"
                       placeholder="Search estimates by number, project, or client..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}

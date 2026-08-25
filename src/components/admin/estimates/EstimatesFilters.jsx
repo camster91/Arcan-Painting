@@ -17,6 +17,7 @@ export function EstimatesFilters({
           />
           <input
             type="text"
+            aria-label="Search estimates"
             placeholder="Search estimates by title, number, or creator..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}

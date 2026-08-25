@@ -41,6 +41,7 @@ export default function TaskFilters({
             className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <input
+            aria-label="Search tasks"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search tasks..."

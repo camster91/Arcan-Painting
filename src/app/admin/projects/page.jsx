@@ -157,6 +157,7 @@ export default function ProjectsPage() {
                 />
                 <input
                   type="text"
+                  aria-label="Search projects"
                   placeholder="Search projects by name, client, or location..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

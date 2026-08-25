@@ -14,6 +14,7 @@ export function ContractsFilters({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
           <input
             type="text"
+            aria-label="Search contracts"
             placeholder="Search contracts..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
