@@ -98,23 +98,49 @@ export async function insertLead({
     throw new Error("Either email or phone is required");
   }
 
-  const result = await sql`
-    INSERT INTO leads (
-      name, email, phone, service_type, project_description,
-      preferred_contact, address, status, lead_source, meta_lead_id
-    ) VALUES (
-      ${_name},
-      ${_email},
-      ${_phone},
-      ${_serviceType},
-      ${_projectDescription},
-      ${_preferredContact},
-      ${_address},
-      'new',
-      ${_leadSource},
-      ${_metaLeadId}
-    )
-    RETURNING id
-  `;
-  return result[0]?.id ?? null;
+  return sql.transaction(async (tx) => {
+    const result = await tx`
+      INSERT INTO leads (
+        name, email, phone, service_type, project_description,
+        preferred_contact, address, status, lead_source, meta_lead_id
+      ) VALUES (
+        ${_name},
+        ${_email},
+        ${_phone},
+        ${_serviceType},
+        ${_projectDescription},
+        ${_preferredContact},
+        ${_address},
+        'new',
+        ${_leadSource},
+        ${_metaLeadId}
+      )
+      RETURNING id
+    `;
+    const leadId = result[0]?.id ?? null;
+    if (!leadId) return null;
+
+    // This is the durable CRM signal for a new inquiry. External email and
+    // Telegram delivery are optional integrations, so they must not be the
+    // sole way the business learns about a saved lead.
+    await tx`
+      INSERT INTO notifications (
+        type, title, message, email, related_id, related_type,
+        is_read, send_email, data, created_at
+      ) VALUES (
+        'new_lead',
+        'New lead received',
+        ${`${_name} requested ${_serviceType || "a painting estimate"}.`},
+        ${_email || null},
+        ${leadId},
+        'lead',
+        false,
+        false,
+        ${JSON.stringify({ source: _leadSource })}::jsonb,
+        CURRENT_TIMESTAMP
+      )
+    `;
+
+    return leadId;
+  });
 }
