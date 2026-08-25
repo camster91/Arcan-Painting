@@ -3,15 +3,20 @@
 #
 # Stage 1 (build):  full devDeps + run `npm run build` -> build/{client,server}
 # Stage 2 (deps):   prodDeps only (so the runtime image has argon2, pg, etc. but no Vite)
-# Stage 3 (runtime): node:20-alpine, non-root, just the bundled build + prodDeps.
+# Stage 3 (runtime): node:22.20.0-alpine, non-root, just the bundled build + prodDeps.
 #
-# Why node:20 instead of node:22:  the Anythings-template Dockerfile was on 22.
-# 20 LTS is what `react-router-hono-server` is tested against; 22 works too but
-# has been a source of subtle ESM import edge cases on Alpine.
+# Why node:22: the locked server dependency requires Node 22.20 or newer.
+# The locked server dependency requires Node 22.20 or newer. Keep build and
+# runtime on the same supported LTS line so native dependencies and the server
+# execute against the same ABI.
 
 # ── Stage 1: build ───────────────────────────────────────────────────────────
-FROM node:20-alpine AS build
+FROM node:22.20.0-alpine AS build
 WORKDIR /app
+
+# argon2 is compiled during `npm ci` when a matching prebuild is unavailable.
+# Keep these tools in the build stage only; the runtime image stays minimal.
+RUN apk add --no-cache python3 make g++
 
 # Install with devDeps so we have Vite, TypeScript, etc.
 # --legacy-peer-deps: react-router-hono-server@2.26.0 peers @types/react@19,
@@ -32,7 +37,7 @@ RUN npm run build
 RUN npm prune --omit=dev
 
 # ── Stage 2: runtime ──────────────────────────────────────────────────────────
-FROM node:20-alpine AS runtime
+FROM node:22.20.0-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production \
