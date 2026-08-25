@@ -2,8 +2,9 @@
 // are not painter-scoped. Keep the policy at the route-registration boundary
 // so every method and nested resource receives the same role protection.
 const ADMIN_ONLY_PREFIXES = [
-  "/admin/audit-logs",
-  "/admin/gallery",
+  // Every route in this namespace is an administrative control or exposes
+  // company-wide data. Enforce the role gate before its own handler runs.
+  "/admin",
   "/contract-templates",
   "/contracts",
   "/invoices",
