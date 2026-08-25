@@ -3,7 +3,7 @@ import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { sendLeadEvent } from "../utils/meta-capi.js";
-import { insertLead } from "../utils/insert-lead.js";
+import { insertLead, validateLeadInput } from "../utils/insert-lead.js";
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking).
 // Gated on OPENCLAW_URL being set — when the local OpenClaw instance is
@@ -131,6 +131,16 @@ export async function POST(request) {
         { status: 400 },
       );
     }
+
+    const inputError = validateLeadInput({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      serviceType: body.serviceType,
+      projectDescription: body.projectDescription,
+      address: body.address,
+    });
+    if (inputError) return Response.json({ error: inputError }, { status: 400 });
 
     let leadId = null;
     let leadSaved = false;

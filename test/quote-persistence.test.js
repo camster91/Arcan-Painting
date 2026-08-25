@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const insertLead = vi.fn();
 const notifyGerardo = vi.fn();
 
-vi.mock("@/app/api/utils/insert-lead", () => ({ insertLead }));
+vi.mock("@/app/api/utils/insert-lead", () => ({
+  insertLead,
+  validateLeadInput: (input) => input.projectDescription.length > 4_000 ? "Project description must be 4000 characters or fewer" : null,
+}));
 vi.mock("@/app/api/utils/telegram", () => ({
   notifyGerardo,
   formatQuoteNotification: vi.fn(() => "quote notification"),
@@ -35,6 +38,23 @@ describe("POST /api/quote", () => {
     }));
 
     expect(response.status).toBe(503);
+    expect(notifyGerardo).not.toHaveBeenCalled();
+  });
+
+  it("rejects oversized quote details before CRM or notification side effects", async () => {
+    const response = await POST(new Request("https://example.test/api/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        email: "customer@example.test",
+        serviceType: "interior",
+        details: "x".repeat(4_001),
+      }),
+    }));
+
+    expect(response.status).toBe(400);
+    expect(insertLead).not.toHaveBeenCalled();
     expect(notifyGerardo).not.toHaveBeenCalled();
   });
 });

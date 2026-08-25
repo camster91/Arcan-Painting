@@ -4,7 +4,10 @@ const insertLead = vi.fn();
 const sendGmailEmail = vi.fn();
 const notifyGerardo = vi.fn();
 
-vi.mock("@/app/api/utils/insert-lead", () => ({ insertLead }));
+vi.mock("@/app/api/utils/insert-lead", () => ({
+  insertLead,
+  validateLeadInput: (input) => input.name.length > 255 ? "Name must be 255 characters or fewer" : null,
+}));
 vi.mock("@/lib/google", () => ({ sendGmailEmail }));
 vi.mock("@/app/api/utils/telegram", () => ({
   notifyGerardo,
@@ -38,6 +41,23 @@ describe("POST /api/contact", () => {
     }));
 
     expect(response.status).toBe(503);
+    expect(sendGmailEmail).not.toHaveBeenCalled();
+    expect(notifyGerardo).not.toHaveBeenCalled();
+  });
+
+  it("rejects oversized public input before CRM or notification side effects", async () => {
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "x".repeat(256),
+        email: "customer@example.test",
+        serviceType: "interior",
+      }),
+    }));
+
+    expect(response.status).toBe(400);
+    expect(insertLead).not.toHaveBeenCalled();
     expect(sendGmailEmail).not.toHaveBeenCalled();
     expect(notifyGerardo).not.toHaveBeenCalled();
   });

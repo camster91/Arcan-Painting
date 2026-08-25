@@ -1,7 +1,7 @@
 import { notifyGerardo, formatQuoteNotification } from '../utils/telegram.js';
 import { chatWithGemini } from '../utils/gemini.js';
 import { createRateLimiter } from '../utils/rate-limit.js';
-import { insertLead } from '../utils/insert-lead.js';
+import { insertLead, validateLeadInput } from '../utils/insert-lead.js';
 
 const quoteLimiter = createRateLimiter({ windowMs: 60_000, max: 5, prefix: 'quote' });
 
@@ -21,6 +21,22 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
+    const projectDescription = [
+      details,
+      scope && `Scope: ${scope}`,
+      timeline && `Timeline: ${timeline}`,
+      budget && `Budget: ${budget}`,
+    ].filter(Boolean).join('\n');
+    const inputError = validateLeadInput({
+      name,
+      email,
+      phone,
+      serviceType,
+      projectDescription,
+      address,
+    });
+    if (inputError) return Response.json({ error: inputError }, { status: 400 });
+
     // Save through the server-only helper. The CRM HTTP endpoint is protected
     // for admin users and must not be used by a public quote submission.
     try {
@@ -29,12 +45,7 @@ export async function POST(request) {
         email,
         phone,
         serviceType,
-        projectDescription: [
-          details,
-          scope && `Scope: ${scope}`,
-          timeline && `Timeline: ${timeline}`,
-          budget && `Budget: ${budget}`,
-        ].filter(Boolean).join('\n'),
+        projectDescription,
         preferredContact: email ? 'email' : 'phone',
         address,
         leadSource: 'website_quote',
