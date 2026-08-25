@@ -42,18 +42,20 @@ The dev server is on `http://localhost:4000`. With `DATABASE_URL` configured, mi
 
 ### First-time setup
 
-After the stack is up and migrations have run, seed an admin user. The `migrate-passwords.js` boot script re-hashes plain-text passwords automatically, so the simplest seed is plain text (the script picks it up on next boot):
+After the stack is up and migrations have run, create a **unique local-only** admin password. Never use a shared password, commit it, or seed production from this command:
 
 ```bash
+read -s -p "Local admin password: " ARCAN_LOCAL_ADMIN_PASSWORD
 docker compose exec db psql -U arcan -d arcan_painting -c "
 INSERT INTO auth_users (username, password, role, password_is_hashed)
 VALUES (
   'owner@arcan.local',
-  'change-me-now',
+  :'admin_password',
   'owner',
   false
 );
-"
+" -v admin_password="$ARCAN_LOCAL_ADMIN_PASSWORD"
+unset ARCAN_LOCAL_ADMIN_PASSWORD
 ```
 
 Then trigger the re-hash by restarting the app, or wait for the lazy `ensureSchema()` call on the first `/api/*` request:
@@ -62,7 +64,7 @@ Then trigger the re-hash by restarting the app, or wait for the lazy `ensureSche
 docker compose restart app
 ```
 
-After that, log in at <http://localhost:3000/admin/login> with `owner@arcan.local` / `change-me-now`. **Change the password immediately** — the re-hash script just upgrades the column, it doesn't enforce first-login password change.
+After that, log in at <http://localhost:3000/admin/login> with the local-only password you chose. The bootstrap password is re-hashed on the next app request; change it immediately if the local environment is shared.
 
 ### Verifying the stack
 

@@ -110,13 +110,9 @@ The yup `lead` schema accepted only `service_type`, `project_description`, `pref
 
 ## What got deployed to the VPS (2026-06-12 20:18 EDT)
 
-**Live URL:** `https://arcanpainting.ca` (Caddy reverse proxy → `127.0.0.1:3000`).
+**Live URL:** `https://arcanpainting.ca` (Caddy reverse proxy → private app port).
 
-**Container state on VPS (187.77.26.99):**
-- `arcan-painting_default` network with two services
-- `arcan-db` (postgres:16-alpine, port 5432, healthy) — fresh volume, 54 tables after migrations
-- `arcan-app` (multi-stage build, port 3000, healthy) — running with `NODE_ENV=production`
-- Admin user `owner@arcan.local` seeded (password `test1234`)
+**Historic deployment record:** The prior server address, container details, and bootstrap credential have been redacted. Treat all historical credentials as compromised and rotate them before any release. Current production state must be verified through the release gate, not inferred from this historical note.
 
 **Smoke test against arcanpainting.ca:**
 
@@ -216,27 +212,9 @@ Two distinct bugs were stacked:
 
 **Out of scope (intentionally not changed):** `src/client-integrations/react-google-maps.jsx` — different integration, uses `@vis.gl/react-google-maps` SDK for the public map widget, not Maton.
 
-## Deploy steps (for next time)
+## Deployment guidance
 
-```bash
-# Local: build, tar, ship
-cd ~/repos/arcan-painting-src
-tar czf - --exclude='node_modules' --exclude='build' --exclude='.react-router' \
-  --exclude='.git' --exclude='public/gallery/{images,thumbnails}' --exclude='public/sw.js' \
-  --exclude='.env' --exclude='*.log' . \
-  | ssh root@187.77.26.99 "cd /opt/arcan-painting && tar xzf -"
-
-# VPS: rebuild and start
-ssh root@187.77.26.99 'cd /opt/arcan-painting && docker compose down -v && docker compose up -d --build'
-
-# Seed admin user
-ssh root@187.77.26.99 "docker exec arcan-db psql -U arcan -d arcan_painting -c \
-  \"INSERT INTO auth_users (username, password, role, password_is_hashed) \
-   VALUES ('owner@arcan.local', '\$argon2id\$v=19\$m=65536,t=3,p=4\$GYJiMCM8uGg2dHPz9c9GPg\$qiQkwDFF+xTaMrz8DvGsKdtSerUAAQVvXhkXtLTQ64w', 'owner', true);\""
-
-# Verify
-curl https://arcanpainting.ca/api/health   # should be 200
-```
+The direct-server commands previously recorded here were removed: they contained historical infrastructure details, a bootstrap credential, and a destructive database-volume command. Deploy only through the reviewed CI/CD path after the release checklist is approved. Record the deployed revision, rollback target, health result, ingress/header verification, and authenticated CRM smoke result in the release issue.
 
 ## Removed packages — what you lost
 

@@ -47,13 +47,14 @@ Requires Node 20+ and a local Postgres 16 (Homebrew: `brew install postgresql@16
 # One-time DB setup
 createdb arcan_painting
 
-# Seed an admin user
-psql -d arcan_painting -c "
+# Create a unique local-only admin. Never use a documented/default credential
+# and never run a direct database seed against production.
+read -s -p "Local admin password: " ARCAN_LOCAL_ADMIN_PASSWORD
+psql -d arcan_painting -v admin_password="$ARCAN_LOCAL_ADMIN_PASSWORD" -c "
   INSERT INTO auth_users (username, password, role, password_is_hashed)
-  VALUES ('owner@arcan.local',
-          '\$argon2id\$v=19\$m=65536,t=3,p=4\$GYJiMCM8uGg2dHPz9c9GPg\$qiQkwDFF+xTaMrz8DvGsKdtSerUAAQVvXhkXtLTQ64w',
-          'owner', true);
+  VALUES ('owner@arcan.local', :'admin_password', 'owner', false);
 "
+unset ARCAN_LOCAL_ADMIN_PASSWORD
 
 # Start the dev server
 DATABASE_URL="postgresql://$(whoami)@localhost:5432/arcan_painting" \
