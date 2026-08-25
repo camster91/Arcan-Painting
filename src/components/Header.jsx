@@ -220,8 +220,7 @@ export default function Header() {
             {/* Regular nav items */}
             {[
               { label: "Portfolio", href: "#portfolio" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "About", href: "#about" },
+              { label: "FAQ", href: "#faq" },
             ].map((item) => (
               <button
                 key={item.href}
@@ -374,8 +373,7 @@ export default function Header() {
 
                 {[
                   { label: "Portfolio", href: "#portfolio" },
-                  { label: "Pricing", href: "#pricing" },
-                  { label: "About", href: "#about" },
+                  { label: "FAQ", href: "#faq" },
                 ].map((item) => (
                   <a
                     key={item.href}

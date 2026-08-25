@@ -4,15 +4,6 @@ import { motion, useScroll, useTransform, useReducedMotion } from "motion/react"
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
-// Animated counter component
-function AnimatedCounter({ target, suffix = "" }) {
-  return (
-    <span>
-      {target}{suffix}
-    </span>
-  );
-}
-
 // GA event helper
 function trackEvent(eventName, params = {}) {
   if (typeof window !== "undefined" && window.gtag) {
@@ -263,99 +254,18 @@ export default function HeroSection() {
               </motion.button>
             </div>
 
-            {/* Social Proof / Trust Bar */}
+            {/* Keep the primary conversion path factual until client proof
+                points have been verified for publication. */}
             <div
               className="mt-10 pt-8 border-t"
               style={{ borderColor: "rgba(255,255,255,0.1)" }}
             >
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8">
-                {/* Happy Clients Counter */}
-                <div className="flex flex-col items-center lg:items-start">
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: "#fbbf24" }}
-                  >
-                    <AnimatedCounter target={500} suffix="+" />
-                  </span>
-                  <span
-                    className="text-xs font-medium mt-0.5"
-                    style={{ color: themeColors.textSecondary }}
-                  >
-                    Happy Clients
-                  </span>
-                </div>
-
-                {/* Divider */}
-                <div
-                  className="hidden sm:block w-px h-10 self-center"
-                  style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
-                />
-
-                {/* Star Rating */}
-                <div className="flex flex-col items-center lg:items-start">
-                  <div className="flex items-center gap-1">
-                    <span
-                      className="text-2xl font-bold"
-                      style={{ color: "#fbbf24" }}
-                    >
-                      <AnimatedCounter target={5} suffix=".0" />
-                    </span>
-                    <span style={{ color: "#fbbf24", fontSize: "1.2rem" }}>★</span>
-                  </div>
-                  <span
-                    className="text-xs font-medium mt-0.5"
-                    style={{ color: themeColors.textSecondary }}
-                  >
-                    Rating on Google
-                  </span>
-                </div>
-
-                {/* Divider */}
-                <div
-                  className="hidden sm:block w-px h-10 self-center"
-                  style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
-                />
-
-                {/* Years */}
-                <div className="flex flex-col items-center lg:items-start">
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: "#fbbf24" }}
-                  >
-                    <AnimatedCounter target={25} suffix="+" />
-                  </span>
-                  <span
-                    className="text-xs font-medium mt-0.5"
-                    style={{ color: themeColors.textSecondary }}
-                  >
-                    Years Experience
-                  </span>
-                </div>
-              </div>
-
-              {/* Trust badges row */}
-              <div
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-5"
+              <p
+                className="text-sm sm:text-base"
+                style={{ color: themeColors.textSecondary }}
               >
-                <span
-                  className="text-sm flex items-center gap-1.5"
-                  style={{ color: themeColors.textSecondary }}
-                >
-                  <span style={{ color: "#4ade80" }}>✓</span> Fully Insured & Licensed
-                </span>
-                <span
-                  className="text-sm flex items-center gap-1.5"
-                  style={{ color: themeColors.textSecondary }}
-                >
-                  <span style={{ color: "#4ade80" }}>✓</span> 2-Year Warranty
-                </span>
-                <span
-                  className="text-sm flex items-center gap-1.5"
-                  style={{ color: themeColors.textSecondary }}
-                >
-                  <span style={{ color: "#4ade80" }}>✓</span> GTA-Wide Service
-                </span>
-              </div>
+                Tell us about your space and we&apos;ll help you plan the next step.
+              </p>
             </div>
           </div>
 

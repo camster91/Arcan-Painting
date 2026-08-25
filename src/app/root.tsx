@@ -269,46 +269,16 @@ export function Layout({ children }: { children: ReactNode }) {
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Arcan Painting",
-              "description": "Professional interior and exterior painting services for residential and commercial properties in Toronto and the GTA. Licensed, insured, and free estimates.",
+              "description": "Interior, exterior, and commercial painting services for residential and commercial projects in Toronto and the Greater Toronto Area.",
               "url": "https://arcanpainting.ca",
-              "telephone": "+1 (416) 727-2148",
               "email": "info@arcanpainting.ca",
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Toronto",
-                "addressRegion": "ON",
-                "addressCountry": "CA"
-              },
-              "areaServed": [
-                "Toronto", "Scarborough", "North York", "Etobicoke",
-                "Mississauga", "Brampton", "Vaughan", "Markham",
-                "Richmond Hill", "Pickering", "Ajax", "Oshawa"
-              ],
-              "image": "https://arcanpainting.ca/logo.png",
-              "priceRange": "$$",
-              "openingHoursSpecification": [
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                  "opens": "08:00",
-                  "closes": "18:00"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": ["Saturday"],
-                  "opens": "09:00",
-                  "closes": "16:00"
-                }
-              ],
-              "sameAs": [
-                "https://arcanpainting.ca"
-              ]
+              "image": "https://arcanpainting.ca/logo.png"
             })
           }}
         />
         {/* Static OG meta tags for social crawlers (SSR-rendered) */}
-        <meta property="og:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
-        <meta property="og:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
+        <meta property="og:title" content="Arcan Painting | Painting Services in Toronto & the GTA" />
+        <meta property="og:description" content="Interior, exterior, and commercial painting services for residential and commercial projects. Request an estimate from Arcan Painting." />
         <meta property="og:url" content="https://arcanpainting.ca" />
         <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
@@ -320,8 +290,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@arcanpainting" />
-        <meta name="twitter:title" content="Arcan Painting - Professional Toronto Painting Services | GTA's Trusted Painters" />
-        <meta name="twitter:description" content="Transform your Toronto space with professional painting services. Family legacy of quality craftsmanship in the GTA, licensed & insured. Get your free estimate today." />
+        <meta name="twitter:title" content="Arcan Painting | Painting Services in Toronto & the GTA" />
+        <meta name="twitter:description" content="Interior, exterior, and commercial painting services for residential and commercial projects. Request an estimate from Arcan Painting." />
         <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
         <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         {/* SEO: Robots meta */}
@@ -345,21 +315,11 @@ export function Layout({ children }: { children: ReactNode }) {
           className="sr-only"
           aria-hidden="true"
         >
-          <h1>Professional Painting Services in Toronto &amp; the GTA — Arcan Painting</h1>
+          <h1>Painting Services in Toronto &amp; the GTA — Arcan Painting</h1>
 
-          <p>Arcan Painting is Toronto's trusted painting contractor, proudly serving homeowners and businesses across the Greater Toronto Area. With over 15 years of hands-on experience, our family-owned team delivers exceptional interior and exterior painting results — on time, on budget, and backed by our 2-year satisfaction guarantee.</p>
+          <p>Arcan Painting offers interior, exterior, commercial painting, wallpaper services, and specialty finishes for residential and commercial projects.</p>
 
-          <p>From a single accent wall to a complete commercial repaint, we treat every project with the same care, precision, and pride that has made us one of the GTA's most recommended painting companies. Whether you need fresh colour for a bedroom, weather-resistant protection for your home's exterior, or a professional finish for your office space, Arcan Painting is the team you can count on.</p>
-
-          <h2>Why Choose Arcan Painting for Your Toronto Painting Project?</h2>
-
-          <ul>
-            <li><strong>15+ Years of Experience</strong></li>
-            <li><strong>Licensed and Fully Insured</strong></li>
-            <li><strong>Premium Materials Only</strong> — Sherwin-Williams and Benjamin Moore</li>
-            <li><strong>Guaranteed Satisfaction</strong> — 2-year interior / 5-year exterior warranty</li>
-            <li><strong>500+ Happy Clients</strong></li>
-          </ul>
+          <p>Tell us about your project to request an estimate and discuss the right scope, materials, and schedule.</p>
 
           <h2>Our Painting Services</h2>
 
@@ -380,11 +340,11 @@ export function Layout({ children }: { children: ReactNode }) {
 
           <h2>Serving Toronto &amp; the Greater Toronto Area</h2>
 
-          <p>Toronto, Mississauga, Brampton, Markham, Vaughan, Richmond Hill, Oakville, Burlington, Pickering, Ajax, Whitby, Oshawa, Newmarket, Aurora and more. <a href="/contact">Contact us</a> for a free estimate.</p>
+          <p><a href="/contact">Contact us</a> to discuss availability in your area.</p>
 
           <h2>Get a Free Painting Estimate in Toronto</h2>
 
-          <p>Arcan Painting — Toronto's trusted family painting company. <a href="#quote">Get your free estimate today.</a></p>
+          <p>Arcan Painting. <a href="#quote">Request an estimate.</a></p>
         </div>
 
         <ErrorBoundaryWrapper>

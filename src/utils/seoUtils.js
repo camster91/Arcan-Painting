@@ -5,7 +5,7 @@ export const seoConfig = {
   defaultTitle:
     "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
   defaultDescription:
-    "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
+    "Interior, exterior, and commercial painting services for residential and commercial projects in Toronto and the Greater Toronto Area. Request an estimate from Arcan Painting.",
   siteUrl: "https://arcanpainting.ca",
   logoUrl: "https://arcanpainting.ca/logo.png",
   socialImageUrl: "https://arcanpainting.ca/logo.png",
@@ -145,38 +145,10 @@ export function generateLocalBusinessSchema() {
     logo: seoConfig.logoUrl,
     image: seoConfig.socialImageUrl,
     email: seoConfig.businessEmail,
-    address: {
-      "@type": "PostalAddress",
-      ...seoConfig.businessAddress,
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: seoConfig.coordinates.latitude,
-      longitude: seoConfig.coordinates.longitude,
-    },
-    areaServed: seoConfig.serviceAreas.map((area) => ({
-      "@type": "City",
-      name: area,
-      addressRegion: "ON",
-      addressCountry: "CA",
-    })),
-    serviceArea: {
-      "@type": "GeoCircle",
-      geoMidpoint: {
-        "@type": "GeoCoordinates",
-        latitude: seoConfig.coordinates.latitude,
-        longitude: seoConfig.coordinates.longitude,
-      },
-      geoRadius: "120000", // 120km radius — covers GTA, York Region, and Simcoe County
-    },
-    priceRange: "$$",
-    openingHours: "Mo-Fr 07:00-18:00, Sa 08:00-16:00",
-    currenciesAccepted: "CAD",
-    paymentAccepted: ["Cash", "Check", "Credit Card", "Bank Transfer"],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Painting Services",
-      itemListElement: seoConfig.services.map((service, index) => ({
+      itemListElement: seoConfig.services.map((service) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
@@ -188,15 +160,6 @@ export function generateLocalBusinessSchema() {
         },
       })),
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "18",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-    ],
   };
 }
 
