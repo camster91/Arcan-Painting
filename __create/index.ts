@@ -13,8 +13,7 @@ import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
 import { requestId } from 'hono/request-id';
 import { createHonoServer } from 'react-router-hono-server/node';
-import { serializeError } from 'serialize-error';
-import { getHTMLForErrorPage } from './get-html-for-error-page';
+import { getSafeErrorResponse } from './error-response';
 import { API_BASENAME, api } from './route-builder';
 
 const als = new AsyncLocalStorage<{ requestId: string }>();
@@ -57,16 +56,7 @@ app.onError(async (err, c) => {
     // Sentry not available — continue
   }
 
-  if (c.req.method !== 'GET') {
-    return c.json(
-      {
-        error: 'An error occurred in your app',
-        details: serializeError(err),
-      },
-      500
-    );
-  }
-  return c.html(getHTMLForErrorPage(err), 200);
+  return getSafeErrorResponse(c);
 });
 
 if (process.env.CORS_ORIGINS) {
