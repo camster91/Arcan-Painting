@@ -81,6 +81,20 @@ import type { Route } from './+types/root';
 
 export const links = () => [];
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+
+  if (!url.pathname.startsWith('/admin')) {
+    return null;
+  }
+
+  // Routes are generated directly from page modules, so admin/layout.jsx is
+  // not a route boundary. Keep this server-side guard at the root instead so
+  // every nested admin URL is protected before its page module renders.
+  const { protectAdminRoute } = await import('./admin/route-guard.server.js');
+  return protectAdminRoute(request);
+}
+
 function SharedErrorBoundary({
   isOpen,
   children,

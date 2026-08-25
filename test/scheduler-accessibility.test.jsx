@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import SchedulerSection from "@/components/SchedulerSection";
 
 vi.mock("@tanstack/react-query", () => ({
@@ -22,6 +23,13 @@ vi.mock("@tanstack/react-query", () => ({
 }));
 
 describe("SchedulerSection accessibility", () => {
+  it("uses the same empty scheduler shell during server rendering", () => {
+    const markup = renderToString(<SchedulerSection />);
+
+    expect(markup).toContain("available days");
+    expect(markup).not.toMatch(/>(Mon|Tue|Wed|Thu|Fri)</);
+  });
+
   it("connects every booking input to a label and exposes the selected time", () => {
     render(<SchedulerSection />);
 

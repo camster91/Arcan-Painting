@@ -14,7 +14,7 @@ export default function QuotePage() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300">
       <Header />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <main id="main" tabIndex={-1} className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <QuoteCalculatorSection />
       </main>
       <Footer />

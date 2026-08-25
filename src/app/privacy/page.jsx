@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Header />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-28 pb-16">
+      <main id="main" tabIndex={-1} className="max-w-3xl mx-auto px-4 sm:px-6 pt-28 pb-16">
         <h1 className="text-4xl font-bold tracking-tight">Privacy Notice</h1>
         <p className="mt-6 text-lg text-slate-700 leading-relaxed">
           This notice explains how Arcan Painting uses information submitted through this website.

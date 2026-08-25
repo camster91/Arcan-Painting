@@ -8,7 +8,7 @@ export default function ServiceInquiryPage({ serviceName }) {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main>
+      <main id="main" tabIndex={-1}>
         <section className="bg-slate-900 py-24 text-white">
           <div className="max-w-5xl mx-auto px-6">
             <p className="text-amber-400 font-semibold tracking-wide uppercase text-sm mb-4">Arcan Painting</p>

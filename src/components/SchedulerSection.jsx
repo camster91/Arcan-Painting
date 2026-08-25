@@ -6,21 +6,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function SchedulerSection() {
   const queryClient = useQueryClient();
-  // -- state
-  // UPDATED: default to next available weekday (no same-day booking)
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 1); // start from tomorrow
-    // skip weekends
-    while (d.getDay() === 0 || d.getDay() === 6) {
-      d.setDate(d.getDate() + 1);
-    }
-    return d;
-  });
+  // Dates and viewport width are browser-specific. Initializing them after
+  // hydration keeps the server and first client render identical.
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [dateStrip, setDateStrip] = useState([]);
+  const [daysPerPage, setDaysPerPage] = useState(14);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [datePage, setDatePage] = useState(0);
-  const DAYS_PER_PAGE = typeof window !== "undefined" && window.innerWidth < 640 ? 7 : 14;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -44,6 +36,29 @@ export default function SchedulerSection() {
     }));
   }, []);
 
+  useEffect(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() + 1);
+
+    const days = [];
+    for (let i = 0; i < 90; i++) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+      if (date.getDay() !== 0 && date.getDay() !== 6) {
+        days.push(date);
+      }
+    }
+
+    const firstAvailableDay = days[0] || null;
+    const updateDaysPerPage = () => setDaysPerPage(window.innerWidth < 640 ? 7 : 14);
+    setSelectedDate(firstAvailableDay);
+    setDateStrip(days);
+    updateDaysPerPage();
+    window.addEventListener("resize", updateDaysPerPage);
+    return () => window.removeEventListener("resize", updateDaysPerPage);
+  }, []);
+
   // --- helpers
   const toISODate = useCallback((dateObj) => {
     if (!dateObj) return null;
@@ -56,22 +71,6 @@ export default function SchedulerSection() {
     () => toISODate(selectedDate),
     [selectedDate, toISODate],
   );
-
-  // Build a 90-day weekday strip (Mon–Fri), starting tomorrow to avoid same-day bookings
-  const dateStrip = useMemo(() => {
-    const days = [];
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    start.setDate(start.getDate() + 1); // start from tomorrow
-    for (let i = 0; i < 90; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      const day = d.getDay(); // 0 Sun .. 6 Sat
-      if (day === 0 || day === 6) continue; // skip weekends
-      days.push(d);
-    }
-    return days;
-  }, []);
 
   const quickPick = useCallback((type) => {
     const base = new Date();
@@ -256,7 +255,7 @@ export default function SchedulerSection() {
 
                 {/* Days */}
                 {dateStrip
-                  .slice(datePage * DAYS_PER_PAGE, (datePage + 1) * DAYS_PER_PAGE)
+                  .slice(datePage * daysPerPage, (datePage + 1) * daysPerPage)
                   .map((d) => {
                     const isActive = formattedDate === toISODate(d);
                     const dow = dayNames[d.getDay()];
@@ -286,7 +285,7 @@ export default function SchedulerSection() {
                 {/* Next */}
                 <button
                   onClick={() => setDatePage(datePage + 1)}
-                  disabled={(datePage + 1) * DAYS_PER_PAGE >= dateStrip.length}
+                  disabled={(datePage + 1) * daysPerPage >= dateStrip.length}
                   className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="More days"
                 >
@@ -295,7 +294,7 @@ export default function SchedulerSection() {
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-1 text-center">
-              {Math.min((datePage + 1) * DAYS_PER_PAGE, dateStrip.length)} of {dateStrip.length} available days
+              {Math.min((datePage + 1) * daysPerPage, dateStrip.length)} of {dateStrip.length} available days
             </p>
 
             {/* Times for selected date */}
