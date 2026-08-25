@@ -152,7 +152,7 @@ export default function HeroSection() {
                 className="w-2 h-2 rounded-full animate-pulse"
                 style={{ backgroundColor: "#fbbf24" }}
               />
-              Toronto's Trusted Painting Experts
+              Project conversations start here
             </div>
 
             {/* Main Headline */}
@@ -180,9 +180,8 @@ export default function HeroSection() {
               className="text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
               style={{ color: themeColors.textSecondary }}
             >
-              From residential homes to commercial spaces across the GTA. Expert
-              craftsmanship, premium materials, and guaranteed satisfaction on
-              every project.
+              Tell us about your space, priorities, and project details. A team
+              member can review the information with you.
             </p>
 
             {/* CTA Buttons */}
@@ -211,19 +210,19 @@ export default function HeroSection() {
                   onClick={() => {
                     trackEvent("cta_click", {
                       event_category: "Hero",
-                      event_label: "Get Free Estimate",
+                       event_label: "Discuss Your Project",
                       value: 1,
                     });
                     setIsLeadFormOpen(true);
                   }}
                 >
-                  Get Free Estimate
+                   Discuss Your Project
                 </motion.button>
                 <span
                   className="text-xs font-medium"
                   style={{ color: "#fbbf2499" }}
                 >
-                  Free Estimate · No Obligation
+                   Share your project details
                 </span>
               </div>
 
@@ -305,9 +304,9 @@ export default function HeroSection() {
               {/* Floating Bubbles */}
               <div className="absolute inset-0 pointer-events-none">
                 {[
-                  { label: "Fast & Reliable", top: 24, left: 24, delay: 0 },
-                  { label: "Premium Quality", top: "40%", right: 24, delay: 0.3 },
-                  { label: "Clean & Tidy", bottom: 24, left: 28, delay: 0.6 },
+                   { label: "Project planning", top: 24, left: 24, delay: 0 },
+                   { label: "Your priorities", top: "40%", right: 24, delay: 0.3 },
+                   { label: "Next steps", bottom: 24, left: 28, delay: 0.6 },
                 ].map(({ label, delay, ...pos }) => (
                   <motion.div
                     key={label}
