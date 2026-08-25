@@ -30,6 +30,13 @@ test.describe("public conversion and account routes", () => {
     expect(missingApiRoute.headers()["content-type"]).toContain("application/json");
   });
 
+  test("health refuses to mark an unconfigured CRM ready", async ({ page }) => {
+    const health = await page.request.get("/api/health");
+
+    expect(health.status()).toBe(503);
+    await expect(health.json()).resolves.toMatchObject({ status: "unavailable" });
+  });
+
   test("account links render and are excluded from indexing", async ({ page }) => {
     for (const route of [
       "/account/signin",
