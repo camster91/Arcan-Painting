@@ -32,42 +32,32 @@ export default function FAQSection() {
     {
       question: "How long does a typical painting project take?",
       answer:
-        "Interior rooms typically take 1-2 days, while full home exteriors take 3-5 days depending on size and weather. We provide detailed timelines in every estimate and always communicate any changes promptly.",
+        "Timing depends on the scope of work, the condition of the space, material choices, and site conditions. Share the details of your project and the team can discuss a suitable plan with you.",
     },
     {
       question: "What happens if it rains during exterior painting?",
       answer:
-        "We monitor weather closely and only paint when conditions are ideal. If unexpected rain occurs, we'll pause work and ensure all surfaces are properly protected. Rain delays don't cost you extra - we'll return to complete the work when conditions improve.",
+        "Exterior work depends on safe, suitable site and weather conditions. The team can explain how weather may affect the plan for your particular project.",
     },
     {
       question: "Do you help with color selection?",
       answer:
-        "Absolutely! We offer complimentary color consultation with every project. Our experienced team will help you choose colors that complement your space, lighting, and personal style. We can also provide sample patches before starting.",
+        "Let the team know what you have in mind for your space. They can discuss colour options and the next steps for your project.",
     },
     {
       question: "How do you protect my furniture and floors?",
       answer:
-        "We take extensive precautions including plastic sheeting, drop cloths, and masking tape. All furniture is either moved or carefully covered. We treat your home with the same care we'd want for our own.",
+        "Discuss the space, contents, and any concerns when you request your project. The team can outline the preparation and protection plan before work begins.",
     },
     {
       question: "What type of paint do you use?",
       answer:
-        "We use only premium-grade paints from trusted brands like Sherwin-Williams and Benjamin Moore. All paints are low-VOC or zero-VOC for your family's health and safety. We'll discuss the best options for your specific project.",
+        "Suitable materials depend on the surface, finish, and project requirements. The team can discuss options with you after learning more about the work.",
     },
     {
-      question: "Do you provide free estimates?",
+      question: "How do I request an estimate?",
       answer:
-        "Yes! All estimates are completely free with no obligation. We'll visit your property, assess the work needed, and provide a detailed written quote typically within 24 hours.",
-    },
-    {
-      question: "Are you licensed and insured?",
-      answer:
-        "Yes, we're fully licensed and carry comprehensive liability insurance and workers' compensation. You'll receive proof of insurance before any work begins, giving you complete peace of mind.",
-    },
-    {
-      question: "What's included in your warranty?",
-      answer:
-        "All work includes our satisfaction guarantee plus a 5-year warranty on exterior work and 2-year warranty on interior work. This covers any defects in workmanship including peeling, cracking, or premature fading.",
+        "Use the contact form to share your project details. A team member can review the request and follow up about the information needed for an estimate.",
     },
   ];
 
@@ -196,14 +186,14 @@ export default function FAQSection() {
               </h3>
 
               <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Get personalized answers and your free project estimate
+                Tell us about your project and get personalized answers
               </p>
 
               <button
                 className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold px-10 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-lg"
                 onClick={() => setIsLeadFormOpen(true)}
               >
-                Get Answers & Free Quote
+                Ask a Question
               </button>
             </div>
           </div>

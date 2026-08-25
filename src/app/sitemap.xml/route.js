@@ -1,22 +1,8 @@
-import { CITY_SLUGS, SERVICE_SLUGS } from "../[service]/[city]/page";
-
-// Generate dynamic sitemap.xml — blog index + posts removed 2026-06-14.
+// Generate the public sitemap. City-specific routes stay out of the sitemap
+// until their service coverage and local content have been verified by the client.
 export async function GET() {
   const baseUrl = process.env.APP_URL || "https://arcanpainting.ca";
   const currentDate = new Date().toISOString().split("T")[0];
-
-  const services = Object.keys(SERVICE_SLUGS);
-
-  // The route data is the only source of valid city/service combinations.
-  const cityServiceUrls = services.flatMap((service) =>
-    CITY_SLUGS.map((city) => `
-  <url>
-    <loc>${baseUrl}/${service}/${city}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>`)
-  ).join("");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -30,8 +16,8 @@ export async function GET() {
     <priority>1.0</priority>
     <image:image>
       <image:loc>${baseUrl}/og-image.png</image:loc>
-      <image:caption>Arcan Painting Professional Toronto Painting Services</image:caption>
-      <image:title>Professional Painting Services GTA</image:title>
+      <image:caption>Arcan Painting</image:caption>
+      <image:title>Arcan Painting</image:title>
     </image:image>
   </url>
 
@@ -78,8 +64,6 @@ export async function GET() {
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  <!-- City × service SEO pages -->${cityServiceUrls}
-
 </urlset>`;
 
   return new Response(sitemap, {

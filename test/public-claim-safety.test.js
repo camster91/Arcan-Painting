@@ -13,7 +13,12 @@ describe("public claim safety", () => {
     const root = readProjectFile("src/app/root.tsx");
     const llms = readProjectFile("public/llms.txt");
     const seo = readProjectFile("src/utils/seoUtils.js");
-    const publicSurfaces = [homepage, hero, root, llms, seo].join("\n");
+    const faq = readProjectFile("src/components/FAQSection.jsx");
+    const chat = readProjectFile("src/app/api/utils/gemini.js");
+    const quote = readProjectFile("src/app/api/quote/route.js");
+    const cityServiceRoute = readProjectFile("src/app/[service]/[city]/page.jsx");
+    const sitemap = readProjectFile("src/app/sitemap.xml/route.js");
+    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, cityServiceRoute, sitemap].join("\n");
 
     for (const unsupportedClaim of [
       "500+ Happy Clients",
@@ -23,6 +28,12 @@ describe("public claim safety", () => {
       "2-Year Warranty",
       "5-Year Warranty",
       "aggregateRating",
+      "fully licensed",
+      "comprehensive liability insurance",
+      "free on-site estimate within 48 hours",
+      "typically within 24 hours",
+      "Serving ${city.name} since 1995",
+      "Free colour consultation",
     ]) {
       expect(publicSurfaces).not.toContain(unsupportedClaim);
     }
@@ -30,5 +41,7 @@ describe("public claim safety", () => {
     expect(homepage).not.toContain("GoogleReviewsSection");
     expect(homepage).not.toContain("GuaranteeSection");
     expect(homepage).not.toContain("PricingSection");
+    expect(cityServiceRoute).toContain('content: "noindex, follow"');
+    expect(sitemap).not.toContain("cityServiceUrls");
   });
 });

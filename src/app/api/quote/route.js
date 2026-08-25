@@ -63,8 +63,7 @@ export async function POST(request) {
 
     // AI-draft a quote response for Gerardo to review
     try {
-      const aiQuote = await chatWithGemini([], `A customer named ${name} wants a quote for ${serviceType}. Scope: ${scope || 'not specified'}. Timeline: ${timeline || 'flexible'}. Budget: ${budget || 'not specified'}. Details: ${details || 'none'}. Address: ${address || 'not provided'}. Draft a brief, professional email response acknowledging their request and letting them know we'll schedule a free on-site estimate within 48 hours.`);
-      console.log('AI quote draft generated for review');
+      await chatWithGemini([], `A customer named ${name} wants a quote for ${serviceType}. Scope: ${scope || 'not specified'}. Timeline: ${timeline || 'flexible'}. Budget: ${budget || 'not specified'}. Details: ${details || 'none'}. Address: ${address || 'not provided'}. Draft a brief, professional email response acknowledging the request and explaining that a team member will review the details before confirming next steps.`);
     } catch (e) {
       console.error('AI quote draft failed:', e.message);
     }
