@@ -347,7 +347,7 @@ export default function ContactSection() {
           </div>
 
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8">
-            Get your free estimate
+            Discuss your project
           </h2>
           <p className="text-xl lg:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
             Quick 60-second quiz. One question at a time. No spam—just your
@@ -368,7 +368,7 @@ export default function ContactSection() {
 
               <div className="relative z-10">
                 <h3 className="text-slate-900 text-2xl lg:text-3xl font-bold mb-6 lg:mb-8">
-                  Request Your Estimate
+                  Share Your Project Details
                 </h3>
 
                 {/* Enhanced Progress */}
@@ -467,18 +467,18 @@ export default function ContactSection() {
                     <Shield size={24} className="text-white" />
                   </div>
                   <h3 className="text-white text-xl lg:text-2xl font-bold">
-                    Emergency Services
+                    Project Support
                   </h3>
                 </div>
                 <p className="text-white/90 mb-6 leading-relaxed text-base lg:text-lg">
-                  Water damage or urgent repairs? We offer 24/7 emergency
-                  painting services for immediate response situations.
+                  Share the details of your project and any timing considerations.
+                  A team member can review them before confirming next steps.
                 </p>
                 <a
                   href="#contact"
                   className="inline-flex items-center gap-2 bg-white hover:bg-white/90 text-amber-700 font-bold px-6 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto justify-center text-base lg:text-lg"
                 >
-                  Request Emergency Service
+                  Discuss Your Project
                 </a>
               </div>
             </div>
@@ -536,12 +536,11 @@ export default function ContactSection() {
                     </div>
                     <div>
                       <div className="font-bold text-slate-900 text-lg">
-                        Service Area
+                        Service Availability
                       </div>
                       <div className="text-slate-600 font-medium">
-                        Greater Toronto Area (GTA)
-                        <br />
-                        Toronto, Mississauga, Brampton & surrounding areas
+                        Confirm service availability with the team when you
+                        submit your project details.
                       </div>
                     </div>
                   </div>
@@ -552,14 +551,11 @@ export default function ContactSection() {
                     </div>
                     <div>
                       <div className="font-bold text-slate-900 text-lg">
-                        Business Hours
+                        Project Timing
                       </div>
                       <div className="text-slate-600 font-medium">
-                        Mon-Fri: 7:00 AM - 6:00 PM
-                        <br />
-                        Sat: 8:00 AM - 4:00 PM
-                        <br />
-                        Sun: Emergency calls only
+                        Include any timing requirements in your request so the
+                        team can discuss the next steps.
                       </div>
                     </div>
                   </div>
@@ -577,32 +573,32 @@ export default function ContactSection() {
                     <CheckCircle2 size={24} className="text-white" />
                   </div>
                   <h3 className="text-slate-900 text-xl lg:text-2xl font-bold">
-                    Our Promise to You
+                    What to include
                   </h3>
                 </div>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
                     <span className="text-slate-700 font-medium">
-                      Free, detailed estimates within 24 hours
+                      The scope and condition of the space
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
                     <span className="text-slate-700 font-medium">
-                      Licensed, insured, and bonded professionals
+                      Your goals, preferences, and questions
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
                     <span className="text-slate-700 font-medium">
-                      100% satisfaction guarantee
+                      Relevant timing or material considerations
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
                     <span className="text-slate-700 font-medium">
-                      Complete cleanup after every project
+                      The best way for the team to contact you
                     </span>
                   </li>
                 </ul>

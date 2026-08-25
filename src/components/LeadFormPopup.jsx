@@ -447,8 +447,8 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                 Thank You!
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4">
-                We've received your request and will contact you within 24 hours
-                to schedule your free estimate.
+                We've received your request. A team member can review the
+                details before confirming next steps.
               </p>
               <div className="text-sm text-slate-500 dark:text-slate-400">
                 This window will close automatically...

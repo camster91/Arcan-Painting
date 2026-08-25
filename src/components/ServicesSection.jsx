@@ -37,7 +37,7 @@ function ServiceCard({ service, index, isVisible, isFlipped, onFlip, onQuote }) 
             onClick={onQuote}
             className="w-full font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-lg bg-white hover:bg-white/90 text-amber-700 hover:text-amber-800"
           >
-            Get Your Free Estimate
+            Discuss Your Project
           </button>
         </div>
       </div>
@@ -143,7 +143,7 @@ function ServiceCard({ service, index, isVisible, isFlipped, onFlip, onQuote }) 
               onClick={onQuote}
               className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:-to-yellow-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
             >
-              Get Free Quote
+              Discuss Your Project
             </button>
           </div>
         </div>
@@ -227,7 +227,7 @@ function ServiceCarouselCard({ service, index, onQuote }) {
             onClick={(e) => { e.stopPropagation(); onQuote(); }}
             className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-xl text-sm transition-colors"
           >
-            Get Free Quote
+            Discuss Your Project
           </button>
         </div>
       )}
@@ -264,7 +264,7 @@ export default function ServicesSection() {
       title: "Interior Painting",
       subtitle: "Transform Living Spaces",
       description:
-        "Premium finishes that reflect your style and increase your Toronto property's value with expert color consultation.",
+        "Tell us about the space and finish you have in mind.",
       features: [
         "Professional color consultation",
         "Premium paints & eco-friendly finishes",
@@ -280,12 +280,12 @@ export default function ServicesSection() {
       title: "Exterior Painting",
       subtitle: "Weather Protection",
       description:
-        "Protect and beautify your property with weather-resistant coatings designed for Ontario's harsh climate conditions.",
+        "Tell us about the exterior surfaces and project priorities.",
       features: [
         "Power washing & surface prep",
         "Professional surface repair & priming",
         "Weather-resistant protection coatings",
-        "5-year warranty",
+        "Project details reviewed with the team",
       ],
       image:
         "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80",
@@ -296,7 +296,7 @@ export default function ServicesSection() {
       title: "Commercial Painting",
       subtitle: "Business Solutions",
       description:
-        "Professional painting for Toronto offices, retail, and facilities with minimal disruption to your business operations.",
+        "Tell us about the commercial space and scheduling considerations.",
       features: [
         "Flexible after-hours scheduling",
         "Large-scale project expertise",
@@ -312,7 +312,7 @@ export default function ServicesSection() {
       title: "Wallpaper Services",
       subtitle: "High-End Wallpaper Installation",
       description:
-        "Luxury and designer wallpaper installation specialists. From high-end residential feature walls to commercial statement pieces, we deliver flawless results with premium materials throughout the GTA.",
+        "Tell us about the wallcovering project and the details you want to discuss.",
       features: [
         "Luxury & designer wallpaper specialists",
         "Precise pattern matching & alignment",
@@ -328,7 +328,7 @@ export default function ServicesSection() {
       title: "Specialty Finishes",
       subtitle: "Custom Artistry",
       description:
-        "Custom textures, faux finishes, and protective coatings for unique Toronto spaces and high-traffic commercial areas.",
+        "Tell us about the finish, surface, and project goals you have in mind.",
       features: [
         "Custom texture applications & techniques",
         "Decorative faux finishing artistry",
@@ -341,14 +341,14 @@ export default function ServicesSection() {
     },
     {
       icon: Star,
-      title: "Ready to Transform Your Space?",
-      subtitle: "Get Your Free Estimate",
+      title: "Ready to Discuss Your Space?",
+      subtitle: "Share Your Project Details",
       // description removed per request
       features: [
-        "Free on-site consultation & assessment",
-        "Detailed project breakdown & timeline",
-        "Transparent pricing with no hidden fees",
-        "2-year warranty on all completed work",
+        "Share the project scope and condition of the space",
+        "Discuss questions about materials and timing",
+        "Ask the team to review your project details",
+        "Confirm next steps after the review",
       ],
       image:
         "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&h=400&fit=crop&q=80",
@@ -397,18 +397,18 @@ export default function ServicesSection() {
 
           {/* Main Headline */}
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8">
-            Transform Your Toronto Property
+            Discuss Your Painting Project
           </h2>
 
           {/* Subtitle */}
           <p className="text-2xl lg:text-3xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12">
-            From single rooms to entire buildings, we deliver exceptional
-            results with
+            From a single room to a larger space, tell us about the details
+            that matter to you. We can help you
             <span className="text-amber-400 font-semibold">
               {" "}
               attention to detail
             </span>{" "}
-            that sets us apart across the GTA
+            plan the next step
           </p>
         </div>
 
