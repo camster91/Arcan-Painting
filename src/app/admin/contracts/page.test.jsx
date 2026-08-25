@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import ContractsPage from "./page";
 
@@ -43,6 +43,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
   mockFetch.mockClear();
 });
 
