@@ -1,9 +1,21 @@
 import { sendGmailEmail } from "@/lib/google.js";
 import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { generalLimiter } from "../utils/rate-limit.js";
-import { auditLog } from "../utils/audit.js";
 import { sendLeadEvent } from "../utils/meta-capi.js";
-import { insertLead } from "../utils/insert-lead.js";
+import { insertLead, validateLeadInput } from "../utils/insert-lead.js";
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function toEmailHeaderValue(value) {
+  return String(value).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+}
 
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking).
 // Gated on OPENCLAW_URL being set — when the local OpenClaw instance is
@@ -13,13 +25,16 @@ import { insertLead } from "../utils/insert-lead.js";
 // /api/agents/lead-qualifier still exists) so when OpenClaw is wired
 // up later, the gating is a one-line revert.
 async function spawnLeadQualifierAsync(leadData, baseUrl) {
-  if (!process.env.OPENCLAW_URL) {
+  if (!process.env.OPENCLAW_URL || !process.env.INTERNAL_API_TOKEN) {
     return; // OpenClaw is not deployed — skip the qualifier agent.
   }
   try {
     await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-api-token': process.env.INTERNAL_API_TOKEN,
+      },
       body: JSON.stringify(leadData),
     });
   } catch (err) {
@@ -117,11 +132,11 @@ export async function POST(request) {
 
     // Validate formats only for the provided values
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (hasEmail && !emailRegex.test(body.email)) {
+    if (hasEmail && (!emailRegex.test(body.email) || /[\r\n]/.test(body.email))) {
       return Response.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    const phoneRegex = /^[\d\s\-\(\)\+]+$/;
+    const phoneRegex = /^[\d\s()+-]+$/;
     if (hasPhone && !phoneRegex.test(body.phone)) {
       return Response.json(
         { error: "Invalid phone number format" },
@@ -129,8 +144,18 @@ export async function POST(request) {
       );
     }
 
-    let leadId = null;
-    let leadSaved = false;
+    const inputError = validateLeadInput({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      serviceType: body.serviceType,
+      projectDescription: body.projectDescription,
+      address: body.address,
+    });
+    if (inputError) return Response.json({ error: inputError }, { status: 400 });
+
+    let leadId;
+    let leadSaved;
 
     // Save the lead directly via the shared insertLead helper — the
     // previous implementation POSTed to /api/leads as an internal fetch,
@@ -179,25 +204,38 @@ export async function POST(request) {
         });
       }
     } catch (dbError) {
-      console.error("Database error (continuing with email):", dbError);
+      console.error("Database error while saving lead:", dbError);
+      return Response.json(
+        { error: "We couldn't save your request. Please try again or call us directly." },
+        { status: 503 },
+      );
     }
 
     // Send notification + confirmation emails via Gmail
     const adminEmail = process.env.GOOGLE_EMAIL || "info@arcanpainting.ca";
     try {
+      const lead = {
+        name: escapeHtml(body.name),
+        email: hasEmail ? escapeHtml(body.email) : "",
+        phone: hasPhone ? escapeHtml(body.phone) : "",
+        serviceType: escapeHtml(body.serviceType),
+        preferredContact: escapeHtml(preferredContact),
+        address: body.address ? escapeHtml(body.address) : "",
+        projectDescription: body.projectDescription ? escapeHtml(body.projectDescription) : "",
+      };
       // Notify the business
       await sendGmailEmail({
         to: adminEmail,
-        subject: `New Lead: ${body.name} — ${body.serviceType}`,
+        subject: `New Lead: ${toEmailHeaderValue(body.name)} — ${toEmailHeaderValue(body.serviceType)}`,
         replyTo: hasEmail ? body.email : undefined,
         body: `<h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${body.name}</p>
-${hasEmail ? `<p><strong>Email:</strong> ${body.email}</p>` : ""}
-${hasPhone ? `<p><strong>Phone:</strong> ${body.phone}</p>` : ""}
-<p><strong>Service:</strong> ${body.serviceType}</p>
-<p><strong>Preferred Contact:</strong> ${preferredContact}</p>
-${body.address ? `<p><strong>Address:</strong> ${body.address}</p>` : ""}
-${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDescription}</p>` : ""}`,
+<p><strong>Name:</strong> ${lead.name}</p>
+${hasEmail ? `<p><strong>Email:</strong> ${lead.email}</p>` : ""}
+${hasPhone ? `<p><strong>Phone:</strong> ${lead.phone}</p>` : ""}
+<p><strong>Service:</strong> ${lead.serviceType}</p>
+<p><strong>Preferred Contact:</strong> ${lead.preferredContact}</p>
+${lead.address ? `<p><strong>Address:</strong> ${lead.address}</p>` : ""}
+${lead.projectDescription ? `<p><strong>Description:</strong> ${lead.projectDescription}</p>` : ""}`,
       });
 
       // Send confirmation to customer if they provided email
@@ -205,8 +243,8 @@ ${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDesc
         await sendGmailEmail({
           to: body.email,
           subject: "We received your request — Arcan Painting",
-          body: `<p>Hi ${body.name},</p>
-<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${body.serviceType}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
+          body: `<p>Hi ${lead.name},</p>
+<p>Thank you for reaching out to Arcan Painting. We received your inquiry about <strong>${lead.serviceType}</strong> and a team member will review the details before confirming next steps.</p>
 <p>Best regards,<br>The Arcan Painting Team</p>`,
         });
       }
@@ -225,7 +263,7 @@ ${body.projectDescription ? `<p><strong>Description:</strong> ${body.projectDesc
     return Response.json({
       success: true,
       message:
-        "Thank you! We will contact you within 24 hours to schedule your free estimate.",
+        "Thank you! A team member will review your request and follow up about next steps.",
       lead_saved: leadSaved,
       lead_id: leadId,
     });

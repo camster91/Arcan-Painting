@@ -1,4 +1,6 @@
 import sql from "@/app/api/utils/sql";
+import { requireAdmin } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
 
 // ADD: Ensure table exists before operations
 async function ensureTeamAvailabilityTable() {
@@ -32,6 +34,10 @@ async function ensureTeamAvailabilityTable() {
 }
 
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await ensureTeamAvailabilityTable(); // ensure table
     const { searchParams } = new URL(request.url);
@@ -95,6 +101,12 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     await ensureTeamAvailabilityTable(); // ensure table
     const body = await request.json();
@@ -152,6 +164,12 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     await ensureTeamAvailabilityTable(); // ensure table
     const body = await request.json();
@@ -227,6 +245,12 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     await ensureTeamAvailabilityTable(); // ensure table
     const { searchParams } = new URL(request.url);

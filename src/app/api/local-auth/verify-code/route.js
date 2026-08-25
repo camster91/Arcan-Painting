@@ -3,6 +3,8 @@ import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { generateSecureToken, parseCookies } from "@/app/api/utils/auth";
 
+const MAX_CODE_ATTEMPTS = 5;
+
 function makeCookie(name, value, maxAgeSeconds) {
   const parts = [
     `${name}=${encodeURIComponent(value)}`,
@@ -13,11 +15,10 @@ function makeCookie(name, value, maxAgeSeconds) {
   if (maxAgeSeconds !== undefined && maxAgeSeconds !== null) {
     parts.push(`Max-Age=${maxAgeSeconds}`);
   }
-  try {
-    if (process.env.AUTH_URL && process.env.AUTH_URL.startsWith("https")) {
-      parts.push("Secure");
-    }
-  } catch {}
+  const appUrl = process.env.PUBLIC_APP_URL || process.env.APP_URL || "";
+  if (appUrl.startsWith("https://")) {
+    parts.push("Secure");
+  }
   return parts.join("; ");
 }
 
@@ -34,21 +35,38 @@ export async function POST(request) {
       return Response.json({ error: "Email and code are required" }, { status: 400 });
     }
 
-    // Look up valid (unused, unexpired) code
-    const codes = await sql`
-      SELECT id, username, code, expires_at, used_at
-      FROM auth_verification_codes
-      WHERE username = ${username}
-        AND code = ${code}
-        AND used_at IS NULL
-        AND expires_at > NOW()
-      ORDER BY created_at DESC
-      LIMIT 1
-    `;
+    // Lock the latest code before comparing it so invalid attempts are
+    // persisted atomically and cannot race past the per-code limit.
+    const verification = await sql.transaction(async (txSql) => {
+      const codes = await txSql`
+        SELECT id, username, code, expires_at, used_at, failed_attempts, locked_at
+        FROM auth_verification_codes
+        WHERE username = ${username}
+          AND used_at IS NULL
+          AND expires_at > NOW()
+        ORDER BY created_at DESC
+        LIMIT 1
+        FOR UPDATE
+      `;
+      const record = codes[0];
+      if (!record) return { valid: false };
 
-    const record = codes[0];
+      const attempts = Number(record.failed_attempts || 0);
+      if (record.locked_at || attempts >= MAX_CODE_ATTEMPTS || record.code !== code) {
+        await txSql`
+          UPDATE auth_verification_codes
+          SET failed_attempts = failed_attempts + 1,
+              locked_at = CASE WHEN failed_attempts + 1 >= ${MAX_CODE_ATTEMPTS} THEN NOW() ELSE locked_at END
+          WHERE id = ${record.id}
+        `;
+        return { valid: false };
+      }
 
-    if (!record) {
+      await txSql`UPDATE auth_verification_codes SET used_at = NOW() WHERE id = ${record.id}`;
+      return { valid: true };
+    });
+
+    if (!verification.valid) {
       await auditLog({
         request,
         action: "magic_code.verify",
@@ -57,11 +75,6 @@ export async function POST(request) {
       });
       return Response.json({ error: "Invalid or expired code" }, { status: 401 });
     }
-
-    // Mark code as used
-    await sql`
-      UPDATE auth_verification_codes SET used_at = NOW() WHERE id = ${record.id}
-    `;
 
     // Look up the user
     const users = await sql`

@@ -405,10 +405,12 @@ export default function EstimatesPage() {
                   <div className="relative">
                     <Search
                       size={18}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                      aria-hidden="true"
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"
                     />
                     <input
                       type="text"
+                      aria-label="Search estimates"
                       placeholder="Search estimates by number, project, or client..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}

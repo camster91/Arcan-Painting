@@ -189,6 +189,7 @@ export default function CapturePage() {
             >
               <input
                 type="file"
+                aria-label="Upload job-site photos"
                 accept="image/*"
                 multiple
                 onChange={onInputChange}
@@ -234,6 +235,7 @@ export default function CapturePage() {
               Caption (optional)
             </label>
             <textarea
+              aria-label="Caption (optional)"
               rows={3}
               value={caption}
               onChange={(e) => setCaption(e.target.value)}

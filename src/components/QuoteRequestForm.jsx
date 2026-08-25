@@ -310,7 +310,7 @@ export default function QuoteRequestForm() {
         ) : (
           <>
             <Send className="w-5 h-5" aria-hidden="true" />
-            Get Your Free Quote
+            Submit Project Details
           </>
         )}
       </button>

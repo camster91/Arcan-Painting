@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   X,
   Phone,
@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 
 export default function LeadFormPopup({ isOpen, onClose }) {
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
   // Quiz-style state
   const [step, setStep] = useState(0);
   const [serviceType, setServiceType] = useState("");
@@ -35,7 +38,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
     [],
   );
   const isPhoneValid = useCallback(
-    (value) => /^[\d\s\-\(\)\+]+$/.test(value),
+    (value) => /^[\d\s()+-]+$/.test(value),
     [],
   );
 
@@ -78,6 +81,50 @@ export default function LeadFormPopup({ isOpen, onClose }) {
       setIsSuccess(false);
     }
   }, [isOpen]);
+
+  // A modal must keep keyboard focus inside itself and return focus to its
+  // trigger when it closes. This makes the multi-step estimate form usable
+  // without a mouse or screen reader mode changes.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    previouslyFocusedElement.current = document.activeElement;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = dialogRef.current.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      const elements = Array.from(focusable);
+      if (elements.length === 0) return;
+
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (previouslyFocusedElement.current instanceof HTMLElement) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [isOpen, onClose]);
 
   // Prevent body scroll when popup is open
   useEffect(() => {
@@ -333,18 +380,14 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           rows={4}
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit(e);
-            }
-          }}
           className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base resize-none"
           placeholder="Tell us about your project, size, timing, or any special requests..."
         />
         <div className="flex items-center gap-2 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800 rounded-lg p-3 mt-3 text-sm">
           <CheckCircle2 size={18} />
           <span>
-            Your info is secure and only used to contact you about this request.
+            Your details are used to respond to this request. See our{" "}
+            <a href="/privacy" className="underline font-medium">Privacy Notice</a>.
           </span>
         </div>
       </div>
@@ -361,6 +404,10 @@ export default function LeadFormPopup({ isOpen, onClose }) {
 
       {/* Centered modal box */}
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lead-form-title"
         className={`relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl transform transition-all duration-300 ease-out max-h-[90vh] overflow-hidden ${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
@@ -368,7 +415,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
           <div>
-            <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
+            <h2 id="lead-form-title" className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
               Request Your Estimate
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
@@ -376,6 +423,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
             </p>
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close estimate form"
             className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
@@ -399,8 +447,8 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                 Thank You!
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4">
-                We've received your request and will contact you within 24 hours
-                to schedule your free estimate.
+                We've received your request. A team member can review the
+                details before confirming next steps.
               </p>
               <div className="text-sm text-slate-500 dark:text-slate-400">
                 This window will close automatically...

@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Lint
+        run: bun run lint
+
       - name: Build
         run: bun run build
         env:
@@ -30,19 +33,6 @@ jobs:
         run: bun run test
         env:
           CI: true
-        continue-on-error: true
-
-      - name: Cancel stuck Coolify deploys
-        run: |
-          mkdir -p ~/.ssh
-          echo "$COOLIFY_SSH_KEY" > ~/.ssh/coolify_key
-          chmod 600 ~/.ssh/coolify_key
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/coolify_key root@187.77.26.99 \
-            "docker exec coolify-db psql -U coolify -c \"UPDATE application_deployment_queues SET status='cancelled' WHERE status IN ('queued','in_progress');\""
-          echo "Cleared stuck deploy queue"
-          rm -f ~/.ssh/coolify_key
-        env:
-          COOLIFY_SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
 
       - name: Trigger Coolify Deployment
         id: deploy
@@ -72,14 +62,14 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting 30s for deploy to start, then checking https://arcanpainting.ca..."
+          echo "Waiting 30s for deploy to start, then checking CRM readiness..."
           sleep 30
           RETRIES=5
           DELAY=10
           for i in $(seq 1 $RETRIES); do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://arcanpainting.ca)
-            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
-              echo "Health check passed (HTTP $HTTP_CODE)"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://arcanpainting.ca/api/health)
+            if [ "$HTTP_CODE" -eq 200 ]; then
+              echo "CRM readiness check passed (HTTP $HTTP_CODE)"
               exit 0
             fi
             echo "Attempt $i/$RETRIES: HTTP $HTTP_CODE, retrying in ${DELAY}s..."

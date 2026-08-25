@@ -16,9 +16,10 @@ export function PaymentsFilters({
         {/* Search */}
         <div className="lg:col-span-2">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-5 h-5" />
             <input
               type="text"
+              aria-label="Search payments"
               placeholder="Search payments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

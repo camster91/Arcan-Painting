@@ -4,6 +4,7 @@ import { authLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
 
 export async function POST(request) {
   // Rate limiting
@@ -11,6 +12,9 @@ export async function POST(request) {
   if (limited) return limited;
 
   try {
+    const csrfError = requireCsrf(request);
+    if (csrfError) return csrfError;
+
     const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

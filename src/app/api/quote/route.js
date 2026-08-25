@@ -1,6 +1,7 @@
 import { notifyGerardo, formatQuoteNotification } from '../utils/telegram.js';
 import { chatWithGemini } from '../utils/gemini.js';
 import { createRateLimiter } from '../utils/rate-limit.js';
+import { insertLead, validateLeadInput } from '../utils/insert-lead.js';
 
 const quoteLimiter = createRateLimiter({ windowMs: 60_000, max: 5, prefix: 'quote' });
 
@@ -20,16 +21,41 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
-    // Save as lead via internal API
+    const projectDescription = [
+      details,
+      scope && `Scope: ${scope}`,
+      timeline && `Timeline: ${timeline}`,
+      budget && `Budget: ${budget}`,
+    ].filter(Boolean).join('\n');
+    const inputError = validateLeadInput({
+      name,
+      email,
+      phone,
+      serviceType,
+      projectDescription,
+      address,
+    });
+    if (inputError) return Response.json({ error: inputError }, { status: 400 });
+
+    // Save through the server-only helper. The CRM HTTP endpoint is protected
+    // for admin users and must not be used by a public quote submission.
     try {
-      const baseUrl = process.env.APP_URL || new URL(request.url).origin;
-      const leadResponse = await fetch(`${baseUrl}/api/leads`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, serviceType, projectDescription: details, address }),
+      await insertLead({
+        name,
+        email,
+        phone,
+        serviceType,
+        projectDescription,
+        preferredContact: email ? 'email' : 'phone',
+        address,
+        leadSource: 'website_quote',
       });
     } catch (e) {
       console.error('Failed to save quote as lead:', e.message);
+      return Response.json(
+        { error: "We couldn't save your quote request. Please try again or call us directly." },
+        { status: 503 },
+      );
     }
 
     // Notify Gerardo via Telegram
@@ -37,8 +63,7 @@ export async function POST(request) {
 
     // AI-draft a quote response for Gerardo to review
     try {
-      const aiQuote = await chatWithGemini([], `A customer named ${name} wants a quote for ${serviceType}. Scope: ${scope || 'not specified'}. Timeline: ${timeline || 'flexible'}. Budget: ${budget || 'not specified'}. Details: ${details || 'none'}. Address: ${address || 'not provided'}. Draft a brief, professional email response acknowledging their request and letting them know we'll schedule a free on-site estimate within 48 hours.`);
-      console.log('AI quote draft generated for review');
+      await chatWithGemini([], `A customer named ${name} wants a quote for ${serviceType}. Scope: ${scope || 'not specified'}. Timeline: ${timeline || 'flexible'}. Budget: ${budget || 'not specified'}. Details: ${details || 'none'}. Address: ${address || 'not provided'}. Draft a brief, professional email response acknowledging the request and explaining that a team member will review the details before confirming next steps.`);
     } catch (e) {
       console.error('AI quote draft failed:', e.message);
     }

@@ -1,112 +1,75 @@
 import sql from "@/app/api/utils/sql";
+import { hash } from "argon2";
+import { passwordLimiter } from "@/app/api/utils/rate-limit";
+import { ensureSchema } from "@/migrations/001-initial-schema";
 
-async function ensureTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'owner',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS team_members (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      phone VARCHAR(50),
-      role VARCHAR(50) NOT NULL DEFAULT 'painter',
-      hire_date DATE,
-      hourly_rate NUMERIC(8,2),
-      status VARCHAR(50) DEFAULT 'active',
-      specialties TEXT,
-      notes TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS team_invites (
-      id SERIAL PRIMARY KEY,
-      email VARCHAR(255) NOT NULL,
-      role VARCHAR(50) NOT NULL DEFAULT 'painter',
-      token VARCHAR(255) UNIQUE NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      accepted_at TIMESTAMP,
-      created_by_user_id INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
+const INVITABLE_ROLES = new Set(["painter", "owner"]);
+
+class InviteError extends Error {}
+
+function validateInvite(invite) {
+  if (!invite || invite.accepted_at) throw new InviteError("Invalid or expired invite");
+  const expiresAt = new Date(invite.expires_at);
+  if (Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date()) {
+    throw new InviteError("Invalid or expired invite");
+  }
+  if (!INVITABLE_ROLES.has(invite.role)) throw new InviteError("Invalid invite role");
 }
 
 export async function POST(request) {
+  const limited = passwordLimiter(request);
+  if (limited) return limited;
+
   try {
-    await ensureTables();
     const body = await request.json();
     const token = (body.token || "").trim();
     const name = (body.name || "").trim();
     const password = (body.password || "").trim();
 
-    if (!token || !name || !password) {
+    if (!/^[a-f0-9]{64}$/i.test(token) || !name || name.length > 255 || password.length < 6 || password.length > 128) {
       return Response.json(
-        { error: "Token, name and password are required" },
+        { error: "Please provide a valid invite, name, and password of at least 6 characters" },
         { status: 400 },
       );
     }
 
-    const invites =
-      await sql`SELECT * FROM team_invites WHERE token = ${token} LIMIT 1`;
-    const invite = invites[0];
-    if (!invite) {
-      return Response.json(
-        { error: "Invalid or expired invite" },
-        { status: 400 },
-      );
-    }
+    await ensureSchema();
+    // Avoid costly password hashing for invalid, expired, or consumed tokens.
+    const preflight = await sql`SELECT id, role, expires_at, accepted_at FROM team_invites WHERE token = ${token} LIMIT 1`;
+    validateInvite(preflight[0]);
 
-    // Robust expiry check using Date objects (avoids string comparison pitfalls)
-    const now = new Date();
-    const expiresAt = new Date(invite.expires_at);
-    if (invite.accepted_at) {
-      return Response.json(
-        { error: "Invite already accepted" },
-        { status: 400 },
-      );
-    }
-    if (isFinite(expiresAt.getTime()) && expiresAt < now) {
-      return Response.json({ error: "Invite has expired" }, { status: 400 });
-    }
+    await sql.transaction(async (tx) => {
+      const [invite] = await tx`SELECT * FROM team_invites WHERE token = ${token} FOR UPDATE`;
+      validateInvite(invite);
+      const hashedPassword = await hash(password);
+      const existingUsers = await tx`SELECT id FROM auth_users WHERE username = ${invite.email} LIMIT 1`;
+      let userId;
+      if (existingUsers.length) {
+        userId = existingUsers[0].id;
+        await tx`UPDATE auth_users SET password = ${hashedPassword}, password_is_hashed = TRUE, role = ${invite.role} WHERE id = ${userId}`;
+      } else {
+        const [inserted] = await tx`
+          INSERT INTO auth_users (username, password, password_is_hashed, role)
+          VALUES (${invite.email}, ${hashedPassword}, TRUE, ${invite.role})
+          RETURNING id
+        `;
+        userId = inserted.id;
+      }
 
-    // Create or update auth user
-    const existingUsers =
-      await sql`SELECT * FROM auth_users WHERE username = ${invite.email} LIMIT 1`;
-    let userId;
-    if (existingUsers.length) {
-      userId = existingUsers[0].id;
-      await sql`UPDATE auth_users SET password = ${password}, role = ${invite.role} WHERE id = ${userId}`;
-    } else {
-      const inserted = await sql`
-        INSERT INTO auth_users (username, password, role)
-        VALUES (${invite.email}, ${password}, ${invite.role})
-        RETURNING id
-      `;
-      userId = inserted[0].id;
-    }
-
-    // Create or update team member record
-    const existingMembers =
-      await sql`SELECT * FROM team_members WHERE email = ${invite.email} LIMIT 1`;
-    if (existingMembers.length) {
-      await sql`UPDATE team_members SET name = ${name}, role = ${invite.role}, status = 'active', updated_at = ${new Date().toISOString()} WHERE id = ${existingMembers[0].id}`;
-    } else {
-      await sql`
-        INSERT INTO team_members (name, email, role, status)
-        VALUES (${name}, ${invite.email}, ${invite.role}, 'active')
-      `;
-    }
-
-    await sql`UPDATE team_invites SET accepted_at = ${new Date().toISOString()} WHERE id = ${invite.id}`;
+      const existingMembers = await tx`SELECT id FROM team_members WHERE email = ${invite.email} LIMIT 1`;
+      if (existingMembers.length) {
+        await tx`UPDATE team_members SET name = ${name}, role = ${invite.role}, status = 'active', updated_at = NOW() WHERE id = ${existingMembers[0].id}`;
+      } else {
+        await tx`INSERT INTO team_members (name, email, role, status) VALUES (${name}, ${invite.email}, ${invite.role}, 'active')`;
+      }
+      await tx`UPDATE team_invites SET accepted_at = NOW() WHERE id = ${invite.id}`;
+    });
 
     return Response.json({ success: true });
   } catch (error) {
+    if (error instanceof InviteError) {
+      return Response.json({ error: error.message }, { status: 400 });
+    }
     console.error("Accept invite error:", error);
     return Response.json({ error: "Failed to accept invite" }, { status: 500 });
   }

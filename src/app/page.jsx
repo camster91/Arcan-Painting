@@ -5,12 +5,7 @@ import ServicesSection from "../components/ServicesSection";
 // ─── Below-fold sections: lazy loaded for faster initial bundle ───────────────
 import ProcessSection from "../components/ProcessSection";
 import PortfolioSection from "../components/PortfolioSection";
-import GoogleReviewsSection from "../components/GoogleReviewsSection";
-import PricingSection from "../components/PricingSection";
-import GuaranteeSection from "../components/GuaranteeSection";
-import LocalAreaSection from "../components/LocalAreaSection";
 import FAQSection from "../components/FAQSection";
-import AboutSection from "../components/AboutSection";
 import ContactSection from "../components/ContactSection";
 import Footer from "../components/Footer";
 
@@ -49,34 +44,9 @@ export default function HomePage() {
           <PortfolioSection />
         
 
-        {/* Google Reviews */}
-        
-          <GoogleReviewsSection />
-        
-
-        {/* Pricing Section - Calculator + transparent pricing tiers */}
-        
-          <PricingSection />
-        
-
-        {/* Guarantee Section */}
-        
-          <GuaranteeSection />
-        
-
-        {/* Local Area Section */}
-        
-          <LocalAreaSection />
-        
-
         {/* FAQ Section */}
         
           <FAQSection />
-        
-
-        {/* About Section */}
-        
-          <AboutSection />
         
 
         {/* Contact Section */}

@@ -7,3 +7,9 @@ declare module 'react-router' {
 		// add context properties here
 	}
 }
+
+declare global {
+	interface Window {
+		__arcanCsrfPatched?: boolean;
+	}
+}

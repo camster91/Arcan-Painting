@@ -12,6 +12,7 @@ import { logAgentRun, updateAgentRun } from '../store.js';
 export async function POST(request) {
   const csrfError = requireCsrf(request);
   if (csrfError) return csrfError;
+  let runRecord;
 
   try {
     const authorized = await requireAdmin(request);
@@ -20,7 +21,7 @@ export async function POST(request) {
     }
 
     // Log the agent run
-    const runRecord = await logAgentRun({
+    runRecord = await logAgentRun({
       agent_id: 'migrate',
       agent_name: 'Migration Agent',
       status: 'running',

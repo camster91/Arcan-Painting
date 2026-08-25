@@ -18,7 +18,7 @@ function Section({ title, description, children }) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+        <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
         {description ? (
           <p className="text-sm text-slate-600 mt-1">{description}</p>
         ) : null}
@@ -151,6 +151,7 @@ export default function SettingsPage() {
                   Company Name
                 </label>
                 <input
+                  aria-label="Company name"
                   defaultValue={settings.company_name || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_name: e.target.value })
@@ -164,6 +165,7 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="email"
+                  aria-label="Company email"
                   defaultValue={settings.company_email || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_email: e.target.value })
@@ -176,6 +178,7 @@ export default function SettingsPage() {
                   Phone
                 </label>
                 <input
+                  aria-label="Company phone"
                   defaultValue={settings.company_phone || ""}
                   onBlur={(e) =>
                     mutation.mutate({ company_phone: e.target.value })

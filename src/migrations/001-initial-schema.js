@@ -157,6 +157,10 @@ export async function runMigrations() {
     `;
     await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_username ON auth_verification_codes(username)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_code ON auth_verification_codes(code)`;
+    // Persist brute-force protection with each issued code so an application
+    // restart cannot reset the verification-attempt budget.
+    await sql`ALTER TABLE auth_verification_codes ADD COLUMN IF NOT EXISTS failed_attempts INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE auth_verification_codes ADD COLUMN IF NOT EXISTS locked_at TIMESTAMP`;
 
     // ── agent_runs (from agents/migrate.js) ─────────────────────────────────
     await sql`
@@ -372,6 +376,22 @@ export async function runMigrations() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+
+    // ── team_invites ────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS team_invites (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'painter',
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        accepted_at TIMESTAMP,
+        created_by_user_id INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_email ON team_invites(email)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_token ON team_invites(token)`;
 
     // ── email_logs (added 2026-06-11) ────────────────────────────────────────
     await sql`

@@ -48,9 +48,9 @@ export async function migratePasswords() {
         WHERE id = ${user.id}
       `;
       migrated++;
-      console.log(`[migrate-passwords] Migrated user: ${user.username}`);
+      console.log("[migrate-passwords] Migrated one user.");
     } catch (err) {
-      console.error(`[migrate-passwords] Failed for user ${user.username}:`, err.message);
+      console.error("[migrate-passwords] Failed to migrate one user:", err.message);
     }
   }
 

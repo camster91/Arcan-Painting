@@ -38,9 +38,11 @@ export default function TaskFilters({
         <div className="relative flex-1">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            aria-hidden="true"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
           />
           <input
+            aria-label="Search tasks"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search tasks..."
@@ -50,7 +52,8 @@ export default function TaskFilters({
         <div className="relative">
           <Filter
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            aria-hidden="true"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
           />
           <select
             value={statusFilter}
@@ -80,7 +83,8 @@ export default function TaskFilters({
         <div className="relative">
           <User
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            aria-hidden="true"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
           />
           <select
             value={assigneeFilter}

@@ -9,7 +9,11 @@
 
 const store = new Map(); // ip -> { count, resetAt }
 
-function getIp(request) {
+export function getClientIp(request) {
+  // Forwarded headers are meaningful only when the application is reachable
+  // exclusively through a proxy that overwrites them. Direct clients can set
+  // either header themselves, so collapse them to one conservative bucket.
+  if (process.env.TRUST_PROXY !== "true") return "direct";
   return (
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-real-ip") ||
@@ -26,7 +30,7 @@ function getIp(request) {
  */
 export function createRateLimiter({ windowMs = 60_000, max = 100, prefix = "default" } = {}) {
   return function checkLimit(request) {
-    const ip = getIp(request);
+    const ip = getClientIp(request);
     const key = `${prefix}:${ip}`;
     const now = Date.now();
     const entry = store.get(key);

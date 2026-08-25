@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes, timingSafeEqual } from "crypto";
 import sql from "./sql.js";
 import { ensureSchema } from "../../../migrations/001-initial-schema.js";
 
@@ -9,6 +9,24 @@ import { ensureSchema } from "../../../migrations/001-initial-schema.js";
  */
 export function generateSecureToken() {
   return randomBytes(32).toString("hex");
+}
+
+// PostgreSQL returns timestamp columns as Date objects. Comparing them to an
+// ISO string coerces the Date to a non-chronological string, which can leave
+// expired credentials valid.
+export function isExpiredAt(expiresAt, now = new Date()) {
+  const expiresAtMs = new Date(expiresAt).getTime();
+  return Number.isNaN(expiresAtMs) || expiresAtMs <= now.getTime();
+}
+
+export function isTrustedInternalRequest(request) {
+  const expectedToken = process.env.INTERNAL_API_TOKEN;
+  const receivedToken = request.headers.get("x-internal-api-token");
+  if (!expectedToken || !receivedToken) return false;
+
+  const expected = Buffer.from(expectedToken);
+  const received = Buffer.from(receivedToken);
+  return expected.length === received.length && timingSafeEqual(expected, received);
 }
 
 // Helper function to parse cookies
@@ -29,7 +47,10 @@ export function parseCookies(cookieHeader) {
 export async function getCurrentUser(request) {
   try {
     await ensureSchema();
-  } catch {}
+  } catch {
+    // Fail closed when the authentication schema is unavailable.
+    return null;
+  }
 
   // 1. Try Authorization: Bearer header first (API clients / mobile)
   const authHeader = request.headers.get("authorization");
@@ -62,6 +83,7 @@ export async function getCurrentUser(request) {
     JOIN auth_users u ON u.id = s.user_id
     WHERE s.token = ${token}
       AND s.deleted_at IS NULL
+      AND s.expires_at > NOW()
     LIMIT 1
   `;
   const row = rows[0];
@@ -70,8 +92,7 @@ export async function getCurrentUser(request) {
     return null;
   }
 
-  const nowIso = new Date().toISOString();
-  if (row.expires_at && row.expires_at < nowIso) {
+  if (isExpiredAt(row.expires_at)) {
     // Soft-delete expired session (preserve audit trail)
     await sql`UPDATE auth_sessions SET deleted_at = NOW() WHERE token = ${token} AND deleted_at IS NULL`;
     return null;

@@ -32,27 +32,27 @@ export default function ProcessSection() {
   const steps = [
     {
       icon: Calendar,
-      title: "Free Consultation",
+      title: "Project Discussion",
       description:
-        "We visit your property to assess the project and discuss your vision",
+        "Share the project details and priorities you want to discuss",
       features: [
-        "On-site property assessment",
-        "Color consultation & recommendations",
-        "Project scope & timeline discussion",
-        "No obligation estimate",
+        "Project details and current conditions",
+        "Questions about materials and finishes",
+        "Scope and timing considerations",
+        "Next steps confirmed after review",
       ],
       gradient: "from-blue-500/20 to-cyan-500/20",
     },
     {
       icon: FileText,
-      title: "Detailed Estimate",
+      title: "Project Review",
       description:
-        "Receive a comprehensive quote with materials, timeline, and costs",
+        "A team member can review the details you provide",
       features: [
-        "Itemized cost breakdown",
-        "Material specifications & quality",
-        "Timeline & scheduling details",
-        "Warranty & guarantee information",
+        "Scope and surface information",
+        "Questions about materials",
+        "Timing considerations",
+        "Project-specific next steps",
       ],
       gradient: "from-purple-500/20 to-pink-500/20",
     },

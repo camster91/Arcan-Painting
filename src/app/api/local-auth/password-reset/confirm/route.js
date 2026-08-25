@@ -4,6 +4,7 @@ import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 import { ensureSchema } from "@/migrations/001-initial-schema";
+import { isExpiredAt } from "@/app/api/utils/auth";
 
 export async function POST(request) {
   // Rate limiting
@@ -22,6 +23,7 @@ export async function POST(request) {
       SELECT t.id, t.user_id, t.expires_at, t.used
       FROM password_reset_tokens t
       WHERE t.token = ${token}
+        AND t.expires_at > NOW()
       LIMIT 1
     `;
     const row = rows[0];
@@ -33,8 +35,7 @@ export async function POST(request) {
       return Response.json({ error: "This reset link has already been used" }, { status: 400 });
     }
 
-    const nowIso = new Date().toISOString();
-    if (row.expires_at < nowIso) {
+    if (isExpiredAt(row.expires_at)) {
       return Response.json({ error: "This reset link has expired" }, { status: 400 });
     }
 
@@ -44,6 +45,9 @@ export async function POST(request) {
     // Use real transaction for atomicity
     await sql.transaction(async (txSql) => {
       await txSql`UPDATE auth_users SET password = ${hashed}, password_is_hashed = TRUE WHERE id = ${row.user_id}`;
+      // A reset is the recovery path for a potentially compromised account.
+      // Revoke every existing browser/API session before marking the token used.
+      await txSql`UPDATE auth_sessions SET deleted_at = NOW() WHERE user_id = ${row.user_id} AND deleted_at IS NULL`;
       await txSql`UPDATE password_reset_tokens SET used = TRUE WHERE id = ${row.id}`;
     });
 

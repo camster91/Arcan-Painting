@@ -11,52 +11,6 @@ const SERVICES_NAV = [
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
 ];
 
-const LOCATIONS_NAV = [
-  {
-    region: "Greater Toronto Area",
-    cities: [
-      { name: "Toronto", slug: "toronto" },
-      { name: "Mississauga", slug: "mississauga" },
-      { name: "Brampton", slug: "brampton" },
-      { name: "Oakville", slug: "oakville" },
-      { name: "Burlington", slug: "burlington" },
-      { name: "Milton", slug: "milton" },
-      { name: "Pickering", slug: "pickering" },
-      { name: "Ajax", slug: "ajax" },
-      { name: "Whitby", slug: "whitby" },
-      { name: "Oshawa", slug: "oshawa" },
-    ],
-  },
-  {
-    region: "York Region",
-    cities: [
-      { name: "Newmarket", slug: "newmarket" },
-      { name: "Aurora", slug: "aurora" },
-      { name: "Richmond Hill", slug: "richmond-hill" },
-      { name: "Markham", slug: "markham" },
-      { name: "Vaughan", slug: "vaughan" },
-      { name: "King City", slug: "king-city" },
-      { name: "Stouffville", slug: "stouffville" },
-      { name: "Georgina", slug: "georgina" },
-      { name: "East Gwillimbury", slug: "east-gwillimbury" },
-    ],
-  },
-  {
-    region: "Simcoe County",
-    cities: [
-      { name: "Barrie", slug: "barrie" },
-      { name: "Orillia", slug: "orillia" },
-      { name: "Innisfil", slug: "innisfil" },
-      { name: "Bradford", slug: "bradford" },
-      { name: "Alliston", slug: "alliston" },
-      { name: "Collingwood", slug: "collingwood" },
-      { name: "Wasaga Beach", slug: "wasaga-beach" },
-      { name: "Midland", slug: "midland" },
-      { name: "Penetanguishene", slug: "penetanguishene" },
-    ],
-  },
-];
-
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,7 +19,7 @@ export default function Header() {
   const [mobileExpanded, setMobileExpanded] = useState(null); // 'services' | 'locations' | region name | null
   const closeBtnRef = useRef(null);
   const dropdownRef = useRef(null);
-  const { mounted } = useTheme();
+  useTheme();
   const themeColors = getThemeColors(false);
 
   useEffect(() => {
@@ -131,7 +85,7 @@ export default function Header() {
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-4 py-3">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Brand */}
           <a href="/" className="block flex-shrink-0">
@@ -143,7 +97,7 @@ export default function Header() {
               loading="eager"
               fetchpriority="high"
               decoding="async"
-              className={`transition-all duration-300 object-contain ${isScrolled ? "w-[145px] h-[75px]" : "w-[170px] h-[95px]"}`}
+              className={`transition-all duration-300 object-contain ${isScrolled ? "w-[112px] h-[62px] sm:w-[145px] sm:h-[75px]" : "w-[120px] h-[66px] sm:w-[170px] sm:h-[95px]"}`}
             />
           </a>
 
@@ -177,51 +131,10 @@ export default function Header() {
               )}
             </div>
 
-            {/* Locations mega menu */}
-            <div className="relative">
-              <button
-                className="flex items-center gap-1 text-base font-medium transition-colors py-2"
-                style={{ color: activeDropdown === "locations" ? "#f59e0b" : themeColors.textSecondary }}
-                onClick={() => toggleDropdown("locations")}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === "locations"}
-              >
-                Locations <ChevronDown size={16} className={`transition-transform ${activeDropdown === "locations" ? "rotate-180" : ""}`} />
-              </button>
-              {activeDropdown === "locations" && (
-                <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-4 z-50" style={{ minWidth: "560px" }}>
-                  <div className="px-5 pb-3 mb-3 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Serving 30 Cities Across Ontario</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-0 px-4">
-                    {LOCATIONS_NAV.map((region) => (
-                      <div key={region.region} className="px-2">
-                        <p className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-3">{region.region}</p>
-                        <ul className="space-y-1">
-                          {region.cities.map((city) => (
-                            <li key={city.slug}>
-                              <a
-                                href={`/interior-painting/${city.slug}`}
-                                className="text-sm text-slate-700 hover:text-amber-600 hover:font-medium transition-colors block py-0.5"
-                                onClick={() => setActiveDropdown(null)}
-                              >
-                                {city.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Regular nav items */}
             {[
               { label: "Portfolio", href: "#portfolio" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "About", href: "#about" },
+              { label: "FAQ", href: "#faq" },
             ].map((item) => (
               <button
                 key={item.href}
@@ -249,13 +162,13 @@ export default function Header() {
             </a>
 
             <button
-              className="font-semibold text-lg px-6 py-3 rounded-lg transition-all duration-300 active:scale-[0.98] shadow-lg hover:shadow-xl group relative overflow-hidden"
+              className="font-semibold text-sm sm:text-lg px-3 sm:px-6 py-2 sm:py-3 rounded-lg transition-all duration-300 active:scale-[0.98] shadow-lg hover:shadow-xl group relative overflow-hidden"
               style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
               onClick={() => setIsLeadFormOpen(true)}
             >
               <span className="relative z-10 inline-flex items-center gap-2">
-                <span className="hidden sm:inline">Get Free Estimate</span>
-                <span className="sm:hidden">Get Quote</span>
+                <span className="hidden sm:inline">Discuss Your Project</span>
+                <span className="sm:hidden whitespace-nowrap">Contact</span>
                 <ChevronRight size={18} className="hidden sm:inline" aria-hidden="true" />
               </span>
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(to right, #fbbf24, #f59e0b)" }} />
@@ -330,52 +243,9 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Locations accordion */}
-                <div>
-                  <button
-                    className="flex items-center justify-between w-full px-3 py-4 rounded-lg font-medium text-base"
-                    style={{ color: themeColors.text }}
-                    onClick={() => setMobileExpanded(mobileExpanded === "locations" ? null : "locations")}
-                  >
-                    Locations
-                    <ChevronDown size={16} className={`transition-transform ${mobileExpanded === "locations" ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileExpanded === "locations" && (
-                    <div className="pl-2 pb-2 space-y-2">
-                      {LOCATIONS_NAV.map((region) => (
-                        <div key={region.region}>
-                          <button
-                            className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold text-amber-600 uppercase tracking-wide"
-                            onClick={() => setMobileExpanded(mobileExpanded === region.region ? "locations" : region.region)}
-                          >
-                            {region.region}
-                            <ChevronDown size={12} className={`transition-transform ${mobileExpanded === region.region ? "rotate-180" : ""}`} />
-                          </button>
-                          {mobileExpanded === region.region && (
-                            <div className="pl-4 grid grid-cols-2 gap-1 pb-2">
-                              {region.cities.map((city) => (
-                                <a
-                                  key={city.slug}
-                                  href={`/interior-painting/${city.slug}`}
-                                  className="block px-2 py-2 text-sm rounded-lg hover:bg-amber-50"
-                                  style={{ color: themeColors.textSecondary }}
-                                  onClick={() => setIsMenuOpen(false)}
-                                >
-                                  {city.name}
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
                 {[
                   { label: "Portfolio", href: "#portfolio" },
-                  { label: "Pricing", href: "#pricing" },
-                  { label: "About", href: "#about" },
+                  { label: "FAQ", href: "#faq" },
                 ].map((item) => (
                   <a
                     key={item.href}
@@ -408,7 +278,7 @@ export default function Header() {
                 className="w-full py-4 rounded-lg font-semibold text-lg"
                 style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
               >
-                Get Free Estimate
+                Discuss Your Project
               </button>
             </div>
           </div>

@@ -65,5 +65,6 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 
 # Default entrypoint — the Hono server in build/server/index.js.
-# The migrations boot automatically on first request.
+# When DATABASE_URL is configured, migrations run during startup before the
+# database-backed CRM begins serving requests.
 CMD ["node", "./build/server/index.js"]

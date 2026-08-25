@@ -1,16 +1,23 @@
 import Stripe from 'stripe';
 import { addCredits } from '../utils/credits-db.js';
 
+export function getStripeWebhookSecret() {
+  // ARCAN_STRIPE_WEBHOOK_SECRET is the canonical production name. Retaining
+  // the documented legacy name prevents an otherwise-valid deployment from
+  // silently rejecting Stripe events during the configuration transition.
+  return process.env.ARCAN_STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET;
+}
+
 export async function POST(request) {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const body = await request.text();
     const sig = request.headers.get('stripe-signature');
 
-    const webhookSecret = process.env.ARCAN_STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = getStripeWebhookSecret();
 
     if (!webhookSecret) {
-      console.error('ARCAN_STRIPE_WEBHOOK_SECRET not set — rejecting webhook');
+      console.error('Stripe webhook secret not set — rejecting webhook');
       return Response.json({ error: 'Webhook not configured' }, { status: 503 });
     }
 
@@ -24,14 +31,13 @@ export async function POST(request) {
       const packageId = session.metadata?.package_id;
 
       if (userId && credits > 0) {
-        const newBalance = await addCredits(
+        await addCredits(
           userId,
           credits,
           'purchase',
           `Purchased ${packageId} (${credits} credits)`,
           session.id
         );
-        console.log(`Credits added: ${credits} for ${userId}, new balance: ${newBalance}`);
       }
     }
 

@@ -1,5 +1,56 @@
 import sql from "../utils/sql.js";
 import { sendEmail } from "../utils/send-email.js";
+import { requireAdmin } from "../utils/auth.js";
+import { createRateLimiter } from "../utils/rate-limit.js";
+
+const appointmentLimiter = createRateLimiter({
+  windowMs: 60_000,
+  max: 5,
+  prefix: "appointment",
+});
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function toEmailHeaderValue(value) {
+  return String(value).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function escapeIcsText(value) {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\r\n|\r|\n/g, "\\n")
+    .replace(/([,;])/g, "\\$1");
+}
+
+function validateAppointmentInput(body) {
+  const value = body || {};
+  const slotId = Number(value.slotId);
+  const name = typeof value.name === "string" ? value.name.trim() : "";
+  const email = typeof value.email === "string" ? value.email.trim().toLowerCase() : "";
+  const phone = typeof value.phone === "string" ? value.phone.trim() : "";
+  const address = typeof value.address === "string" ? value.address.trim() : "";
+  const notes = typeof value.notes === "string" ? value.notes.trim() : "";
+  const serviceType = typeof value.serviceType === "string" ? value.serviceType.trim() : "Estimate";
+
+  if (!Number.isInteger(slotId) || slotId <= 0 || !name || (!email && !phone)) {
+    return { error: "slotId, name and either email or phone are required" };
+  }
+  if (name.length > 255 || email.length > 255 || phone.length > 50 || address.length > 2_000 || notes.length > 4_000 || serviceType.length > 100) {
+    return { error: "One or more appointment fields exceed the allowed length" };
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: "Email format is invalid" };
+  }
+
+  return { value: { slotId, name, email, phone, address, notes, serviceType } };
+}
 
 // helper to format datetimes for calendar URLs
 function toCalendarStamp(date) {
@@ -14,6 +65,10 @@ function toCalendarStamp(date) {
 
 // List upcoming appointments (ADMIN)
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const url = new URL(request.url);
     const from = url.searchParams.get("from");
@@ -58,83 +113,54 @@ export async function GET(request) {
 
 // Create a booking (public)
 export async function POST(request) {
+  const limited = appointmentLimiter(request);
+  if (limited) return limited;
+
   try {
-    const body = await request.json();
-    const {
-      slotId,
-      name,
-      email = "",
-      phone = "",
-      address = "",
-      notes = "",
-      serviceType = "Estimate",
-    } = body || {};
+    const parsed = validateAppointmentInput(await request.json().catch(() => null));
+    if (parsed.error) return Response.json({ error: parsed.error }, { status: 400 });
+    const { slotId, name, email, phone, address, notes, serviceType } = parsed.value;
 
-    if (!slotId || !name || (!email && !phone)) {
-      return Response.json(
-        { error: "slotId, name and either email or phone are required" },
-        { status: 400 },
-      );
-    }
-
-    // Create a lead first (email/phone may be empty strings to satisfy NOT NULL)
-    const leadRows = await sql`
-      INSERT INTO leads (name, email, phone, service_type, status, lead_source, address, follow_up_date)
-      VALUES (
-        ${name.trim()},
-        ${email.trim().toLowerCase()},
-        ${phone.trim()},
-        ${serviceType},
-        'estimate_scheduled',
-        'website',
-        ${address},
-        (SELECT slot_date FROM availability_slots WHERE id = ${slotId} LIMIT 1)
-      )
-      RETURNING id
-    `;
-
-    const leadId = leadRows[0]?.id;
-
-    // Guarded insert into appointments to prevent overbooking using a CTE and row lock
-    const rows = await sql(
-      `
-      WITH slot AS (
-        SELECT s.id, s.capacity, s.status
-        FROM availability_slots s
-        WHERE s.id = $1 AND s.slot_date > CURRENT_DATE
+    // Lock the slot, then create both records in one transaction. A failed or
+    // full slot leaves no orphan CRM lead behind.
+    const booking = await sql.transaction(async (txSql) => {
+      const slots = await txSql`
+        SELECT id, slot_date, start_time, end_time, capacity, status
+        FROM availability_slots
+        WHERE id = ${slotId} AND slot_date > CURRENT_DATE
         FOR UPDATE
-      ),
-      booked AS (
-        SELECT COUNT(*)::int AS cnt FROM appointments a WHERE a.slot_id = $1 AND a.status = 'booked'
-      )
-      INSERT INTO appointments (slot_id, lead_id, name, email, phone, address, notes, status)
-      SELECT $1, $2, $3, $4, $5, $6, $7, 'booked'
-      FROM slot, booked
-      WHERE slot.status = 'open' AND (slot.capacity - booked.cnt) > 0
-      RETURNING id
-    `,
-      [
-        slotId,
-        leadId || null,
-        name.trim(),
-        email.trim().toLowerCase(),
-        phone.trim(),
-        address,
-        notes,
-      ],
-    );
+      `;
+      const slot = slots[0];
+      if (!slot || slot.status !== "open") return null;
 
-    if (!rows[0]) {
+      const booked = await txSql`
+        SELECT COUNT(*)::int AS count FROM appointments
+        WHERE slot_id = ${slotId} AND status = 'booked'
+      `;
+      if ((booked[0]?.count || 0) >= slot.capacity) return null;
+
+      const leads = await txSql`
+        INSERT INTO leads (name, email, phone, service_type, status, lead_source, address, follow_up_date)
+        VALUES (${name}, ${email}, ${phone}, ${serviceType}, 'estimate_scheduled', 'website', ${address}, ${slot.slot_date})
+        RETURNING id
+      `;
+      const leadId = leads[0]?.id;
+      const appointments = await txSql`
+        INSERT INTO appointments (slot_id, lead_id, name, email, phone, address, notes, status)
+        VALUES (${slotId}, ${leadId}, ${name}, ${email}, ${phone}, ${address}, ${notes}, 'booked')
+        RETURNING id
+      `;
+      return { appointmentId: appointments[0]?.id, leadId, slot };
+    });
+
+    if (!booking?.appointmentId) {
       return Response.json(
         { error: "Selected time is no longer available" },
         { status: 409 },
       );
     }
 
-    // Fetch slot details for calendar invite
-    const slotInfo =
-      await sql`SELECT slot_date, start_time, end_time FROM availability_slots WHERE id = ${slotId} LIMIT 1`;
-    const s = slotInfo[0];
+    const { leadId, appointmentId, slot: s } = booking;
 
     // Build event datetimes
     const startLocal = new Date(
@@ -159,13 +185,13 @@ export async function POST(request) {
       "CALSCALE:GREGORIAN",
       "METHOD:REQUEST",
       "BEGIN:VEVENT",
-      `UID:appointment-${rows[0].id}@arcanpainting.ca`,
+      `UID:appointment-${appointmentId}@arcanpainting.ca`,
       `DTSTAMP:${toCalendarStamp(new Date())}`,
       `DTSTART:${startStamp}`,
       `DTEND:${endStamp}`,
-      `SUMMARY:${title}`,
-      `DESCRIPTION:${description}`,
-      `LOCATION:${location}`,
+      `SUMMARY:${escapeIcsText(title)}`,
+      `DESCRIPTION:${escapeIcsText(description)}`,
+      `LOCATION:${escapeIcsText(location)}`,
       "END:VEVENT",
       "END:VCALENDAR",
     ].join("\r\n");
@@ -179,10 +205,10 @@ export async function POST(request) {
     const htmlBody = (recipientName) => `
       <div style="font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:#0f172a">
         <h2 style="margin:0 0 8px">You're booked!</h2>
-        <p style="margin:0 0 12px">${recipientName ? `${recipientName}, ` : ""}we scheduled your on‑site estimate.</p>
+        <p style="margin:0 0 12px">${recipientName ? `${escapeHtml(recipientName)}, ` : ""}we scheduled your on‑site estimate.</p>
         <ul style="padding:0;margin:0 0 12px;list-style:none">
           <li><strong>When:</strong> ${startLocal.toLocaleString()} – ${endLocal.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</li>
-          <li><strong>Where:</strong> ${location}</li>
+          <li><strong>Where:</strong> ${escapeHtml(location)}</li>
         </ul>
         <p style="margin:12px 0">
           <a href="${googleUrl}" style="background:#f59e0b;color:#111827;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600">Add to Google Calendar</a>
@@ -205,7 +231,7 @@ export async function POST(request) {
       // Team notification
       await sendEmail({
         to: notifyTo,
-        subject: `New estimate booked: ${name}`,
+        subject: `New estimate booked: ${toEmailHeaderValue(name)}`,
         html: htmlBody("Team"),
         text: `New estimate. Client: ${name}. When: ${startLocal.toISOString()} - ${endLocal.toISOString()} Where: ${location}. Add to Google: ${googleUrl}`,
       });
@@ -214,7 +240,7 @@ export async function POST(request) {
       // Do not fail the booking if emails fail
     }
 
-    return Response.json({ success: true, appointmentId: rows[0].id, leadId });
+    return Response.json({ success: true, appointmentId, leadId });
   } catch (error) {
     console.error("Error booking appointment:", error);
     return Response.json(

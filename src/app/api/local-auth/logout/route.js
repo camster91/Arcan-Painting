@@ -14,11 +14,10 @@ function makeCookie(name, value, maxAgeSeconds) {
   if (maxAgeSeconds !== undefined && maxAgeSeconds !== null) {
     parts.push(`Max-Age=${maxAgeSeconds}`);
   }
-  try {
-    if (process.env.AUTH_URL && process.env.AUTH_URL.startsWith("https")) {
-      parts.push("Secure");
-    }
-  } catch {}
+  const appUrl = process.env.PUBLIC_APP_URL || process.env.APP_URL || "";
+  if (appUrl.startsWith("https://")) {
+    parts.push("Secure");
+  }
   return parts.join("; ");
 }
 
@@ -45,7 +44,9 @@ export async function POST(request) {
         if (sessionUser) {
           await auditLog({ request, action: "logout", userId: sessionUser.id, username: sessionUser.username, status: "success" });
         }
-      } catch {}
+      } catch (auditError) {
+        console.error("Logout audit log failed:", auditError);
+      }
     }
 
     const clearSessionCookie = makeCookie("admin_session", "", 0);

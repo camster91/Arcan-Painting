@@ -330,11 +330,13 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
             </div>
             <div className="relative">
               <Search
-                className="absolute left-3 top-2 text-slate-400"
                 size={16}
+                aria-hidden="true"
+                className="absolute left-3 top-2 text-slate-500"
               />
               <input
                 type="text"
+                aria-label="Search reports"
                 placeholder="Search reports..."
                 value={filters.search}
                 onChange={(e) =>

@@ -2,62 +2,17 @@
 
 export const seoConfig = {
   siteName: "Arcan Painting",
-  defaultTitle:
-    "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
-  defaultDescription:
-    "Professional Toronto painting services for residential and commercial properties. Family-owned business serving the GTA with generations of craftsmanship. Licensed, insured, and quality guaranteed. Get your free Toronto estimate today.",
+  defaultTitle: "Arcan Painting",
+  defaultDescription: "Contact Arcan Painting to discuss a project.",
   siteUrl: "https://arcanpainting.ca",
   logoUrl: "https://arcanpainting.ca/logo.png",
   socialImageUrl: "https://arcanpainting.ca/logo.png",
   twitterHandle: "@arcanpainting",
   businessEmail: "info@arcanpainting.ca",
   businessPhone: "", // Add when available
-  businessAddress: {
-    streetAddress: "Greater Toronto Area",
-    addressLocality: "Toronto",
-    addressRegion: "ON",
-    postalCode: "",
-    addressCountry: "CA",
-  },
-  coordinates: {
-    latitude: "43.6532",
-    longitude: "-79.3832",
-  },
-  serviceAreas: [
-    // GTA
-    "Toronto",
-    "Mississauga",
-    "Brampton",
-    "Oakville",
-    "Burlington",
-    "Milton",
-    "Pickering",
-    "Ajax",
-    "Whitby",
-    "Oshawa",
-    // York Region
-    "Newmarket",
-    "Aurora",
-    "Richmond Hill",
-    "Markham",
-    "Vaughan",
-    "King City",
-    "Stouffville",
-    "Georgina",
-    "East Gwillimbury",
-    "Whitchurch-Stouffville",
-    // Simcoe County
-    "Barrie",
-    "Orillia",
-    "Innisfil",
-    "Bradford",
-    "Alliston",
-    "Collingwood",
-    "Wasaga Beach",
-    "Midland",
-    "Penetanguishene",
-    "New Tecumseth",
-  ],
+  businessAddress: {},
+  coordinates: {},
+  serviceAreas: [],
   services: [
     "Interior Painting",
     "Exterior Painting",
@@ -145,38 +100,10 @@ export function generateLocalBusinessSchema() {
     logo: seoConfig.logoUrl,
     image: seoConfig.socialImageUrl,
     email: seoConfig.businessEmail,
-    address: {
-      "@type": "PostalAddress",
-      ...seoConfig.businessAddress,
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: seoConfig.coordinates.latitude,
-      longitude: seoConfig.coordinates.longitude,
-    },
-    areaServed: seoConfig.serviceAreas.map((area) => ({
-      "@type": "City",
-      name: area,
-      addressRegion: "ON",
-      addressCountry: "CA",
-    })),
-    serviceArea: {
-      "@type": "GeoCircle",
-      geoMidpoint: {
-        "@type": "GeoCoordinates",
-        latitude: seoConfig.coordinates.latitude,
-        longitude: seoConfig.coordinates.longitude,
-      },
-      geoRadius: "120000", // 120km radius — covers GTA, York Region, and Simcoe County
-    },
-    priceRange: "$$",
-    openingHours: "Mo-Fr 07:00-18:00, Sa 08:00-16:00",
-    currenciesAccepted: "CAD",
-    paymentAccepted: ["Cash", "Check", "Credit Card", "Bank Transfer"],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Painting Services",
-      itemListElement: seoConfig.services.map((service, index) => ({
+      itemListElement: seoConfig.services.map((service) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
@@ -188,15 +115,6 @@ export function generateLocalBusinessSchema() {
         },
       })),
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "18",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-    ],
   };
 }
 

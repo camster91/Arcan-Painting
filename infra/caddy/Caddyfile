@@ -38,7 +38,26 @@ alinenasseh.com, www.alinenasseh.com {
 # (the global on_demand_tls block at the top authorizes via the
 # contraction-tracker SPA fallback).
 arcanpainting.ca, www.arcanpainting.ca {
-  reverse_proxy 127.0.0.1:3000
+  encode gzip zstd
+
+  # Apply these browser protections to both public pages and the CRM API.
+  # A strict Content-Security-Policy is intentionally not set here until the
+  # existing third-party image and integration origins are inventoried.
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Frame-Options "SAMEORIGIN"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    Permissions-Policy "camera=(), geolocation=(), microphone=()"
+  }
+
+  reverse_proxy 127.0.0.1:3000 {
+    # Overwrite, never append, client-provided forwarding headers before the
+    # app's trusted-proxy rate limiting reads them.
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+  }
 }
 
 # artisan.ashbi.ca — preview URL for the new PHP app

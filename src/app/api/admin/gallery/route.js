@@ -1,6 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
-import { analyzeImage } from "@/app/api/utils/vision-tagger";
+import { analyzeImage, ImageInputError } from "@/app/api/utils/vision-tagger";
 
 const CREATE_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS gallery_media (
@@ -55,6 +55,9 @@ export async function GET(request) {
 
     return Response.json({ items });
   } catch (err) {
+    if (err instanceof ImageInputError) {
+      return Response.json({ error: err.message }, { status: 400 });
+    }
     return Response.json({ error: err.message }, { status: 500 });
   }
 }
@@ -108,7 +111,9 @@ export async function POST(request) {
             ON CONFLICT (filename) DO NOTHING
           `;
           imported++;
-        } catch {}
+        } catch {
+          // A bad legacy tag must not prevent other gallery metadata imports.
+        }
       }
 
       return Response.json({ imported, total: Object.keys(staticTags).length });
