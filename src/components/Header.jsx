@@ -11,8 +11,6 @@ const SERVICES_NAV = [
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
 ];
 
-const LOCATIONS_NAV = [];
-
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -133,46 +131,6 @@ export default function Header() {
               )}
             </div>
 
-            {/* Locations mega menu */}
-            <div className="relative">
-              <button
-                className="flex items-center gap-1 text-base font-medium transition-colors py-2"
-                style={{ color: activeDropdown === "locations" ? "#f59e0b" : themeColors.textSecondary }}
-                onClick={() => toggleDropdown("locations")}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === "locations"}
-              >
-                Locations <ChevronDown size={16} className={`transition-transform ${activeDropdown === "locations" ? "rotate-180" : ""}`} />
-              </button>
-              {activeDropdown === "locations" && (
-                <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-4 z-50" style={{ minWidth: "560px" }}>
-                  <div className="px-5 pb-3 mb-3 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Service coverage confirmed with the team</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-0 px-4">
-                    {LOCATIONS_NAV.map((region) => (
-                      <div key={region.region} className="px-2">
-                        <p className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-3">{region.region}</p>
-                        <ul className="space-y-1">
-                          {region.cities.map((city) => (
-                            <li key={city.slug}>
-                              <a
-                                href={`/interior-painting/${city.slug}`}
-                                className="text-sm text-slate-700 hover:text-amber-600 hover:font-medium transition-colors block py-0.5"
-                                onClick={() => setActiveDropdown(null)}
-                              >
-                                {city.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Regular nav items */}
             {[
               { label: "Portfolio", href: "#portfolio" },
@@ -209,8 +167,8 @@ export default function Header() {
               onClick={() => setIsLeadFormOpen(true)}
             >
               <span className="relative z-10 inline-flex items-center gap-2">
-                <span className="hidden sm:inline">Get Free Estimate</span>
-                <span className="sm:hidden whitespace-nowrap">Get Quote</span>
+                <span className="hidden sm:inline">Discuss Your Project</span>
+                <span className="sm:hidden whitespace-nowrap">Contact</span>
                 <ChevronRight size={18} className="hidden sm:inline" aria-hidden="true" />
               </span>
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(to right, #fbbf24, #f59e0b)" }} />
@@ -285,48 +243,6 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Locations accordion */}
-                <div>
-                  <button
-                    className="flex items-center justify-between w-full px-3 py-4 rounded-lg font-medium text-base"
-                    style={{ color: themeColors.text }}
-                    onClick={() => setMobileExpanded(mobileExpanded === "locations" ? null : "locations")}
-                  >
-                    Locations
-                    <ChevronDown size={16} className={`transition-transform ${mobileExpanded === "locations" ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileExpanded === "locations" && (
-                    <div className="pl-2 pb-2 space-y-2">
-                      {LOCATIONS_NAV.map((region) => (
-                        <div key={region.region}>
-                          <button
-                            className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold text-amber-600 uppercase tracking-wide"
-                            onClick={() => setMobileExpanded(mobileExpanded === region.region ? "locations" : region.region)}
-                          >
-                            {region.region}
-                            <ChevronDown size={12} className={`transition-transform ${mobileExpanded === region.region ? "rotate-180" : ""}`} />
-                          </button>
-                          {mobileExpanded === region.region && (
-                            <div className="pl-4 grid grid-cols-2 gap-1 pb-2">
-                              {region.cities.map((city) => (
-                                <a
-                                  key={city.slug}
-                                  href={`/interior-painting/${city.slug}`}
-                                  className="block px-2 py-2 text-sm rounded-lg hover:bg-amber-50"
-                                  style={{ color: themeColors.textSecondary }}
-                                  onClick={() => setIsMenuOpen(false)}
-                                >
-                                  {city.name}
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
                 {[
                   { label: "Portfolio", href: "#portfolio" },
                   { label: "FAQ", href: "#faq" },
@@ -362,7 +278,7 @@ export default function Header() {
                 className="w-full py-4 rounded-lg font-semibold text-lg"
                 style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
               >
-                Get Free Estimate
+                Discuss Your Project
               </button>
             </div>
           </div>
