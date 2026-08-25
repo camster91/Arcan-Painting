@@ -45,6 +45,9 @@ export async function POST(request) {
     // Use real transaction for atomicity
     await sql.transaction(async (txSql) => {
       await txSql`UPDATE auth_users SET password = ${hashed}, password_is_hashed = TRUE WHERE id = ${row.user_id}`;
+      // A reset is the recovery path for a potentially compromised account.
+      // Revoke every existing browser/API session before marking the token used.
+      await txSql`UPDATE auth_sessions SET deleted_at = NOW() WHERE user_id = ${row.user_id} AND deleted_at IS NULL`;
       await txSql`UPDATE password_reset_tokens SET used = TRUE WHERE id = ${row.id}`;
     });
 

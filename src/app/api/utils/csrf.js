@@ -21,6 +21,19 @@ import { randomBytes } from "crypto";
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 /**
+ * State-changing API requests that carry the browser session cookie must
+ * prove same-origin intent. Public webhooks and anonymous lead forms have no
+ * session cookie, while bearer-token and server-to-server requests do not
+ * depend on ambient browser credentials and are protected by their own
+ * authentication checks.
+ */
+export function shouldRequireCsrf(request) {
+  if (SAFE_METHODS.has(request.method)) return false;
+  const cookies = parseCookies(request.headers.get("cookie"));
+  return Boolean(cookies.admin_session);
+}
+
+/**
  * Generate a new CSRF token (32 random bytes → 64 hex chars).
  */
 export function generateCsrfToken() {

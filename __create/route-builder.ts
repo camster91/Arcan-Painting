@@ -1,9 +1,27 @@
 import { Hono } from 'hono';
 import type { Handler } from 'hono/types';
 import updatedFetch from '../src/__create/fetch';
+import { requireAdmin } from '../src/app/api/utils/auth.js';
+import { requireCsrf, shouldRequireCsrf } from '../src/app/api/utils/csrf.js';
+import { requiresAdminApiAccess } from '../src/app/api/utils/api-access-policy.js';
 
 const API_BASENAME = '/api';
 const api = new Hono();
+
+// Enforce the double-submit CSRF check once for every unsafe API request made
+// with the ambient browser session. Route handlers retain their authorization
+// and input-validation responsibilities; this protects existing and future
+// authenticated mutation routes from being missed by a route-local check.
+api.use('*', async (c, next) => {
+  if (requiresAdminApiAccess(c.req.path) && !(await requireAdmin(c.req.raw))) {
+    return c.json({ error: 'Forbidden' }, 403);
+  }
+  if (shouldRequireCsrf(c.req.raw)) {
+    const csrfError = requireCsrf(c.req.raw);
+    if (csrfError) return csrfError;
+  }
+  return next();
+});
 
 if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production' && globalThis.fetch) {
   globalThis.fetch = updatedFetch;

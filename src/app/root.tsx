@@ -29,19 +29,14 @@ if (typeof window !== 'undefined') {
 
 // CSRF: inject x-csrf-token from the arcan_csrf cookie on every state-changing
 // /api/* request. Patched once on module load so we don't need to touch 50+
-// fetch call sites. Public/unauthenticated endpoints (login, contact, quote,
-// webhook) are skipped so they don't carry a stale token.
+// fetch call sites. The login endpoint is unauthenticated; every other
+// state-changing API request carries the token when a logged-in browser has
+// one, including public forms submitted from an admin session.
 if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
   window.__arcanCsrfPatched = true;
   const originalFetch = window.fetch.bind(window);
   const CSRF_EXEMPT_PREFIXES = [
     '/api/local-auth/login',
-    '/api/local-auth/logout',
-    '/api/contact',
-    '/api/quote',
-    '/api/lead-webhook/',
-    '/api/stripe-webhook',
-    '/api/health',
   ];
   const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
   window.fetch = function patchedFetch(input, init) {
