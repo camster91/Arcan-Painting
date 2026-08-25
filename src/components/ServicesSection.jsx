@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Home,
   Building,
@@ -6,16 +6,13 @@ import {
   Shield,
   Wallpaper,
   Star,
-  CheckCircle2,
-  Award,
-  Clock,
   Brush,
 } from "lucide-react";
 import { useTheme } from "@/utils/useTheme";
 import LeadFormPopup from "./LeadFormPopup";
 
 // ─── Reusable Service Card ────────────────────────────────────────────────────
-function ServiceCard({ service, index, isVisible, isFlipped, onFlip, onQuote }) {
+function ServiceCard({ service, isFlipped, onQuote }) {
   if (service.isCTA) {
     return (
       <div className="relative h-full w-full rounded-3xl overflow-hidden">
@@ -153,7 +150,7 @@ function ServiceCard({ service, index, isVisible, isFlipped, onFlip, onQuote }) 
 }
 
 // ─── Mobile Carousel Card (no flip — simple tap) ──────────────────────────────
-function ServiceCarouselCard({ service, index, onQuote }) {
+function ServiceCarouselCard({ service, onQuote }) {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -240,7 +237,7 @@ export default function ServicesSection() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
-  const { mounted } = useTheme(); // Remove isDark, only use mounted
+  useTheme();
 
   useEffect(() => {
     const observer = new IntersectionObserver(

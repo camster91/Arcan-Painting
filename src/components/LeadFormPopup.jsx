@@ -38,7 +38,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
     [],
   );
   const isPhoneValid = useCallback(
-    (value) => /^[\d\s\-\(\)\+]+$/.test(value),
+    (value) => /^[\d\s()+-]+$/.test(value),
     [],
   );
 

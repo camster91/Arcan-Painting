@@ -12,11 +12,10 @@ import {
   Shield,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { useTheme, getThemeColors } from "@/utils/useTheme";
+import { useTheme } from "@/utils/useTheme";
 
 export default function ContactSection() {
-  const { mounted } = useTheme();
-  const themeColors = getThemeColors(false); // Always use light mode colors
+  useTheme();
 
   // Quiz-style state
   const [step, setStep] = useState(0);
@@ -41,7 +40,7 @@ export default function ContactSection() {
     [],
   );
   const isPhoneValid = useCallback(
-    (value) => /^[\d\s\-\(\)\+]+$/.test(value),
+    (value) => /^[\d\s()+-]+$/.test(value),
     [],
   );
 
