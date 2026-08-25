@@ -1,6 +1,11 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
-import { getCurrentUser } from "@/app/api/utils/auth";
+import { generateSecureToken, getCurrentUser } from "@/app/api/utils/auth";
+import { requireCsrf } from "@/app/api/utils/csrf";
+import { ensureSchema } from "@/migrations/001-initial-schema";
+
+const INVITABLE_ROLES = new Set(["painter", "owner"]);
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function requireOwner(request) {
   const user = await getCurrentUser(request);
@@ -10,99 +15,61 @@ async function requireOwner(request) {
 }
 
 function buildBaseUrl(request) {
-  // Prefer configured public URLs first
-  try {
-    if (process.env.PUBLIC_APP_URL) return process.env.PUBLIC_APP_URL;
-    if (process.env.APP_URL) return process.env.APP_URL;
-  } catch {}
-  // Respect proxy headers commonly set by hosting providers
-  const xfProto = request.headers.get("x-forwarded-proto");
-  const xfHost = request.headers.get("x-forwarded-host");
-  const host = xfHost || request.headers.get("host") || "localhost:4000";
-  const proto = xfProto || (host.includes("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
+  const configuredUrl = process.env.PUBLIC_APP_URL || process.env.APP_URL;
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
 
-async function ensureTables() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) DEFAULT 'owner',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS auth_sessions (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES auth_users(id) ON DELETE CASCADE,
-      token VARCHAR(255) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      expires_at TIMESTAMP NOT NULL
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS team_members (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email VARCHAR(255) UNIQUE NOT NULL,
-      phone VARCHAR(50),
-      role VARCHAR(50) NOT NULL DEFAULT 'painter',
-      hire_date DATE,
-      hourly_rate NUMERIC(8,2),
-      status VARCHAR(50) DEFAULT 'active',
-      specialties TEXT,
-      notes TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS team_invites (
-      id SERIAL PRIMARY KEY,
-      email VARCHAR(255) NOT NULL,
-      role VARCHAR(50) NOT NULL DEFAULT 'painter',
-      token VARCHAR(255) UNIQUE NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      accepted_at TIMESTAMP,
-      created_by_user_id INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-  await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_email ON team_invites(email)`;
-  await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_token ON team_invites(token)`;
-  // Ensure admin seeded and owner
-  await sql`
-    INSERT INTO auth_users (username, password, role)
-    VALUES ('admin', 'admin', 'owner')
-    ON CONFLICT (username) DO NOTHING`;
-  await sql`UPDATE auth_users SET role = 'owner' WHERE username = 'admin' AND role <> 'owner'`;
+  // A production invite is a credential-delivery channel. Refuse to derive
+  // its origin from request headers when the canonical public URL is missing.
+  if (process.env.NODE_ENV === "production") return null;
+  return new URL(request.url).origin;
 }
 
 export async function POST(request) {
   try {
-    await ensureTables();
+    const csrfError = requireCsrf(request);
+    if (csrfError) return csrfError;
+
     const owner = await requireOwner(request);
     if (!owner) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    await ensureSchema();
+
     const body = await request.json();
     const email = (body.email || "").trim().toLowerCase();
     const role = (body.role || "painter").trim();
-    // Optional override, useful to force production URLs from any environment
-    const bodyBaseUrl = (body.baseUrl || "").trim();
-    if (!email) {
-      return Response.json({ error: "Email is required" }, { status: 400 });
+    if (!EMAIL_PATTERN.test(email)) {
+      return Response.json({ error: "A valid email is required" }, { status: 400 });
+    }
+    if (!INVITABLE_ROLES.has(role)) {
+      return Response.json({ error: "Invalid invitation role" }, { status: 400 });
     }
 
-    // generate token
-    const token = `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    const computedBaseUrl = buildBaseUrl(request);
+    if (!computedBaseUrl) {
+      return Response.json({ error: "The public app URL is not configured" }, { status: 503 });
+    }
+
+    const token = generateSecureToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    await sql`
-      INSERT INTO team_invites (email, role, token, expires_at, created_by_user_id)
-      VALUES (${email}, ${role}, ${token}, ${expiresAt.toISOString()}, ${owner.id})
-    `;
+    // A resend must invalidate every previous unaccepted link for this email.
+    // Serialize replacements per normalized address so simultaneous requests
+    // cannot both observe no pending invite and create separate usable links.
+    await sql.transaction(async (tx) => {
+      await tx`SELECT pg_advisory_xact_lock(hashtext(${email}))`;
+      await tx`
+        UPDATE team_invites
+        SET accepted_at = NOW()
+        WHERE email = ${email} AND accepted_at IS NULL
+      `;
+      await tx`
+        INSERT INTO team_invites (email, role, token, expires_at, created_by_user_id)
+        VALUES (${email}, ${role}, ${token}, ${expiresAt.toISOString()}, ${owner.id})
+      `;
+    });
 
-    const computedBaseUrl = bodyBaseUrl || buildBaseUrl(request);
     const acceptUrl = `${computedBaseUrl}/account/accept-invite?token=${encodeURIComponent(token)}`;
 
     // Professional email template (HTML + text)
@@ -144,17 +111,16 @@ export async function POST(request) {
     `;
 
     try {
-      await sendEmail({
-        to: email,
-        subject,
-        text,
-        html,
-      });
+      await sendEmail({ to: email, subject, text, html });
     } catch (err) {
       console.error("Invite email error:", err);
+      return Response.json(
+        { error: "Invitation was created, but email delivery failed. Check the email configuration before sending another invite." },
+        { status: 502 },
+      );
     }
 
-    return Response.json({ success: true, acceptUrl });
+    return Response.json({ success: true });
   } catch (error) {
     console.error("Team invite error:", error);
     return Response.json({ error: "Failed to create invite" }, { status: 500 });

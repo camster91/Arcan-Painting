@@ -197,6 +197,7 @@ class ErrorBoundaryWrapper extends Component<ErrorBoundaryProps, ErrorBoundarySt
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location?.pathname;
+  const isAccountPage = pathname?.startsWith('/account/');
 
   // Per-page meta description. Default is the home/company-wide description;
   // specific routes get a route-specific one so Google doesn't see four pages
@@ -329,7 +330,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
         <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
         {/* SEO: Robots meta */}
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content={isAccountPage ? "noindex, nofollow" : "index, follow"} />
         {/* Performance: Preload hero images (critical above-fold) */}
         <link
           rel="preload"

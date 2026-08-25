@@ -7,12 +7,10 @@ import { generateSecureToken } from "@/app/api/utils/auth";
 import { ensureSchema } from "@/migrations/001-initial-schema";
 
 function buildBaseUrl(request) {
-  try {
-    if (process.env.PUBLIC_APP_URL) return process.env.PUBLIC_APP_URL;
-  } catch {}
-  const proto = request.headers.get("x-forwarded-proto") || "https";
-  const host = request.headers.get("host") || "localhost:4000";
-  return `${proto}://${host}`;
+  const configuredUrl = process.env.PUBLIC_APP_URL || process.env.APP_URL;
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production") return null;
+  return new URL(request.url).origin;
 }
 
 export async function POST(request) {
@@ -65,6 +63,10 @@ export async function POST(request) {
     });
 
     const baseUrl = buildBaseUrl(request);
+    if (!baseUrl) {
+      console.error("Password reset email skipped: PUBLIC_APP_URL or APP_URL is not configured");
+      return genericResponse;
+    }
     const resetUrl = `${baseUrl}/account/reset-password?token=${encodeURIComponent(token)}`;
 
     try {

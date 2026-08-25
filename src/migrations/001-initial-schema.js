@@ -373,6 +373,22 @@ export async function runMigrations() {
       )
     `;
 
+    // ── team_invites ────────────────────────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS team_invites (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'painter',
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        accepted_at TIMESTAMP,
+        created_by_user_id INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_email ON team_invites(email)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_team_invites_token ON team_invites(token)`;
+
     // ── email_logs (added 2026-06-11) ────────────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS email_logs (
