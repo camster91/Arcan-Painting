@@ -62,7 +62,9 @@ services:
       SENTRY_DSN: ""
       NEXT_PUBLIC_SENTRY_DSN: ""
     ports:
-      - "3000:3000"
+      # The VPS Caddy process is the only public ingress. Keep the application
+      # itself loopback-bound so callers cannot spoof proxy forwarding headers.
+      - "127.0.0.1:3000:3000"
     volumes:
       # DEV ONLY — remove these mount lines before prod deploy (they shadow
       # the image's versions). See CLAUDE.md Known Caveats.
