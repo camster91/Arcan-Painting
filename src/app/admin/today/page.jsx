@@ -233,7 +233,8 @@ export default function TodayOperationsPage() {
               <div className="relative">
                 <Search
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  aria-hidden="true"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
                 />
                 <input
                   aria-label="Search today's projects"

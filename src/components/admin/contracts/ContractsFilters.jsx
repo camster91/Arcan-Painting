@@ -11,7 +11,7 @@ export function ContractsFilters({
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Search */}
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-5 h-5" />
           <input
             type="text"
             aria-label="Search contracts"

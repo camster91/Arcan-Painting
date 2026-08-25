@@ -59,7 +59,8 @@ export default function ClientsPage() {
           <div className="mt-4 relative max-w-md">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              aria-hidden="true"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
             />
             <input
               aria-label="Search clients"
@@ -89,9 +90,9 @@ export default function ClientsPage() {
                 className="bg-white border border-slate-200 rounded-xl p-5"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-900 truncate">
+                  <h2 className="text-lg font-semibold text-slate-900 truncate">
                     {c.name}
-                  </h3>
+                  </h2>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-200">
                     Won
                   </span>

@@ -469,6 +469,8 @@ export default function PortfolioSection() {
             <img
               src={`/gallery/images/${currentItem.file}`}
               alt={currentItem.altText}
+              loading="eager"
+              decoding="async"
               className="max-w-full max-h-full object-contain"
               style={{ imageOrientation: "from-image" }}
             />

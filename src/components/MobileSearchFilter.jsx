@@ -158,12 +158,13 @@ export default function MobileSearchFilter({
       <div className="p-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-slate-400" />
+            <Search size={18} aria-hidden="true" className="text-slate-500" />
           </div>
 
           <input
             ref={searchInputRef}
             type="text"
+            aria-label={placeholder}
             placeholder={placeholder}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
