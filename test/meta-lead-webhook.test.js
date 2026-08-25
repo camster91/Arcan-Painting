@@ -66,8 +66,9 @@ describe("POST /api/lead-webhook/meta", () => {
     }));
     expect(notifyGerardo).toHaveBeenCalledOnce();
     expect(sendLeadEvent).toHaveBeenCalledWith(expect.objectContaining({ leadId: "lead-123" }));
+    const baseUrl = process.env.APP_URL || "https://example.test";
     expect(fetch).toHaveBeenCalledWith(
-      "https://example.test/api/agents/lead-qualifier",
+      `${baseUrl}/api/agents/lead-qualifier`,
       expect.any(Object),
     );
   });
