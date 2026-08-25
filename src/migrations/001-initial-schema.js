@@ -157,6 +157,10 @@ export async function runMigrations() {
     `;
     await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_username ON auth_verification_codes(username)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_auth_codes_code ON auth_verification_codes(code)`;
+    // Persist brute-force protection with each issued code so an application
+    // restart cannot reset the verification-attempt budget.
+    await sql`ALTER TABLE auth_verification_codes ADD COLUMN IF NOT EXISTS failed_attempts INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE auth_verification_codes ADD COLUMN IF NOT EXISTS locked_at TIMESTAMP`;
 
     // ── agent_runs (from agents/migrate.js) ─────────────────────────────────
     await sql`
