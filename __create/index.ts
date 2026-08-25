@@ -136,17 +136,22 @@ app.all('/api/*', (c) => {
 
 
 
-// Run password migration on startup (hash any remaining plain-text passwords).
-// IMPORTANT: ensureSchema() must run first so the `auth_users` table exists;
-// otherwise the migration tries to ALTER a non-existent table and the boot
-// log gets an ugly "relation does not exist" error. Schema is idempotent
-// (CREATE TABLE IF NOT EXISTS) so calling it on every boot is safe.
-await ensureSchema().catch((err) => {
-  console.error('[startup] ensureSchema failed:', err?.message || err);
-});
-migratePasswords().catch((err) =>
-  console.error('[startup] Password migration failed:', err)
-);
+// Run database migrations before accepting requests when persistence is
+// configured. Public pages must remain available without a database (for
+// example, in a static smoke-test environment), while database-backed routes
+// will still report their own configuration error if called.
+//
+// Password migration follows a successful schema migration so it cannot run
+// against a missing auth_users table.
+if (process.env.DATABASE_URL) {
+  await ensureSchema()
+    .then(() => migratePasswords())
+    .catch((err) => {
+      console.error('[startup] Database migrations failed:', err?.message || err);
+    });
+} else {
+  console.warn('[startup] DATABASE_URL not set; persistence routes are unavailable');
+}
 
 // Override the publicAssets root. The upstream library defaults to
 // `${BUILD_DIR}/client` (same as clientAssets) for the public assets
@@ -162,9 +167,16 @@ const publicAssetsRoot = process.env.NODE_ENV === "production"
   ? "./public"
   : "./public";
 
-export default await createHonoServer({
-  app,
+// Do not top-level-await this promise. The Hono server imports the React
+// Router server build asynchronously; top-level await can deadlock when both
+// builds share a chunk in the production bundle.
+export default createHonoServer({
   defaultLogger: false,
+  configure(server) {
+    // Mount our API, XML, and defensive API 404 routes before the React
+    // Router catch-all is registered by createHonoServer.
+    server.route('/', app);
+  },
   serveStaticOptions: {
     publicAssets: { root: publicAssetsRoot },
   },

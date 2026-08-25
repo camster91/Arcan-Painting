@@ -8,6 +8,10 @@
 # Vitest
 /.vitest/
 
+# Playwright
+/test-results/
+/playwright-report/
+
 # Environment
 .env
 
