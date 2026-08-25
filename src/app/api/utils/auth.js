@@ -47,7 +47,10 @@ export function parseCookies(cookieHeader) {
 export async function getCurrentUser(request) {
   try {
     await ensureSchema();
-  } catch {}
+  } catch {
+    // Fail closed when the authentication schema is unavailable.
+    return null;
+  }
 
   // 1. Try Authorization: Bearer header first (API clients / mobile)
   const authHeader = request.headers.get("authorization");

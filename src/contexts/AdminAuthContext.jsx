@@ -68,7 +68,9 @@ export function AdminAuthProvider({ children }) {
   const logout = useCallback(async () => {
     try {
       await fetch("/api/local-auth/logout", { method: "POST", credentials: "include" });
-    } catch {}
+    } catch {
+      // Navigation still clears a locally stale session when the request fails.
+    }
     window.location.replace("/account/signin");
   }, []);
 

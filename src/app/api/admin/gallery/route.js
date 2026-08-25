@@ -108,7 +108,9 @@ export async function POST(request) {
             ON CONFLICT (filename) DO NOTHING
           `;
           imported++;
-        } catch {}
+        } catch {
+          // A bad legacy tag must not prevent other gallery metadata imports.
+        }
       }
 
       return Response.json({ imported, total: Object.keys(staticTags).length });

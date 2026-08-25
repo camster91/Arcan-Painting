@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Lint
+        run: bun run lint
+
       - name: Build
         run: bun run build
         env:
@@ -59,14 +62,14 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting 30s for deploy to start, then checking https://arcanpainting.ca..."
+          echo "Waiting 30s for deploy to start, then checking CRM readiness..."
           sleep 30
           RETRIES=5
           DELAY=10
           for i in $(seq 1 $RETRIES); do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://arcanpainting.ca)
-            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
-              echo "Health check passed (HTTP $HTTP_CODE)"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://arcanpainting.ca/api/health)
+            if [ "$HTTP_CODE" -eq 200 ]; then
+              echo "CRM readiness check passed (HTTP $HTTP_CODE)"
               exit 0
             fi
             echo "Attempt $i/$RETRIES: HTTP $HTTP_CODE, retrying in ${DELAY}s..."

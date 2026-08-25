@@ -91,7 +91,9 @@ function AdminLayoutContent({ children }) {
             : 0;
           setUnreadCount(n);
         }
-      } catch {}
+      } catch {
+        // Notification polling is best-effort; the next interval retries it.
+      }
     };
     load();
     const id = setInterval(load, 60000);

@@ -21,16 +21,11 @@ function makeCookie(name, value, maxAgeSeconds) {
   if (maxAgeSeconds !== undefined && maxAgeSeconds !== null) {
     parts.push(`Max-Age=${maxAgeSeconds}`);
   }
-  // Mark the cookie Secure whenever the app is served over HTTPS. The
-  // existing check looked for AUTH_URL which the project doesn't actually
-  // set; NEXTAUTH_URL is the env var the project uses.
-  try {
-    const env = process.env;
-    const url = env.NEXTAUTH_URL || env.AUTH_URL || env.APP_URL || "";
-    if (url.startsWith("https")) {
-      parts.push("Secure");
-    }
-  } catch {}
+  // Mark the cookie Secure whenever the configured application origin is HTTPS.
+  const appUrl = process.env.PUBLIC_APP_URL || process.env.APP_URL || "";
+  if (appUrl.startsWith("https://")) {
+    parts.push("Secure");
+  }
   return parts.join("; ");
 }
 

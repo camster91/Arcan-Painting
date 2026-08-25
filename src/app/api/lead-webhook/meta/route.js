@@ -234,24 +234,8 @@ export async function POST(request) {
           serviceType: lead.serviceType,
           request,
         });
-        // Fire-and-forget: route through existing email workflow engine (new_lead trigger)
-        try {
-          await triggerWorkflow("new_lead", {
-            customer_name: lead.name,
-            customer_email: lead.email,
-            customer_phone: lead.phone,
-            service_type: lead.serviceType,
-            project_description: lead.projectDescription,
-            address: lead.address,
-            related_type: "lead",
-            related_id: saved.lead?.id,
-            app_url: process.env.APP_URL,
-            admin_email: "info@arcanpainting.ca",
-            source: "meta_lead_ad",
-          });
-        } catch (wfErr) {
-          console.error("[meta-leads] workflow trigger failed:", wfErr.message);
-        }
+        // Email workflow dispatch is not implemented as a server-side helper.
+        // Do not invoke an unbound workflow from this public webhook.
         // Fire-and-forget: AI lead qualifier (mirrors contact route pattern)
         try {
           await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
@@ -272,7 +256,9 @@ export async function POST(request) {
         }
         try {
           await auditLog({ request, action: "meta_lead.received", resource: "lead", resourceId: saved.lead?.id, changes: { source: "meta", adId: lead.meta.adId } });
-        } catch {}
+        } catch (auditError) {
+          console.error("[meta-leads] audit log failed:", auditError.message);
+        }
       } catch (err) {
         console.error("[meta-leads] save failed:", err.message);
         results.push({ ok: false, error: err.message, meta: lead.meta });
