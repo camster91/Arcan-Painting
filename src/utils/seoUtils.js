@@ -2,62 +2,17 @@
 
 export const seoConfig = {
   siteName: "Arcan Painting",
-  defaultTitle:
-    "Arcan Painting - Professional Toronto Painting Services | Interior & Exterior Painters GTA",
-  defaultDescription:
-    "Interior, exterior, and commercial painting services for residential and commercial projects in Toronto and the Greater Toronto Area. Request an estimate from Arcan Painting.",
+  defaultTitle: "Arcan Painting",
+  defaultDescription: "Contact Arcan Painting to discuss a project.",
   siteUrl: "https://arcanpainting.ca",
   logoUrl: "https://arcanpainting.ca/logo.png",
   socialImageUrl: "https://arcanpainting.ca/logo.png",
   twitterHandle: "@arcanpainting",
   businessEmail: "info@arcanpainting.ca",
   businessPhone: "", // Add when available
-  businessAddress: {
-    streetAddress: "Greater Toronto Area",
-    addressLocality: "Toronto",
-    addressRegion: "ON",
-    postalCode: "",
-    addressCountry: "CA",
-  },
-  coordinates: {
-    latitude: "43.6532",
-    longitude: "-79.3832",
-  },
-  serviceAreas: [
-    // GTA
-    "Toronto",
-    "Mississauga",
-    "Brampton",
-    "Oakville",
-    "Burlington",
-    "Milton",
-    "Pickering",
-    "Ajax",
-    "Whitby",
-    "Oshawa",
-    // York Region
-    "Newmarket",
-    "Aurora",
-    "Richmond Hill",
-    "Markham",
-    "Vaughan",
-    "King City",
-    "Stouffville",
-    "Georgina",
-    "East Gwillimbury",
-    "Whitchurch-Stouffville",
-    // Simcoe County
-    "Barrie",
-    "Orillia",
-    "Innisfil",
-    "Bradford",
-    "Alliston",
-    "Collingwood",
-    "Wasaga Beach",
-    "Midland",
-    "Penetanguishene",
-    "New Tecumseth",
-  ],
+  businessAddress: {},
+  coordinates: {},
+  serviceAreas: [],
   services: [
     "Interior Painting",
     "Exterior Painting",

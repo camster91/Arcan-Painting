@@ -221,23 +221,23 @@ export function Layout({ children }: { children: ReactNode }) {
     switch (seg) {
       case "quote":
         return {
-          title: "Get a Free Painting Quote | Arcan Painting",
-          description: "Free instant painting quote for your Toronto or GTA project. Interior, exterior, commercial. Get a detailed estimate in 24 hours.",
+          title: "Project Inquiry | Arcan Painting",
+          description: "Tell Arcan Painting about your project and a team member can review the details with you.",
         };
       case "contact":
         return {
-          title: "Contact Arcan Painting | Free Painting Estimate",
-          description: "Get a free painting estimate in 24 hours. Call (416) 727-2148 or send a quick message — we serve Toronto, Mississauga, Brampton, Markham, and the GTA.",
+          title: "Contact Arcan Painting",
+          description: "Contact Arcan Painting to discuss your project.",
         };
       case "thank-you":
         return {
           title: "Thank You | Arcan Painting",
-          description: "We received your request and will be in touch within 24 hours. Book your free painting estimate online or call (416) 727-2148.",
+          description: "We received your request. A team member can review the details before confirming next steps.",
         };
       default:
         return {
-          title: "Arcan Painting | Professional Interior & Exterior Painting Services",
-          description: "Expert painting services for residential & commercial properties in Toronto and the GTA. Free estimates. Licensed & insured.",
+          title: "Arcan Painting | Project Inquiries",
+          description: "Contact Arcan Painting to discuss your project.",
         };
     }
   })();
@@ -269,7 +269,7 @@ export function Layout({ children }: { children: ReactNode }) {
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Arcan Painting",
-              "description": "Interior, exterior, and commercial painting services for residential and commercial projects in Toronto and the Greater Toronto Area.",
+              "description": "Contact Arcan Painting to discuss a project.",
               "url": "https://arcanpainting.ca",
               "email": "info@arcanpainting.ca",
               "image": "https://arcanpainting.ca/logo.png"
@@ -277,8 +277,8 @@ export function Layout({ children }: { children: ReactNode }) {
           }}
         />
         {/* Static OG meta tags for social crawlers (SSR-rendered) */}
-        <meta property="og:title" content="Arcan Painting | Painting Services in Toronto & the GTA" />
-        <meta property="og:description" content="Interior, exterior, and commercial painting services for residential and commercial projects. Request an estimate from Arcan Painting." />
+        <meta property="og:title" content="Arcan Painting" />
+        <meta property="og:description" content="Contact Arcan Painting to discuss a project." />
         <meta property="og:url" content="https://arcanpainting.ca" />
         <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
@@ -286,14 +286,14 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:image" content="https://arcanpainting.ca/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
+        <meta property="og:image:alt" content="Arcan Painting" />
         <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@arcanpainting" />
-        <meta name="twitter:title" content="Arcan Painting | Painting Services in Toronto & the GTA" />
-        <meta name="twitter:description" content="Interior, exterior, and commercial painting services for residential and commercial projects. Request an estimate from Arcan Painting." />
+        <meta name="twitter:title" content="Arcan Painting" />
+        <meta name="twitter:description" content="Contact Arcan Painting to discuss a project." />
         <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
-        <meta name="twitter:image:alt" content="Arcan Painting Professional Toronto Painting Services" />
+        <meta name="twitter:image:alt" content="Arcan Painting" />
         {/* SEO: Robots meta */}
         <meta name="robots" content={isAccountPage ? "noindex, nofollow" : "index, follow"} />
         {/* Performance: Preload hero images (critical above-fold) */}
@@ -315,36 +315,8 @@ export function Layout({ children }: { children: ReactNode }) {
           className="sr-only"
           aria-hidden="true"
         >
-          <h1>Painting Services in Toronto &amp; the GTA — Arcan Painting</h1>
-
-          <p>Arcan Painting offers interior, exterior, commercial painting, wallpaper services, and specialty finishes for residential and commercial projects.</p>
-
-          <p>Tell us about your project to request an estimate and discuss the right scope, materials, and schedule.</p>
-
-          <h2>Our Painting Services</h2>
-
-          <h3>Interior Painting Toronto</h3>
-          <p>Transform your living spaces with professional interior painting. Get a <a href="/contact">free estimate for interior painting</a>.</p>
-
-          <h3>Exterior Painting Toronto &amp; GTA</h3>
-          <p>Weather-resistant protection for Ontario's climate. Learn more about our <a href="/contact">exterior painting services</a>.</p>
-
-          <h3>Commercial Painting Services</h3>
-          <p>Flexible after-hours scheduling. <a href="/contact">Request a commercial painting quote</a>.</p>
-
-          <h3>Wallpaper Installation &amp; Removal</h3>
-          <p>Expert wallpaper services for all wallpaper types.</p>
-
-          <h3>Specialty Finishes &amp; Decorative Painting</h3>
-          <p>Faux textures, Venetian plaster, limewash, and more.</p>
-
-          <h2>Serving Toronto &amp; the Greater Toronto Area</h2>
-
-          <p><a href="/contact">Contact us</a> to discuss availability in your area.</p>
-
-          <h2>Get a Free Painting Estimate in Toronto</h2>
-
-          <p>Arcan Painting. <a href="#quote">Request an estimate.</a></p>
+          <h1>Arcan Painting</h1>
+          <p><a href="/contact">Contact us</a> to discuss your project.</p>
         </div>
 
         <ErrorBoundaryWrapper>

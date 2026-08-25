@@ -244,7 +244,7 @@ ${lead.projectDescription ? `<p><strong>Description:</strong> ${lead.projectDesc
           to: body.email,
           subject: "We received your request — Arcan Painting",
           body: `<p>Hi ${lead.name},</p>
-<p>Thank you for reaching out to Arcan Painting! We received your inquiry about <strong>${lead.serviceType}</strong> and will contact you within 24 hours to schedule your free estimate.</p>
+<p>Thank you for reaching out to Arcan Painting. We received your inquiry about <strong>${lead.serviceType}</strong> and a team member will review the details before confirming next steps.</p>
 <p>Best regards,<br>The Arcan Painting Team</p>`,
         });
       }
@@ -263,7 +263,7 @@ ${lead.projectDescription ? `<p><strong>Description:</strong> ${lead.projectDesc
     return Response.json({
       success: true,
       message:
-        "Thank you! We will contact you within 24 hours to schedule your free estimate.",
+        "Thank you! A team member will review your request and follow up about next steps.",
       lead_saved: leadSaved,
       lead_id: leadId,
     });
