@@ -134,21 +134,19 @@ export async function saveEstimate({
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      console.error("Update estimate failed:", res.status, data);
+      console.error("Update estimate failed:", res.status);
       throw new Error(data.error || "Failed to update estimate");
     }
     onEstimateUpdated?.();
   } else {
-    console.log("Creating estimate with payload:", estimatePayload);
     const res = await fetch("/api/estimate-builder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(estimatePayload),
     });
     const data = await res.json().catch(() => ({}));
-    console.log("Estimate creation response:", { status: res.status, data });
     if (!res.ok) {
-      console.error("Create estimate failed:", res.status, data);
+      console.error("Create estimate failed:", res.status);
       throw new Error(
         data.error || `Failed to create estimate (${res.status})`,
       );

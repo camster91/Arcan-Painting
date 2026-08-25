@@ -31,14 +31,13 @@ export async function POST(request) {
       const packageId = session.metadata?.package_id;
 
       if (userId && credits > 0) {
-        const newBalance = await addCredits(
+        await addCredits(
           userId,
           credits,
           'purchase',
           `Purchased ${packageId} (${credits} credits)`,
           session.id
         );
-        console.log(`Credits added: ${credits} for ${userId}, new balance: ${newBalance}`);
       }
     }
 
