@@ -6,6 +6,10 @@
   input, textarea, select, button {
     @apply outline-none focus:outline-none;
   }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-amber-500 ring-offset-2;
+  }
 }
 
 .btn-primary {
