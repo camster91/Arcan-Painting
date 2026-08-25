@@ -61,4 +61,25 @@ describe("POST /api/contact", () => {
     expect(sendGmailEmail).not.toHaveBeenCalled();
     expect(notifyGerardo).not.toHaveBeenCalled();
   });
+
+  it("escapes public values before constructing email content", async () => {
+    insertLead.mockResolvedValue(42);
+
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: '<img src=x onerror="alert(1)">',
+        email: "customer@example.test",
+        serviceType: "interior\r\nBcc: attacker@example.test",
+      }),
+    }));
+
+    expect(response.status).toBe(200);
+    const [businessEmail] = sendGmailEmail.mock.calls;
+    expect(businessEmail[0].subject).not.toContain("\r");
+    expect(businessEmail[0].subject).not.toContain("\n");
+    expect(businessEmail[0].body).toContain("&lt;img src=x onerror=&quot;alert(1)&quot;&gt;");
+    expect(businessEmail[0].body).not.toContain('<img src=x onerror="alert(1)">');
+  });
 });
