@@ -30,8 +30,8 @@ describe("Header mobile layout", () => {
 
     expect(screen.getByAltText("Arcan Painting logo"))
       .toHaveClass("w-[120px]", "h-[66px]", "sm:w-[170px]", "sm:h-[95px]");
-    expect(screen.getByRole("button", { name: /Get Free Estimate Get Quote/ }))
+    expect(screen.getByRole("button", { name: /Discuss Your Project Contact/ }))
       .toHaveClass("text-sm", "px-3", "py-2");
-    expect(screen.getByText("Get Quote")).toHaveClass("whitespace-nowrap");
+    expect(screen.getByText("Contact")).toHaveClass("whitespace-nowrap");
   });
 });
