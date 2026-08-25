@@ -20,7 +20,15 @@ describe("public claim safety", () => {
     const sitemap = readProjectFile("src/app/sitemap.xml/route.js");
     const header = readProjectFile("src/components/Header.jsx");
     const footer = readProjectFile("src/components/Footer.jsx");
-    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, cityServiceRoute, sitemap, header, footer].join("\n");
+    const serviceInquiry = readProjectFile("src/components/ServiceInquiryPage.jsx");
+    const servicePages = [
+      "src/app/interior-painting/page.jsx",
+      "src/app/exterior-painting/page.jsx",
+      "src/app/commercial-painting/page.jsx",
+      "src/app/wallpaper-services/page.jsx",
+      "src/app/specialty-finishes/page.jsx",
+    ].map(readProjectFile);
+    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, cityServiceRoute, sitemap, header, footer, serviceInquiry, ...servicePages].join("\n");
 
     for (const unsupportedClaim of [
       "500+ Happy Clients",
@@ -38,6 +46,8 @@ describe("public claim safety", () => {
       "Free colour consultation",
       "Serving 30 Cities Across Ontario",
       "Family-owned business with generations of craftsmanship",
+      "Get Free Estimate",
+      "Get Free Quote",
     ]) {
       expect(publicSurfaces).not.toContain(unsupportedClaim);
     }
