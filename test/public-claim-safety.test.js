@@ -18,7 +18,9 @@ describe("public claim safety", () => {
     const quote = readProjectFile("src/app/api/quote/route.js");
     const cityServiceRoute = readProjectFile("src/app/[service]/[city]/page.jsx");
     const sitemap = readProjectFile("src/app/sitemap.xml/route.js");
-    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, cityServiceRoute, sitemap].join("\n");
+    const header = readProjectFile("src/components/Header.jsx");
+    const footer = readProjectFile("src/components/Footer.jsx");
+    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, cityServiceRoute, sitemap, header, footer].join("\n");
 
     for (const unsupportedClaim of [
       "500+ Happy Clients",
@@ -34,6 +36,8 @@ describe("public claim safety", () => {
       "typically within 24 hours",
       "Serving ${city.name} since 1995",
       "Free colour consultation",
+      "Serving 30 Cities Across Ontario",
+      "Family-owned business with generations of craftsmanship",
     ]) {
       expect(publicSurfaces).not.toContain(unsupportedClaim);
     }

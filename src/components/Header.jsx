@@ -147,7 +147,7 @@ export default function Header() {
               {activeDropdown === "locations" && (
                 <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-4 z-50" style={{ minWidth: "560px" }}>
                   <div className="px-5 pb-3 mb-3 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Serving 30 Cities Across Ontario</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Service coverage confirmed with the team</p>
                   </div>
                   <div className="grid grid-cols-3 gap-0 px-4">
                     {LOCATIONS_NAV.map((region) => (
