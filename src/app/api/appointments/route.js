@@ -9,6 +9,26 @@ const appointmentLimiter = createRateLimiter({
   prefix: "appointment",
 });
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function toEmailHeaderValue(value) {
+  return String(value).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function escapeIcsText(value) {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\r\n|\r|\n/g, "\\n")
+    .replace(/([,;])/g, "\\$1");
+}
+
 function validateAppointmentInput(body) {
   const value = body || {};
   const slotId = Number(value.slotId);
@@ -169,9 +189,9 @@ export async function POST(request) {
       `DTSTAMP:${toCalendarStamp(new Date())}`,
       `DTSTART:${startStamp}`,
       `DTEND:${endStamp}`,
-      `SUMMARY:${title}`,
-      `DESCRIPTION:${description}`,
-      `LOCATION:${location}`,
+      `SUMMARY:${escapeIcsText(title)}`,
+      `DESCRIPTION:${escapeIcsText(description)}`,
+      `LOCATION:${escapeIcsText(location)}`,
       "END:VEVENT",
       "END:VCALENDAR",
     ].join("\r\n");
@@ -185,10 +205,10 @@ export async function POST(request) {
     const htmlBody = (recipientName) => `
       <div style="font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:#0f172a">
         <h2 style="margin:0 0 8px">You're booked!</h2>
-        <p style="margin:0 0 12px">${recipientName ? `${recipientName}, ` : ""}we scheduled your on‑site estimate.</p>
+        <p style="margin:0 0 12px">${recipientName ? `${escapeHtml(recipientName)}, ` : ""}we scheduled your on‑site estimate.</p>
         <ul style="padding:0;margin:0 0 12px;list-style:none">
           <li><strong>When:</strong> ${startLocal.toLocaleString()} – ${endLocal.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</li>
-          <li><strong>Where:</strong> ${location}</li>
+          <li><strong>Where:</strong> ${escapeHtml(location)}</li>
         </ul>
         <p style="margin:12px 0">
           <a href="${googleUrl}" style="background:#f59e0b;color:#111827;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600">Add to Google Calendar</a>
@@ -211,7 +231,7 @@ export async function POST(request) {
       // Team notification
       await sendEmail({
         to: notifyTo,
-        subject: `New estimate booked: ${name}`,
+        subject: `New estimate booked: ${toEmailHeaderValue(name)}`,
         html: htmlBody("Team"),
         text: `New estimate. Client: ${name}. When: ${startLocal.toISOString()} - ${endLocal.toISOString()} Where: ${location}. Add to Google: ${googleUrl}`,
       });
