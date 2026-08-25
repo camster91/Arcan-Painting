@@ -1,5 +1,6 @@
 import { getCalendarClient } from "@/lib/google.js";
 import { createRateLimiter } from "../utils/rate-limit.js";
+import { requireAdmin } from "../utils/auth.js";
 
 const calendarLimiter = createRateLimiter({
   windowMs: 60_000,
@@ -15,6 +16,10 @@ const calendarLimiter = createRateLimiter({
  *   - days (default 14) — how many days ahead to look
  */
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const limited = calendarLimiter(request);
   if (limited) return limited;
 

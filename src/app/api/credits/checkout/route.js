@@ -1,12 +1,22 @@
 import Stripe from 'stripe';
 import { CREDIT_PACKAGES } from '../../utils/packages.js';
+import { getCurrentUser } from '../../utils/auth.js';
+import { requireCsrf } from '../../utils/csrf.js';
 
 const PACKAGES = Object.fromEntries(CREDIT_PACKAGES.map(p => [p.id, p]));
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
+    const user = await getCurrentUser(request);
+    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const { packageId, userId } = await request.json();
+    const { packageId } = await request.json();
 
     const pkg = PACKAGES[packageId];
     if (!pkg) {
@@ -28,7 +38,7 @@ export async function POST(request) {
       success_url: `${origin}/admin?credits=success`,
       cancel_url: `${origin}/admin?credits=cancelled`,
       metadata: {
-        user_id: userId || 'gerardo',
+        user_id: String(user.id),
         package_id: packageId,
         credits: pkg.credits.toString(),
       },

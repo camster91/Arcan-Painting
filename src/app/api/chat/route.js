@@ -7,14 +7,27 @@ const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 10, prefix: 'chat
 // Fire-and-forget: triage new chat messages via AI customer support agent
 async function triggerCustomerSupportAgent(message, baseUrl) {
   try {
-    await fetch(`${baseUrl}/api/agents/customer-support`, {
+    const internalToken = process.env.INTERNAL_API_TOKEN;
+    if (!internalToken) {
+      console.error('Customer support triage skipped: INTERNAL_API_TOKEN is not configured');
+      return;
+    }
+
+    const response = await fetch(`${baseUrl}/api/agents/customer-support`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-api-token': internalToken,
+      },
       body: JSON.stringify({
         messageText: message,
         source: 'website_chat',
       }),
     });
+
+    if (!response.ok) {
+      console.error(`Customer support triage failed: ${response.status}`);
+    }
   } catch (err) {
     console.error('Customer support agent trigger failed (non-fatal):', err.message);
   }

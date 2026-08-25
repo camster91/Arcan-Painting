@@ -1,7 +1,12 @@
 
-// import sql from '../../../utils/sql.js';
+import { requireAdmin } from "../../utils/auth.js";
+import { requireCsrf } from "../../utils/csrf.js";
 
 export async function GET(request) {
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const tools = [
     {
       name: "create_facebook_ad",
@@ -28,10 +33,17 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
+  if (!(await requireAdmin(request))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { tool, params } = await request.json();
-  if (tool === "create_facebook_ad") return Response.json({ success: true, message: `Facebook campaign '${params.campaign_name}' staged successfully with a budget of $${params.daily_budget}/day.` });
-  if (tool === "update_google_business") return Response.json({ success: true, message: `GBP update posted: ${params.update_text}` });
-  if (tool === "send_cold_email_sequence") return Response.json({ success: true, message: `Added ${params.emails?.length || 0} prospects to the ${params.target_role} Mailgun sequence.` });
-  if (tool === "generate_linkedin_post") return Response.json({ success: true, message: `LinkedIn post drafted about '${params.topic}'.` });
+  if (tool === "create_facebook_ad") return Response.json({ success: true, status: "staged", message: `Facebook campaign '${params.campaign_name}' was staged locally with a budget of $${params.daily_budget}/day. No external campaign was launched.` });
+  if (tool === "update_google_business") return Response.json({ success: true, status: "staged", message: `Google Business Profile update was staged locally. No external post was published.` });
+  if (tool === "send_cold_email_sequence") return Response.json({ success: true, status: "staged", message: `${params.emails?.length || 0} prospects were staged for the ${params.target_role} sequence. No email was sent.` });
+  if (tool === "generate_linkedin_post") return Response.json({ success: true, status: "staged", message: `LinkedIn post draft was staged about '${params.topic}'. No post was scheduled or published.` });
   return Response.json({ error: "Unknown tool" }, { status: 400 });
 }

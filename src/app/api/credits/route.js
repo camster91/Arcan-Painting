@@ -1,16 +1,16 @@
 import { getBalance, getTransactions } from '../utils/credits-db.js';
 import { CREDIT_PACKAGES } from '../utils/packages.js';
-import { requireAuth } from '../utils/auth.js';
+import { getCurrentUser } from '../utils/auth.js';
 // NOTE: credits route is GET-only — no CSRF needed
 
 export async function GET(request) {
   try {
-    const user = await requireAuth(request);
+    const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = 'gerardo';
+    const userId = String(user.id);
 
     return Response.json({
       balance: await getBalance(userId),

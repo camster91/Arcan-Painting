@@ -12,10 +12,24 @@
 import sql from '../../utils/sql.js';
 import { spawnAgent, parseAgentJSON } from '../openclaw.js';
 import { notifyGerardo } from '../../utils/telegram.js';
+import { isTrustedInternalRequest, requireAdmin } from '../../utils/auth.js';
+import { requireCsrf } from '../../utils/csrf.js';
 
 const CONTEXT_FILE = 'agents/arcan-customer-support.md';
 
 export async function POST(request) {
+  // Automated chat triage is server-to-server; manual triage is admin-only.
+  // Both paths must authenticate before an attacker-controlled message can
+  // reach the agent, database update, or notification side effects.
+  if (!isTrustedInternalRequest(request)) {
+    const csrfError = requireCsrf(request);
+    if (csrfError) return csrfError;
+
+    if (!(await requireAdmin(request))) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   try {
     const body = await request.json();
     const { 
