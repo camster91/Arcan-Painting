@@ -1,7 +1,7 @@
 # Staging Verification
 
 Verified: 2026-08-28  
-Verified code revision: `ec281d8`  
+Verified code revision: `46b1cc2`  
 Preview: `https://along-upgrades-cashiers-florist.trycloudflare.com`
 
 This is a reversible Cloudflare Quick Tunnel to the local production build. It has no
@@ -26,8 +26,18 @@ running. It does not change DNS, Coolify, or the production website.
   browser crawl. The quote page H1 defect found by this crawl was corrected.
 - Production dependency audit: zero known vulnerabilities.
 - GitGuardian secret check: passed.
-- Local release verification: typecheck, 49 test files / 147 tests, production build,
+- Local release verification: typecheck, 50 test files / 149 tests, production build,
   desktop/mobile Playwright smoke suite.
+- Mobile Lighthouse through the staging tunnel: performance 84, accessibility 100,
+  best practices 100, FCP 2.1 s, LCP 3.8 s, TBT 0 ms, CLS 0, 634 KiB transferred.
+  The SEO score is intentionally suppressed by staging `noindex`; production metadata
+  scored 100 in the local production-mode audit.
+
+## QA verdict
+
+**Ready with conditions** for owner review and content approval. It is not yet ready for
+production publication because the staging integrations below are unavailable and the
+business-proof and production-infrastructure decisions in `REMEDIATION.md` remain open.
 
 ## Known limits and rollback
 

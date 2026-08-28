@@ -27,7 +27,7 @@ production approval.
 
 ## Baseline evidence
 
-- 49 test files and 147 tests pass.
+- 50 test files and 149 tests pass.
 - Type checking passes.
 - Lint passes with 319 pre-existing warnings and no errors.
 - Production Lighthouse mobile baseline: performance 60, accessibility 93,
@@ -84,9 +84,9 @@ production approval.
 - [x] Align visible labels and accessible names.
 - [x] Verify modal focus containment, close behavior, focus return, and errors.
 - [x] Remove avoidable duplicate responsive DOM.
-- [ ] Reduce public JavaScript/CSS and avoid shipping admin-only integrations publicly.
+- [x] Reduce public JavaScript/CSS and avoid shipping admin-only integrations publicly.
 - [x] Optimize or locally host the hero media with responsive variants.
-- [ ] Repeat Lighthouse and responsive browser QA on staging.
+- [x] Repeat Lighthouse and responsive browser QA on staging.
 
 ## Phase 5 — Staging and release gate
 
@@ -97,7 +97,7 @@ production approval.
       indexing.
 - [ ] Verify desktop/mobile pages, forms, errors, metadata, schema, redirects, headers,
       analytics debug events, and accessibility on staging.
-- [ ] Run independent client-deliverable QA and reconcile every roadmap checkbox.
+- [x] Run independent client-deliverable QA and reconcile every roadmap checkbox.
 - [x] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
       production approval request.
 
