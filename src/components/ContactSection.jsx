@@ -414,7 +414,7 @@ export default function ContactSection() {
                     type="button"
                     onClick={back}
                     disabled={step === 0 || submitMutation.isLoading}
-                    aria-label="Go to previous step"
+                    aria-label="Back"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition-all duration-200 font-medium"
                   >
                     <ChevronLeft size={18} aria-hidden="true" /> Back

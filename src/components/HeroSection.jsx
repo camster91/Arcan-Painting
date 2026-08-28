@@ -1,15 +1,9 @@
 import { useState, useRef, lazy, Suspense, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
+import { trackEvent } from "@/utils/analytics";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
-
-// GA event helper
-function trackEvent(eventName, params = {}) {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", eventName, params);
-  }
-}
 
 const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80",
@@ -61,30 +55,27 @@ export default function HeroSection() {
         className="absolute inset-0 z-0"
         style={shouldReduceMotion ? {} : { y: bgY, willChange: "transform" }}
       >
-        {HERO_IMAGES.map((img, i) => (
-          <picture key={img} style={{
+          <picture key={HERO_IMAGES[currentSlide]} style={{
             position: "absolute",
             inset: 0,
-            opacity: i === currentSlide ? 1 : 0,
-            transition: "opacity 1s ease-in-out",
-            willChange: "opacity",
+            opacity: 1,
           }}>
             <source
               media="(min-width: 768px)"
-              srcSet={`${img.replace("w=1920","w=1920")} 1920w, ${img.replace("w=1920","w=1280")} 1280w, ${img.replace("w=1920","w=768")} 768w`}
+              srcSet={`${HERO_IMAGES[currentSlide].replace("w=1920","w=1600")} 1600w, ${HERO_IMAGES[currentSlide].replace("w=1920","w=1280")} 1280w, ${HERO_IMAGES[currentSlide].replace("w=1920","w=768")} 768w`}
               sizes="100vw"
             />
             <source
               media="(max-width: 767px)"
-              srcSet={`${img.replace("w=1920","w=900")} 900w, ${img.replace("w=1920","w=600")} 600w`}
+              srcSet={`${HERO_IMAGES[currentSlide].replace("w=1920","w=900")} 900w, ${HERO_IMAGES[currentSlide].replace("w=1920","w=600")} 600w`}
               sizes="100vw"
             />
             <img
-              src={img.replace("w=1920","w=900")}
+              src={HERO_IMAGES[currentSlide].replace("w=1920","w=900")}
               alt=""
               aria-hidden="true"
-              loading={i === 0 ? "eager" : "lazy"}
-              fetchpriority={i === 0 ? "high" : "low"}
+              loading={currentSlide === 0 ? "eager" : "lazy"}
+              fetchpriority={currentSlide === 0 ? "high" : "low"}
               decoding="async"
               style={{
                 width: "100%",
@@ -95,7 +86,6 @@ export default function HeroSection() {
               }}
             />
           </picture>
-        ))}
         {/* Gradient Overlays */}
         <div
           className="absolute inset-0"
@@ -121,16 +111,16 @@ export default function HeroSection() {
             key={i}
             onClick={() => setCurrentSlide(i)}
             aria-label={`Go to slide ${i + 1}`}
-            className="transition-all duration-300 rounded-full"
+            className="transition-all duration-300 rounded-full flex items-center justify-center"
             style={{
-              width: i === currentSlide ? "24px" : "8px",
-              height: "8px",
-              backgroundColor: i === currentSlide ? "#fbbf24" : "rgba(255,255,255,0.4)",
+              width: "44px",
+              height: "44px",
+              backgroundColor: "transparent",
               border: "none",
               padding: 0,
               cursor: "pointer",
             }}
-          />
+          ><span aria-hidden="true" className="block rounded-full" style={{ width: i === currentSlide ? "24px" : "8px", height: "8px", backgroundColor: i === currentSlide ? "#fbbf24" : "rgba(255,255,255,0.4)" }} /></button>
         ))}
       </div>
 
@@ -295,8 +285,8 @@ export default function HeroSection() {
                   className="w-full h-[520px] object-cover"
                   width="800"
                   height="520"
-                  loading="eager"
-                  fetchpriority="high"
+                  loading="lazy"
+                  fetchpriority="low"
                   decoding="async"
                 />
               </picture>
@@ -345,27 +335,6 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Slide dot indicators */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-        {HERO_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentSlide(i)}
-            aria-label={`Go to slide ${i + 1}`}
-            className="transition-all duration-300"
-            style={{
-              width: i === currentSlide ? "24px" : "8px",
-              height: "8px",
-              borderRadius: "4px",
-              backgroundColor: i === currentSlide ? "#fbbf24" : "rgba(255,255,255,0.35)",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-            }}
-          />
-        ))}
       </div>
 
       {/* Scroll Indicator */}

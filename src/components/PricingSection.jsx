@@ -617,7 +617,7 @@ export default function PricingSection() {
       )}
 
       {/* CSS Animations */}
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;

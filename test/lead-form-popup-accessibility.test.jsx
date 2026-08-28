@@ -8,11 +8,11 @@ describe("LeadFormPopup accessibility", () => {
 
     render(<LeadFormPopup isOpen onClose={onClose} />);
 
-    expect(screen.getByRole("dialog", { name: /request your estimate/i })).toHaveAttribute(
+    expect(screen.getByRole("dialog", { name: /discuss your project/i })).toHaveAttribute(
       "aria-modal",
       "true",
     );
-    expect(screen.getByRole("button", { name: "Close estimate form" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Close project inquiry form" })).toHaveFocus();
 
     fireEvent.keyDown(document, { key: "Escape" });
 

@@ -82,4 +82,23 @@ describe("POST /api/contact", () => {
     expect(businessEmail[0].body).toContain("&lt;img src=x onerror=&quot;alert(1)&quot;&gt;");
     expect(businessEmail[0].body).not.toContain('<img src=x onerror="alert(1)">');
   });
+
+  it("passes only bounded attribution fields to CRM persistence", async () => {
+    insertLead.mockResolvedValue(43);
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        email: "customer@example.test",
+        serviceType: "interior",
+        attribution: { utmSource: "search", landingPage: "/?utm_source=search", unexpected: "discard" },
+      }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(insertLead).toHaveBeenCalledWith(expect.objectContaining({
+      attribution: { utmSource: "search", landingPage: "/?utm_source=search" },
+    }));
+  });
 });

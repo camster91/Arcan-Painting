@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import SignInPage from "@/app/account/signin/page";
 import ForgotPasswordPage from "@/app/account/forgot-password/page";
@@ -16,6 +16,7 @@ function jsonResponse(body, ok = true) {
 }
 
 describe("account recovery and onboarding flows", () => {
+  afterEach(() => cleanup());
   beforeEach(() => {
     global.fetch = vi.fn();
   });

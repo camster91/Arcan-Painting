@@ -17,6 +17,13 @@ function toEmailHeaderValue(value) {
   return String(value).replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function sanitizeAttribution(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const allowed = ["landingPage", "referrer", "utmSource", "utmMedium", "utmCampaign", "utmContent", "utmTerm"];
+  const sanitized = Object.fromEntries(allowed.flatMap((key) => typeof value[key] === "string" && value[key] ? [[key, value[key].slice(0, 500)]] : []));
+  return Object.keys(sanitized).length ? sanitized : null;
+}
+
 // Spawn lead qualifier agent in background (fire-and-forget, non-blocking).
 // Gated on OPENCLAW_URL being set — when the local OpenClaw instance is
 // not deployed, the fetch hits a dead upstream and the container log
@@ -163,6 +170,7 @@ export async function POST(request) {
     // because this server-to-server call has no cookies. Inlining the
     // INSERT removes both problems.
     try {
+      const attribution = sanitizeAttribution(body.attribution);
       leadId = await insertLead({
         name: body.name,
         email: body.email,
@@ -172,6 +180,7 @@ export async function POST(request) {
         preferredContact: preferredContact,
         address: body.address,
         leadSource: body.leadSource || "website",
+        attribution,
       });
       leadSaved = leadId != null;
 

@@ -181,7 +181,7 @@ function ServiceCarouselCard({ service, onQuote }) {
           <div className="flex gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); onQuote(); }}
-              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors"
+              className="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors"
             >
               Get Quote
             </button>
@@ -400,12 +400,12 @@ export default function ServicesSection() {
           {/* Subtitle */}
           <p className="text-2xl lg:text-3xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12">
             From a single room to a larger space, tell us about the details
-            that matter to you. We can help you
+            that matter to you. We can review your priorities with
             <span className="text-amber-400 font-semibold">
               {" "}
               attention to detail
             </span>{" "}
-            plan the next step
+            in mind and discuss the next step.
           </p>
         </div>
 
@@ -473,7 +473,7 @@ export default function ServicesSection() {
       />
 
       {/* CSS Animations */}
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }

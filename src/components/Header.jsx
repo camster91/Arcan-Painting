@@ -64,14 +64,6 @@ export default function Header() {
     return () => mq.removeEventListener("change", check);
   }, []);
 
-  const scrollTo = (selector) => {
-    const el = document.querySelector(selector);
-    if (el) {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-    }
-  };
-
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
@@ -139,19 +131,19 @@ export default function Header() {
 
             {/* Regular nav items */}
             {[
-              { label: "Portfolio", href: "#portfolio" },
-              { label: "FAQ", href: "#faq" },
+              { label: "Portfolio", href: "/#portfolio" },
+              { label: "FAQ", href: "/#faq" },
             ].map((item) => (
-              <button
+              <a
                 key={item.href}
-                onClick={() => scrollTo(item.href)}
+                href={item.href}
                 className="text-base font-medium transition-colors"
                 style={{ color: themeColors.textSecondary }}
                 onMouseEnter={(e) => (e.target.style.color = "#f59e0b")}
                 onMouseLeave={(e) => (e.target.style.color = themeColors.textSecondary)}
               >
                 {item.label}
-              </button>
+              </a>
             ))}
           </nav>
 

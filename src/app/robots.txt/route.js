@@ -7,12 +7,23 @@ Disallow: /admin/*
 Disallow: /api/*
 Disallow: /account/
 Disallow: /account/*
+Disallow: /thank-you
 
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
+
+# OpenAI search discovery is allowed independently of model-training crawl.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Disallow: /
 
 Sitemap: https://arcanpainting.ca/sitemap.xml`;
 

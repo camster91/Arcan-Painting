@@ -1,75 +1,26 @@
-// Generate the public sitemap. City-specific routes stay out of the sitemap
-// until their service coverage and local content have been verified by the client.
+const PUBLIC_ROUTES = [
+  ["/", "1.0", "weekly"],
+  ["/interior-painting", "0.9", "monthly"],
+  ["/exterior-painting", "0.9", "monthly"],
+  ["/commercial-painting", "0.9", "monthly"],
+  ["/wallpaper-services", "0.9", "monthly"],
+  ["/specialty-finishes", "0.9", "monthly"],
+  ["/contact", "0.7", "yearly"],
+  ["/quote", "0.7", "yearly"],
+  ["/privacy", "0.3", "yearly"],
+];
+
+function escapeXml(value) {
+  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+}
+
+// Generated location pages remain excluded until service-area facts and unique
+// local content are approved. Conversion-completion and private routes are also
+// intentionally omitted.
 export async function GET() {
-  const baseUrl = process.env.APP_URL || "https://arcanpainting.ca";
-  const currentDate = new Date().toISOString().split("T")[0];
+  const baseUrl = (process.env.APP_URL || "https://arcanpainting.ca").replace(/\/$/, "");
+  const urls = PUBLIC_ROUTES.map(([path, priority, changefreq]) => `  <url>\n    <loc>${escapeXml(`${baseUrl}${path}`)}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`).join("\n");
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-
-  <!-- Homepage -->
-  <url>
-    <loc>${baseUrl}/</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>${baseUrl}/og-image.png</image:loc>
-      <image:caption>Arcan Painting</image:caption>
-      <image:title>Arcan Painting</image:title>
-    </image:image>
-  </url>
-
-  <!-- Core Service Pages -->
-  <url>
-    <loc>${baseUrl}/interior-painting</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>${baseUrl}/exterior-painting</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>${baseUrl}/commercial-painting</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>${baseUrl}/wallpaper-services</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>${baseUrl}/specialty-finishes</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Thank You Page -->
-  <url>
-    <loc>${baseUrl}/thank-you</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-</urlset>`;
-
-  return new Response(sitemap, {
-    headers: {
-      "Content-Type": "application/xml",
-      "Cache-Control": "public, max-age=86400",
-    },
-  });
+  return new Response(sitemap, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=86400" } });
 }

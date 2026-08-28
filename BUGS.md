@@ -1,5 +1,9 @@
 # Arcan Painting — bug report
 
+> Historical incident record. Current remediation status and release gates live in
+> `REMEDIATION.md`. Historical credentials, infrastructure descriptions, and
+> `Remaining` notes below are not instructions and may be stale.
+
 Bug list as of 2026-06-12. **Strikethrough** = fixed.
 
 ## ~~Bug #1 — Boot crash on fresh DB: `relation "auth_users" does not exist`~~

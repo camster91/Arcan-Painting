@@ -8,8 +8,9 @@ import {
   Send,
   CheckCircle2,
 } from "lucide-react";
+import { getAttribution, trackEvent } from "@/utils/analytics";
 
-export default function LeadFormPopup({ isOpen, onClose }) {
+export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) {
   const dialogRef = useRef(null);
   const closeButtonRef = useRef(null);
   const previouslyFocusedElement = useRef(null);
@@ -69,6 +70,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
   // Reset form when popup opens
   useEffect(() => {
     if (isOpen) {
+      trackEvent("lead_form_open", { source });
       setStep(0);
       setServiceType("");
       setFullName("");
@@ -146,9 +148,13 @@ export default function LeadFormPopup({ isOpen, onClose }) {
     (force = false) => {
       setError(null);
       if (!force && !canGoNext) return;
-      setStep((s) => Math.min(s + 1, stepsTotal - 1));
+      setStep((s) => {
+        const nextStep = Math.min(s + 1, stepsTotal - 1);
+        trackEvent("lead_form_step", { source, step: nextStep + 1 });
+        return nextStep;
+      });
     },
-    [canGoNext, stepsTotal],
+    [canGoNext, stepsTotal, source],
   );
 
   const back = useCallback(() => {
@@ -172,6 +178,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           serviceType: serviceType,
           projectDescription: projectDescription,
           preferredContact: preferredContact,
+          attribution: getAttribution(),
         };
 
         const response = await fetch("/api/contact", {
@@ -182,8 +189,11 @@ export default function LeadFormPopup({ isOpen, onClose }) {
 
         const result = await response.json();
         if (!response.ok) {
+          trackEvent("lead_submit_error", { source, service_type: serviceType });
           throw new Error(result?.error || "Failed to submit");
         }
+
+        trackEvent("lead_submit_success", { source, service_type: serviceType, preferred_contact: preferredContact });
 
         // Redirect to thank-you page with params (match ContactSection behavior)
         const params = new URLSearchParams({
@@ -206,7 +216,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
         setIsSubmitting(false);
       }
     },
-    [fullName, email, phone, serviceType, projectDescription, preferredContact],
+    [fullName, email, phone, serviceType, projectDescription, preferredContact, source],
   );
 
   if (!isOpen) return null;
@@ -416,7 +426,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
           <div>
             <h2 id="lead-form-title" className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
-              Request Your Estimate
+              Discuss Your Project
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
               One question at a time.
@@ -425,7 +435,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            aria-label="Close estimate form"
+            aria-label="Close project inquiry form"
             className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           >
             <X size={24} className="text-slate-600 dark:text-slate-400" aria-hidden="true" />
@@ -501,7 +511,7 @@ export default function LeadFormPopup({ isOpen, onClose }) {
                   type="button"
                   onClick={back}
                   disabled={step === 0 || isSubmitting}
-                  aria-label="Go to previous step"
+                  aria-label="Back"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-50 transition-all duration-200 font-medium"
                 >
                   <ChevronLeft size={18} aria-hidden="true" /> Back

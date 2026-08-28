@@ -1,6 +1,5 @@
 import {
   Links,
-  Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -78,6 +77,9 @@ if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
 // import { LoadFonts } from 'virtual:load-fonts.jsx';
 import { Toaster } from 'sonner';
 import type { Route } from './+types/root';
+import { buildStructuredData, getPublicSeo } from '../utils/publicSeo.js';
+import { initializeAnalytics, trackPageView } from '../utils/analytics.js';
+import { ThemeProvider } from '../utils/useTheme.jsx';
 
 export const links = () => [];
 
@@ -206,61 +208,12 @@ class ErrorBoundaryWrapper extends Component<ErrorBoundaryProps, ErrorBoundarySt
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location?.pathname;
-  const isAccountPage = pathname?.startsWith('/account/');
+  const seo = getPublicSeo(pathname || "/");
 
-  // Per-page meta description. Default is the home/company-wide description;
-  // specific routes get a route-specific one so Google doesn't see four pages
-  // with the same description (duplicate-content signal that hurts ranking).
-  // Map is keyed on the leading URL segment after the slash.
-  const pageMeta = (() => {
-    const segs = (pathname || "/").split("/").filter(Boolean);
-    const seg = segs[0] || "";
-    const sub = segs[1] || "";
-    // Two-segment routes (admin/leads, admin/calendar, etc.) get the
-    // most specific title.
-    if (seg === "admin" && sub) {
-      const subTitle = sub.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-      return {
-        title: `${subTitle} | Arcan Painting Admin`,
-        description: `Arcan Painting admin ${subTitle.toLowerCase()} page.`,
-      };
-    }
-    // /admin (no sub) is the dashboard.
-    if (seg === "admin") {
-      return {
-        title: "Admin Dashboard | Arcan Painting",
-        description: "Arcan Painting internal CRM dashboard.",
-      };
-    }
-    switch (seg) {
-      case "quote":
-        return {
-          title: "Project Inquiry | Arcan Painting",
-          description: "Tell Arcan Painting about your project and a team member can review the details with you.",
-        };
-      case "contact":
-        return {
-          title: "Contact Arcan Painting",
-          description: "Contact Arcan Painting to discuss your project.",
-        };
-      case "thank-you":
-        return {
-          title: "Thank You | Arcan Painting",
-          description: "We received your request. A team member can review the details before confirming next steps.",
-        };
-      default:
-        return {
-          title: "Arcan Painting | Project Inquiries",
-          description: "Contact Arcan Painting to discuss your project.",
-        };
-    }
-  })();
-
-  // Hide SSR SEO block once React has hydrated — the interactive app takes over
   useEffect(() => {
-    const ssrBlock = document.getElementById("ssr-seo-block");
-    if (ssrBlock) ssrBlock.style.display = "none";
-  }, []);
+    initializeAnalytics();
+    trackPageView(`${location.pathname}${location.search}`);
+  }, [location.pathname, location.search]);
 
   return (
     <html lang="en">
@@ -268,32 +221,25 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* SEO: Title & Description (per-page) */}
-        <title>{pageMeta.title}</title>
-        <meta name="description" content={pageMeta.description} />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
         <meta name="geo.region" content="CA-ON" />
         <meta name="geo.position" content="43.6532;-79.3832" />
         <meta name="ICBM" content="43.6532, -79.3832" />
         {/* SEO: Canonical tag */}
-        <link rel="canonical" href={`https://arcanpainting.ca${pathname}`} />
+        <link rel="canonical" href={seo.canonical} />
+        <link rel="icon" href="/favicon.png" type="image/png" />
         {/* SEO: LocalBusiness JSON-LD schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              "name": "Arcan Painting",
-              "description": "Contact Arcan Painting to discuss a project.",
-              "url": "https://arcanpainting.ca",
-              "email": "info@arcanpainting.ca",
-              "image": "https://arcanpainting.ca/logo.png"
-            })
+            __html: JSON.stringify(buildStructuredData(seo))
           }}
         />
         {/* Static OG meta tags for social crawlers (SSR-rendered) */}
-        <meta property="og:title" content="Arcan Painting" />
-        <meta property="og:description" content="Contact Arcan Painting to discuss a project." />
-        <meta property="og:url" content="https://arcanpainting.ca" />
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.description} />
+        <meta property="og:url" content={seo.canonical} />
         <meta property="og:site_name" content="Arcan Painting" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_CA" />
@@ -303,43 +249,21 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:image:alt" content="Arcan Painting" />
         <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@arcanpainting" />
-        <meta name="twitter:title" content="Arcan Painting" />
-        <meta name="twitter:description" content="Contact Arcan Painting to discuss a project." />
+        <meta name="twitter:title" content={seo.title} />
+        <meta name="twitter:description" content={seo.description} />
         <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
         <meta name="twitter:image:alt" content="Arcan Painting" />
         {/* SEO: Robots meta */}
-        <meta name="robots" content={isAccountPage ? "noindex, nofollow" : "index, follow"} />
-        {/* Performance: Preload hero images (critical above-fold) */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp"
-          type="image/webp"
-          imageSrcSet="https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&q=80&fm=webp 600w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=80&fm=webp 1200w, https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1920&q=80&fm=webp 1920w"
-          imageSizes="(max-width: 640px) 600px, (max-width: 1280px) 1200px, 1920px"
-        />
-        <Meta />
+        <meta name="robots" content={seo.indexable ? "index, follow" : "noindex, nofollow"} />
         <Links />
       </head>
       <body suppressHydrationWarning>
-        {/* SSR SEO Block — visible to Google crawlers, hidden after React hydration */}
-        <div
-          id="ssr-seo-block"
-          className="sr-only"
-          aria-hidden="true"
-        >
-          <h1>Arcan Painting</h1>
-          <p><a href="/contact">Contact us</a> to discuss your project.</p>
-        </div>
-
         <ErrorBoundaryWrapper>
           {children}
         </ErrorBoundaryWrapper>
         <Toaster position="bottom-right" />
         <ScrollRestoration />
         <Scripts />
-        <script src="https://kit.fontawesome.com/2c15cc0cc7.js" crossOrigin="anonymous" async />
       </body>
     </html>
   );
@@ -355,8 +279,10 @@ export default function App() {
   // per session) and fixes the home page 500.
   const queryClient = useMemo(() => new QueryClient(), []);
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

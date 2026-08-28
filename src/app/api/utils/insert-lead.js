@@ -66,6 +66,7 @@ export async function insertLead({
   lead_source,
   metaLeadId,
   meta_lead_id,
+  attribution,
 }) {
   const validationError = validateLeadInput({
     name,
@@ -136,7 +137,7 @@ export async function insertLead({
         'lead',
         false,
         false,
-        ${JSON.stringify({ source: _leadSource })}::jsonb,
+        ${JSON.stringify({ source: _leadSource, ...(attribution ? { attribution } : {}) })}::jsonb,
         CURRENT_TIMESTAMP
       )
     `;
