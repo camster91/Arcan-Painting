@@ -1,7 +1,7 @@
 # Staging Verification
 
 Verified: 2026-08-28  
-Revision: `5047da2` plus the final quote-heading QA fix  
+Verified code revision: `ec281d8`  
 Preview: `https://along-upgrades-cashiers-florist.trycloudflare.com`
 
 This is a reversible Cloudflare Quick Tunnel to the local production build. It has no
@@ -37,4 +37,3 @@ running. It does not change DNS, Coolify, or the production website.
   admin, and production headers require isolated staging credentials before they can be
   verified safely.
 - Stop the `cloudflared` and local Node processes to remove this preview immediately.
-
