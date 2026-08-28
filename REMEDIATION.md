@@ -92,7 +92,7 @@ production approval.
 - [x] Build the production bundle from a clean install.
 - [x] Run unit, integration, type, lint, and browser smoke suites.
 - [ ] Run dependency and secret checks appropriate to the release.
-- [ ] Publish a reversible staging environment with isolated data and no production
+- [x] Publish a reversible staging environment with isolated data and no production
       indexing.
 - [ ] Verify desktop/mobile pages, forms, errors, metadata, schema, redirects, headers,
       analytics debug events, and accessibility on staging.

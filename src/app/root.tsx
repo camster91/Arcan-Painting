@@ -5,6 +5,7 @@ import {
   ScrollRestoration,
   useAsyncError,
   useLocation,
+  useLoaderData,
   useRouteError,
 } from 'react-router';
 
@@ -87,7 +88,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
 
   if (!url.pathname.startsWith('/admin')) {
-    return null;
+    return { siteMode: process.env.PUBLIC_SITE_MODE || 'production' };
   }
 
   // Routes are generated directly from page modules, so admin/layout.jsx is
@@ -207,8 +208,10 @@ class ErrorBoundaryWrapper extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
+  const loaderData = useLoaderData<typeof loader>();
   const pathname = location?.pathname;
   const seo = getPublicSeo(pathname || "/");
+  const isStaging = loaderData && 'siteMode' in loaderData && loaderData.siteMode === 'staging';
 
   useEffect(() => {
     initializeAnalytics();
@@ -254,7 +257,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="twitter:image" content="https://arcanpainting.ca/og-image.png" />
         <meta name="twitter:image:alt" content="Arcan Painting" />
         {/* SEO: Robots meta */}
-        <meta name="robots" content={seo.indexable ? "index, follow" : "noindex, nofollow"} />
+        <meta name="robots" content={!isStaging && seo.indexable ? "index, follow" : "noindex, nofollow"} />
         <Links />
       </head>
       <body suppressHydrationWarning>

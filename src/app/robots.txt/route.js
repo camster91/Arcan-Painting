@@ -1,5 +1,11 @@
 // Generate dynamic robots.txt
 export async function GET() {
+  if (process.env.PUBLIC_SITE_MODE === "staging") {
+    return new Response("User-agent: *\nDisallow: /\n", {
+      headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" },
+    });
+  }
+
   const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /admin
