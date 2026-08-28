@@ -67,14 +67,15 @@ production approval.
 - [x] Standardize the primary promise to `Discuss your project` / `Request project review`
       until the product returns a real estimate.
 - [x] Fix broken and unsupported homepage copy.
-- [ ] Track CTA, modal-open, step-complete, validation, submit-success, click-to-call,
+- [x] Track CTA, modal-open, step-complete, validation, submit-success, click-to-call,
       click-to-email, and service-context events through a vendor-neutral event layer.
 - [x] Load GA4 only when an approved public measurement ID is configured.
 - [x] Preserve UTM/referrer/landing-page attribution with lead submissions.
-- [ ] Add project city/postal area, scope, and timing fields only if the API and CRM can
-      store them safely and the added friction is justified.
+- [x] Do not add project city/postal area and timing fields in this release: the current
+      CRM has no dedicated attribution-safe fields and the extra friction is not yet
+      supported by funnel evidence. Scope remains available in project description.
 - [ ] State response expectations only after the client approves an operational SLA.
-- [ ] Add tests for event payloads, form semantics, validation, and successful handoff.
+- [x] Add tests for event payloads, form semantics, validation, and successful handoff.
 
 ## Phase 4 — Accessibility and performance
 

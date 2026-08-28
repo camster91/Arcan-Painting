@@ -1,6 +1,5 @@
 import { useState, useRef, lazy, Suspense, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
-import { trackEvent } from "@/utils/analytics";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
@@ -198,11 +197,6 @@ export default function HeroSection() {
                   whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
                   transition={{ duration: 0.2 }}
                   onClick={() => {
-                    trackEvent("cta_click", {
-                      event_category: "Hero",
-                       event_label: "Discuss Your Project",
-                      value: 1,
-                    });
                     setIsLeadFormOpen(true);
                   }}
                 >

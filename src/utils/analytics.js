@@ -32,6 +32,24 @@ export function initializeAnalytics() {
   };
   window.sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
 
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target.closest("a,button") : null;
+    if (!target) return;
+    const href = target instanceof HTMLAnchorElement ? target.getAttribute("href") || "" : "";
+    if (href.startsWith("tel:")) trackEvent("click_to_call", { location: clean(window.location.pathname), destination: clean(href, 100) });
+    else if (href.startsWith("mailto:")) trackEvent("click_to_email", { location: clean(window.location.pathname), destination: clean(href, 200) });
+    else if (target instanceof HTMLButtonElement && /discuss your project|contact|get quote|project review/i.test(target.textContent || "")) {
+      trackEvent("cta_click", { location: clean(window.location.pathname), label: clean((target.textContent || "").trim()) });
+    }
+  });
+
+  document.addEventListener("invalid", (event) => {
+    const field = event.target;
+    if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+      trackEvent("form_validation_error", { form: clean(field.form?.id || field.form?.getAttribute("name") || "unknown"), field: clean(field.name || field.id || "unknown") });
+    }
+  }, true);
+
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
   if (measurementId && /^G-[A-Z0-9]+$/.test(measurementId)) {
     const script = document.createElement("script");
@@ -55,4 +73,3 @@ export function trackEvent(eventName, properties = {}) {
 export function trackPageView(path) {
   trackEvent("page_view", { page_path: path, page_title: document.title });
 }
-
