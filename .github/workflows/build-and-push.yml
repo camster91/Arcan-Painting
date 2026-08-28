@@ -73,8 +73,7 @@ jobs:
             TAG="${REF#refs/heads/}"
             TAG="${TAG//\//-}"
           fi
-          SHA_SHORT="${{ github.event.pull_request.head.sha || github.sha }}" | head -c 7
-          SHA_SHORT=$(echo "${{ github.sha }}" | head -c 7)
+          SHA_SHORT=$(printf '%s' "${{ github.event.pull_request.head.sha || github.sha }}" | head -c 7)
           echo "image=ghcr.io/camster91/${REPO_NAME}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "sha=${SHA_SHORT}" >> $GITHUB_OUTPUT
@@ -111,7 +110,6 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
             ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}-${{ steps.meta.outputs.sha }}
-            ${{ steps.meta.outputs.image }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           provenance: true

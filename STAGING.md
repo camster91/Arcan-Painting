@@ -1,7 +1,7 @@
 # Staging Verification
 
-Verified: 2026-08-28  
-Verified code revision: `46b1cc2`  
+Verified: 2026-08-28
+Verified code revision: PR branch through `79bc771`
 Preview: `https://along-upgrades-cashiers-florist.trycloudflare.com`
 
 This is a reversible Cloudflare Quick Tunnel to the local production build. It has no
@@ -42,7 +42,15 @@ business-proof and production-infrastructure decisions in `REMEDIATION.md` remai
 ## Known limits and rollback
 
 - A durable staging host remains needed; the historical Vercel preview integration did
-  not respond to the branch push.
+  not respond to the branch push. An anonymous Vercel deployment was also tested on
+  2026-08-28: its build completed, but all routes returned HTTP 500
+  `FUNCTION_INVOCATION_FAILED` because Vercel's zero-config React Router runtime did not
+  package the repository's custom Hono server. The temporary deployment was rejected as
+  a staging candidate and no project token was retained in the repository.
+- The supported deployment artifact is the repository's Node 22.20 container. The PR
+  workflow publishes `ghcr.io/camster91/arcan-painting:pr-109`; a durable preview should
+  run that image in a separate Coolify staging service with `PUBLIC_SITE_MODE=staging`,
+  isolated credentials, and a non-production hostname.
 - End-to-end lead persistence, notifications, analytics vendor delivery, authenticated
   admin, and production headers require isolated staging credentials before they can be
   verified safely.

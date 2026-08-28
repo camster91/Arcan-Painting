@@ -31,7 +31,7 @@ docker compose exec app sh            # shell into the app container
 
 ### Native (no Docker)
 
-Requires Node 20+ and a local Postgres 16.
+Requires Node 22.20+ and a local Postgres 16.
 
 ```bash
 npm install
