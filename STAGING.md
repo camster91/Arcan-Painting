@@ -48,10 +48,11 @@ business-proof and production-infrastructure decisions in `REMEDIATION.md` remai
   package the repository's custom Hono server. The temporary deployment was rejected as
   a staging candidate and no project token was retained in the repository.
 - The supported deployment artifact is the repository's Node 22.20 container. The PR
-  workflow is configured to publish `ghcr.io/camster91/arcan-painting:pr-109`, but
-  GitHub Actions are currently disabled at the repository level. After an owner enables
-  Actions, a durable preview should run that image in a separate Coolify staging service
-  with `PUBLIC_SITE_MODE=staging`, isolated credentials, and a non-production hostname.
+  workflow is configured to publish `ghcr.io/camster91/arcan-painting:pr-109`. GitHub
+  Actions were enabled on 2026-08-28; the repository's `Preview` environment currently
+  has no secrets or variables. A durable preview should run the PR image in a separate
+  Coolify staging service with `PUBLIC_SITE_MODE=staging`, isolated credentials, and a
+  non-production hostname.
 - End-to-end lead persistence, notifications, analytics vendor delivery, authenticated
   admin, and production headers require isolated staging credentials before they can be
   verified safely.

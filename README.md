@@ -153,11 +153,10 @@ The 1700-line `ensureSchema()` migration runs on first boot and is idempotent. N
 For the live deployment to arcanpainting.ca, Caddy (already running on the host) routes `arcanpainting.ca` to `127.0.0.1:3015` (the container's exposed port).
 
 ### GitHub Actions CI
-When repository Actions are enabled, every PR runs `ci.yml` to typecheck, execute the
-unit suite, build the production bundle, and run Chromium smoke checks against that
-bundle. Keep these checks required before merge. If Actions are disabled in repository
-settings, the checked-in CI, GHCR image publishing, and Coolify deploy workflows cannot
-run even though external checks may still appear on the pull request.
+Repository Actions are enabled. Every PR runs `ci.yml` to typecheck, execute the unit
+suite, build the production bundle, and run Chromium smoke checks against that bundle.
+Keep these checks required before merge. The PR workflow also publishes an immutable
+GHCR image tag for staging; production deploy remains separately approval-gated.
 
 ## Known caveats
 
