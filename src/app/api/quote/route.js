@@ -70,7 +70,7 @@ export async function POST(request) {
 
     return Response.json({
       success: true,
-      message: "Thank you! We'll review your quote request and get back to you within 24-48 hours with a detailed estimate.",
+      message: "Thank you! A team member will review your quote request and follow up about next steps.",
     });
   } catch (error) {
     console.error('Quote error:', error.message);

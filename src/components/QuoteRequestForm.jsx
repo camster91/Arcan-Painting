@@ -82,7 +82,7 @@ export default function QuoteRequestForm() {
         <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" aria-hidden="true" />
         <h3 className="text-2xl font-bold text-gray-900 mb-2">Quote Request Received!</h3>
         <p className="text-gray-600 max-w-md mx-auto">
-          We'll review your project details and send you a detailed estimate within 24-48 hours.
+          A team member will review your project details and follow up about next steps.
         </p>
       </div>
     );
