@@ -103,6 +103,8 @@ production approval.
 
 ## External approvals and evidence still required
 
+- A repository owner must enable GitHub Actions before the checked-in CI, GHCR preview
+  image, and guarded Coolify deployment workflows can run.
 - Valid certificate and redirect for `www.arcanpainting.ca` require production ingress
   or DNS authority and are not part of the staging code change.
 - GA4/Search Console/Google Business Profile/Bing access and identifiers are not present.
