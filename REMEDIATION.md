@@ -91,13 +91,13 @@ production approval.
 
 - [x] Build the production bundle from a clean install.
 - [x] Run unit, integration, type, lint, and browser smoke suites.
-- [ ] Run dependency and secret checks appropriate to the release.
+- [x] Run dependency and secret checks appropriate to the release.
 - [x] Publish a reversible staging environment with isolated data and no production
       indexing.
 - [ ] Verify desktop/mobile pages, forms, errors, metadata, schema, redirects, headers,
       analytics debug events, and accessibility on staging.
 - [ ] Run independent client-deliverable QA and reconcile every roadmap checkbox.
-- [ ] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
+- [x] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
       production approval request.
 
 ## External approvals and evidence still required

@@ -237,17 +237,17 @@ export default function QuoteCalculatorSection() {
           </div>
 
           {/* Main Headline */}
-          <h2 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-8">
-            Get Your Ballpark Estimate in 30 Seconds
-          </h2>
+          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-8">
+            Build a Rough Project Planning Range
+          </h1>
 
           {/* Subtitle */}
           <p className="text-lg lg:text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12">
-            This rough range helps you plan your budget. We'll provide exact
-            pricing after a
+            This calculator provides a rough planning range. Project-specific
+            pricing requires the team to review the
             <span className="text-amber-400 font-semibold">
               {" "}
-              quick walkthrough and color consultation
+              surfaces, scope, access, and finish choices.
             </span>
           </p>
         </div>
