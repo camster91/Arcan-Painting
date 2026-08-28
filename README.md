@@ -158,6 +158,13 @@ suite, build the production bundle, and run Chromium smoke checks against that b
 Keep these checks required before merge. The PR workflow also publishes an immutable
 GHCR image tag for staging; production deploy remains separately approval-gated.
 
+The manual `deploy-preview.yml` workflow is intentionally bound to the `Preview`
+environment. Configure `PREVIEW_COOLIFY_URL` and `PREVIEW_COOLIFY_TOKEN` as Preview
+secrets, plus `PREVIEW_APP_UUID` and `PREVIEW_URL` as Preview variables. The target
+service must select the intended PR image, set `PUBLIC_SITE_MODE=staging`, and use
+isolated non-production data. The workflow rejects a preview that lacks both
+`robots.txt` blocking and a page-level `noindex` directive.
+
 ## Known caveats
 
 - The idempotent schema migration runs during startup when `DATABASE_URL` is configured. The container healthcheck has a 20-second start period; do not release without confirming `/api/health` is `200` and the database-backed admin flow is usable.

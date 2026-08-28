@@ -1,0 +1,83 @@
+name: Deploy Preview to Coolify
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: Deploy isolated preview
+    runs-on: ubuntu-latest
+    environment: Preview
+    steps:
+      - name: Validate isolated preview configuration
+        env:
+          PREVIEW_COOLIFY_URL: ${{ secrets.PREVIEW_COOLIFY_URL }}
+          PREVIEW_COOLIFY_TOKEN: ${{ secrets.PREVIEW_COOLIFY_TOKEN }}
+          PREVIEW_APP_UUID: ${{ vars.PREVIEW_APP_UUID }}
+          PREVIEW_URL: ${{ vars.PREVIEW_URL }}
+        run: |
+          missing=0
+          for name in PREVIEW_COOLIFY_URL PREVIEW_COOLIFY_TOKEN PREVIEW_APP_UUID PREVIEW_URL; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is not configured in the Preview environment"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Trigger preview deployment
+        env:
+          PREVIEW_COOLIFY_URL: ${{ secrets.PREVIEW_COOLIFY_URL }}
+          PREVIEW_COOLIFY_TOKEN: ${{ secrets.PREVIEW_COOLIFY_TOKEN }}
+          PREVIEW_APP_UUID: ${{ vars.PREVIEW_APP_UUID }}
+        run: |
+          response=$(curl --silent --show-error --max-time 30 \
+            --write-out '\n%{http_code}' \
+            --get "$PREVIEW_COOLIFY_URL/api/v1/deploy" \
+            --header "Authorization: Bearer $PREVIEW_COOLIFY_TOKEN" \
+            --data-urlencode "uuid=$PREVIEW_APP_UUID" \
+            --data-urlencode 'force=true')
+          http_code=$(printf '%s\n' "$response" | tail -1)
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "::error::Preview deploy trigger failed with HTTP $http_code"
+            exit 1
+          fi
+
+      - name: Verify preview health and indexing isolation
+        env:
+          PREVIEW_URL: ${{ vars.PREVIEW_URL }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error --max-time 15 \
+              "$PREVIEW_URL/api/health" >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then
+              echo "::error::Preview health check did not become ready"
+              exit 1
+            fi
+            sleep 10
+          done
+
+          robots=$(curl --fail --silent --show-error --max-time 15 \
+            "$PREVIEW_URL/robots.txt")
+          printf '%s' "$robots" | grep -Fq 'Disallow: /' || {
+            echo "::error::Preview robots.txt does not block indexing"
+            exit 1
+          }
+
+          home=$(curl --fail --silent --show-error --max-time 15 "$PREVIEW_URL/")
+          printf '%s' "$home" | grep -Eiq \
+            "<meta[^>]+name=['\"]robots['\"][^>]+content=['\"][^'\"]*noindex" || {
+            echo "::error::Preview homepage does not emit a noindex directive"
+            exit 1
+          }
+
+          echo "Preview is healthy and indexing is blocked: $PREVIEW_URL"

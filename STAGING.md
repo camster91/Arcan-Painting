@@ -1,7 +1,7 @@
 # Staging Verification
 
 Verified: 2026-08-28
-Verified code revision: PR branch through `79bc771`
+Verified code revision: PR branch through `c2d88a7`
 Preview: `https://along-upgrades-cashiers-florist.trycloudflare.com`
 
 This is a reversible Cloudflare Quick Tunnel to the local production build. It has no
@@ -49,10 +49,14 @@ business-proof and production-infrastructure decisions in `REMEDIATION.md` remai
   a staging candidate and no project token was retained in the repository.
 - The supported deployment artifact is the repository's Node 22.20 container. The PR
   workflow is configured to publish `ghcr.io/camster91/arcan-painting:pr-109`. GitHub
-  Actions were enabled on 2026-08-28; the repository's `Preview` environment currently
-  has no secrets or variables. A durable preview should run the PR image in a separate
-  Coolify staging service with `PUBLIC_SITE_MODE=staging`, isolated credentials, and a
-  non-production hostname.
+  Actions were enabled on 2026-08-28, but GitHub rejected both hosted jobs before any
+  step ran because recent account payments failed or the Actions spending limit must be
+  increased. The repository's `Preview` environment currently has no secrets or
+  variables. The manual `deploy-preview.yml` workflow is bound to that environment and
+  validates health, `robots.txt`, and page-level `noindex` after deployment. After
+  billing access is restored and the Preview environment is configured, it can run the
+  PR image in a separate Coolify staging service with `PUBLIC_SITE_MODE=staging`,
+  isolated credentials, and a non-production hostname.
 - End-to-end lead persistence, notifications, analytics vendor delivery, authenticated
   admin, and production headers require isolated staging credentials before they can be
   verified safely.

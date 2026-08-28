@@ -95,17 +95,23 @@ production approval.
 - [x] Run dependency and secret checks appropriate to the release.
 - [x] Publish a reversible staging environment with isolated data and no production
       indexing.
-- [ ] Verify desktop/mobile pages, forms, errors, metadata, schema, redirects, headers,
-      analytics debug events, and accessibility on staging.
+- [x] Verify desktop/mobile public pages, client-side form validation and failure states,
+      metadata, schema, redirects, staging headers, analytics debug events, and
+      accessibility on the isolated preview.
+- [ ] Verify database persistence, outbound notifications, vendor-side analytics
+      receipt, authenticated admin, and production-ingress headers after isolated
+      staging credentials and a durable host are supplied.
 - [x] Run independent client-deliverable QA and reconcile every roadmap checkbox.
 - [x] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
       production approval request.
 
 ## External approvals and evidence still required
 
-- GitHub Actions are enabled. The repository `Preview` environment still requires
-  isolated staging host identifiers and credentials before a durable preview workflow
-  can be connected without reusing production infrastructure.
+- GitHub Actions are enabled, but GitHub rejected hosted jobs before execution because
+  recent account payments failed or the Actions spending limit must be increased. The
+  repository `Preview` environment also requires isolated staging host identifiers and
+  credentials before a durable preview workflow can be connected without reusing
+  production infrastructure.
 - Valid certificate and redirect for `www.arcanpainting.ca` require production ingress
   or DNS authority and are not part of the staging code change.
 - GA4/Search Console/Google Business Profile/Bing access and identifiers are not present.
