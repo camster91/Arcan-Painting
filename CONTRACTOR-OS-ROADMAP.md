@@ -272,3 +272,7 @@ operations, and real external communications require explicit action-time approv
   caps failures, reports queue outcomes, clears on login/logout, never caches authenticated
   API responses or admin pages, and refuses to queue creates, approvals, payments, or deletes.
   Offline creation workflows remain open rather than being represented as safe.
+- 2026-09-01: Deployed exact offline-safety candidate `124a4ec` to isolated Ashbi staging as
+  image `sha256:73b9f4e8b7e4a84ba3b7bbbdec7d05b0bb9cf9a0452c9523353939d1d5109cad`.
+  The gate records 89 passing test files and 265 tests plus typecheck and production build;
+  staging is healthy and production remains unchanged.
