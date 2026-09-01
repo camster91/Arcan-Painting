@@ -329,3 +329,8 @@ operations, and real external communications require explicit action-time approv
   as the insert. Estimate deletion no longer deletes a related project: only an unlinked draft
   can be removed, while sent, approved, contracted, and scheduled estimates are retained as
   auditable business records. The full local gate passes with 100 files and 316 tests.
+- 2026-09-01: Built and deployed exact record-integrity candidate `dce979f` to isolated Ashbi
+  staging as image `sha256:5088fff9fedfec62cff9100f6be7ee4d92c3c9b31f1fe84d58e4d68c9888c1f3`.
+  Health, PWA assets, protected send/report/privacy/delete boundaries, and the real-schema
+  retention query passed. Staging and production remain healthy with zero restarts; production
+  is still pinned to `arcan-painting:175d567`.
