@@ -4,14 +4,14 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `24f5f03`
+Candidate revision: `8a2c152`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:24f5f03`
-- Image ID: `sha256:32c657f01be85156201fb1192e6ac603b9ef12304515a4190e0269aa7b88a9f7`
-- OCI revision label: `24f5f03`
+- Ashbi image: `arcan-painting-staging:8a2c152`
+- Image ID: `sha256:813bd11dca80df42c3a6689285417098d25d9a4e409ac7e9cd7cb711fd1e3d5d`
+- OCI revision label: `8a2c152`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -20,7 +20,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 85 files, 253 tests passed.
+- `npm test -- --run`: 86 files, 256 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -77,5 +77,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `24f5f03` (or a
+Production deployment requires explicit action-time approval naming revision `8a2c152` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.

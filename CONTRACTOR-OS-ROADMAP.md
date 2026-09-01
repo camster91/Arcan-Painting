@@ -246,3 +246,7 @@ operations, and real external communications require explicit action-time approv
   approval now atomically marks the related lead won and creates or reuses exactly one
   scheduled project, while manual estimate-to-project creation rejects unapproved or
   already-converted estimates instead of duplicating data.
+- 2026-09-01: Deployed exact lifecycle candidate `8a2c152` to isolated Ashbi staging as
+  image `sha256:813bd11dca80df42c3a6689285417098d25d9a4e409ac7e9cd7cb711fd1e3d5d`.
+  The gate records 86 passing test files and 256 tests plus typecheck and production build;
+  staging health passed and production remained unchanged.
