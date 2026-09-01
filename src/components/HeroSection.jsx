@@ -1,4 +1,4 @@
-import { useState, useRef, lazy, Suspense, useEffect } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
@@ -17,15 +17,6 @@ export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const shouldReduceMotion = useReducedMotion();
   const containerRef = useRef(null);
-
-  // Auto-advance slideshow
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const interval = setInterval(() => {
-      setCurrentSlide(s => (s + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [shouldReduceMotion]);
 
   // Parallax scroll effect on background
   const { scrollYProgress } = useScroll({
