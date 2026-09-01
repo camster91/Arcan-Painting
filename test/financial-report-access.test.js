@@ -8,8 +8,8 @@ const source = readFileSync(
 );
 
 describe("financial report access", () => {
-  it("is owner-only and prevents caching sensitive exports", () => {
-    expect(source).toContain("Owner access required");
+  it("requires financial read authority and prevents caching sensitive exports", () => {
+    expect(source).toContain('hasPermission(user, "finance.read")');
     expect(source).toContain('"Cache-Control": "private, no-store"');
   });
   it("exports invoices, payments, actual expenses, and commitments", () => {

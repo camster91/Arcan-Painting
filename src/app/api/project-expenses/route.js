@@ -3,17 +3,19 @@ import { getCurrentUser } from "@/app/api/utils/auth";
 import { auditLog } from "@/app/api/utils/audit";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { validateProjectExpense } from "@/app/api/utils/project-expenses-domain";
+import { hasPermission } from "@/app/api/utils/permissions";
 
 const owner = (user) => user?.role === "owner";
 async function hasAccess(user, projectId) {
-  if (owner(user)) return true;
+  if (hasPermission(user, "projects.write")) return true;
   const rows = await sql`SELECT p.id FROM projects p LEFT JOIN team_members tm ON tm.id = p.assigned_painter_id WHERE p.id = ${projectId} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER(${user.username})))`;
   return rows.length > 0;
 }
 
 export async function GET(request) {
   const limited = generalLimiter(request); if (limited) return limited;
-  const user = await getCurrentUser(request); if (!owner(user)) return Response.json({ error: "Owner access required" }, { status: 403 });
+  const user = await getCurrentUser(request); if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "job_cost.read")) return Response.json({ error: "Forbidden" }, { status: 403 });
   const projectId = Number(new URL(request.url).searchParams.get("project_id"));
   if (!Number.isInteger(projectId)) return Response.json({ error: "Valid project_id is required" }, { status: 400 });
   const expenses = await sql`SELECT * FROM project_expenses WHERE project_id = ${projectId} ORDER BY incurred_on DESC, created_at DESC`;
@@ -23,6 +25,7 @@ export async function GET(request) {
 export async function POST(request) {
   const limited = generalLimiter(request); if (limited) return limited;
   const user = await getCurrentUser(request); if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "field.write") && !hasPermission(user, "projects.write")) return Response.json({ error: "Forbidden" }, { status: 403 });
   const body = await request.json().catch(() => ({})); const projectId = Number(body.project_id);
   if (!Number.isInteger(projectId)) return Response.json({ error: "Valid project_id is required" }, { status: 400 });
   if (!(await hasAccess(user, projectId))) return Response.json({ error: "Forbidden" }, { status: 403 });

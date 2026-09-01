@@ -30,6 +30,7 @@ import MobileBreadcrumb from "@/components/MobileBreadcrumb";
 import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
 import { ModalProvider, useModal } from "@/contexts/ModalContext";
 import { initSmartPreloader } from "@/utils/pagePreloader";
+import { hasPermission } from "@/app/api/utils/permissions";
 
 function AdminLayoutContent({ children }) {
   const { user, loading, authChecked, authError, logout, refreshAuth } =
@@ -120,6 +121,7 @@ function AdminLayoutContent({ children }) {
     () => [
       {
         key: "dashboard",
+        permissions: ["dashboard.read"],
         label: "Dashboard",
         icon: LayoutGrid,
         entryHref: "/admin",
@@ -130,6 +132,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "customers",
+        permissions: ["customers.read"],
         label: "Customer Management",
         icon: Users,
         entryHref: "/admin/leads",
@@ -156,6 +159,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "sales",
+        permissions: ["estimates.read"],
         label: "Sales & Contracts",
         icon: FileText,
         entryHref: "/admin/estimates",
@@ -186,6 +190,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "projects",
+        permissions: ["projects.read", "projects.assigned"],
         label: "Project Management",
         icon: Briefcase,
         entryHref: "/admin/projects",
@@ -203,6 +208,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "financial",
+        permissions: ["finance.read"],
         label: "Financial",
         icon: Wallet,
         entryHref: "/admin/invoices",
@@ -224,6 +230,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "scheduling",
+        permissions: ["schedule.read", "field.read"],
         label: "Scheduling",
         icon: Calendar,
         entryHref: "/admin/calendar",
@@ -254,6 +261,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "operations",
+        permissions: ["field.read", "communications.manage"],
         label: "Operations",
         icon: Briefcase,
         entryHref: "/admin/today",
@@ -281,6 +289,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "ai-chat",
+        permissions: ["ai.manage"],
         label: "AI Help",
         icon: Bot,
         entryHref: "/admin/ai-chat",
@@ -291,6 +300,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "agents",
+        permissions: ["ai.manage"],
         label: "AI Agents",
         icon: Cpu,
         entryHref: "/admin/agents",
@@ -304,6 +314,7 @@ function AdminLayoutContent({ children }) {
       },
       {
         key: "team",
+        permissions: ["team.manage"],
         label: "Team & Settings",
         icon: Settings,
         entryHref: "/admin/team",
@@ -350,15 +361,24 @@ function AdminLayoutContent({ children }) {
     [unreadCount],
   );
 
+  const visibleGroups = useMemo(
+    () =>
+      groups.filter((group) =>
+        group.permissions.some((permission) => hasPermission(user, permission)),
+      ),
+    [groups, user],
+  );
+
   const activeGroup = useMemo(() => {
     const path = currentPath || "";
     // Exact dashboard match
-    if (path === "/admin") return groups[0];
+    if (path === "/admin") return visibleGroups[0] || null;
     return (
-      groups.find((g) => g.matchers.some((m) => new RegExp(m).test(path))) ||
-      groups[0]
+      visibleGroups.find((g) =>
+        g.matchers.some((m) => new RegExp(m).test(path)),
+      ) || visibleGroups[0] || null
     );
-  }, [currentPath, groups]);
+  }, [currentPath, visibleGroups]);
 
   // During auth check: render children immediately so page-level redirects can fire
   // The auth check in AdminAuthContext will redirect to login if needed
@@ -510,9 +530,9 @@ function AdminLayoutContent({ children }) {
           {/* Sidebar */}
           <aside className="hidden lg:block sticky top-24 self-start">
             <nav className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-              {groups.map((g, index) => {
+              {visibleGroups.map((g) => {
                 const Icon = g.icon;
-                const active = g.key === activeGroup.key;
+                const active = g.key === activeGroup?.key;
                 return (
                   <div key={g.key} className="relative">
                     <a

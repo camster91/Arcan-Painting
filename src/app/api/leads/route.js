@@ -1,7 +1,8 @@
 import sql from "../utils/sql.js";
 import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
-import { requireAdmin, getCurrentUser } from "../utils/auth.js";
+import { getCurrentUser } from "../utils/auth.js";
+import { hasPermission } from "../utils/permissions.js";
 import { validateBody, schemas } from "../utils/validate.js";
 import { requireCsrf } from "../utils/csrf.js";
 
@@ -21,7 +22,7 @@ export async function POST(request) {
 
   // Auth: admin only
   const user = await getCurrentUser(request);
-  if (!user || (user.role !== "owner" && user.role !== "admin")) {
+  if (!user || !hasPermission(user, "customers.write")) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -141,8 +142,8 @@ export async function POST(request) {
 // Get all leads with filtering and pagination (ADMIN ONLY)
 export async function GET(request) {
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!user || !hasPermission(user, "customers.read")) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -275,8 +276,8 @@ export async function PUT(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!user || !hasPermission(user, "customers.write")) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -437,8 +438,8 @@ export async function DELETE(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!user || !hasPermission(user, "customers.write")) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 

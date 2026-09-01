@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { agingBucket, toCsv } from "@/app/api/utils/accounting-export-domain";
 
@@ -22,8 +23,9 @@ export async function GET(request) {
   const limited = generalLimiter(request);
   if (limited) return limited;
   const user = await getCurrentUser(request);
-  if (user?.role !== "owner")
-    return Response.json({ error: "Owner access required" }, { status: 403 });
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "finance.read"))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   const format = new URL(request.url).searchParams.get("format") || "json";
   const receivables =
     await sql`SELECT i.id, i.invoice_number, i.due_date, i.amount_due, i.total_amount, i.payment_status, GREATEST(0, CURRENT_DATE - COALESCE(i.due_date, CURRENT_DATE))::int AS days_overdue, COALESCE(l.name, '') AS customer, COALESCE(p.project_name, '') AS project FROM invoices i LEFT JOIN leads l ON l.id = i.lead_id LEFT JOIN projects p ON p.id = i.project_id WHERE i.status NOT IN ('draft', 'void', 'cancelled') AND i.amount_due > 0 ORDER BY i.due_date ASC NULLS LAST`;

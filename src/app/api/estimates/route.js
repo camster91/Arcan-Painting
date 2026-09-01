@@ -1,11 +1,13 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
 
 // GET /api/estimates - Get all estimates with optional filtering (role-aware)
 export async function GET(request) {
   try {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!hasPermission(user, "estimates.read")) return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -32,12 +34,6 @@ export async function GET(request) {
     if (leadId) {
       query += ` AND e.lead_id = $${params.length + 1}`;
       params.push(parseInt(leadId));
-    }
-
-    // If not owner, limit to estimates created by this user
-    if (user.role !== "owner") {
-      query += ` AND (e.created_by = $${params.length + 1})`;
-      params.push(user.username);
     }
 
     query += ` ORDER BY e.created_at DESC`;
@@ -73,8 +69,7 @@ export async function POST(request) {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     // Only owners and lead roles can create estimates
-    const allowed = ["owner", "lead_painter", "supervisor", "admin"];
-    if (!allowed.includes(user.role)) {
+    if (!hasPermission(user, "estimates.write")) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -185,8 +180,7 @@ export async function PUT(request) {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-    const allowed = ["owner", "lead_painter", "supervisor", "admin"];
-    if (!allowed.includes(user.role)) {
+    if (!hasPermission(user, "estimates.write")) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -220,12 +214,6 @@ export async function PUT(request) {
         { success: false, error: "Estimate not found" },
         { status: 404 },
       );
-    }
-    if (
-      user.role !== "owner" &&
-      existingEstimate[0].created_by !== user.username
-    ) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Build dynamic update query

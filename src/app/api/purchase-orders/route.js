@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
+import { hasPermission } from "@/app/api/utils/permissions";
 import {
   assertPurchaseTransition,
   validatePurchaseEvidence,
@@ -16,8 +17,9 @@ export async function GET(request) {
   const limited = generalLimiter(request);
   if (limited) return limited;
   const user = await getCurrentUser(request);
-  if (!owner(user))
-    return Response.json({ error: "Owner access required" }, { status: 403 });
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "job_cost.read"))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   const projectId = identifier(
     new URL(request.url).searchParams.get("project_id"),
   );
@@ -35,8 +37,9 @@ export async function POST(request) {
   const limited = generalLimiter(request);
   if (limited) return limited;
   const user = await getCurrentUser(request);
-  if (!owner(user))
-    return Response.json({ error: "Owner access required" }, { status: 403 });
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "purchasing.write"))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   const body = await request.json().catch(() => ({}));
   const projectId = identifier(body.project_id);
   if (!projectId)

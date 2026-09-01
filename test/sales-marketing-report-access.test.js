@@ -6,8 +6,8 @@ const source = readFileSync(
   "utf8",
 );
 describe("sales and marketing reporting", () => {
-  it("is owner-only, non-cacheable, and uses cleared cash", () => {
-    expect(source).toContain("Owner access required");
+  it("requires marketing read authority, is non-cacheable, and uses cleared cash", () => {
+    expect(source).toContain('hasPermission(user, "marketing.read")');
     expect(source).toContain("private, no-store");
     expect(source).toContain("pay.status = 'cleared'");
   });

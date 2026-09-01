@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
 import type { Handler } from 'hono/types';
 import updatedFetch from '../src/__create/fetch';
-import { requireAdmin } from '../src/app/api/utils/auth.js';
+import { getCurrentUser } from '../src/app/api/utils/auth.js';
+import { hasPermission } from '../src/app/api/utils/permissions.js';
 import { requireCsrf, shouldRequireCsrf } from '../src/app/api/utils/csrf.js';
-import { requiresAdminApiAccess } from '../src/app/api/utils/api-access-policy.js';
+import { requiredApiPermission } from '../src/app/api/utils/api-access-policy.js';
 
 const API_BASENAME = '/api';
 const api = new Hono();
@@ -13,8 +14,13 @@ const api = new Hono();
 // and input-validation responsibilities; this protects existing and future
 // authenticated mutation routes from being missed by a route-local check.
 api.use('*', async (c, next) => {
-  if (requiresAdminApiAccess(c.req.path) && !(await requireAdmin(c.req.raw))) {
-    return c.json({ error: 'Forbidden' }, 403);
+  const requiredPermission = requiredApiPermission(c.req.path, c.req.method);
+  if (requiredPermission) {
+    const user = await getCurrentUser(c.req.raw);
+    if (!user) return c.json({ error: 'Unauthorized' }, 401);
+    if (!hasPermission(user, requiredPermission)) {
+      return c.json({ error: 'Forbidden' }, 403);
+    }
   }
   if (shouldRequireCsrf(c.req.raw)) {
     const csrfError = requireCsrf(c.req.raw);

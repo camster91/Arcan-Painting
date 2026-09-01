@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/app/api/utils/auth.js", () => ({
-  requireAdmin: vi.fn(),
+  requireStaff: vi.fn(),
 }));
 
-const { requireAdmin } = await import("@/app/api/utils/auth.js");
+const { requireStaff } = await import("@/app/api/utils/auth.js");
 const { protectAdminRoute } = await import("@/app/admin/route-guard.server.js");
 
 describe("admin route guard", () => {
   it("redirects unauthenticated requests and preserves the nested destination", async () => {
-    requireAdmin.mockResolvedValue(false);
+    requireStaff.mockResolvedValue(false);
 
     const response = await protectAdminRoute(
       new Request("https://arcanpainting.ca/admin/leads?status=new"),
@@ -22,7 +22,7 @@ describe("admin route guard", () => {
   });
 
   it("allows an authenticated administrator through", async () => {
-    requireAdmin.mockResolvedValue(true);
+    requireStaff.mockResolvedValue(true);
 
     await expect(
       protectAdminRoute(new Request("https://arcanpainting.ca/admin/leads")),

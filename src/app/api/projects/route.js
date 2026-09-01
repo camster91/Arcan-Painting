@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
 import { auditLog } from "@/app/api/utils/audit";
 import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 
@@ -45,8 +46,12 @@ export async function GET(request) {
     `;
     const params = [];
 
-    // Role-based filtering
-    if (user.role !== "owner") {
+    const canReadAll = hasPermission(user, "projects.read");
+    const canReadAssigned = hasPermission(user, "projects.assigned");
+    if (!canReadAll && !canReadAssigned) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (!canReadAll) {
       // Painters only see their assigned projects
       query += ` AND (LOWER(tm.email) = LOWER($${params.length + 1}) OR EXISTS (
         SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
@@ -87,7 +92,7 @@ export async function POST(request) {
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-    if (user.role !== "owner") {
+    if (!hasPermission(user, "projects.write")) {
       return Response.json(
         { error: "Forbidden - Owners only" },
         { status: 403 },
@@ -226,8 +231,13 @@ export async function PUT(request) {
     }
 
     // Verify the project exists and user has access
+    const canManageProject = hasPermission(user, "projects.write");
+    const canWorkAssigned = hasPermission(user, "field.write");
+    if (!canManageProject && !canWorkAssigned) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
     let projectCheck;
-    if (user.role === "owner") {
+    if (canManageProject) {
       projectCheck = await sql`
         SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email
         FROM projects p LEFT JOIN leads l ON p.lead_id = l.id WHERE p.id = ${id}
@@ -265,7 +275,7 @@ export async function PUT(request) {
     let paramCount = 1;
 
     // Owner can update all fields
-    if (user.role === "owner") {
+    if (canManageProject) {
       if (project_name !== undefined) {
         updateFields.push(`project_name = $${paramCount}`);
         updateValues.push(project_name);
@@ -413,7 +423,7 @@ export async function DELETE(request) {
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-    if (user.role !== "owner") {
+    if (!hasPermission(user, "projects.write")) {
       return Response.json(
         { error: "Forbidden - Owners only" },
         { status: 403 },

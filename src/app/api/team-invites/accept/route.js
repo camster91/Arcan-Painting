@@ -3,7 +3,7 @@ import { hash } from "argon2";
 import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { ensureSchema } from "@/migrations/001-initial-schema";
 
-const INVITABLE_ROLES = new Set(["painter", "owner"]);
+const INVITABLE_ROLES = new Set(["crew", "office", "estimator", "project_manager", "finance_readonly"]);
 
 class InviteError extends Error {}
 

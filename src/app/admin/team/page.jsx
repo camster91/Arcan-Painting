@@ -29,7 +29,7 @@ export default function TeamManagementPage() {
 
   // Invite state
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("painter");
+  const [inviteRole, setInviteRole] = useState("crew");
   const [inviteMsg, setInviteMsg] = useState(null);
   const inviteMutation = useMutation({
     mutationFn: async ({ email, role }) => {
@@ -48,7 +48,7 @@ export default function TeamManagementPage() {
     onSuccess: () => {
       setInviteMsg({ type: "success", text: "Invite sent successfully" });
       setInviteEmail("");
-      setInviteRole("painter");
+      setInviteRole("crew");
     },
     onError: (e) =>
       setInviteMsg({
@@ -309,8 +309,11 @@ export default function TeamManagementPage() {
                 onChange={(e) => setInviteRole(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
-                <option value="painter">Painter</option>
-                <option value="owner">Owner</option>
+                <option value="crew">Crew</option>
+                <option value="office">Office</option>
+                <option value="estimator">Estimator</option>
+                <option value="project_manager">Project Manager</option>
+                <option value="finance_readonly">Finance (read-only)</option>
               </select>
             </div>
             <div className="md:col-span-3 flex justify-end">

@@ -4,8 +4,7 @@ const sql = vi.fn();
 
 vi.mock("@/app/api/utils/sql", () => ({ default: sql }));
 vi.mock("@/app/api/utils/auth", () => ({
-  requireAdmin: vi.fn().mockResolvedValue({ id: 1, role: "admin" }),
-  getCurrentUser: vi.fn(),
+  getCurrentUser: vi.fn().mockResolvedValue({ id: 1, role: "admin" }),
 }));
 
 const { GET } = await import("@/app/api/leads/route");

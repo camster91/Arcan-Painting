@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { summarizeFunnel } from "@/app/api/utils/funnel-domain";
 import { toCsv } from "@/app/api/utils/accounting-export-domain";
@@ -10,8 +11,9 @@ export async function GET(request) {
   const limited = generalLimiter(request);
   if (limited) return limited;
   const user = await getCurrentUser(request);
-  if (user?.role !== "owner")
-    return Response.json({ error: "Owner access required" }, { status: 403 });
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "marketing.read"))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   const url = new URL(request.url);
   const days = allowedDays.has(Number(url.searchParams.get("days")))
     ? Number(url.searchParams.get("days"))

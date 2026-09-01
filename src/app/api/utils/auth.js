@@ -114,6 +114,13 @@ export async function requireAdmin(request) {
   return user.role === 'owner' || user.role === 'admin';
 }
 
+export async function requireStaff(request) {
+  const user = await getCurrentUser(request);
+  if (!user) return false;
+  const { isStaffRole } = await import("./permissions.js");
+  return isStaffRole(user.role);
+}
+
 // Helper function to require owner-only authentication
 export async function requireOwner(request) {
   const user = await getCurrentUser(request);

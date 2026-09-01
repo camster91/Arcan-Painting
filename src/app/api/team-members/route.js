@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
 
 // Get all team members (owners only) or get current painter's info
 export async function GET(request) {
@@ -11,9 +12,17 @@ export async function GET(request) {
     }
 
     // Only owners can see all team members
-    if (user.role === "owner") {
+    if (hasPermission(user, "team.manage")) {
       const teamMembers = await sql`
         SELECT * FROM team_members 
+        ORDER BY name ASC
+      `;
+      return Response.json(teamMembers);
+    } else if (hasPermission(user, "schedule.read")) {
+      const teamMembers = await sql`
+        SELECT id, name, email, phone, role, status, specialties
+        FROM team_members
+        WHERE status = 'active'
         ORDER BY name ASC
       `;
       return Response.json(teamMembers);

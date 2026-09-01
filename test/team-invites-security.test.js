@@ -93,14 +93,14 @@ describe("team invitation creation", () => {
     const response = await createInvite(new Request("https://hostile.test/api/team-invites", {
       method: "POST",
       headers: { "x-forwarded-host": "hostile.test" },
-      body: JSON.stringify({ email: "crew@example.com", role: "painter", baseUrl: "https://hostile.test" }),
+      body: JSON.stringify({ email: "crew@example.com", role: "crew", baseUrl: "https://hostile.test" }),
     }));
 
     expect(response.status).toBe(200);
     expect(generateSecureToken).toHaveBeenCalledOnce();
     expect(sql.transaction).toHaveBeenCalledOnce();
     expect(tx).toHaveBeenCalledWith(expect.any(Array), "crew@example.com");
-    expect(tx).toHaveBeenCalledWith(expect.any(Array), "crew@example.com", "painter", invitationToken, expect.any(String), 4);
+    expect(tx).toHaveBeenCalledWith(expect.any(Array), "crew@example.com", "crew", invitationToken, expect.any(String), 4);
     expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
       html: expect.stringContaining("https://arcanpainting.ca/account/accept-invite"),
     }));
@@ -120,13 +120,13 @@ describe("team invitation creation", () => {
 
     const response = await createInvite(new Request("https://arcanpainting.ca/api/team-invites", {
       method: "POST",
-      body: JSON.stringify({ email: "crew@example.com", role: "owner" }),
+      body: JSON.stringify({ email: "crew@example.com", role: "office" }),
     }));
 
     expect(response.status).toBe(200);
     expect(tx.mock.calls[0]).toEqual([expect.any(Array), "crew@example.com"]);
     expect(tx.mock.calls[1]).toEqual([expect.any(Array), "crew@example.com"]);
-    expect(tx.mock.calls[2]).toEqual([expect.any(Array), "crew@example.com", "owner", invitationToken, expect.any(String), 4]);
+    expect(tx.mock.calls[2]).toEqual([expect.any(Array), "crew@example.com", "office", invitationToken, expect.any(String), 4]);
   });
 });
 

@@ -1,8 +1,8 @@
 import { redirect } from "react-router";
-import { requireAdmin } from "../api/utils/auth.js";
+import { requireStaff } from "../api/utils/auth.js";
 
 export async function protectAdminRoute(request) {
-  if (await requireAdmin(request)) {
+  if (await requireStaff(request)) {
     return null;
   }
 
