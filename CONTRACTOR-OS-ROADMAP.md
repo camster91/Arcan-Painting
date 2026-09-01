@@ -318,3 +318,9 @@ operations, and real external communications require explicit action-time approv
   consent-backed portal signing is authoritative. Contract templates now update all legal fields
   atomically, validate deposit percentages, and audit create/update/delete. Settings, team-member
   permissions, invitations, accounting exports, and marketing exports also gained audit coverage.
+- 2026-09-01: Built and deployed exact lifecycle-hardening candidate `017ac90` to isolated Ashbi
+  staging as image `sha256:045edf3f8bf5916b9db0fc6352c8cb6d73d387cac8f86322bd06aa2de0e9c76c`.
+  The full gate records 99 passing files and 311 tests, typecheck, production build, and zero
+  production dependency vulnerabilities. Health, PWA assets, reporting authorization, all three
+  customer-document send boundaries, and contract-template boundaries passed. Both staging and
+  production report zero restarts; production remains unchanged on `arcan-painting:175d567`.
