@@ -355,3 +355,7 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Restricted onboarding company identity, progression, completion, and Google-prompt
   state to owner/admin users and added audit evidence for every action. Team availability
   create/update/delete now uses the same explicit trust boundary and central audit trail.
+- 2026-09-01: Built and deployed exact owner-control candidate `7e4dcf7` to isolated Ashbi staging
+  as image `sha256:9dd0b8a3f46ada7e0a0bee9d5a405eaff7a0926409a24c43653782748a3f68c4`.
+  The full gate records 104 files and 332 tests. Anonymous onboarding and team-availability reads
+  and writes return `401`; both staging and unchanged production are healthy with zero restarts.
