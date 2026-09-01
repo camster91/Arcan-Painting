@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshCw, Mail, RotateCcw, Trash2 } from "lucide-react";
+import { RefreshCw, Mail, RotateCcw } from "lucide-react";
 import MobileModal from "@/components/MobileModal";
 
 export default function PaymentsListModal({
@@ -74,27 +74,6 @@ export default function PaymentsListModal({
         throw new Error(data.error || "Failed to send receipt");
       }
       onNotify?.("Receipt sent to client");
-    } catch (e) {
-      console.error(e);
-      alert(e.message);
-    } finally {
-      setWorkingId(null);
-    }
-  };
-
-  const deletePayment = async (p) => {
-    const ok = window.confirm(`Delete this payment? This cannot be undone.`);
-    if (!ok) return;
-    try {
-      setWorkingId(p.id);
-      const res = await fetch(`/api/payments?id=${p.id}`, { method: "DELETE" });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to delete payment");
-      }
-      onNotify?.("Payment deleted");
-      await load();
-      await onChanged?.();
     } catch (e) {
       console.error(e);
       alert(e.message);
@@ -222,14 +201,6 @@ export default function PaymentsListModal({
                           <RotateCcw size={16} />
                         </button>
                       )}
-                      <button
-                        disabled={workingId === p.id}
-                        onClick={() => deletePayment(p)}
-                        title="Delete"
-                        className={`p-1.5 rounded-lg ${workingId === p.id ? "text-red-600 bg-red-50" : "text-slate-600 hover:text-red-700 hover:bg-red-50"}`}
-                      >
-                        <Trash2 size={16} />
-                      </button>
                     </div>
                   </td>
                 </tr>

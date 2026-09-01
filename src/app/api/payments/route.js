@@ -14,6 +14,27 @@ import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
+import { assertPaymentCreateStatus, assertPaymentUpdate } from "@/app/api/utils/payment-domain";
+
+const requireOwner = (user) => user?.role === "owner";
+
+async function recalculateInvoice(txSql, invoiceId) {
+  if (!invoiceId) return null;
+  const [invoice] = await txSql`
+    UPDATE invoices
+    SET amount_paid = COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoiceId} AND status = 'cleared'), 0),
+        payment_status = CASE
+          WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoiceId} AND status = 'cleared'), 0) >= total_amount AND total_amount > 0 THEN 'paid'
+          WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoiceId} AND status = 'cleared'), 0) > 0 THEN 'partial'
+          ELSE 'unpaid'
+        END,
+        amount_due = GREATEST(0, total_amount - COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoiceId} AND status = 'cleared'), 0)),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ${invoiceId}
+    RETURNING *
+  `;
+  return invoice || null;
+}
 
 // GET /api/payments - List payments with filtering or get single payment
 export async function GET(request) {
@@ -22,9 +43,8 @@ export async function GET(request) {
 
   try {
     const user = await getCurrentUser(request);
-    if (!user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!requireOwner(user)) return Response.json({ error: "Owner access required" }, { status: 403 });
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -200,6 +220,7 @@ export async function POST(request) {
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!requireOwner(user)) return Response.json({ error: "Owner access required" }, { status: 403 });
 
     const [body, validationError] = await validateBody(request, schemas.payment);
     if (validationError) return validationError;
@@ -218,6 +239,7 @@ export async function POST(request) {
 
     const paymentAmount = parseFloat(amount);
     const payment_number = generatePaymentNumber();
+    try { assertPaymentCreateStatus(status); } catch (error) { return Response.json({ error: error.message }, { status: 400 }); }
 
     // Verify invoice and contract exist if provided
     if (invoice_id) {
@@ -247,30 +269,7 @@ export async function POST(request) {
         ) RETURNING *
       `;
 
-      let updatedInvoice = null;
-      if (invoice_id) {
-        const [inv] = await txSql`
-          UPDATE invoices 
-          SET 
-            amount_paid = COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-            ), 0),
-            payment_status = CASE 
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
-              ELSE 'unpaid'
-            END,
-            amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-            ), 0),
-            updated_at = CURRENT_TIMESTAMP
-          WHERE id = ${invoice_id}
-          RETURNING *
-        `;
-        updatedInvoice = inv;
-      }
+      const updatedInvoice = await recalculateInvoice(txSql, invoice_id);
 
       return { payment, updatedInvoice };
     });
@@ -328,20 +327,13 @@ export async function PUT(request) {
 
   try {
     const user = await getCurrentUser(request);
-    if (!user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!requireOwner(user)) return Response.json({ error: "Owner access required" }, { status: 403 });
 
     const [body, validationError] = await validateBody(request, schemas.paymentUpdate);
     if (validationError) return validationError;
 
     const { id, payment_method, payment_reference, amount, payment_date, status, notes, processed_by } = body;
-
-    // Check if payment exists
-    const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
-    if (existingPayment.length === 0) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
-    }
 
     // Build update query dynamically
     const updateFields = [];
@@ -360,24 +352,16 @@ export async function PUT(request) {
     updateValues.push(id);
 
     const updateQuery = `UPDATE payments SET ${updateFields.join(", ")} WHERE id = $${paramCount} RETURNING *`;
-    const [payment] = await sql(updateQuery, updateValues);
-
-    // If payment amount or status changed and it's linked to an invoice, update invoice totals
-    if ((amount !== undefined || status !== undefined) && payment.invoice_id) {
-      await sql`
-        UPDATE invoices 
-        SET 
-          amount_paid = COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
-          payment_status = CASE 
-            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
-            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
-            ELSE 'unpaid'
-          END,
-          amount_due = total_amount - COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${payment.invoice_id}
-      `;
-    }
+    const result = await sql.transaction(async (txSql) => {
+      const [existing] = await txSql`SELECT * FROM payments WHERE id = ${id} FOR UPDATE`;
+      if (!existing) return { error: "Payment not found", status: 404 };
+      try { assertPaymentUpdate(existing, body); } catch (error) { return { error: error.message, status: 409 }; }
+      const [updated] = await txSql(updateQuery, updateValues);
+      if (amount !== undefined || status !== undefined) await recalculateInvoice(txSql, updated.invoice_id);
+      return { payment: updated };
+    });
+    if (result.error) return Response.json({ error: result.error }, { status: result.status });
+    const payment = result.payment;
 
     await auditLog({
       request,
@@ -397,72 +381,13 @@ export async function PUT(request) {
   }
 }
 
-// DELETE /api/payments - Delete payment
+// Payment records form an immutable financial ledger. Corrections use status transitions.
 export async function DELETE(request) {
   const limited = paymentLimiter(request);
   if (limited) return limited;
 
-  try {
-    const user = await getCurrentUser(request);
-    if (!user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return Response.json({ error: "Payment ID is required" }, { status: 400 });
-    }
-
-    const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
-    if (existingPayment.length === 0) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
-    }
-
-    const payment = existingPayment[0];
-
-    // Real transaction: delete payment + recalculate invoice
-    await sql.transaction(async (txSql) => {
-      await txSql`DELETE FROM payments WHERE id = ${id}`;
-
-      if (payment.invoice_id) {
-        await txSql`
-          UPDATE invoices 
-          SET 
-            amount_paid = COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-            ), 0),
-            payment_status = CASE 
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) > 0 THEN 'partial'
-              ELSE 'unpaid'
-            END,
-            amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-            ), 0),
-            updated_at = CURRENT_TIMESTAMP
-          WHERE id = ${payment.invoice_id}
-        `;
-      }
-    });
-
-    await auditLog({
-      request,
-      action: "payment.delete",
-      userId: user.id,
-      username: user.username,
-      resource: "payment",
-      resourceId: id,
-      changes: { amount: payment.amount, payment_method: payment.payment_method },
-      status: "success",
-    });
-
-    return Response.json({ message: "Payment deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting payment:", error);
-    return Response.json({ error: "Failed to delete payment" }, { status: 500 });
-  }
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!requireOwner(user)) return Response.json({ error: "Owner access required" }, { status: 403 });
+  return Response.json({ error: "Payments cannot be deleted; mark pending payments failed or refund cleared payments" }, { status: 405, headers: { Allow: "GET, POST, PUT" } });
 }
