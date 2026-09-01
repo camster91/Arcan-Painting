@@ -334,3 +334,7 @@ operations, and real external communications require explicit action-time approv
   Health, PWA assets, protected send/report/privacy/delete boundaries, and the real-schema
   retention query passed. Staging and production remain healthy with zero restarts; production
   is still pinned to `arcan-painting:175d567`.
+- 2026-09-01: Hardened estimate duplication as a single transaction with explicit estimate-write
+  permission and central audit evidence. Duplicates now preserve the full painting handoff scope,
+  including area exclusions, production assumptions, coating product, colour, and sheen, and a
+  failed nested copy can no longer leave a partial draft estimate behind.
