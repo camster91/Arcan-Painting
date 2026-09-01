@@ -338,3 +338,8 @@ operations, and real external communications require explicit action-time approv
   permission and central audit evidence. Duplicates now preserve the full painting handoff scope,
   including area exclusions, production assumptions, coating product, colour, and sheen, and a
   failed nested copy can no longer leave a partial draft estimate behind.
+- 2026-09-01: The real staging schema check caught and corrected the surface colour column name
+  before authenticated use. Exact candidate `d8eac46` is now healthy on isolated Ashbi staging as
+  image `sha256:c8c7195b61839eb20fc3e5123b54fc68a22cd125f5e8d20986282edf7f925e63`.
+  All five sold-scope columns were confirmed in the live staging schema, the duplicate boundary
+  returns `401` anonymously, and production remains healthy and restart-free on `175d567`.

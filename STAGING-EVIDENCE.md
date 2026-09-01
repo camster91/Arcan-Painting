@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `dce979f`
+Candidate revision: `d8eac46`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:dce979f`
-- Image ID: `sha256:5088fff9fedfec62cff9100f6be7ee4d92c3c9b31f1fe84d58e4d68c9888c1f3`
+- Ashbi image: `arcan-painting-staging:d8eac46`
+- Image ID: `sha256:c8c7195b61839eb20fc3e5123b54fc68a22cd125f5e8d20986282edf7f925e63`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 100 files, 316 tests passed.
+- `npm test -- --run`: 101 files, 318 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -64,6 +64,11 @@ for an anonymous estimate deletion attempt. The new transaction and linked-recor
 prepared successfully against the real isolated staging schema. This candidate prevents project
 deletion through the estimate endpoint and preserves every non-draft or linked estimate.
 
+The `d8eac46` candidate adds transaction-safe estimate duplication. A real staging schema check
+confirmed all five operational handoff columns: area exclusions and production assumptions plus
+surface coating product, `color_name`, and sheen. The public duplicate endpoint rejects anonymous
+access with `401`; health and PWA assets remain available with `200` responses.
+
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
 images missing alternative text.
@@ -98,5 +103,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `dce979f` (or a
+Production deployment requires explicit action-time approval naming revision `d8eac46` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
