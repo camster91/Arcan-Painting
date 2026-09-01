@@ -22,6 +22,7 @@ import {
 import RecordPaymentModal from "@/components/admin/invoices/RecordPaymentModal";
 import PaymentsListModal from "@/components/admin/invoices/PaymentsListModal";
 import CreateInvoiceModal from "@/components/admin/invoices/CreateInvoiceModal";
+import ReceivableAging from "@/components/admin/invoices/ReceivableAging";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState([]);
@@ -275,6 +276,7 @@ export default function InvoicesPage() {
             </div>
           </div>
         </div>
+        <ReceivableAging />
       </div>
 
       {/* Filters and Search */}

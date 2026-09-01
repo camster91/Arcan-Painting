@@ -48,7 +48,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified |
 | Contracts | Partial | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified |
 | Projects and field progress | Partial | Multi-person assignment-scoped Today queue, scheduled-job start, concurrency-safe time tracking, progress, checklists, audited change orders, and severity-ranked site issues exist; materials, offline retry, and closeout remain incomplete |
-| Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, owner-controlled immutable payment records, cleared-cash reconciliation, refunds, receipts, and corrected aggregation exist; hosted payment remains incomplete |
+| Invoices and payments | Partial | Validated deposit/progress/final invoices, APIs, PDFs, send, owner-controlled immutable payment records, cleared-cash reconciliation, aging, refunds, receipts, and accounting export exist; hosted payment remains incomplete |
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
 | Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains |
@@ -97,8 +97,8 @@ progress, labor, materials, risks, approvals, and closeout state.
 
 - [x] Add estimate budget, committed cost, labor/material actuals, change-order impact, invoice schedule, collected cash, and gross-margin reconciliation.
 - [x] Enforce non-negative balances, overpayment handling, payment status rules, and immutable financial audit events.
-- [ ] Add expenses, tax treatment, aging, deposit/progress/final invoice schedules, refund/void handling, and CSV/accounting exports.
-- [ ] Add an accounting integration seam; select a vendor only after owner workflow and cost review.
+- [x] Add expenses, tax treatment, aging, deposit/progress/final invoice schedules, refund/void handling, and CSV/accounting exports.
+- [x] Add an accounting integration seam; select a vendor only after owner workflow and cost review.
 
 Acceptance: job-level budget, actual cost, billed amount, collected amount, receivable, and
 gross margin reconcile to source transactions.
@@ -209,3 +209,7 @@ operations, and real external communications require explicit action-time approv
   ordered, received, and cancelled states. Approved and ordered costs now affect projected
   job cost and margin; receiving is concurrency-safe and transactionally converts the
   commitment into one receipt-linked actual expense so committed and actual cost do not overlap.
+- 2026-09-01: Added authoritative receivable aging and a formula-injection-safe,
+  owner-only accounting CSV across invoices, payments, expenses, and purchase commitments.
+  The export is deliberately vendor-neutral and non-cacheable pending an explicit accounting
+  platform choice, while the invoice workspace surfaces current through 90-plus-day balances.
