@@ -324,3 +324,8 @@ operations, and real external communications require explicit action-time approv
   production dependency vulnerabilities. Health, PWA assets, reporting authorization, all three
   customer-document send boundaries, and contract-template boundaries passed. Both staging and
   production report zero restarts; production remains unchanged on `arcan-painting:175d567`.
+- 2026-09-01: Closed two additional record-integrity gaps. Creating a default contract template
+  now validates a true 0-100 deposit percentage and changes defaults inside the same transaction
+  as the insert. Estimate deletion no longer deletes a related project: only an unlinked draft
+  can be removed, while sent, approved, contracted, and scheduled estimates are retained as
+  auditable business records. The full local gate passes with 100 files and 316 tests.

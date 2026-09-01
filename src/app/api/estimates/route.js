@@ -380,33 +380,56 @@ export async function DELETE(request) {
     }
 
     const body = await request.json();
-    const { id } = body;
+    const id = Number(body.id);
 
-    if (!id) {
+    if (!Number.isInteger(id) || id <= 0) {
       return Response.json(
-        { success: false, error: "Estimate ID is required" },
+        { success: false, error: "A valid estimate ID is required" },
         { status: 400 },
       );
     }
 
-    // Check if estimate exists
-    const existingEstimate = await sql`
-      SELECT id, estimate_number, project_title 
-      FROM estimates 
-      WHERE id = ${id}
-    `;
-    if (!existingEstimate || existingEstimate.length === 0) {
+    const deletion = await sql.transaction(async (txn) => {
+      const [estimate] = await txn`
+        SELECT
+          e.id,
+          e.estimate_number,
+          e.project_title,
+          e.status,
+          (SELECT COUNT(*)::integer FROM projects p WHERE p.estimate_id = e.id) AS project_count,
+          (SELECT COUNT(*)::integer FROM contracts c WHERE c.estimate_id = e.id) AS contract_count
+        FROM estimates e
+        WHERE e.id = ${id}
+        FOR UPDATE
+      `;
+      if (!estimate) return { outcome: "missing" };
+      if (
+        estimate.status !== "draft" ||
+        estimate.project_count > 0 ||
+        estimate.contract_count > 0
+      ) {
+        return { outcome: "retained", estimate };
+      }
+      await txn`DELETE FROM estimates WHERE id = ${id} AND status = 'draft'`;
+      return { outcome: "deleted", estimate };
+    });
+
+    if (deletion.outcome === "missing") {
       return Response.json(
         { success: false, error: "Estimate not found" },
         { status: 404 },
       );
     }
-
-    // Delete related records first (due to foreign key constraints)
-    await sql`DELETE FROM projects WHERE estimate_id = ${id}`;
-
-    // Delete the estimate
-    await sql`DELETE FROM estimates WHERE id = ${id}`;
+    if (deletion.outcome === "retained") {
+      return Response.json(
+        {
+          success: false,
+          error:
+            "Only unlinked draft estimates can be deleted. Sent, approved, contracted, and scheduled estimates are retained as business records.",
+        },
+        { status: 409 },
+      );
+    }
 
     await auditLog({
       request,
@@ -416,14 +439,14 @@ export async function DELETE(request) {
       resource: "estimate",
       resourceId: id,
       changes: {
-        estimate_number: existingEstimate[0].estimate_number,
-        project_title: existingEstimate[0].project_title,
+        estimate_number: deletion.estimate.estimate_number,
+        project_title: deletion.estimate.project_title,
       },
     });
 
     return Response.json({
       success: true,
-      message: `Estimate "${existingEstimate[0].estimate_number}" (${existingEstimate[0].project_title}) has been deleted successfully`,
+      message: `Draft estimate "${deletion.estimate.estimate_number}" (${deletion.estimate.project_title}) has been deleted successfully`,
     });
   } catch (error) {
     console.error("Error deleting estimate:", error);

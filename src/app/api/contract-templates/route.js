@@ -78,36 +78,51 @@ export async function POST(request) {
       );
     }
 
-    // If setting as default, unset other defaults first
-    if (data.is_default) {
-      await sql`UPDATE contract_templates SET is_default = false WHERE is_default = true`;
+    const depositPercentage =
+      data.default_deposit_percentage === undefined
+        ? 25
+        : Number(data.default_deposit_percentage);
+    if (
+      !Number.isFinite(depositPercentage) ||
+      depositPercentage < 0 ||
+      depositPercentage > 100
+    ) {
+      return Response.json(
+        { error: "Default deposit percentage must be between 0 and 100" },
+        { status: 400 },
+      );
     }
 
-    const template = await sql`
-      INSERT INTO contract_templates (
-        name,
-        description,
-        scope_template,
-        terms_template,
-        payment_terms_template,
-        warranty_template,
-        default_deposit_percentage,
-        is_active,
-        is_default
-      )
-      VALUES (
-        ${data.name},
-        ${data.description || ""},
-        ${data.scope_template || ""},
-        ${data.terms_template || ""},
-        ${data.payment_terms_template || ""},
-        ${data.warranty_template || ""},
-        ${data.default_deposit_percentage || 25},
-        ${data.is_active !== false},
-        ${data.is_default || false}
-      )
-      RETURNING *
-    `;
+    const template = await sql.transaction(async (txn) => {
+      if (data.is_default) {
+        await txn`UPDATE contract_templates SET is_default = false WHERE is_default = true`;
+      }
+      return txn`
+        INSERT INTO contract_templates (
+          name,
+          description,
+          scope_template,
+          terms_template,
+          payment_terms_template,
+          warranty_template,
+          default_deposit_percentage,
+          is_active,
+          is_default
+        )
+        VALUES (
+          ${data.name},
+          ${data.description || ""},
+          ${data.scope_template || ""},
+          ${data.terms_template || ""},
+          ${data.payment_terms_template || ""},
+          ${data.warranty_template || ""},
+          ${depositPercentage},
+          ${data.is_active !== false},
+          ${data.is_default || false}
+        )
+        RETURNING *
+      `;
+    });
 
     await auditLog({
       request,

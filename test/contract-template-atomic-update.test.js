@@ -7,7 +7,7 @@ const auditLog = vi.fn();
 vi.mock("@/app/api/utils/sql", () => ({ default: sql }));
 vi.mock("@/app/api/utils/auth", () => ({ getCurrentUser }));
 vi.mock("@/app/api/utils/audit", () => ({ auditLog }));
-const { PUT } = await import("@/app/api/contract-templates/route");
+const { POST, PUT } = await import("@/app/api/contract-templates/route");
 
 describe("contract template atomic update", () => {
   beforeEach(() => {
@@ -17,6 +17,65 @@ describe("contract template atomic update", () => {
       username: "owner@example.test",
       role: "owner",
     });
+  });
+
+  test("creates a new default and unsets the previous default atomically", async () => {
+    const txn = vi
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        {
+          id: 10,
+          name: "Commercial",
+          is_active: true,
+          is_default: true,
+          default_deposit_percentage: 0,
+        },
+      ]);
+    sql.transaction.mockImplementation((callback) => callback(txn));
+
+    const response = await POST(
+      new Request("https://example.test/api/contract-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Commercial",
+          is_default: true,
+          default_deposit_percentage: 0,
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(sql.transaction).toHaveBeenCalledOnce();
+    expect(txn).toHaveBeenCalledTimes(2);
+    expect(String(txn.mock.calls[0][0])).toContain(
+      "UPDATE contract_templates SET is_default = false",
+    );
+    expect(txn.mock.calls[1][0]).toEqual(
+      expect.arrayContaining([expect.stringContaining("INSERT INTO contract_templates")]),
+    );
+    expect(txn.mock.calls[1]).toContain(0);
+    expect(auditLog).toHaveBeenCalledWith(
+      expect.objectContaining({ action: "contract_template.create" }),
+    );
+  });
+
+  test("rejects an unsafe deposit before changing the current default", async () => {
+    const response = await POST(
+      new Request("https://example.test/api/contract-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Unsafe",
+          is_default: true,
+          default_deposit_percentage: -1,
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(sql.transaction).not.toHaveBeenCalled();
   });
 
   test("persists all changed legal template fields in one transaction", async () => {

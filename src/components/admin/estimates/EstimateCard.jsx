@@ -292,18 +292,22 @@ export function EstimateCard({ estimate, onViewEstimate, onAction }) {
               Send to Client
             </button>
           )}
-          <div className="border-t border-slate-100 my-1" />
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAction?.("delete", estimate);
-              setShowActions(false);
-            }}
-            className="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50 flex items-center gap-3"
-          >
-            <Trash2 size={14} />
-            Delete
-          </button>
+          {estimate.status === "draft" && (
+            <>
+              <div className="border-t border-slate-100 my-1" />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction?.("delete", estimate);
+                  setShowActions(false);
+                }}
+                className="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50 flex items-center gap-3"
+              >
+                <Trash2 size={14} />
+                Delete Draft
+              </button>
+            </>
+          )}
         </div>
       )}
 

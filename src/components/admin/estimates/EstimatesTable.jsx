@@ -216,11 +216,11 @@ export function EstimatesTable({
                       </button>
                     )}
 
-                    {onDeleteEstimate && (
+                    {onDeleteEstimate && estimate.status === "draft" && (
                       <button
                         onClick={() => onDeleteEstimate(estimate)}
                         className="text-red-600 hover:text-red-700 p-1 rounded"
-                        title="Delete"
+                        title="Delete draft"
                       >
                         <Trash2 size={16} />
                       </button>
