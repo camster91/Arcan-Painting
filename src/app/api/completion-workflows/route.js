@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
 
 async function ensureProjectAccess(user, projectId) {
   if (!user) return false;
@@ -34,8 +35,9 @@ export async function GET(request) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const steps = await sql`
-      SELECT * FROM completion_workflows
-      WHERE project_id = ${parseInt(project_id)}
+      SELECT cw.*, tm.name AS completed_by_name FROM completion_workflows cw
+      LEFT JOIN team_members tm ON tm.id = cw.completed_by
+      WHERE cw.project_id = ${parseInt(project_id)}
       ORDER BY step_order ASC
     `;
 
@@ -55,6 +57,7 @@ export async function POST(request) {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await request.json();
+    if (user.role !== "owner") return Response.json({ error: "Owner access required" }, { status: 403 });
     const {
       project_id,
       step_title,
@@ -97,6 +100,8 @@ export async function POST(request) {
       )
       RETURNING *
     `;
+
+    await auditLog({ request, action: "completion_step.create", userId: user.id, username: user.username, resource: "completion_step", resourceId: result[0].id, changes: { project_id: Number(project_id), required: Boolean(is_required) }, status: "success" });
 
     return Response.json({ step: result[0] }, { status: 201 });
   } catch (e) {
@@ -147,6 +152,8 @@ export async function PUT(request) {
       WHERE id = ${id}
       RETURNING *
     `;
+
+    await auditLog({ request, action: is_completed ? "completion_step.complete" : "completion_step.reopen", userId: user.id, username: user.username, resource: "completion_step", resourceId: id, changes: { project_id: rows[0].project_id }, status: "success" });
 
     return Response.json({ step: result[0] });
   } catch (e) {

@@ -41,6 +41,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
     quality_notes: "",
     is_milestone: false,
     milestone_description: "",
+    customer_visible: false,
   });
   const [photos, setPhotos] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -49,6 +50,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
   const [lightboxSrc, setLightboxSrc] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxList, setLightboxList] = useState([]);
+  const formatMembers = (value) => Array.isArray(value) ? value.join(", ") : String(value || "");
 
   useEffect(() => {
     loadProgressReports();
@@ -77,7 +79,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
         reports = reports.filter(
           (report) =>
             report.work_description?.toLowerCase().includes(searchLower) ||
-            report.team_members_present?.toLowerCase().includes(searchLower) ||
+            formatMembers(report.team_members_present).toLowerCase().includes(searchLower) ||
             report.materials_used?.toLowerCase().includes(searchLower),
         );
       }
@@ -144,6 +146,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
         quality_notes: "",
         is_milestone: false,
         milestone_description: "",
+        customer_visible: false,
       });
       setPhotos([]);
       setShowForm(false);
@@ -514,6 +517,10 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
                     Mark as milestone
                   </span>
                 </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={formData.customer_visible} onChange={(e) => setFormData({ ...formData, customer_visible: e.target.checked })} className="rounded border-slate-300 text-amber-500 focus:ring-amber-500" />
+                  <span className="text-sm text-slate-700">Share description, progress, and photos with customer</span>
+                </label>
               </div>
 
               {formData.is_milestone && (
@@ -640,7 +647,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
                             <div className="flex items-center gap-2">
                               <User size={14} className="text-slate-400" />
                               <span className="text-slate-600">
-                                {report.team_members_present}
+                                {formatMembers(report.team_members_present)}
                               </span>
                             </div>
                           )}

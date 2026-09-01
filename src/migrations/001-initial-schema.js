@@ -237,6 +237,8 @@ export async function runMigrations() {
         status VARCHAR(50) DEFAULT 'scheduled',
         final_cost DECIMAL(12, 2),
         completion_percentage INTEGER DEFAULT 0,
+        last_progress_update TIMESTAMP,
+        progress_notes TEXT,
         assigned_painter_id INTEGER,
         crew_assigned TEXT,
         notes TEXT,
@@ -565,7 +567,9 @@ export async function runMigrations() {
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_estimate_id ON projects(estimate_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_assigned_painter_id ON projects(assigned_painter_id)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at DESC)`;
+    await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS last_progress_update TIMESTAMP`;
+    await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS progress_notes TEXT`;
 
     // auth_sessions — hot path on every request
     await sql`CREATE INDEX IF NOT EXISTS idx_auth_sessions_token ON auth_sessions(token)`;
@@ -1789,11 +1793,21 @@ async function ensureMissingTables() {
       step_order INTEGER DEFAULT 1,
       is_required BOOLEAN DEFAULT TRUE,
       estimated_hours NUMERIC,
+      is_completed BOOLEAN DEFAULT FALSE,
+      completed_at TIMESTAMP,
+      completed_by INTEGER REFERENCES team_members(id) ON DELETE SET NULL,
+      actual_hours NUMERIC,
+      notes TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_completion_workflows_project ON completion_workflows(project_id)`;
+  await sql`ALTER TABLE completion_workflows ADD COLUMN IF NOT EXISTS is_completed BOOLEAN DEFAULT FALSE`;
+  await sql`ALTER TABLE completion_workflows ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP`;
+  await sql`ALTER TABLE completion_workflows ADD COLUMN IF NOT EXISTS completed_by INTEGER REFERENCES team_members(id) ON DELETE SET NULL`;
+  await sql`ALTER TABLE completion_workflows ADD COLUMN IF NOT EXISTS actual_hours NUMERIC`;
+  await sql`ALTER TABLE completion_workflows ADD COLUMN IF NOT EXISTS notes TEXT`;
 
   // Project progress (daily site reports)
   await sql`
@@ -1816,12 +1830,14 @@ async function ensureMissingTables() {
       is_milestone BOOLEAN DEFAULT FALSE,
       milestone_description TEXT,
       customer_visible BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
     await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS customer_visible BOOLEAN DEFAULT FALSE`;
+    await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
 
   // Change orders connect field discoveries to approved scope, schedule, and value.
   await sql`

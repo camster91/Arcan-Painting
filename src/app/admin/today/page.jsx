@@ -22,6 +22,7 @@ export default function TodayOperationsPage() {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
+  const [canManage, setCanManage] = useState(false);
 
   // Time tracking state
   const [activeEntry, setActiveEntry] = useState(null);
@@ -34,19 +35,20 @@ export default function TodayOperationsPage() {
   const [showChecklist, setShowChecklist] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
 
-  const fetchProjects = async () => {
+  const fetchFieldToday = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Focus on projects in progress for "Today"
-      const res = await fetch("/api/projects?status=in_progress");
+      const res = await fetch("/api/field/today");
       if (!res.ok) {
         throw new Error(
-          `When fetching /api/projects, the response was [${res.status}] ${res.statusText}`,
+          `When fetching today's field work, the response was [${res.status}] ${res.statusText}`,
         );
       }
       const data = await res.json();
-      setProjects(Array.isArray(data.projects) ? data.projects : data);
+      setProjects(data.projects || []);
+      setActiveEntry(data.active_time_entry || null);
+      setCanManage(Boolean(data.can_manage));
     } catch (e) {
       console.error(e);
       setError(e.message || "Could not load projects");
@@ -55,24 +57,8 @@ export default function TodayOperationsPage() {
     }
   };
 
-  const fetchActiveEntry = async () => {
-    try {
-      const res = await fetch("/api/time-tracking?status=active&limit=1");
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(
-          j?.error || `Failed to load time entry [${res.status}]`,
-        );
-      }
-      setActiveEntry(j?.timeEntries?.[0] || null);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
-    fetchProjects();
-    fetchActiveEntry();
+    fetchFieldToday();
   }, []);
 
   // simple ticker to update elapsed time label
@@ -83,7 +69,7 @@ export default function TodayOperationsPage() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([fetchProjects(), fetchActiveEntry()]);
+    await fetchFieldToday();
     setRefreshing(false);
   };
 
@@ -133,7 +119,7 @@ export default function TodayOperationsPage() {
       if (!res.ok) {
         throw new Error(j?.error || `Failed to start time [${res.status}]`);
       }
-      setActiveEntry(j.timeEntry);
+      await fetchFieldToday();
     } catch (e) {
       console.error(e);
       alert(e.message || "Could not start time");
@@ -159,7 +145,7 @@ export default function TodayOperationsPage() {
         throw new Error(j?.error || `Failed to stop time [${res.status}]`);
       }
       setActiveEntry(null);
-      await fetchProjects();
+      await fetchFieldToday();
     } catch (e) {
       console.error(e);
       alert(e.message || "Could not stop time");
@@ -197,7 +183,7 @@ export default function TodayOperationsPage() {
       if (!res.ok) {
         throw new Error(j?.error || `Failed to log hours [${res.status}]`);
       }
-      await Promise.all([fetchProjects(), fetchActiveEntry()]);
+      await fetchFieldToday();
     } catch (e) {
       console.error(e);
       alert(e.message || "Could not log hours");
@@ -219,7 +205,7 @@ export default function TodayOperationsPage() {
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">Today</h1>
                 <p className="text-sm text-slate-600 mt-1">
-                  Operations overview for active jobs
+                  Assigned jobs due to start or currently in progress
                 </p>
               </div>
             </div>
@@ -274,7 +260,7 @@ export default function TodayOperationsPage() {
           <div className="bg-white rounded-lg border border-slate-200 p-10 text-center">
             <Briefcase className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-slate-600">
-              No active projects found for today.
+              No assigned field work is due or active today.
             </p>
           </div>
         ) : (
@@ -304,6 +290,11 @@ export default function TodayOperationsPage() {
                         {p.address}
                       </div>
                     )}
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                      <span className={`rounded-full px-2 py-1 font-semibold ${p.schedule_state === "overdue_start" ? "bg-red-100 text-red-700" : p.schedule_state === "scheduled_today" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>{String(p.schedule_state || p.status).replaceAll("_", " ")}</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Checklist {p.checklist_completed || 0}/{p.checklist_total || 0}</span>
+                      {p.last_report_date && <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Last report {new Date(p.last_report_date).toLocaleDateString("en-CA")}</span>}
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-slate-500">Progress</div>
@@ -396,7 +387,7 @@ export default function TodayOperationsPage() {
             setSelectedProject(null);
           }}
           onUpdate={async () => {
-            await fetchProjects();
+            await fetchFieldToday();
           }}
         />
       )}
@@ -404,12 +395,13 @@ export default function TodayOperationsPage() {
       {showChecklist && selectedProject && (
         <CompletionWorkflowsModal
           project={selectedProject}
+          canManage={canManage}
           onClose={() => {
             setShowChecklist(false);
             setSelectedProject(null);
           }}
           onUpdate={async () => {
-            await fetchProjects();
+            await fetchFieldToday();
           }}
         />
       )}
@@ -422,7 +414,7 @@ export default function TodayOperationsPage() {
             setSelectedProject(null);
           }}
           onUpdate={async () => {
-            await fetchProjects();
+            await fetchFieldToday();
           }}
         />
       )}

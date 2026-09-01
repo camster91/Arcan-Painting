@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
+function CompletionWorkflowsModal({ project, onClose, onUpdate, canManage = true }) {
   const [workflows, setWorkflows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -324,14 +324,13 @@ function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
                 />
                 <p className="text-lg font-medium">No workflow steps defined</p>
                 <p className="text-sm">
-                  Add steps below to create a completion checklist for this
-                  project.
+                  {canManage ? "Add steps below to create a completion checklist for this project." : "The owner has not added a checklist for this project yet."}
                 </p>
               </div>
             )}
 
             {/* Add New Step Form */}
-            <div className="border-t border-slate-200 pt-6 mt-6">
+            {canManage && <div className="border-t border-slate-200 pt-6 mt-6">
               <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
                 <Plus size={18} />
                 Add New Step
@@ -415,7 +414,7 @@ function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
                   Add Step
                 </button>
               </div>
-            </div>
+            </div>}
           </div>
         )}
       </div>

@@ -1,19 +1,29 @@
 import sql from "@/app/api/utils/sql";
 import { createNotification } from "@/app/api/notifications/route";
-import { requireAdmin } from "@/app/api/utils/auth";
-import { requireCsrf } from "@/app/api/utils/csrf";
+import { getCurrentUser } from "@/app/api/utils/auth";
 import { shouldNotifyCustomerProgress } from "@/app/api/utils/customer-portal";
+import { auditLog } from "@/app/api/utils/audit";
+
+async function canAccessProject(user, projectId) {
+  if (!user || !Number.isInteger(Number(projectId))) return false;
+  if (["owner", "admin"].includes(user.role)) return true;
+  const rows = await sql`SELECT p.id FROM projects p JOIN team_members tm ON tm.id = p.assigned_painter_id WHERE p.id = ${Number(projectId)} AND LOWER(tm.email) = LOWER(${user.username})`;
+  return rows.length > 0;
+}
+
+const memberList = (value) => Array.isArray(value) ? value : typeof value === "string" ? value.split(",").map((item) => item.trim()).filter(Boolean) : [];
 
 export async function GET(request) {
-  if (!(await requireAdmin(request))) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const { searchParams } = new URL(request.url);
     const project_id = searchParams.get("project_id");
     const start_date = searchParams.get("start_date");
     const end_date = searchParams.get("end_date");
+    if (!["owner", "admin"].includes(user.role) && !project_id) return Response.json({ error: "project_id is required" }, { status: 400 });
+    if (project_id && !(await canAccessProject(user, parseInt(project_id)))) return Response.json({ error: "Forbidden" }, { status: 403 });
 
     let whereConditions = [];
     let params = [];
@@ -65,11 +75,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  if (!(await requireAdmin(request))) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const csrfError = requireCsrf(request);
-  if (csrfError) return csrfError;
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const body = await request.json();
@@ -101,6 +108,11 @@ export async function POST(request) {
         { status: 400 },
       );
     }
+    if (!(await canAccessProject(user, Number(project_id)))) return Response.json({ error: "Forbidden" }, { status: 403 });
+    const percentage = Number(progress_percentage);
+    if (progress_percentage != null && (!Number.isFinite(percentage) || percentage < 0 || percentage > 100)) return Response.json({ error: "Progress must be between 0 and 100" }, { status: 400 });
+    const hours = hours_worked === "" || hours_worked == null ? null : Number(hours_worked);
+    if (hours != null && (!Number.isFinite(hours) || hours < 0 || hours > 24)) return Response.json({ error: "Hours worked must be between 0 and 24" }, { status: 400 });
 
     const result = await sql`
       INSERT INTO project_progress (
@@ -109,13 +121,14 @@ export async function POST(request) {
         next_steps, weather_conditions, client_interaction, quality_notes,
         photos, reported_by, is_milestone, milestone_description, customer_visible
       ) VALUES (
-        ${project_id}, ${report_date}, ${work_description}, ${progress_percentage},
-        ${hours_worked}, ${team_members_present}, ${materials_used}, ${challenges_faced},
+        ${project_id}, ${report_date}, ${work_description.trim()}, ${progress_percentage == null ? null : percentage},
+        ${hours}, ${JSON.stringify(memberList(team_members_present))}, ${materials_used}, ${challenges_faced},
         ${next_steps}, ${weather_conditions}, ${client_interaction}, ${quality_notes},
-        ${JSON.stringify(photos)}, ${reported_by}, ${is_milestone}, ${milestone_description}, ${Boolean(customer_visible)}
+        ${JSON.stringify(photos)}, ${user.role === "owner" && reported_by ? reported_by : user.username}, ${is_milestone}, ${milestone_description}, ${Boolean(customer_visible)}
       )
       RETURNING *
     `;
+    await auditLog({ request, action: "project_progress.create", userId: user.id, username: user.username, resource: "project_progress", resourceId: result[0].id, changes: { project_id: Number(project_id), progress_percentage: percentage, customer_visible: Boolean(customer_visible) }, status: "success" });
 
     // Update project completion percentage if provided
     if (progress_percentage !== null && progress_percentage !== undefined) {
@@ -183,11 +196,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-  if (!(await requireAdmin(request))) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const csrfError = requireCsrf(request);
-  if (csrfError) return csrfError;
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const body = await request.json();
@@ -199,6 +209,8 @@ export async function PUT(request) {
         { status: 400 },
       );
     }
+    const [existing] = await sql`SELECT project_id FROM project_progress WHERE id = ${id}`;
+    if (!existing || !(await canAccessProject(user, existing.project_id))) return Response.json({ error: "Progress report not found or access denied" }, { status: 404 });
 
     const allowedFields = [
       "work_description",
@@ -224,9 +236,9 @@ export async function PUT(request) {
     Object.entries(updateFields).forEach(([field, value]) => {
       if (allowedFields.includes(field) && value !== undefined) {
         paramCount++;
-        if (field === "photos") {
+        if (field === "photos" || field === "team_members_present") {
           setClause.push(`${field} = $${paramCount}`);
-          values.push(JSON.stringify(value));
+          values.push(JSON.stringify(field === "photos" ? value : memberList(value)));
         } else {
           setClause.push(`${field} = $${paramCount}`);
           values.push(value);
@@ -264,6 +276,8 @@ export async function PUT(request) {
       );
     }
 
+    await auditLog({ request, action: "project_progress.update", userId: user.id, username: user.username, resource: "project_progress", resourceId: id, changes: { fields: Object.keys(updateFields).filter((field) => allowedFields.includes(field)) }, status: "success" });
+
     return Response.json({ progressReport: result[0] });
   } catch (error) {
     console.error("Error updating progress report:", error);
@@ -275,11 +289,9 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
-  if (!(await requireAdmin(request))) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const csrfError = requireCsrf(request);
-  if (csrfError) return csrfError;
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!["owner", "admin"].includes(user.role)) return Response.json({ error: "Owner access required" }, { status: 403 });
 
   try {
     const { searchParams } = new URL(request.url);
@@ -295,7 +307,7 @@ export async function DELETE(request) {
     const result = await sql`
       DELETE FROM project_progress
       WHERE id = ${parseInt(id)}
-      RETURNING id
+      RETURNING id, project_id
     `;
 
     if (result.length === 0) {
@@ -304,6 +316,8 @@ export async function DELETE(request) {
         { status: 404 },
       );
     }
+
+    await auditLog({ request, action: "project_progress.delete", userId: user.id, username: user.username, resource: "project_progress", resourceId: id, changes: { project_id: result[0].project_id }, status: "success" });
 
     return Response.json({ message: "Progress report deleted successfully" });
   } catch (error) {
