@@ -363,3 +363,9 @@ operations, and real external communications require explicit action-time approv
   priority values and audit create/update/delete with assignment context. Delayed-email queue
   inspection now requires communications-management permission, protecting recipient and failure
   details from crew roles; owner and cron worker runs emit central processed/sent/failed evidence.
+- 2026-09-01: Built and deployed exact operator-record candidate `424dbe8` to isolated Ashbi
+  staging as image `sha256:011f91d8fde8260abc425dcfcbede62a0f1e3521f77bac2d7d4ed770353bc327`.
+  The full gate records 106 files and 337 tests, passing typecheck, production build, and the
+  production-dependency audit with zero vulnerabilities. Anonymous internal-task and delayed-email
+  queue reads return `401`, task writes fail at the CSRF boundary with `403`, public health and PWA
+  assets return `200`, and unchanged production remains healthy on `175d567` with zero restarts.

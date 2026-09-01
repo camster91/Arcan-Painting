@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `7e4dcf7`
+Candidate revision: `424dbe8`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:7e4dcf7`
-- Image ID: `sha256:9dd0b8a3f46ada7e0a0bee9d5a405eaff7a0926409a24c43653782748a3f68c4`
+- Ashbi image: `arcan-painting-staging:424dbe8`
+- Image ID: `sha256:011f91d8fde8260abc425dcfcbede62a0f1e3521f77bac2d7d4ed770353bc327`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 104 files, 332 tests passed.
+- `npm test -- --run`: 106 files, 337 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -80,6 +80,13 @@ to owner/admin users and audits each state change. Anonymous GET and POST checks
 routes return `401`. Exact-container health, worker, and manifest checks return `200`; staging and
 production remain restart-free.
 
+The `424dbe8` operator-record candidate validates internal-task status and priority values and
+audits task create/update/delete actions. Delayed-email queue inspection now requires
+`communications.manage`, while owner and cron worker runs emit processed/sent/failed audit
+summaries. Anonymous task and queue reads return `401`; an anonymous task write is rejected at the
+CSRF boundary with `403`. Health, service worker, and manifest checks return `200`. Exact staging
+and unchanged production containers are healthy with zero restarts.
+
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
 images missing alternative text.
@@ -114,5 +121,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `7e4dcf7` (or a
+Production deployment requires explicit action-time approval naming revision `424dbe8` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
