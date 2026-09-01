@@ -8,8 +8,8 @@ test.describe("public conversion and account routes", () => {
     const response = await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(response?.status()).toBe(200);
 
-    await page.locator("header").getByRole("button", { name: /get (free estimate|quote)/i }).click();
-    const dialog = page.getByRole("dialog", { name: /request your estimate/i });
+    await page.locator("header").getByRole("button", { name: /^(discuss your project|contact)$/i }).click();
+    const dialog = page.getByRole("dialog", { name: /discuss your project/i });
     await expect(dialog).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();

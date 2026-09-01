@@ -1,5 +1,8 @@
 # Arcan Painting Website Fixes - Summary Report
 
+> Historical summary from March 2026. It is not a current release certificate.
+> See `REMEDIATION.md` for the production-reconciled roadmap and verification state.
+
 ## Project: arcanpainting.ca
 **Stack:** React Router 7 + Hono + Neon
 **Date:** March 26, 2026

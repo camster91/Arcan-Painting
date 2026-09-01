@@ -40,6 +40,13 @@ export default function PrivacyPage() {
           </section>
 
           <section>
+            <h2 className="text-2xl font-semibold text-slate-900">Website measurement</h2>
+            <p className="mt-3">
+              The website may record page visits, form progress, referral information, and campaign parameters to understand how the site is used and whether inquiries are completed. An analytics provider is loaded only when it has been configured for the website.
+            </p>
+          </section>
+
+          <section>
             <h2 className="text-2xl font-semibold text-slate-900">Your choices</h2>
             <p className="mt-3">
               Please avoid sending sensitive financial information through website forms. For questions about an

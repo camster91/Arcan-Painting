@@ -85,10 +85,10 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               {[
-                { href: "#services", label: "Services" },
-                { href: "#portfolio", label: "Our Work" },
-                { href: "#about", label: "About Us" },
-                { href: "#contact", label: "Get Estimate" },
+                { href: "/#services", label: "Services" },
+                { href: "/#portfolio", label: "Our Work" },
+                { href: "/#about", label: "About Us" },
+                { href: "/contact", label: "Discuss a Project" },
                 { href: "/privacy", label: "Privacy Notice" },
                 { href: "/admin", label: "Admin" },
               ].map((link, index) => (
@@ -96,12 +96,12 @@ export default function Footer() {
                   <a
                     href={link.href}
                     className="text-sm transition-colors"
-                    style={{ color: themeColors.textMuted }}
+                    style={{ color: themeColors.textSecondary }}
                     onMouseEnter={(e) =>
                       (e.target.style.color = themeColors.primary)
                     }
                     onMouseLeave={(e) =>
-                      (e.target.style.color = themeColors.textMuted)
+                      (e.target.style.color = themeColors.textSecondary)
                     }
                   >
                     {link.label}
@@ -156,7 +156,7 @@ export default function Footer() {
             </div>
             <div
               className="space-y-1 text-xs"
-              style={{ color: themeColors.textMuted }}
+              style={{ color: themeColors.textSecondary }}
             >
               <div>Project details confirmed with the team</div>
             </div>
@@ -168,7 +168,7 @@ export default function Footer() {
           className="pt-8 border-t text-center"
           style={{ borderColor: themeColors.border }}
         >
-          <p className="text-sm" style={{ color: themeColors.textMuted }}>
+          <p className="text-sm" style={{ color: themeColors.textSecondary }}>
             © {currentYear} Arcan Painting. All rights reserved.
           </p>
         </div>

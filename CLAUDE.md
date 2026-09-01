@@ -41,7 +41,7 @@ npm run typecheck         # react-router typegen && tsc --noEmit
 
 ## Local dev (no Docker — recommended on macOS)
 
-Requires Node 20+ and a local Postgres 16 (Homebrew: `brew install postgresql@16 && brew services start postgresql@16`).
+Requires Node 22.20+ and a local Postgres 16 (Homebrew: `brew install postgresql@16 && brew services start postgresql@16`).
 
 ```bash
 # One-time DB setup

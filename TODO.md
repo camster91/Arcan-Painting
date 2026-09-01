@@ -1,5 +1,10 @@
 # TODO
 
+> Historical backlog. The authoritative current plan is `REMEDIATION.md`, reconciled
+> against production and `main` on 2026-08-28. Unchecked items below may describe
+> removed integrations, stale architecture, or superseded priorities and must not be
+> treated as approved work without being promoted into the remediation roadmap.
+
 All previous tasks have been archived or completed during the 2026 consolidation and launch prep.
 
 ## Summary Statistics

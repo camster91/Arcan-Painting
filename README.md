@@ -31,7 +31,7 @@ docker compose exec app sh            # shell into the app container
 
 ### Native (no Docker)
 
-Requires Node 20+ and a local Postgres 16.
+Requires Node 22.20+ and a local Postgres 16.
 
 ```bash
 npm install
@@ -153,7 +153,17 @@ The 1700-line `ensureSchema()` migration runs on first boot and is idempotent. N
 For the live deployment to arcanpainting.ca, Caddy (already running on the host) routes `arcanpainting.ca` to `127.0.0.1:3015` (the container's exposed port).
 
 ### GitHub Actions CI
-On every PR, the `ci.yml` workflow typechecks, runs the unit suite, builds the production bundle, and runs Chromium smoke checks against that bundle. All checks are required before merge.
+Repository Actions are enabled. Every PR runs `ci.yml` to typecheck, execute the unit
+suite, build the production bundle, and run Chromium smoke checks against that bundle.
+Keep these checks required before merge. The PR workflow also publishes an immutable
+GHCR image tag for staging; production deploy remains separately approval-gated.
+
+The manual `deploy-preview.yml` workflow is intentionally bound to the `Preview`
+environment. Configure `PREVIEW_COOLIFY_URL` and `PREVIEW_COOLIFY_TOKEN` as Preview
+secrets, plus `PREVIEW_APP_UUID` and `PREVIEW_URL` as Preview variables. The target
+service must select the intended PR image, set `PUBLIC_SITE_MODE=staging`, and use
+isolated non-production data. The workflow rejects a preview that lacks both
+`robots.txt` blocking and a page-level `noindex` directive.
 
 ## Known caveats
 

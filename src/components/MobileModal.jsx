@@ -125,7 +125,7 @@ export default function MobileModal({
       </div>
 
       {/* Animations */}
-      <style jsx global>{`
+      <style>{`
         /* Mobile: slide up from bottom */
         @media (max-width: 1023px) {
           .fixed.inset-0.z-\\[60\\] > .absolute {

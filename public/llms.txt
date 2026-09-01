@@ -1,14 +1,13 @@
 # Arcan Painting
 
-> Arcan Painting provides interior, exterior, commercial painting, wallpaper services, and specialty finishes for residential and commercial projects in Toronto and the Greater Toronto Area.
+> Arcan Painting accepts inquiries about interior, exterior, and commercial painting, wallpaper services, and specialty finishes. Project scope and availability are confirmed directly with the team.
 
 ## Services
-- Interior painting (residential and commercial)
-- Exterior painting (weather-resistant for Ontario's climate)
-- Commercial painting (offices, retail, facilities)
-- Wallpaper installation and removal
-- Specialty finishes (faux textures, Venetian plaster, limewash)
-- Colour consultation
+- [Interior painting](https://arcanpainting.ca/interior-painting)
+- [Exterior painting](https://arcanpainting.ca/exterior-painting)
+- [Commercial painting](https://arcanpainting.ca/commercial-painting)
+- [Wallpaper services](https://arcanpainting.ca/wallpaper-services)
+- [Specialty finishes](https://arcanpainting.ca/specialty-finishes)
 
 ## Service Area
 Contact Arcan Painting to discuss availability for your project location.
@@ -19,5 +18,5 @@ Contact Arcan Painting to discuss availability for your project location.
 - Web: https://arcanpainting.ca
 
 ## Project Enquiries
-- Request an estimate for your painting project
+- [Share project details](https://arcanpainting.ca/contact)
 - Discuss scope, materials, timeline, and availability directly with Arcan Painting

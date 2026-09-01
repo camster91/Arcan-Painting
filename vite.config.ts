@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  test: {
+    setupFiles: ['./test/setup.js'],
+  },
   envPrefix: 'NEXT_PUBLIC_',
   optimizeDeps: {
     include: ['fast-glob', 'lucide-react'],
