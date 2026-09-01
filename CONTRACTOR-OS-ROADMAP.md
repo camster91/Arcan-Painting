@@ -374,3 +374,8 @@ operations, and real external communications require explicit action-time approv
   owner/admin endpoint and added central success/failure summaries alongside its agent-run record.
   The expanded full gate records 107 files and 341 tests, passing typecheck, production build, and
   the production-dependency audit with zero vulnerabilities.
+- 2026-09-01: Built and deployed exact control-evidence candidate `d3a736b` to isolated Ashbi
+  staging as image `sha256:41c4c088f7cca5ef0052301f016e3c605013c8f8274a87cd0b565a557821e016`.
+  Anonymous notification and agent reads and notification creation return `401`; migration writes
+  fail at the CSRF boundary with `403`; public health and PWA assets return `200`. Exact staging and
+  unchanged production are healthy with zero restarts.

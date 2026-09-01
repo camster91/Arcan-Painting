@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `424dbe8`
+Candidate revision: `d3a736b`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:424dbe8`
-- Image ID: `sha256:011f91d8fde8260abc425dcfcbede62a0f1e3521f77bac2d7d4ed770353bc327`
+- Ashbi image: `arcan-painting-staging:d3a736b`
+- Image ID: `sha256:41c4c088f7cca5ef0052301f016e3c605013c8f8274a87cd0b565a557821e016`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 106 files, 337 tests passed.
+- `npm test -- --run`: 107 files, 341 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -87,6 +87,13 @@ summaries. Anonymous task and queue reads return `401`; an anonymous task write 
 CSRF boundary with `403`. Health, service worker, and manifest checks return `200`. Exact staging
 and unchanged production containers are healthy with zero restarts.
 
+The `d3a736b` control-evidence candidate records PII-minimized manual-notification and read-state
+audit events and central success/failure summaries for owner/admin agent migrations. Database
+migration logic now exists only in the dedicated authenticated endpoint. Anonymous notification
+and agent reads and notification creation return `401`; an anonymous migration request is rejected
+at the CSRF boundary with `403`. Public health and PWA assets return `200`, and both exact staging
+and unchanged production are healthy with zero restarts.
+
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
 images missing alternative text.
@@ -121,5 +128,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `424dbe8` (or a
+Production deployment requires explicit action-time approval naming revision `d3a736b` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
