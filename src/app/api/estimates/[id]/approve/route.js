@@ -47,10 +47,16 @@ export async function POST(request, { params }) {
         if (estimate.status !== "approved") {
           await txn`UPDATE estimates SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
         }
+        if (estimate.lead_id) {
+          await txn`UPDATE leads SET status = 'won', won_at = COALESCE(won_at, CURRENT_TIMESTAMP), status_changed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ${estimate.lead_id} AND status <> 'won'`;
+        }
         return { project: existingProjects[0], estimate, created: false };
       }
 
       await txn`UPDATE estimates SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
+      if (estimate.lead_id) {
+        await txn`UPDATE leads SET status = 'won', won_at = COALESCE(won_at, CURRENT_TIMESTAMP), status_changed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ${estimate.lead_id}`;
+      }
       const projects = await txn`
         INSERT INTO projects (
           estimate_id, lead_id, project_name, status, final_cost, completion_percentage, created_at, updated_at
@@ -70,7 +76,7 @@ export async function POST(request, { params }) {
       username: user.username,
       resource: "estimate",
       resourceId: id,
-      changes: { project_id: result.project.id, created: result.created },
+      changes: { project_id: result.project.id, lead_id: result.estimate.lead_id, lead_status: "won", created: result.created },
       status: "success",
     });
 

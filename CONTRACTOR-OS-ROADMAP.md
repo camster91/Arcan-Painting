@@ -63,9 +63,9 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 
 - [x] Replace the invoice-creation placeholder with a validated, accessible workflow.
 - [x] Correct invoice/payment aggregation and protect financial invariants with tests.
-- [ ] Define and enforce lifecycle states and allowed transitions from lead through paid job.
+- [x] Define and enforce lifecycle states and allowed transitions from lead through paid job.
 - [x] Add one activity timeline joining customer, estimate, contract, project, invoice, payment, and communication events.
-- [ ] Add explicit conversion actions that carry data forward instead of requiring re-entry.
+- [x] Add explicit conversion actions that carry data forward instead of requiring re-entry.
 - [ ] Verify estimate approval, contract acceptance, deposit, project creation, completion, invoice, and payment end to end.
 
 Acceptance: a test customer can travel from new inquiry to paid closeout on staging, with
@@ -242,3 +242,7 @@ operations, and real external communications require explicit action-time approv
   (`sha256:32c657f01be85156201fb1192e6ac603b9ef12304515a4190e0269aa7b88a9f7`).
   The full suite now records 85 passing files and 253 tests. Public routes, admin redirects,
   protected API boundaries, and health passed again; production remained unchanged.
+- 2026-09-01: Enforced a legal lead lifecycle graph with audited transitions. Estimate
+  approval now atomically marks the related lead won and creates or reuses exactly one
+  scheduled project, while manual estimate-to-project creation rejects unapproved or
+  already-converted estimates instead of duplicating data.

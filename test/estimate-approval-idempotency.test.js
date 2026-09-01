@@ -28,12 +28,13 @@ describe("estimate approval conversion", () => {
       .mockResolvedValueOnce([{ id: 7, lead_id: 3, project_title: "Repaint", total_cost: "2500", status: "sent" }])
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 9, project_name: "Main-floor repaint", status: "scheduled" }]);
 
     const response = await POST(request(), { params: { id: "7" } });
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ success: true, created: true, project: { id: 9 } });
-    expect(txSql).toHaveBeenCalledTimes(4);
+    expect(txSql).toHaveBeenCalledTimes(5);
     expect(String(txSql.mock.calls[0][0])).toContain("FOR UPDATE");
     expect(auditLog).toHaveBeenCalledWith(expect.objectContaining({ action: "estimate.approve_and_create_project" }));
   });
@@ -41,11 +42,12 @@ describe("estimate approval conversion", () => {
   test("returns the existing project on a repeated approval", async () => {
     txSql
       .mockResolvedValueOnce([{ id: 7, lead_id: 3, project_title: "Repaint", total_cost: "2500", status: "approved" }])
-      .mockResolvedValueOnce([{ id: 9, project_name: "Main-floor repaint", status: "scheduled" }]);
+      .mockResolvedValueOnce([{ id: 9, project_name: "Main-floor repaint", status: "scheduled" }])
+      .mockResolvedValueOnce([]);
 
     const response = await POST(request(), { params: { id: "7" } });
     expect(await response.json()).toMatchObject({ success: true, created: false, project: { id: 9 } });
-    expect(txSql).toHaveBeenCalledTimes(2);
+    expect(txSql).toHaveBeenCalledTimes(3);
     expect(auditLog).toHaveBeenCalledWith(expect.objectContaining({ action: "estimate.approve_retry" }));
   });
 

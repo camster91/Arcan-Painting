@@ -128,12 +128,26 @@ export async function POST(request) {
     // If estimate_id is provided, verify it exists and get the lead_id
     if (estimate_id) {
       const estimateCheck = await sql`
-        SELECT id, lead_id FROM estimates WHERE id = ${estimate_id}
+        SELECT e.id, e.lead_id, e.status,
+          EXISTS (SELECT 1 FROM projects p WHERE p.estimate_id = e.id) AS already_converted
+        FROM estimates e WHERE e.id = ${estimate_id}
       `;
       if (!estimateCheck || estimateCheck.length === 0) {
         return Response.json(
           { success: false, error: "Estimate not found" },
           { status: 404 },
+        );
+      }
+      if (estimateCheck[0].status !== "approved") {
+        return Response.json(
+          { success: false, error: "Approve the estimate before creating its project" },
+          { status: 409 },
+        );
+      }
+      if (estimateCheck[0].already_converted) {
+        return Response.json(
+          { success: false, error: "This estimate already has a project" },
+          { status: 409 },
         );
       }
       lead_id = estimateCheck[0].lead_id;
@@ -178,6 +192,17 @@ export async function POST(request) {
     `;
 
     const newProject = result[0];
+
+    await auditLog({
+      request,
+      action: "project.create",
+      userId: user.id,
+      username: user.username,
+      resource: "project",
+      resourceId: newProject.id,
+      changes: { estimate_id: estimate_id || null, lead_id, status: newProject.status },
+      status: "success",
+    });
 
     return Response.json(
       {

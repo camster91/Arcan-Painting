@@ -5,6 +5,7 @@ import { getCurrentUser } from "../utils/auth.js";
 import { hasPermission } from "../utils/permissions.js";
 import { validateBody, schemas } from "../utils/validate.js";
 import { requireCsrf } from "../utils/csrf.js";
+import { assertLeadTransition } from "../utils/lead-lifecycle-domain.js";
 
 // Create a new lead (admin/CRM endpoint — requires CSRF + admin session).
 // The public contact form goes through /api/contact (exempt) which inserts
@@ -314,7 +315,7 @@ export async function PUT(request) {
     }
 
     const exists =
-      await sql`SELECT id FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
+      await sql`SELECT id, status FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
     if (!exists || exists.length === 0) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }
@@ -344,6 +345,11 @@ export async function PUT(request) {
       values.push(preferred_contact || contact_method);
     }
     if (status !== undefined) {
+      try {
+        assertLeadTransition(exists[0].status, status);
+      } catch (error) {
+        return Response.json({ error: error.message }, { status: 409 });
+      }
       if (
         status === "lost" &&
         (!lost_reason || lost_reason.trim().length < 3)
@@ -424,6 +430,21 @@ export async function PUT(request) {
 
     const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} AND deleted_at IS NULL RETURNING *`;
     const result = await sql(query, values);
+
+    await auditLog({
+      request,
+      action: "lead.update",
+      userId: user.id,
+      username: user.username,
+      resource: "lead",
+      resourceId: id,
+      changes: {
+        fields: Object.keys(body).filter((field) => field !== "id"),
+        from_status: exists[0].status,
+        to_status: result[0].status,
+      },
+      status: "success",
+    });
 
     return Response.json({ success: true, lead: result[0] });
   } catch (error) {
