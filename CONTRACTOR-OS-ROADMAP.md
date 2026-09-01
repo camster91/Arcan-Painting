@@ -238,3 +238,7 @@ operations, and real external communications require explicit action-time approv
   move through draft, review, and approved states; customer consent and business proof are
   mandatory before approval or public visibility, and approval/publication changes are
   audited. Google Business Profile publication remains external-access gated.
+- 2026-09-01: Replaced the isolated staging application with exact candidate `24f5f03`
+  (`sha256:32c657f01be85156201fb1192e6ac603b9ef12304515a4190e0269aa7b88a9f7`).
+  The full suite now records 85 passing files and 253 tests. Public routes, admin redirects,
+  protected API boundaries, and health passed again; production remained unchanged.

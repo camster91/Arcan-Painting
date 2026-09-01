@@ -1,15 +1,17 @@
 # Contractor OS staging evidence
 
-Recorded: 2026-09-01  
-Candidate branch: `codex/arcan-contractor-os`  
-Candidate revision: `f185122`  
+Recorded: 2026-09-01
+
+Candidate branch: `codex/arcan-contractor-os`
+
+Candidate revision: `24f5f03`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:f185122`
-- Image ID: `sha256:7be8c8e279a719257a4edb4270ac3d60aa316291d17dac827d54ce4f7d110141`
-- OCI revision label: `f185122`
+- Ashbi image: `arcan-painting-staging:24f5f03`
+- Image ID: `sha256:32c657f01be85156201fb1192e6ac603b9ef12304515a4190e0269aa7b88a9f7`
+- OCI revision label: `24f5f03`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -18,7 +20,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 84 files, 250 tests passed.
+- `npm test -- --run`: 85 files, 253 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -75,5 +77,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `f185122` (or a
+Production deployment requires explicit action-time approval naming revision `24f5f03` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
