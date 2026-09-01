@@ -255,3 +255,7 @@ operations, and real external communications require explicit action-time approv
   Configuration validation, provider acceptance, failures, retries, queue state, logs,
   templates, consent rechecks, and customer timeline evidence remain truthful when no
   provider is enabled; no external message was sent.
+- 2026-09-01: Deployed exact communications candidate `08c7b19` to isolated Ashbi staging
+  as image `sha256:885a078aa0913000344e77d77038c1af903f64f232e71b701ad7df9459ce7b20`.
+  The gate records 87 passing test files and 260 tests, production build, and no production
+  dependency vulnerabilities. Staging is healthy; production remains `175d567`.
