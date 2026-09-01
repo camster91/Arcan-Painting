@@ -43,6 +43,10 @@ export async function GET(request, { params }) {
           p.status, p.final_cost, p.created_at
         FROM projects p WHERE p.lead_id = ${leadId}
         UNION ALL
+        SELECT 'change_order', co.id::text, 'Change order ' || co.change_order_number,
+          co.title, co.status, co.total_amount, co.created_at
+        FROM change_orders co WHERE co.lead_id = ${leadId}
+        UNION ALL
         SELECT 'invoice', i.id::text, 'Invoice ' || i.invoice_number, i.title,
           i.payment_status, i.total_amount, i.created_at
         FROM invoices i WHERE i.lead_id = ${leadId}

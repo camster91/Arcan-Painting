@@ -1819,7 +1819,35 @@ async function ensureMissingTables() {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
-  await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
+
+  // Change orders connect field discoveries to approved scope, schedule, and value.
+  await sql`
+    CREATE TABLE IF NOT EXISTS change_orders (
+      id SERIAL PRIMARY KEY,
+      change_order_number VARCHAR(64) UNIQUE NOT NULL,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+      title VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      reason TEXT,
+      amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+      tax_rate NUMERIC(5, 2) NOT NULL DEFAULT 13,
+      tax_amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+      total_amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+      schedule_impact_days INTEGER NOT NULL DEFAULT 0,
+      status VARCHAR(30) NOT NULL DEFAULT 'draft',
+      requested_by VARCHAR(255),
+      approved_by VARCHAR(255),
+      approved_at TIMESTAMP,
+      rejected_at TIMESTAMP,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_change_orders_project ON change_orders(project_id, created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_change_orders_status ON change_orders(status)`;
 
   // Time tracking (clock-in/clock-out against a project or task)
   await sql`

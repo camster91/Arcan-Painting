@@ -10,6 +10,7 @@ const icons = {
   estimate: FileText,
   contract: FileText,
   project: Paintbrush,
+  change_order: FileText,
   invoice: ReceiptText,
   payment: CircleDollarSign,
   email: Mail,

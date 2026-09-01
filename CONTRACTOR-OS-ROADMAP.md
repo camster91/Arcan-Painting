@@ -167,3 +167,6 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Enforced audited project lifecycle transitions and connected project-start
   and cleared-payment events to the gated workflow queue. Added row claiming, parallel
   worker protection, and recovery of abandoned email jobs after worker failure.
+- 2026-09-01: Added painting-project change orders with scope/reason, HST, schedule
+  impact, lifecycle controls, audit events, and project-level UI. Approval applies value
+  and schedule impact transactionally and retry-safely; voiding reverses the adjustment.

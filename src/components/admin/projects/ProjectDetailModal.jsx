@@ -8,6 +8,7 @@ import {
   getStatusInfo,
 } from "@/utils/projectsUtils";
 import useUpload from "@/utils/useUpload";
+import ChangeOrdersPanel from "@/components/admin/projects/ChangeOrdersPanel";
 
 export default function ProjectDetailModal({ project, onClose, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -500,6 +501,8 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
             </div>
           )}
         </div>
+
+        <ChangeOrdersPanel project={project} onChanged={onUpdate} />
 
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">
