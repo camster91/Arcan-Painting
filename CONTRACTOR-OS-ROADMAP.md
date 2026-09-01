@@ -170,3 +170,6 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Added painting-project change orders with scope/reason, HST, schedule
   impact, lifecycle controls, audit events, and project-level UI. Approval applies value
   and schedule impact transactionally and retry-safely; voiding reverses the adjustment.
+- 2026-09-01: Removed fabricated dashboard comparisons. Owner KPI changes now compare
+  new leads, estimates, projects, and cleared-payment revenue with the actual preceding
+  period, displaying `No baseline` rather than inventing a percentage.

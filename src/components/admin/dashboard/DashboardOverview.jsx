@@ -130,7 +130,8 @@ export default function DashboardOverview() {
     {
       title: "Active Leads",
       value: stats?.activeLeads || 0,
-      change: stats?.leadsChange || 0,
+      change: stats?.leadsChange ?? null,
+      comparison: "new leads",
       icon: Users,
       color: "blue",
       href: "/admin/leads",
@@ -138,7 +139,8 @@ export default function DashboardOverview() {
     {
       title: "Pending Estimates",
       value: stats?.pendingEstimates || 0,
-      change: stats?.estimatesChange || 0,
+      change: stats?.estimatesChange ?? null,
+      comparison: "new estimates",
       icon: FileText,
       color: "amber",
       href: "/admin/estimates",
@@ -146,15 +148,17 @@ export default function DashboardOverview() {
     {
       title: "Active Projects",
       value: stats?.activeProjects || 0,
-      change: stats?.projectsChange || 0,
+      change: stats?.projectsChange ?? null,
+      comparison: "new projects",
       icon: Briefcase,
       color: "green",
       href: "/admin/projects",
     },
     {
-      title: "Monthly Revenue",
+      title: "Collected Revenue",
       value: `$${(stats?.monthlyRevenue || 0).toLocaleString()}`,
-      change: stats?.revenueChange || 0,
+      change: stats?.revenueChange ?? null,
+      comparison: "cleared payments",
       icon: DollarSign,
       color: "purple",
       href: "/admin/payments",
@@ -177,7 +181,8 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const IconComponent = stat.icon;
-          const isPositive = stat.change >= 0;
+          const hasComparison = stat.change !== null;
+          const isPositive = hasComparison && stat.change >= 0;
 
           return (
             <a
@@ -191,18 +196,14 @@ export default function DashboardOverview() {
                 >
                   <IconComponent className="w-6 h-6" />
                 </div>
-                <div
-                  className={`flex items-center gap-1 text-sm font-medium ${
-                    isPositive ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {isPositive ? (
-                    <ArrowUpRight className="w-4 h-4" />
-                  ) : (
-                    <ArrowDownRight className="w-4 h-4" />
-                  )}
-                  {Math.abs(stat.change)}%
-                </div>
+                {hasComparison ? (
+                  <div title={`${stat.comparison} versus the previous ${stats.comparisonDays || 30} days`} className={`flex items-center gap-1 text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}>
+                    {isPositive ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                    {Math.abs(stat.change)}%
+                  </div>
+                ) : (
+                  <span title="No prior-period baseline" className="text-xs font-medium text-slate-500">No baseline</span>
+                )}
               </div>
 
               <div>

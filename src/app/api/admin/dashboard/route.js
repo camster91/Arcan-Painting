@@ -1,6 +1,13 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser, unauthorizedResponse } from "@/app/api/utils/auth";
 
+export function calculatePeriodChange(current, previous) {
+  const currentValue = Number(current) || 0;
+  const previousValue = Number(previous) || 0;
+  if (previousValue === 0) return currentValue === 0 ? 0 : null;
+  return Math.round(((currentValue - previousValue) / previousValue) * 100);
+}
+
 export async function GET(request) {
   try {
     // Auth check
@@ -13,12 +20,14 @@ export async function GET(request) {
     const url = new URL(request.url);
     const range = url.searchParams.get("range") || "30"; // default 30 days
 
-    const daysAgo = parseInt(range);
+    const requestedDays = parseInt(range, 10);
+    const daysAgo = [7, 30, 90, 365].includes(requestedDays) ? requestedDays : 30;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - daysAgo);
     const startDateString = startDate.toISOString();
-
-
+    const previousStartDate = new Date(startDate);
+    previousStartDate.setDate(previousStartDate.getDate() - daysAgo);
+    const previousStartDateString = previousStartDate.toISOString();
 
     // Aggregate metrics from multiple tables
     const [
@@ -26,6 +35,7 @@ export async function GET(request) {
       projectsStats,
       estimatesStats,
       appointmentsStats,
+      paymentsStats,
       recentActivities,
       todaysTasks,
     ] = await Promise.all([
@@ -34,6 +44,7 @@ export async function GET(request) {
         SELECT 
           COUNT(*) as total_leads,
           COUNT(CASE WHEN created_at >= ${startDateString} THEN 1 END) as new_leads,
+          COUNT(CASE WHEN created_at >= ${previousStartDateString} AND created_at < ${startDateString} THEN 1 END) as previous_new_leads,
           COUNT(CASE WHEN status = 'new' OR status = 'contacted' OR status = 'estimate_scheduled' THEN 1 END) as active_leads,
           COUNT(CASE WHEN status = 'won' THEN 1 END) as won_leads,
           AVG(estimated_value) as avg_lead_value
@@ -47,6 +58,8 @@ export async function GET(request) {
           COUNT(CASE WHEN status = 'in_progress' OR status = 'scheduled' THEN 1 END) as active_projects,
           COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_projects,
           COUNT(CASE WHEN status = 'completed' AND end_date >= ${startDateString} THEN 1 END) as recently_completed,
+          COUNT(CASE WHEN created_at >= ${startDateString} THEN 1 END) as new_projects,
+          COUNT(CASE WHEN created_at >= ${previousStartDateString} AND created_at < ${startDateString} THEN 1 END) as previous_new_projects,
           SUM(CASE WHEN status = 'completed' THEN final_cost ELSE 0 END) as total_revenue,
           SUM(CASE WHEN status = 'completed' AND end_date >= ${startDateString} THEN final_cost ELSE 0 END) as recent_revenue
         FROM projects
@@ -59,6 +72,7 @@ export async function GET(request) {
           COUNT(CASE WHEN status = 'sent' OR status = 'draft' THEN 1 END) as pending_estimates,
           COUNT(CASE WHEN status = 'approved' THEN 1 END) as approved_estimates,
           COUNT(CASE WHEN created_at >= ${startDateString} THEN 1 END) as new_estimates,
+          COUNT(CASE WHEN created_at >= ${previousStartDateString} AND created_at < ${startDateString} THEN 1 END) as previous_new_estimates,
           AVG(total_cost) as avg_estimate_value
         FROM estimates
       `,
@@ -70,6 +84,14 @@ export async function GET(request) {
           COUNT(CASE WHEN created_at >= ${startDateString} THEN 1 END) as new_appointments
         FROM appointments
         WHERE status = 'booked'
+      `,
+
+      // Collected cash is the authoritative revenue measure for this dashboard.
+      sql`
+        SELECT
+          COALESCE(SUM(amount) FILTER (WHERE status = 'cleared' AND payment_date >= ${startDateString}), 0) AS collected_revenue,
+          COALESCE(SUM(amount) FILTER (WHERE status = 'cleared' AND payment_date >= ${previousStartDateString} AND payment_date < ${startDateString}), 0) AS previous_collected_revenue
+        FROM payments
       `,
 
       // Recent activities
@@ -111,18 +133,12 @@ export async function GET(request) {
 
 
 
-    // Calculate simple trends (comparing to previous period)
-    const calculateTrend = (current, mockPrevious) => {
-      if (mockPrevious === 0) return current > 0 ? 100 : 0;
-      return Math.round(((current - mockPrevious) / mockPrevious) * 100);
-    };
-
     // Extract values with proper null handling
     const activeLeads = parseInt(leadsStats[0]?.active_leads) || 0;
     const pendingEstimates =
       parseInt(estimatesStats[0]?.pending_estimates) || 0;
     const activeProjects = parseInt(projectsStats[0]?.active_projects) || 0;
-    const monthlyRevenue = parseFloat(projectsStats[0]?.recent_revenue) || 0;
+    const monthlyRevenue = parseFloat(paymentsStats[0]?.collected_revenue) || 0;
 
     // Build response that matches component expectations
     const response = {
@@ -131,20 +147,11 @@ export async function GET(request) {
         pendingEstimates,
         activeProjects,
         monthlyRevenue,
-        // Trends (using mock previous values for now)
-        leadsChange: calculateTrend(activeLeads, Math.max(0, activeLeads - 2)),
-        estimatesChange: calculateTrend(
-          pendingEstimates,
-          Math.max(0, pendingEstimates - 1),
-        ),
-        projectsChange: calculateTrend(
-          activeProjects,
-          Math.max(0, activeProjects - 1),
-        ),
-        revenueChange: calculateTrend(
-          monthlyRevenue,
-          Math.max(0, monthlyRevenue - 5000),
-        ),
+        leadsChange: calculatePeriodChange(leadsStats[0]?.new_leads, leadsStats[0]?.previous_new_leads),
+        estimatesChange: calculatePeriodChange(estimatesStats[0]?.new_estimates, estimatesStats[0]?.previous_new_estimates),
+        projectsChange: calculatePeriodChange(projectsStats[0]?.new_projects, projectsStats[0]?.previous_new_projects),
+        revenueChange: calculatePeriodChange(monthlyRevenue, paymentsStats[0]?.previous_collected_revenue),
+        comparisonDays: daysAgo,
         // Today's tasks with proper null handling
         todaysTasks: (todaysTasks || []).map((task) => ({
           id: task.id,
