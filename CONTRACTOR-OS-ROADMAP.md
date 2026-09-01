@@ -259,3 +259,7 @@ operations, and real external communications require explicit action-time approv
   as image `sha256:885a078aa0913000344e77d77038c1af903f64f232e71b701ad7df9459ce7b20`.
   The gate records 87 passing test files and 260 tests, production build, and no production
   dependency vulnerabilities. Staging is healthy; production remains `175d567`.
+- 2026-09-01: Added painting-specific closeout defaults for final walkthrough, punch-list
+  resolution, completion photos, and care instructions. Project creation and estimate
+  conversion seed them transactionally. Completion is now rejected unless progress is 100%,
+  all required steps are evidenced, site issues are resolved, and every crew timer is stopped.

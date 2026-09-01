@@ -30,11 +30,12 @@ describe("estimate approval conversion", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 9, project_name: "Main-floor repaint", status: "scheduled" }]);
+    txSql.mockResolvedValueOnce([]);
 
     const response = await POST(request(), { params: { id: "7" } });
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ success: true, created: true, project: { id: 9 } });
-    expect(txSql).toHaveBeenCalledTimes(5);
+    expect(txSql).toHaveBeenCalledTimes(6);
     expect(String(txSql.mock.calls[0][0])).toContain("FOR UPDATE");
     expect(auditLog).toHaveBeenCalledWith(expect.objectContaining({ action: "estimate.approve_and_create_project" }));
   });

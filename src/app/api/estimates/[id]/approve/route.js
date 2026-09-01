@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { auditLog } from "@/app/api/utils/audit";
 import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
+import { seedProjectCloseout } from "@/app/api/utils/project-closeout-domain";
 
 export async function POST(request, { params }) {
   try {
@@ -64,6 +65,7 @@ export async function POST(request, { params }) {
           ${id}, ${estimate.lead_id}, ${projectName?.trim() || estimate.project_title}, 'scheduled', ${estimate.total_cost || null}, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
         ) RETURNING id, project_name, status
       `;
+      await seedProjectCloseout(txn, projects[0].id);
       return { project: projects[0], estimate, created: true };
     });
 

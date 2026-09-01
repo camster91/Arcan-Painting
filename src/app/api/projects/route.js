@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/app/api/utils/auth";
 import { hasPermission } from "@/app/api/utils/permissions";
 import { auditLog } from "@/app/api/utils/audit";
 import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
+import { seedProjectCloseout, validateProjectCloseout } from "@/app/api/utils/project-closeout-domain";
 
 const projectTransitions = {
   scheduled: new Set(["in_progress", "paused", "cancelled"]),
@@ -124,38 +125,20 @@ export async function POST(request) {
     }
 
     let lead_id = null;
+    const newProject = await sql.transaction(async (tx) => {
+      if (estimate_id) {
+        const estimateCheck = await tx`
+          SELECT id, lead_id, status FROM estimates WHERE id = ${estimate_id} FOR UPDATE
+        `;
+        if (!estimateCheck.length) throw Object.assign(new Error("Estimate not found"), { status: 404 });
+        if (estimateCheck[0].status !== "approved") throw Object.assign(new Error("Approve the estimate before creating its project"), { status: 409 });
+        const existing = await tx`SELECT id FROM projects WHERE estimate_id = ${estimate_id} LIMIT 1`;
+        if (existing.length) throw Object.assign(new Error("This estimate already has a project"), { status: 409 });
+        lead_id = estimateCheck[0].lead_id;
+      }
 
-    // If estimate_id is provided, verify it exists and get the lead_id
-    if (estimate_id) {
-      const estimateCheck = await sql`
-        SELECT e.id, e.lead_id, e.status,
-          EXISTS (SELECT 1 FROM projects p WHERE p.estimate_id = e.id) AS already_converted
-        FROM estimates e WHERE e.id = ${estimate_id}
-      `;
-      if (!estimateCheck || estimateCheck.length === 0) {
-        return Response.json(
-          { success: false, error: "Estimate not found" },
-          { status: 404 },
-        );
-      }
-      if (estimateCheck[0].status !== "approved") {
-        return Response.json(
-          { success: false, error: "Approve the estimate before creating its project" },
-          { status: 409 },
-        );
-      }
-      if (estimateCheck[0].already_converted) {
-        return Response.json(
-          { success: false, error: "This estimate already has a project" },
-          { status: 409 },
-        );
-      }
-      lead_id = estimateCheck[0].lead_id;
-    }
-
-    // Insert the new project
-    const result = await sql`
-      INSERT INTO projects (
+      const result = await tx`
+        INSERT INTO projects (
         estimate_id,
         lead_id,
         project_name,
@@ -188,10 +171,11 @@ export async function POST(request) {
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
       )
-      RETURNING id, project_name, status, final_cost, created_at
-    `;
-
-    const newProject = result[0];
+        RETURNING id, project_name, status, final_cost, created_at
+      `;
+      await seedProjectCloseout(tx, result[0].id);
+      return result[0];
+    });
 
     await auditLog({
       request,
@@ -215,8 +199,8 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error creating project:", error);
     return Response.json(
-      { success: false, error: "Failed to create project" },
-      { status: 500 },
+      { success: false, error: error.status ? error.message : "Failed to create project" },
+      { status: error.status || 500 },
     );
   }
 }
@@ -264,13 +248,13 @@ export async function PUT(request) {
     let projectCheck;
     if (canManageProject) {
       projectCheck = await sql`
-        SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email
+        SELECT p.id, p.status, p.project_name, p.completion_percentage, l.name AS lead_name, l.email AS lead_email
         FROM projects p LEFT JOIN leads l ON p.lead_id = l.id WHERE p.id = ${id}
       `;
     } else {
       // Painters can only update their assigned projects
       projectCheck = await sql`
-        SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email FROM projects p
+        SELECT p.id, p.status, p.project_name, p.completion_percentage, l.name AS lead_name, l.email AS lead_email FROM projects p
         LEFT JOIN team_members tm ON p.assigned_painter_id = tm.id
         LEFT JOIN leads l ON p.lead_id = l.id
         WHERE p.id = ${id} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (
@@ -292,6 +276,21 @@ export async function PUT(request) {
         { success: false, error: `Project cannot move from ${previousProject.status} to ${status}` },
         { status: 409 },
       );
+    }
+    if (status === "completed" && previousProject.status !== "completed") {
+      const [[checklist], [issues], [timers]] = await Promise.all([
+        sql`SELECT COUNT(*) FILTER (WHERE is_required = TRUE)::int AS required_steps, COUNT(*) FILTER (WHERE is_required = TRUE AND is_completed <> TRUE)::int AS incomplete_required_steps FROM completion_workflows WHERE project_id = ${id}`,
+        sql`SELECT COUNT(*)::int AS open_issues FROM project_issues WHERE project_id = ${id} AND status IN ('open', 'in_progress')`,
+        sql`SELECT COUNT(*)::int AS active_timers FROM time_tracking WHERE project_id = ${id} AND status = 'active'`,
+      ]);
+      const closeoutError = validateProjectCloseout({
+        completionPercentage: completion_percentage ?? previousProject.completion_percentage,
+        requiredSteps: checklist?.required_steps || 0,
+        incompleteRequiredSteps: checklist?.incomplete_required_steps || 0,
+        openIssues: issues?.open_issues || 0,
+        activeTimers: timers?.active_timers || 0,
+      });
+      if (closeoutError) return Response.json({ success: false, error: closeoutError }, { status: 409 });
     }
 
     // Build dynamic update query based on user role
