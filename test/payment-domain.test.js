@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertPaymentCreateStatus, assertPaymentUpdate, invoiceBalance } from "../src/app/api/utils/payment-domain";
+import { assertPaymentCreateStatus, assertPaymentUpdate, assertReceiptEligible, invoiceBalance } from "../src/app/api/utils/payment-domain";
 
 describe("payment ledger rules", () => {
   it("counts cleared cash only and clamps customer balances", () => {
@@ -12,5 +12,12 @@ describe("payment ledger rules", () => {
     expect(() => assertPaymentUpdate({ status: "cleared" }, { amount: 5 })).toThrow(/immutable/);
     expect(() => assertPaymentUpdate({ status: "cleared" }, { status: "pending" })).toThrow(/cannot move/);
     expect(() => assertPaymentUpdate({ status: "cleared" }, { status: "refunded" })).not.toThrow();
+  });
+
+  it("only permits receipts for cleared payments", () => {
+    expect(() => assertReceiptEligible("cleared")).not.toThrow();
+    for (const status of ["pending", "failed", "refunded"]) {
+      expect(() => assertReceiptEligible(status)).toThrow(/only be sent for cleared/);
+    }
   });
 });

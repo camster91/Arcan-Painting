@@ -6,6 +6,7 @@ const getCurrentUser = vi.fn();
 const queueEmailWorkflows = vi.fn();
 const hasPermission = vi.fn();
 const auditLog = vi.fn();
+const requireCsrf = vi.fn();
 
 vi.mock("@/app/api/utils/sql", () => ({ default: sql }));
 vi.mock("@/app/api/utils/send-email", () => ({ sendEmail }));
@@ -13,6 +14,7 @@ vi.mock("@/app/api/utils/auth", () => ({ getCurrentUser }));
 vi.mock("@/app/api/utils/email-workflows", () => ({ queueEmailWorkflows }));
 vi.mock("@/app/api/utils/permissions", () => ({ hasPermission }));
 vi.mock("@/app/api/utils/audit", () => ({ auditLog }));
+vi.mock("@/app/api/utils/csrf", () => ({ requireCsrf }));
 
 const estimateRoute = await import("@/app/api/estimates/[id]/send/route");
 const contractRoute = await import("@/app/api/contracts/[id]/send/route");
@@ -27,6 +29,7 @@ describe("customer document send authorization", () => {
       role: "crew",
     });
     hasPermission.mockReturnValue(false);
+    requireCsrf.mockReturnValue(null);
   });
 
   test.each([

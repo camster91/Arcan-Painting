@@ -183,15 +183,17 @@ export default function PaymentsListModal({
                   </td>
                   <td className="py-2 px-3 text-sm">
                     <div className="flex items-center gap-2">
-                      <button
-                        disabled={workingId === p.id}
-                        onClick={() => sendReceipt(p)}
-                        title="Send Receipt"
-                        className={`p-1.5 rounded-lg ${workingId === p.id ? "text-amber-600 bg-amber-50" : "text-slate-600 hover:text-amber-700 hover:bg-amber-50"}`}
-                      >
-                        <Mail size={16} />
-                      </button>
-                      {p.status !== "refunded" && (
+                      {p.status === "cleared" && (
+                        <button
+                          disabled={workingId === p.id}
+                          onClick={() => sendReceipt(p)}
+                          title="Send Receipt"
+                          className={`p-1.5 rounded-lg ${workingId === p.id ? "text-amber-600 bg-amber-50" : "text-slate-600 hover:text-amber-700 hover:bg-amber-50"}`}
+                        >
+                          <Mail size={16} />
+                        </button>
+                      )}
+                      {p.status === "cleared" && (
                         <button
                           disabled={workingId === p.id}
                           onClick={() => refundPayment(p)}

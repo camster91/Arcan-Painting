@@ -5,6 +5,7 @@ import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 import { hasPermission } from "@/app/api/utils/permissions";
 import { auditLog } from "@/app/api/utils/audit";
 import { customerDocumentSendError } from "@/app/api/utils/customer-document-domain";
+import { requireCsrf } from "@/app/api/utils/csrf";
 
 async function getAppSettings() {
   try {
@@ -24,6 +25,8 @@ function applyTemplate(tpl, vars) {
 }
 
 export async function POST(request, { params }) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
   try {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });

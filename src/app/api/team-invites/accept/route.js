@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { hash } from "argon2";
 import { passwordLimiter } from "@/app/api/utils/rate-limit";
 import { ensureSchema } from "@/migrations/001-initial-schema";
+import { auditLog } from "@/app/api/utils/audit";
 
 const INVITABLE_ROLES = new Set(["crew", "office", "estimator", "project_manager", "finance_readonly"]);
 
@@ -38,7 +39,7 @@ export async function POST(request) {
     const preflight = await sql`SELECT id, role, expires_at, accepted_at FROM team_invites WHERE token = ${token} LIMIT 1`;
     validateInvite(preflight[0]);
 
-    await sql.transaction(async (tx) => {
+    const accepted = await sql.transaction(async (tx) => {
       const [invite] = await tx`SELECT * FROM team_invites WHERE token = ${token} FOR UPDATE`;
       validateInvite(invite);
       const hashedPassword = await hash(password);
@@ -63,6 +64,18 @@ export async function POST(request) {
         await tx`INSERT INTO team_members (name, email, role, status) VALUES (${name}, ${invite.email}, ${invite.role}, 'active')`;
       }
       await tx`UPDATE team_invites SET accepted_at = NOW() WHERE id = ${invite.id}`;
+      return { inviteId: invite.id, role: invite.role, userId };
+    });
+
+    await auditLog({
+      request,
+      action: "team_invite.accept",
+      userId: accepted.userId,
+      username: "invited-user",
+      resource: "auth_user",
+      resourceId: accepted.userId,
+      changes: { invite_id: accepted.inviteId, role: accepted.role },
+      status: "success",
     });
 
     return Response.json({ success: true });

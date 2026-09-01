@@ -379,3 +379,10 @@ operations, and real external communications require explicit action-time approv
   Anonymous notification and agent reads and notification creation return `401`; migration writes
   fail at the CSRF boundary with `403`; public health and PWA assets return `200`. Exact staging and
   unchanged production are healthy with zero restarts.
+- 2026-09-01: Hardened outbound customer financial communications. Estimate, contract, invoice,
+  and receipt sends now enforce the CSRF boundary; receipts additionally require `finance.write`,
+  a cleared payment, and a PII-minimized audit event. The payments UI only offers receipt and
+  refund actions for cleared payments. Successful team-invite acceptance now records the created
+  user, role, and invite identifier without storing the credential token or account PII in audit
+  changes. The full gate records 109 files and 352 tests, passing typecheck, production build, and
+  the production-dependency audit with zero vulnerabilities.

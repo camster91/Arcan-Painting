@@ -10,6 +10,7 @@ const {
   ensureSchema,
   passwordLimiter,
   hash,
+  auditLog,
 } = vi.hoisted(() => {
   const sql = vi.fn();
   sql.transaction = vi.fn();
@@ -23,6 +24,7 @@ const {
     ensureSchema: vi.fn(),
     passwordLimiter: vi.fn(),
     hash: vi.fn(),
+    auditLog: vi.fn(),
   };
 });
 
@@ -33,6 +35,7 @@ vi.mock("@/app/api/utils/csrf", () => ({ requireCsrf }));
 vi.mock("@/migrations/001-initial-schema", () => ({ ensureSchema }));
 vi.mock("@/app/api/utils/rate-limit", () => ({ passwordLimiter }));
 vi.mock("argon2", () => ({ hash }));
+vi.mock("@/app/api/utils/audit", () => ({ auditLog }));
 
 const { POST: createInvite } = await import("@/app/api/team-invites/route.js");
 const { POST: acceptInvite } = await import("@/app/api/team-invites/accept/route.js");
@@ -51,6 +54,7 @@ describe("team invitation creation", () => {
     ensureSchema.mockReset();
     passwordLimiter.mockReset();
     hash.mockReset();
+    auditLog.mockReset();
     tx.mockResolvedValue([]);
     sql.transaction.mockImplementation((callback) => callback(tx));
     process.env.APP_URL = "https://arcanpainting.ca";
@@ -142,6 +146,7 @@ describe("team invitation acceptance", () => {
     ensureSchema.mockReset();
     passwordLimiter.mockReset();
     hash.mockReset();
+    auditLog.mockReset();
     passwordLimiter.mockReturnValue(null);
   });
 
@@ -173,5 +178,29 @@ describe("team invitation acceptance", () => {
     expect(response.status).toBe(429);
     expect(ensureSchema).not.toHaveBeenCalled();
     expect(sql).not.toHaveBeenCalled();
+  });
+
+  test("audits successful acceptance without recording token, email, name, or password", async () => {
+    const accepted = { inviteId: 7, role: "crew", userId: 13 };
+    sql.mockResolvedValueOnce([{ id: 7, role: "crew", expires_at: "2099-01-01T00:00:00.000Z", accepted_at: null }]);
+    sql.transaction.mockResolvedValueOnce(accepted);
+
+    const response = await acceptInvite(new Request("https://arcanpainting.ca/api/team-invites/accept", {
+      method: "POST",
+      body: JSON.stringify({ token: invitationToken, name: "Crew Member", password: "secure-password" }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(auditLog).toHaveBeenCalledWith(expect.objectContaining({
+      action: "team_invite.accept",
+      userId: 13,
+      username: "invited-user",
+      resourceId: 13,
+      changes: { invite_id: 7, role: "crew" },
+    }));
+    const payload = JSON.stringify(auditLog.mock.calls[0][0]);
+    expect(payload).not.toContain(invitationToken);
+    expect(payload).not.toContain("Crew Member");
+    expect(payload).not.toContain("secure-password");
   });
 });

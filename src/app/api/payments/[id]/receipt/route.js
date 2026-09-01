@@ -1,12 +1,21 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
+import { requireCsrf } from "@/app/api/utils/csrf";
+import { auditLog } from "@/app/api/utils/audit";
+import { assertReceiptEligible } from "@/app/api/utils/payment-domain";
 
 export async function POST(request, { params }) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
   try {
     const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!hasPermission(user, "finance.write")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
     const { id } = params; // payment id
     if (!id) {
@@ -44,6 +53,11 @@ export async function POST(request, { params }) {
     }
 
     const p = rows[0];
+    try {
+      assertReceiptEligible(p.status);
+    } catch (error) {
+      return Response.json({ error: error.message }, { status: 409 });
+    }
     if (!p.client_email) {
       return Response.json(
         { error: "Client email not found for this payment" },
@@ -93,6 +107,17 @@ export async function POST(request, { params }) {
       subject,
       html,
       text,
+    });
+
+    await auditLog({
+      request,
+      action: "payment.receipt_send",
+      userId: user.id,
+      username: user.username,
+      resource: "payment",
+      resourceId: p.id,
+      changes: { invoice_id: p.invoice_id, status: p.status },
+      status: "success",
     });
 
     return Response.json({ success: true });

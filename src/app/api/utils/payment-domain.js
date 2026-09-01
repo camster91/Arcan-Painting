@@ -34,3 +34,9 @@ export function invoiceBalance(totalAmount, clearedAmount) {
     payment_status: paid >= total && total > 0 ? "paid" : paid > 0 ? "partial" : "unpaid",
   };
 }
+
+export function assertReceiptEligible(status) {
+  if (status !== "cleared") {
+    throw new Error("Receipts can only be sent for cleared payments");
+  }
+}
