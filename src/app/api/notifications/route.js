@@ -1,7 +1,10 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
-import { requireAdmin } from "@/app/api/utils/auth";
+import { getCurrentUser } from "@/app/api/utils/auth";
 import { requireCsrf } from "@/app/api/utils/csrf";
+import { auditLog } from "@/app/api/utils/audit";
+
+const isAdmin = (user) => user?.role === "owner" || user?.role === "admin";
 
 // Server-only entry point for trusted business workflows. Public HTTP callers
 // must go through the authenticated handlers below.
@@ -59,7 +62,8 @@ export async function createNotification({
 }
 
 export async function GET(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!isAdmin(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -140,7 +144,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!isAdmin(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const csrfError = requireCsrf(request);
@@ -173,6 +178,22 @@ export async function POST(request) {
       type, title, message, user_id, email, related_id, related_type, send_email, data,
     });
 
+    await auditLog({
+      request,
+      action: "notification.create",
+      userId: user.id,
+      username: user.username,
+      resource: "notification",
+      resourceId: notification.id,
+      changes: {
+        type,
+        related_type: related_type || null,
+        related_id: related_id || null,
+        send_email: Boolean(send_email),
+      },
+      status: "success",
+    });
+
     return Response.json({ notification }, { status: 201 });
   } catch (error) {
     console.error("Error creating notification:", error);
@@ -184,7 +205,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!isAdmin(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const csrfError = requireCsrf(request);
@@ -214,6 +236,17 @@ export async function PUT(request) {
         { status: 404 },
       );
     }
+
+    await auditLog({
+      request,
+      action: "notification.read_state_update",
+      userId: user.id,
+      username: user.username,
+      resource: "notification",
+      resourceId: id,
+      changes: { is_read: Boolean(is_read) },
+      status: "success",
+    });
 
     return Response.json({ notification: result[0] });
   } catch (error) {

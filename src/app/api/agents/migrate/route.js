@@ -4,22 +4,22 @@
  * Admin-only endpoint. Safe to run multiple times.
  */
 
-import { requireAdmin } from '../../utils/auth.js';
+import { getCurrentUser } from '../../utils/auth.js';
 import { requireCsrf } from '../../utils/csrf.js';
+import { auditLog } from '../../utils/audit.js';
 import { migrateAgentFields } from '../migrate.js';
 import { logAgentRun, updateAgentRun } from '../store.js';
 
 export async function POST(request) {
   const csrfError = requireCsrf(request);
   if (csrfError) return csrfError;
+  const user = await getCurrentUser(request);
+  if (!user || !['owner', 'admin'].includes(user.role)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   let runRecord;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Log the agent run
     runRecord = await logAgentRun({
       agent_id: 'migrate',
@@ -39,6 +39,21 @@ export async function POST(request) {
       output: { migrations: results, summary: `${results.filter(r => r.status === 'ok').length} applied, ${results.filter(r => r.status.includes('skipped')).length} skipped, ${errors.length} errors` },
     });
 
+    await auditLog({
+      request,
+      action: 'agent_migration.run',
+      userId: user.id,
+      username: user.username,
+      resource: 'agent_migration',
+      resourceId: runRecord.id,
+      changes: {
+        applied: results.filter(r => r.status === 'ok').length,
+        skipped: results.filter(r => r.status.includes('skipped')).length,
+        failed: errors.length,
+      },
+      status: errors.length === 0 ? 'success' : 'failure',
+    });
+
     return Response.json({
       success: errors.length === 0,
       migrations: results,
@@ -54,6 +69,16 @@ export async function POST(request) {
         error: error.message,
       });
     }
+    await auditLog({
+      request,
+      action: 'agent_migration.run',
+      userId: user.id,
+      username: user.username,
+      resource: 'agent_migration',
+      resourceId: runRecord?.id,
+      changes: { failed: true },
+      status: 'failure',
+    });
     
     return Response.json(
       { error: 'Migration failed', details: error.message },

@@ -1,6 +1,7 @@
 /**
  * GET /api/agents — health check and status for AI agents (ADMIN ONLY)
- * POST /api/agents/migrate — run DB migrations for agent fields
+ * POST /api/agents returns routing guidance. The migration handler is the
+ * dedicated /api/agents/migrate route.
  *
  * The /runs sub-path lives in src/app/api/agents/runs/route.js so it
  * actually matches a real route in React Router 7.
@@ -8,7 +9,6 @@
 
 import { requireAdmin, unauthorizedResponse } from '../utils/auth.js';
 import { pingOpenClaw } from './openclaw.js';
-import { migrateAgentFields } from './migrate.js';
 import { requireCsrf } from '../utils/csrf.js';
 
 export async function GET(request) {
@@ -38,18 +38,6 @@ export async function GET(request) {
 export async function POST(request) {
   const csrfError = requireCsrf(request);
   if (csrfError) return csrfError;
-
-  // Handle migration sub-path
-  const url = new URL(request.url);
-  if (url.pathname.endsWith('/migrate')) {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
-      return unauthorizedResponse();
-    }
-
-    const results = await migrateAgentFields();
-    return Response.json({ success: true, migrations: results });
-  }
 
   return Response.json({ error: 'Use POST /api/agents/migrate to run migrations' }, { status: 400 });
 }

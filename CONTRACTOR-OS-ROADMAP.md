@@ -369,3 +369,8 @@ operations, and real external communications require explicit action-time approv
   production-dependency audit with zero vulnerabilities. Anonymous internal-task and delayed-email
   queue reads return `401`, task writes fail at the CSRF boundary with `403`, public health and PWA
   assets return `200`, and unchanged production remains healthy on `175d567` with zero restarts.
+- 2026-09-01: Added actor-bound, PII-minimized audit evidence for manual notification creation and
+  notification read-state changes. Consolidated agent database migration execution in the dedicated
+  owner/admin endpoint and added central success/failure summaries alongside its agent-run record.
+  The expanded full gate records 107 files and 341 tests, passing typecheck, production build, and
+  the production-dependency audit with zero vulnerabilities.
