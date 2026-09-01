@@ -276,3 +276,7 @@ operations, and real external communications require explicit action-time approv
   image `sha256:73b9f4e8b7e4a84ba3b7bbbdec7d05b0bb9cf9a0452c9523353939d1d5109cad`.
   The gate records 89 passing test files and 265 tests plus typecheck and production build;
   staging is healthy and production remains unchanged.
+- 2026-09-01: A direct staging probe found the worker and manifest returned HTML 404s.
+  Root cause was an explicit Docker ignore for `public/sw.js` plus a missing manifest and
+  install icons. The runtime artifact now includes the worker, a field-focused manifest,
+  192/512 install icons, and the notification badge; reachability must be re-proven after rebuild.

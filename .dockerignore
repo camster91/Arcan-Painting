@@ -19,5 +19,3 @@ bun.lock
 # rsync it onto the host separately, or mount it as a volume in compose.
 public/gallery/images
 public/gallery/thumbnails
-public/sw.js
-public/sw.js.map
