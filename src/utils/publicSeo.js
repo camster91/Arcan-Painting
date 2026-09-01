@@ -55,7 +55,8 @@ const PUBLIC_PAGES = {
 export function getPublicSeo(pathname = "/") {
   const path = pathname !== "/" ? pathname.replace(/\/$/, "") : "/";
   const page = PUBLIC_PAGES[path];
-  const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path === "/thank-you";
+  const isPortal = path === "/portal" || path.startsWith("/portal/");
+  const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || isPortal || path === "/thank-you";
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
   const indexable = Boolean(page) && !isPrivate && !isGeneratedLocation;
 
@@ -64,8 +65,9 @@ export function getPublicSeo(pathname = "/") {
   return {
     title: isPrivate ? "Arcan Painting" : "Page Not Found | Arcan Painting",
     description: isPrivate ? "Arcan Painting website page." : "The requested Arcan Painting page could not be found.",
-    path,
-    canonical: `${SITE_URL}${path}`,
+    path: isPortal ? "/portal" : path,
+    // Never echo a customer bearer token into canonical/social metadata.
+    canonical: isPortal ? `${SITE_URL}/portal` : `${SITE_URL}${path}`,
     indexable: false,
   };
 }

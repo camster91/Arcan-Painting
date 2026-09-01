@@ -258,6 +258,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="twitter:image:alt" content="Arcan Painting" />
         {/* SEO: Robots meta */}
         <meta name="robots" content={!isStaging && seo.indexable ? "index, follow" : "noindex, nofollow"} />
+        {!seo.indexable && <meta name="referrer" content="no-referrer" />}
         <Links />
       </head>
       <body suppressHydrationWarning>

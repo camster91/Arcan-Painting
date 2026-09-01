@@ -1849,6 +1849,23 @@ async function ensureMissingTables() {
   await sql`CREATE INDEX IF NOT EXISTS idx_change_orders_project ON change_orders(project_id, created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_change_orders_status ON change_orders(status)`;
 
+  // Revocable customer portal links. Raw bearer tokens are never persisted;
+  // only a SHA-256 digest is stored so a database read cannot reveal links.
+  await sql`
+    CREATE TABLE IF NOT EXISTS customer_portal_tokens (
+      id SERIAL PRIMARY KEY,
+      lead_id INTEGER NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+      token_hash VARCHAR(64) UNIQUE NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      revoked_at TIMESTAMP,
+      last_used_at TIMESTAMP,
+      created_by INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_customer_portal_tokens_lead ON customer_portal_tokens(lead_id, created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_customer_portal_tokens_active ON customer_portal_tokens(token_hash, expires_at) WHERE revoked_at IS NULL`;
+
   // Time tracking (clock-in/clock-out against a project or task)
   await sql`
     CREATE TABLE IF NOT EXISTS time_tracking (

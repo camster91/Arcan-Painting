@@ -43,17 +43,17 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Capability | Status | Evidence / gap |
 | --- | --- | --- |
 | Public inquiry capture and CRM persistence | Complete | Contact and quote submissions were verified through isolated staging data |
-| Leads and clients | Partial | CRUD/search exist; no authoritative lifecycle, activity timeline, attribution reporting, or conversion workflow |
+| Leads and clients | Partial | CRUD/search and a unified customer activity timeline exist; attribution reporting and full lifecycle conversion remain incomplete |
 | Site visits and scheduling | Partial | Appointments, availability, calendar, and schedules exist; external calendar transport is disabled |
-| Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, approve, and duplicate code exist; full customer approval journey is unverified |
-| Contracts | Partial | CRUD, templates, PDF, send, and signature fields exist; customer e-sign journey is unverified |
-| Projects and field progress | Partial | Projects, crews, progress, workflows, time tracking, and daily notes exist; mobile field journey and change control are incomplete |
-| Invoices and payments | Partial | APIs, PDFs, send, payment records, and receipts exist; invoice creation UI is a placeholder |
-| Customer communications | Partial | Template, workflow-configuration, delivery-log, health, and owner-only test APIs now exist locally; automatic workflow dispatch and production provider verification remain incomplete |
-| Customer portal | Missing | No secure self-service approvals, documents, updates, or payment history |
+| Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified |
+| Contracts | Partial | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified |
+| Projects and field progress | Partial | Projects, crews, progress, workflows, time tracking, daily notes, and audited change orders exist; the mobile field journey remains incomplete |
+| Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, payment records, receipts, and corrected aggregation exist; hosted payment remains incomplete |
+| Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
+| Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, and invoice visibility exist; payments, receipts, project updates, and rendered staging QA remain |
 | Job costing and margin | Missing / partial | Estimate costs, project final cost, time and payments exist but are not reconciled into job budgets and actual margin |
 | Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
-| Owner reporting | Partial | Dashboard exists but trend values use mock comparison data |
+| Owner reporting | Partial | Core dashboard trends use real preceding-period data; broader KPI and margin reporting remain incomplete |
 | AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
 | Security, audit, recovery | Partial | Auth, CSRF, rate limits, audit and recovery routes exist; full permission, privacy, restore, and field-device validation remains |
 
@@ -61,10 +61,10 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 
 ### P0 — Make the revenue spine dependable
 
-- [ ] Replace the invoice-creation placeholder with a validated, accessible workflow.
-- [ ] Correct invoice/payment aggregation and protect financial invariants with tests.
+- [x] Replace the invoice-creation placeholder with a validated, accessible workflow.
+- [x] Correct invoice/payment aggregation and protect financial invariants with tests.
 - [ ] Define and enforce lifecycle states and allowed transitions from lead through paid job.
-- [ ] Add one activity timeline joining customer, estimate, contract, project, invoice, payment, and communication events.
+- [x] Add one activity timeline joining customer, estimate, contract, project, invoice, payment, and communication events.
 - [ ] Add explicit conversion actions that carry data forward instead of requiring re-entry.
 - [ ] Verify estimate approval, contract acceptance, deposit, project creation, completion, invoice, and payment end to end.
 
@@ -73,10 +73,10 @@ every transition persisted, attributed, auditable, and visible after reload.
 
 ### P1 — Customer communication and self-service
 
-- [ ] Remove or repair every admin screen whose backing route is absent.
+- [x] Remove or repair every admin screen whose backing route is absent.
 - [ ] Implement provider-neutral message delivery with delivery state, failure state, retries, and logs.
 - [ ] Add configurable email/SMS providers only after credentials and commercial approval.
-- [ ] Build a secure customer portal for estimates, contracts, approvals, signatures, invoices, receipts, project updates, and change orders.
+- [ ] Build a secure customer portal for estimates, contracts, approvals, signatures, invoices, receipts, project updates, and change orders. (Core approval/document slice implemented; remaining scope and rendered QA pending.)
 - [ ] Add template governance, reminders, opt-out/consent controls, and a unified communication timeline.
 
 Acceptance: no message is reported as sent unless the provider confirms it; customers can
@@ -86,7 +86,7 @@ complete the required document and payment actions without staff intervention.
 
 - [ ] Turn estimate scope into job scope: rooms/areas, surfaces, prep, coatings, colors, sheen, quantities, exclusions, and production assumptions.
 - [ ] Add crew assignments, mobile daily view, arrival/departure, time, material usage, photos, notes, delays, and safety/issues.
-- [ ] Add change orders with scope, price, schedule impact, approval, and audit trail.
+- [x] Add change orders with scope, price, schedule impact, approval, and audit trail.
 - [ ] Add punch list, final walkthrough, completion evidence, care instructions, and closeout package.
 - [ ] Provide offline-tolerant field entry and conflict-safe retry behavior.
 
@@ -116,7 +116,7 @@ follow-up action without unsupported claims or silent data gaps.
 
 ### P2 — Owner control plane and hardening
 
-- [ ] Replace mock trends with period-over-period source data and documented KPI definitions.
+- [x] Replace mock trends with period-over-period source data and documented KPI definitions.
 - [ ] Add role-based permissions for owner, office, estimator, project manager, crew, and read-only finance.
 - [ ] Complete audit coverage for sensitive, financial, permission, export, and customer-facing actions.
 - [ ] Verify privacy, retention, export, deletion, secret handling, dependency risk, abuse controls, accessibility, responsive behavior, performance, backups, and restores.
@@ -173,3 +173,8 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Removed fabricated dashboard comparisons. Owner KPI changes now compare
   new leads, estimates, projects, and cleared-payment revenue with the actual preceding
   period, displaying `No baseline` rather than inventing a percentage.
+- 2026-09-01: Added the secure customer-portal foundation: owner-created and revocable
+  expiring links stored only as SHA-256 hashes, customer estimate approval, explicit-consent
+  contract signature, retry-safe change-order decisions, and non-draft invoice visibility.
+  Bearer tokens are excluded from SEO metadata and referrers. Rendered staging verification,
+  hosted payment, receipts, and project-update presentation remain open.

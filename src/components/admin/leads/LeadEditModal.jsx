@@ -3,6 +3,7 @@
 import { useState } from "react";
 import MobileModal from "@/components/MobileModal";
 import CustomerTimeline from "@/components/admin/leads/CustomerTimeline";
+import CustomerPortalLinks from "@/components/admin/projects/CustomerPortalLinks";
 
 export default function LeadEditModal({
   lead,
@@ -351,6 +352,7 @@ export default function LeadEditModal({
           </div>
         )}
 
+        {!isCreate && <CustomerPortalLinks leadId={lead.id} />}
         {!isCreate && <CustomerTimeline leadId={lead.id} />}
 
         {/* Extra spacing for mobile to account for bottom bar */}
