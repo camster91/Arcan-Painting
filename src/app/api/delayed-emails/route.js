@@ -17,6 +17,8 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser, unauthorizedResponse } from "@/app/api/utils/auth";
 import { sendTemplatedEmail } from "@/app/api/utils/send-email";
+import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
 
 const BATCH_LIMIT = 50;
 const MAX_ATTEMPTS = 3;
@@ -35,9 +37,13 @@ export async function POST(request) {
   const validCron = Boolean(
     configuredCronSecret && cronSecret && cronSecret === configuredCronSecret,
   );
+  let actor = validCron
+    ? { id: null, username: "cron", role: "service" }
+    : null;
   if (!validCron) {
     const user = await getCurrentUser(request);
     if (!user || user.role !== "owner") return unauthorizedResponse();
+    actor = user;
   }
 
   try {
@@ -69,6 +75,14 @@ export async function POST(request) {
     );
 
     if (due.length === 0) {
+      await auditLog({
+        request,
+        action: "communications.worker_run",
+        userId: actor.id,
+        username: actor.username,
+        resource: "delayed_email",
+        changes: { processed: 0, sent: 0, failed: 0 },
+      });
       return Response.json({ processed: 0, message: "No delayed emails due" });
     }
 
@@ -124,6 +138,16 @@ export async function POST(request) {
       }
     }
 
+    await auditLog({
+      request,
+      action: "communications.worker_run",
+      userId: actor.id,
+      username: actor.username,
+      resource: "delayed_email",
+      changes: { processed: due.length, sent, failed },
+      status: failed > 0 ? "failure" : "success",
+    });
+
     return Response.json({ processed: due.length, sent, failed, errors });
   } catch (error) {
     console.error("delayed-emails worker error:", error);
@@ -139,6 +163,9 @@ export async function GET(request) {
   try {
     const user = await getCurrentUser(request);
     if (!user) return unauthorizedResponse();
+    if (!hasPermission(user, "communications.manage")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const url = new URL(request.url);
     const status = url.searchParams.get("status") || "pending";

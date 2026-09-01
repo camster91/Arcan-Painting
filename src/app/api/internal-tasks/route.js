@@ -1,7 +1,11 @@
 import sql from "@/app/api/utils/sql";
-import { requireAdmin } from "@/app/api/utils/auth";
+import { getCurrentUser, requireAdmin } from "@/app/api/utils/auth";
 import { requireCsrf } from "@/app/api/utils/csrf";
+import { auditLog } from "@/app/api/utils/audit";
 // Using local admin session cookie like other admin APIs
+
+const TASK_STATUSES = new Set(["todo", "in_progress", "blocked", "done"]);
+const TASK_PRIORITIES = new Set(["low", "medium", "high", "urgent"]);
 
 async function ensureSchema() {
   await sql(`
@@ -71,6 +75,8 @@ function buildFilters(searchParams) {
 export async function GET(request) {
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     await ensureSchema();
     const url = new URL(request.url);
@@ -128,15 +134,27 @@ export async function POST(request) {
       assignee_id = null,
       due_date = null,
     } = body || {};
-    if (!title || typeof title !== "string") {
+    if (!title || typeof title !== "string" || title.trim().length > 255) {
       return Response.json({ error: "Title is required" }, { status: 400 });
+    }
+    if (!TASK_STATUSES.has(status) || !TASK_PRIORITIES.has(priority)) {
+      return Response.json({ error: "Invalid task status or priority" }, { status: 400 });
     }
     const rows = await sql(
       `INSERT INTO internal_tasks (title, description, status, priority, assignee_id, due_date)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [title, description, status, priority, assignee_id, due_date],
+      [title.trim(), description, status, priority, assignee_id, due_date],
     );
+    await auditLog({
+      request,
+      action: "internal_task.create",
+      userId: user.id,
+      username: user.username,
+      resource: "internal_task",
+      resourceId: rows[0].id,
+      changes: { status: rows[0].status, priority: rows[0].priority, assignee_id: rows[0].assignee_id },
+    });
     return Response.json({ task: rows[0] }, { status: 201 });
   } catch (e) {
     console.error("POST /api/internal-tasks error", e);
@@ -149,12 +167,23 @@ export async function PUT(request) {
   if (csrfError) return csrfError;
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     await ensureSchema();
     const body = await request.json();
     const { id, ...updates } = body || {};
     if (!id)
       return Response.json({ error: "Task id is required" }, { status: 400 });
+    if (updates.status !== undefined && !TASK_STATUSES.has(updates.status)) {
+      return Response.json({ error: "Invalid task status" }, { status: 400 });
+    }
+    if (updates.priority !== undefined && !TASK_PRIORITIES.has(updates.priority)) {
+      return Response.json({ error: "Invalid task priority" }, { status: 400 });
+    }
+    if (updates.title !== undefined && (!String(updates.title).trim() || String(updates.title).trim().length > 255)) {
+      return Response.json({ error: "Task title is invalid" }, { status: 400 });
+    }
 
     const setClauses = [];
     const values = [];
@@ -187,6 +216,15 @@ export async function PUT(request) {
     );
     if (!rows[0])
       return Response.json({ error: "Task not found" }, { status: 404 });
+    await auditLog({
+      request,
+      action: "internal_task.update",
+      userId: user.id,
+      username: user.username,
+      resource: "internal_task",
+      resourceId: id,
+      changes: { fields: Object.keys(updates).filter((field) => allowed.includes(field)), status: rows[0].status },
+    });
     return Response.json({ task: rows[0] });
   } catch (e) {
     console.error("PUT /api/internal-tasks error", e);
@@ -199,6 +237,8 @@ export async function DELETE(request) {
   if (csrfError) return csrfError;
   const ok = await requireAdmin(request);
   if (!ok) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getCurrentUser(request);
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     await ensureSchema();
     const url = new URL(request.url);
@@ -206,11 +246,20 @@ export async function DELETE(request) {
     if (!id)
       return Response.json({ error: "Task id is required" }, { status: 400 });
     const rows = await sql(
-      `DELETE FROM internal_tasks WHERE id = $1 RETURNING id`,
+      `DELETE FROM internal_tasks WHERE id = $1 RETURNING id, title, status, assignee_id`,
       [id],
     );
     if (!rows[0])
       return Response.json({ error: "Task not found" }, { status: 404 });
+    await auditLog({
+      request,
+      action: "internal_task.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "internal_task",
+      resourceId: id,
+      changes: { title: rows[0].title, status: rows[0].status, assignee_id: rows[0].assignee_id },
+    });
     return Response.json({ success: true });
   } catch (e) {
     console.error("DELETE /api/internal-tasks error", e);

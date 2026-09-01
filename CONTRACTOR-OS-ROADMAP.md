@@ -359,3 +359,7 @@ operations, and real external communications require explicit action-time approv
   as image `sha256:9dd0b8a3f46ada7e0a0bee9d5a405eaff7a0926409a24c43653782748a3f68c4`.
   The full gate records 104 files and 332 tests. Anonymous onboarding and team-availability reads
   and writes return `401`; both staging and unchanged production are healthy with zero restarts.
+- 2026-09-01: Hardened remaining operator records. Internal tasks now validate legal status and
+  priority values and audit create/update/delete with assignment context. Delayed-email queue
+  inspection now requires communications-management permission, protecting recipient and failure
+  details from crew roles; owner and cron worker runs emit central processed/sent/failed evidence.

@@ -67,6 +67,14 @@ describe("sensitive operation audit coverage", () => {
         "team_availability.delete",
       ],
     ],
+    [
+      "src/app/api/internal-tasks/route.js",
+      ["internal_task.create", "internal_task.update", "internal_task.delete"],
+    ],
+    [
+      "src/app/api/delayed-emails/route.js",
+      ["communications.worker_run"],
+    ],
   ])("retains required audit actions in %s", (path, actions) => {
     const source = read(path);
     expect(source).toContain("auditLog");
