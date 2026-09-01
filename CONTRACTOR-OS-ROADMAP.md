@@ -51,7 +51,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, owner-controlled immutable payment records, cleared-cash reconciliation, refunds, receipts, and corrected aggregation exist; hosted payment remains incomplete |
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
-| Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, billing, cleared collections, credits, gross profit, and margin reconcile per job; commitments, purchasing, and portfolio reporting remain |
+| Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains |
 | Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
 | Owner reporting | Partial | Core dashboard trends use real preceding-period data; broader KPI and margin reporting remain incomplete |
 | AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
@@ -95,7 +95,7 @@ progress, labor, materials, risks, approvals, and closeout state.
 
 ### P1 — Financial control
 
-- [ ] Add estimate budget, committed cost, labor/material actuals, change-order impact, invoice schedule, collected cash, and gross-margin reconciliation.
+- [x] Add estimate budget, committed cost, labor/material actuals, change-order impact, invoice schedule, collected cash, and gross-margin reconciliation.
 - [x] Enforce non-negative balances, overpayment handling, payment status rules, and immutable financial audit events.
 - [ ] Add expenses, tax treatment, aging, deposit/progress/final invoice schedules, refund/void handling, and CSV/accounting exports.
 - [ ] Add an accounting integration seam; select a vendor only after owner workflow and cost review.
@@ -205,3 +205,7 @@ operations, and real external communications require explicit action-time approv
   funds no longer reduce receivables, invoice balances cannot go negative, overpayments
   surface as customer credits, settled financial facts cannot be edited, cleared entries
   can only transition to refunded, and physical deletion was removed from the API and UI.
+- 2026-09-01: Added owner-controlled vendor purchase commitments with draft, approval,
+  ordered, received, and cancelled states. Approved and ordered costs now affect projected
+  job cost and margin; receiving is concurrency-safe and transactionally converts the
+  commitment into one receipt-linked actual expense so committed and actual cost do not overlap.

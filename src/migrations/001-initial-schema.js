@@ -1902,6 +1902,32 @@ async function ensureMissingTables() {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_expenses_project ON project_expenses(project_id, status, incurred_on DESC)`;
 
+  // Vendor commitments become actual expenses only when received.
+  await sql`
+    CREATE TABLE IF NOT EXISTS purchase_orders (
+      id SERIAL PRIMARY KEY,
+      purchase_order_number VARCHAR(64) UNIQUE NOT NULL,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      category VARCHAR(50) NOT NULL,
+      vendor VARCHAR(255) NOT NULL,
+      description VARCHAR(500) NOT NULL,
+      amount NUMERIC(12, 2) NOT NULL,
+      tax_amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+      total_amount NUMERIC(12, 2) NOT NULL,
+      expected_on DATE,
+      order_reference VARCHAR(255),
+      receipt_url TEXT,
+      status VARCHAR(30) NOT NULL DEFAULT 'draft',
+      expense_id INTEGER UNIQUE REFERENCES project_expenses(id) ON DELETE SET NULL,
+      created_by INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+      created_by_name VARCHAR(255),
+      approved_at TIMESTAMP, ordered_at TIMESTAMP, received_at TIMESTAMP, cancelled_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_purchase_orders_project_status ON purchase_orders(project_id, status, expected_on)`;
+
   // Change orders connect field discoveries to approved scope, schedule, and value.
   await sql`
     CREATE TABLE IF NOT EXISTS change_orders (
