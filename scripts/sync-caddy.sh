@@ -38,7 +38,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VPS="${VPS:-hostinger}"
+VPS="${VPS:-coolify}"
 SRC="$(pwd)/infra/caddy/Caddyfile"
 DST="/opt/caddy/Caddyfile"
 

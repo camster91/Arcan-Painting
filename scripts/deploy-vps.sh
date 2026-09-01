@@ -15,7 +15,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SHA="${1:-$(git rev-parse --short HEAD)}"
-VPS="${VPS:-hostinger}"
+VPS="${VPS:-coolify}"
 NAME="arcan-app"
 PROJECT_DIR="/opt/arcan-painting"
 BACKUP_DIR="/opt/arcan-backups"

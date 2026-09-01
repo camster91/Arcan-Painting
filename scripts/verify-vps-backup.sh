@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-VPS="${VPS:-hostinger}"
+VPS="${VPS:-coolify}"
 BACKUP_DIR="${BACKUP_DIR:-/opt/arcan-backups}"
 backup="${1:-}"
 if [ -z "$backup" ]; then
