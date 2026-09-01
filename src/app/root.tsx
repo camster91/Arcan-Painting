@@ -76,11 +76,12 @@ if (typeof window !== 'undefined' && !window.__arcanCsrfPatched) {
 // the explicit Google Fonts preload component was a build-time optimization
 // the SPA doesn't need at our scale.
 // import { LoadFonts } from 'virtual:load-fonts.jsx';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import type { Route } from './+types/root';
 import { buildStructuredData, getPublicSeo } from '../utils/publicSeo.js';
 import { initializeAnalytics, trackPageView } from '../utils/analytics.js';
 import { ThemeProvider } from '../utils/useTheme.jsx';
+import PWAInstaller from '../components/PWAInstaller.jsx';
 
 export const links = () => [];
 
@@ -218,6 +219,27 @@ export function Layout({ children }: { children: ReactNode }) {
     trackPageView(`${location.pathname}${location.search}`);
   }, [location.pathname, location.search]);
 
+  useEffect(() => {
+    if (!location.pathname.startsWith('/admin') || !('serviceWorker' in navigator)) return;
+    let registration: ServiceWorkerRegistration | null = null;
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'OUTBOX_QUEUED') toast.info('Offline: field update queued for retry.');
+      if (event.data?.type === 'OUTBOX_SYNCED') toast.success('Queued field update synchronized.');
+      if (event.data?.type === 'OUTBOX_FAILED') toast.error('A queued field update needs to be entered again.');
+    };
+    const syncNow = () => registration?.active?.postMessage({ type: 'SYNC_NOW' });
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    window.addEventListener('online', syncNow);
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((value) => {
+      registration = value;
+      if (navigator.onLine) syncNow();
+    }).catch((error) => console.error('Field offline support unavailable:', error));
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', onMessage);
+      window.removeEventListener('online', syncNow);
+    };
+  }, [location.pathname]);
+
   return (
     <html lang="en">
       <head>
@@ -232,6 +254,8 @@ export function Layout({ children }: { children: ReactNode }) {
         {/* SEO: Canonical tag */}
         <link rel="canonical" href={seo.canonical} />
         <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0f172a" />
         {/* SEO: LocalBusiness JSON-LD schema */}
         <script
           type="application/ld+json"
@@ -266,6 +290,7 @@ export function Layout({ children }: { children: ReactNode }) {
           {children}
         </ErrorBoundaryWrapper>
         <Toaster position="bottom-right" />
+        {location.pathname.startsWith('/admin') && <PWAInstaller />}
         <ScrollRestoration />
         <Scripts />
       </body>

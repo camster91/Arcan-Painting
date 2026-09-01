@@ -267,3 +267,8 @@ operations, and real external communications require explicit action-time approv
   image `sha256:784ea2c1a934c0cb891ec249b02ce7a9ee996cc2aaff2be9dd9e87b5be1d5082`.
   The gate records 88 passing test files and 262 tests plus typecheck and production build;
   staging is healthy and production remains unchanged.
+- 2026-09-01: Replaced the non-functional service-worker outbox placeholder with a bounded
+  IndexedDB queue for absolute project, progress, and closeout updates. It retries in order,
+  caps failures, reports queue outcomes, clears on login/logout, never caches authenticated
+  API responses or admin pages, and refuses to queue creates, approvals, payments, or deletes.
+  Offline creation workflows remain open rather than being represented as safe.

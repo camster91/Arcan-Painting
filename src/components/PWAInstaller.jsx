@@ -169,8 +169,8 @@ export default function PWAInstaller() {
             </h3>
             <p className="text-slate-600 text-sm mb-4">
               {isMobile
-                ? "Add to your home screen for quick access and offline use"
-                : "Install as an app for better performance and offline access"}
+                ? "Add to your home screen for quick access and safer field retries"
+                : "Install as an app for quick access and supported offline field updates"}
             </p>
 
             <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function PWAInstaller() {
             <div className="mt-4 text-xs text-slate-500">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-1 h-1 bg-green-500 rounded-full"></div>
-                <span>Works offline</span>
+                <span>Queues supported field updates offline</span>
               </div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-1 h-1 bg-green-500 rounded-full"></div>
