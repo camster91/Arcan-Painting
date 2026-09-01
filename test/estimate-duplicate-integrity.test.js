@@ -14,7 +14,7 @@ describe("estimate duplicate integrity", () => {
       "exclusions",
       "production_assumptions",
       "coating_product",
-      "color",
+      "color_name",
       "sheen",
     ]) {
       expect(source).toContain(field);

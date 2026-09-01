@@ -72,8 +72,8 @@ export async function POST(request, { params }) {
           await client`SELECT * FROM estimate_surfaces WHERE area_id = ${a.id}`;
         for (const s of surfaces) {
           await client`
-            INSERT INTO estimate_surfaces (area_id, surface_type, measurement, unit, method, coats, primer, production_rate, coverage_rate, door_sides, profile_type, opening_sqft, coating_product, color, sheen)
-            VALUES (${newAreaId}, ${s.surface_type}, ${s.measurement}, ${s.unit}, ${s.method}, ${s.coats}, ${s.primer}, ${s.production_rate}, ${s.coverage_rate}, ${s.door_sides}, ${s.profile_type}, ${s.opening_sqft}, ${s.coating_product}, ${s.color}, ${s.sheen})
+            INSERT INTO estimate_surfaces (area_id, surface_type, measurement, unit, method, coats, primer, production_rate, coverage_rate, door_sides, profile_type, opening_sqft, coating_product, color_name, sheen)
+            VALUES (${newAreaId}, ${s.surface_type}, ${s.measurement}, ${s.unit}, ${s.method}, ${s.coats}, ${s.primer}, ${s.production_rate}, ${s.coverage_rate}, ${s.door_sides}, ${s.profile_type}, ${s.opening_sqft}, ${s.coating_product}, ${s.color_name}, ${s.sheen})
           `;
         }
 
