@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/app/api/utils/auth";
 import { hasPermission } from "@/app/api/utils/permissions";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { agingBucket, toCsv } from "@/app/api/utils/accounting-export-domain";
+import { auditLog } from "@/app/api/utils/audit";
 
 const columns = [
   "record_type",
@@ -73,6 +74,18 @@ export async function GET(request) {
     ),
     columns,
   );
+  await auditLog({
+    request,
+    action: "finance.export",
+    userId: user.id,
+    username: user.username,
+    resource: "accounting_export",
+    changes: {
+      format: "csv",
+      record_count:
+        invoices.length + payments.length + expenses.length + purchases.length,
+    },
+  });
   const date = new Date().toISOString().slice(0, 10);
   return new Response(body, {
     headers: {

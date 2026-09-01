@@ -1,6 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
 
 // Get all team members (owners only) or get current painter's info
 export async function GET(request) {
@@ -81,6 +82,16 @@ export async function POST(request) {
       VALUES (${name}, ${email}, ${phone}, ${role}, ${hire_date}, ${hourly_rate}, ${specialties}, ${notes})
       RETURNING *
     `;
+
+    await auditLog({
+      request,
+      action: "team_member.create",
+      userId: user.id,
+      username: user.username,
+      resource: "team_member",
+      resourceId: teamMember[0].id,
+      changes: { role: teamMember[0].role, status: teamMember[0].status },
+    });
 
     return Response.json(teamMember[0]);
   } catch (error) {
@@ -189,6 +200,20 @@ export async function PUT(request) {
     if (teamMember.length === 0) {
       return Response.json({ error: "Team member not found" }, { status: 404 });
     }
+
+    await auditLog({
+      request,
+      action: "team_member.update",
+      userId: user.id,
+      username: user.username,
+      resource: "team_member",
+      resourceId: id,
+      changes: {
+        fields: Object.keys(body).filter((field) => field !== "id"),
+        role: teamMember[0].role,
+        status: teamMember[0].status,
+      },
+    });
 
     return Response.json(teamMember[0]);
   } catch (error) {

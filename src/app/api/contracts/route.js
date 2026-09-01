@@ -222,6 +222,22 @@ export async function POST(request) {
     const deposit_amount =
       (parseFloat(total_amount) * (deposit_percentage || 25)) / 100;
 
+    if (estimate_id) {
+      const [estimate] = await sql`
+        SELECT id, status FROM estimates WHERE id = ${estimate_id}
+      `;
+      if (!estimate)
+        return Response.json({ error: "Estimate not found" }, { status: 404 });
+      if (estimate.status !== "approved")
+        return Response.json(
+          {
+            error:
+              "Approve the estimate through the approval action before creating its contract",
+          },
+          { status: 409 },
+        );
+    }
+
     const [contract] = await sql`
       INSERT INTO contracts (
         contract_number, estimate_id, lead_id, project_id,
@@ -238,14 +254,15 @@ export async function POST(request) {
       ) RETURNING *
     `;
 
-    // Update estimate status if linked
-    if (estimate_id) {
-      await sql`
-        UPDATE estimates 
-        SET status = 'approved', updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${estimate_id}
-      `;
-    }
+    await auditLog({
+      request,
+      action: "contract.create",
+      userId: user.id,
+      username: user.username,
+      resource: "contract",
+      resourceId: contract.id,
+      changes: { estimate_id, lead_id, project_id, status: "draft" },
+    });
 
     return Response.json(contract, { status: 201 });
   } catch (error) {
@@ -283,6 +300,32 @@ export async function PUT(request) {
       );
     }
 
+    const [existing] =
+      await sql`SELECT id, status FROM contracts WHERE id = ${id}`;
+    if (!existing)
+      return Response.json({ error: "Contract not found" }, { status: 404 });
+    if (["signed", "completed"].includes(existing.status))
+      return Response.json(
+        { error: "Signed or completed contracts are read-only" },
+        { status: 409 },
+      );
+    if (["signed", "completed"].includes(updates.status))
+      return Response.json(
+        {
+          error:
+            "Customer signatures must be recorded through the consent-backed portal",
+        },
+        { status: 409 },
+      );
+    if (
+      updates.status !== undefined &&
+      !["draft", "sent", "cancelled"].includes(updates.status)
+    )
+      return Response.json(
+        { error: "Contract status is invalid" },
+        { status: 400 },
+      );
+
     // Build dynamic update query
     const updateFields = [];
     const values = [];
@@ -304,12 +347,7 @@ export async function PUT(request) {
       "estimated_duration_days",
       "status",
       "notes",
-      "client_signed_at",
-      "client_signature_data",
-      "contractor_signed_at",
-      "contractor_signature_data",
       "contract_pdf_url",
-      "signed_contract_pdf_url",
       "sent_at",
       "viewed_at",
     ];
@@ -363,6 +401,16 @@ export async function PUT(request) {
       return Response.json({ error: "Contract not found" }, { status: 404 });
     }
 
+    await auditLog({
+      request,
+      action: "contract.update",
+      userId: user.id,
+      username: user.username,
+      resource: "contract",
+      resourceId: id,
+      changes: { fields: Object.keys(updates) },
+    });
+
     return Response.json(result[0]);
   } catch (error) {
     console.error("Error updating contract:", error);
@@ -401,7 +449,7 @@ export async function DELETE(request) {
     }
 
     // Don't allow deletion of signed contracts
-    if (existingContract[0].status === "signed") {
+    if (["signed", "completed"].includes(existingContract[0].status)) {
       return Response.json(
         {
           error: "Cannot delete signed contracts",
@@ -413,14 +461,15 @@ export async function DELETE(request) {
     // Delete the contract
     await sql`DELETE FROM contracts WHERE id = ${parseInt(id)}`;
 
-    // If contract was linked to an estimate, reset estimate status
-    if (existingContract[0].estimate_id) {
-      await sql`
-        UPDATE estimates 
-        SET status = 'sent', updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${existingContract[0].estimate_id}
-      `;
-    }
+    await auditLog({
+      request,
+      action: "contract.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "contract",
+      resourceId: id,
+      changes: { status: existingContract[0].status },
+    });
 
     return Response.json({ success: true });
   } catch (error) {

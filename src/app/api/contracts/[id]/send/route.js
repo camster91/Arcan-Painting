@@ -1,6 +1,9 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
+import { customerDocumentSendError } from "@/app/api/utils/customer-document-domain";
 
 async function getAppSettings() {
   try {
@@ -25,6 +28,9 @@ export async function POST(request, { params }) {
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!hasPermission(user, "contracts.write")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const id = parseInt(params.id, 10);
     if (!id)
@@ -43,6 +49,10 @@ export async function POST(request, { params }) {
     }
 
     const c = rows[0];
+    const stateError = customerDocumentSendError("contract", c.status);
+    if (stateError) {
+      return Response.json({ error: stateError }, { status: 409 });
+    }
     if (!c.client_email) {
       return Response.json({ error: "Client has no email" }, { status: 400 });
     }
@@ -102,7 +112,24 @@ export async function POST(request, { params }) {
       text: `Contract ${vars.contract_number} for ${vars.title}. Total $${vars.total_amount}. View: ${vars.pdf_url}`,
     });
 
-    await sql`UPDATE contracts SET status = 'sent', sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
+    const updated =
+      await sql`UPDATE contracts SET status = 'sent', sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ${id} AND status IN ('draft', 'sent') RETURNING id`;
+    if (!updated.length) {
+      return Response.json(
+        { error: "Contract state changed before delivery completed" },
+        { status: 409 },
+      );
+    }
+
+    await auditLog({
+      request,
+      action: "contract.send",
+      userId: user.id,
+      username: user.username || user.email,
+      resource: "contract",
+      resourceId: id,
+      changes: { status: "sent" },
+    });
 
     return Response.json({ success: true });
   } catch (err) {

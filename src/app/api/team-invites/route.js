@@ -3,8 +3,15 @@ import { sendEmail } from "@/app/api/utils/send-email";
 import { generateSecureToken, getCurrentUser } from "@/app/api/utils/auth";
 import { requireCsrf } from "@/app/api/utils/csrf";
 import { ensureSchema } from "@/migrations/001-initial-schema";
+import { auditLog } from "@/app/api/utils/audit";
 
-const INVITABLE_ROLES = new Set(["crew", "office", "estimator", "project_manager", "finance_readonly"]);
+const INVITABLE_ROLES = new Set([
+  "crew",
+  "office",
+  "estimator",
+  "project_manager",
+  "finance_readonly",
+]);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function requireOwner(request) {
@@ -40,15 +47,24 @@ export async function POST(request) {
     const email = (body.email || "").trim().toLowerCase();
     const role = (body.role || "crew").trim();
     if (!EMAIL_PATTERN.test(email)) {
-      return Response.json({ error: "A valid email is required" }, { status: 400 });
+      return Response.json(
+        { error: "A valid email is required" },
+        { status: 400 },
+      );
     }
     if (!INVITABLE_ROLES.has(role)) {
-      return Response.json({ error: "Invalid invitation role" }, { status: 400 });
+      return Response.json(
+        { error: "Invalid invitation role" },
+        { status: 400 },
+      );
     }
 
     const computedBaseUrl = buildBaseUrl(request);
     if (!computedBaseUrl) {
-      return Response.json({ error: "The public app URL is not configured" }, { status: 503 });
+      return Response.json(
+        { error: "The public app URL is not configured" },
+        { status: 503 },
+      );
     }
 
     const token = generateSecureToken();
@@ -114,11 +130,32 @@ export async function POST(request) {
       await sendEmail({ to: email, subject, text, html });
     } catch (err) {
       console.error("Invite email error:", err);
+      await auditLog({
+        request,
+        action: "team_invite.create",
+        userId: owner.id,
+        username: owner.username,
+        resource: "team_invite",
+        changes: { role, delivery: "failed" },
+        status: "failure",
+      });
       return Response.json(
-        { error: "Invitation was created, but email delivery failed. Check the email configuration before sending another invite." },
+        {
+          error:
+            "Invitation was created, but email delivery failed. Check the email configuration before sending another invite.",
+        },
         { status: 502 },
       );
     }
+
+    await auditLog({
+      request,
+      action: "team_invite.create",
+      userId: owner.id,
+      username: owner.username,
+      resource: "team_invite",
+      changes: { role, delivery: "accepted_by_provider" },
+    });
 
     return Response.json({ success: true });
   } catch (error) {

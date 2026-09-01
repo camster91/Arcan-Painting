@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
 
 export async function GET(request) {
   try {
@@ -108,6 +109,19 @@ export async function POST(request) {
       RETURNING *
     `;
 
+    await auditLog({
+      request,
+      action: "contract_template.create",
+      userId: user.id,
+      username: user.username,
+      resource: "contract_template",
+      resourceId: template[0].id,
+      changes: {
+        is_active: template[0].is_active,
+        is_default: template[0].is_default,
+      },
+    });
+
     return Response.json(template[0]);
   } catch (error) {
     console.error("Error creating contract template:", error);
@@ -135,12 +149,6 @@ export async function PUT(request) {
       );
     }
 
-    // If setting as default, unset other defaults first
-    if (updates.is_default) {
-      await sql`UPDATE contract_templates SET is_default = false WHERE is_default = true AND id != ${parseInt(id)}`;
-    }
-
-    // Build dynamic update with tagged template syntax
     const allowedFields = [
       "name",
       "description",
@@ -152,105 +160,63 @@ export async function PUT(request) {
       "is_active",
       "is_default",
     ];
-
-    // Simple approach - handle each field individually
-    let result;
     const templateId = parseInt(id);
+    if (!Number.isInteger(templateId))
+      return Response.json(
+        { error: "Template ID is invalid" },
+        { status: 400 },
+      );
+    if (
+      updates.default_deposit_percentage !== undefined &&
+      (!Number.isFinite(Number(updates.default_deposit_percentage)) ||
+        Number(updates.default_deposit_percentage) < 0 ||
+        Number(updates.default_deposit_percentage) > 100)
+    )
+      return Response.json(
+        { error: "Default deposit percentage must be between 0 and 100" },
+        { status: 400 },
+      );
+    const changedFields = Object.keys(updates).filter((field) =>
+      allowedFields.includes(field),
+    );
+    if (!changedFields.length)
+      return Response.json(
+        { error: "No valid fields to update" },
+        { status: 400 },
+      );
 
-    if (updates.name !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET name = ${updates.name}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.description !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET description = ${updates.description}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.is_active !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET is_active = ${updates.is_active}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.is_default !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET is_default = ${updates.is_default}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.default_deposit_percentage !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET default_deposit_percentage = ${updates.default_deposit_percentage}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.scope_template !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET scope_template = ${updates.scope_template}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.terms_template !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET terms_template = ${updates.terms_template}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.payment_terms_template !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET payment_terms_template = ${updates.payment_terms_template}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    if (updates.warranty_template !== undefined) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET warranty_template = ${updates.warranty_template}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
-
-    // If no specific field updates, just update the timestamp
-    if (!result) {
-      result = await sql`
-        UPDATE contract_templates 
-        SET updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${templateId}
-        RETURNING *
-      `;
-    }
+    const result = await sql.transaction(async (txn) => {
+      if (updates.is_default) {
+        await txn`UPDATE contract_templates SET is_default = false WHERE is_default = true AND id != ${templateId}`;
+      }
+      const fields = changedFields.map(
+        (field, index) => `${field} = $${index + 1}`,
+      );
+      const values = changedFields.map((field) => updates[field]);
+      values.push(templateId);
+      return txn(
+        `UPDATE contract_templates SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length} RETURNING *`,
+        values,
+      );
+    });
 
     if (result.length === 0) {
       return Response.json({ error: "Template not found" }, { status: 404 });
     }
+
+    await auditLog({
+      request,
+      action: "contract_template.update",
+      userId: user.id,
+      username: user.username,
+      resource: "contract_template",
+      resourceId: templateId,
+      changes: {
+        fields: Object.keys(updates).filter((field) =>
+          allowedFields.includes(field),
+        ),
+      },
+    });
 
     return Response.json(result[0]);
   } catch (error) {
@@ -301,6 +267,16 @@ export async function DELETE(request) {
 
     // Delete the template
     await sql`DELETE FROM contract_templates WHERE id = ${parseInt(id)}`;
+
+    await auditLog({
+      request,
+      action: "contract_template.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "contract_template",
+      resourceId: id,
+      changes: { is_default: false },
+    });
 
     return Response.json({ success: true });
   } catch (error) {

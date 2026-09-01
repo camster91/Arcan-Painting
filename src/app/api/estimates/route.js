@@ -1,13 +1,15 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
 
 // GET /api/estimates - Get all estimates with optional filtering (role-aware)
 export async function GET(request) {
   try {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-    if (!hasPermission(user, "estimates.read")) return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (!hasPermission(user, "estimates.read"))
+      return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -157,6 +159,16 @@ export async function POST(request) {
 
     const newEstimate = result[0];
 
+    await auditLog({
+      request,
+      action: "estimate.create",
+      userId: user.id,
+      username: user.username,
+      resource: "estimate",
+      resourceId: newEstimate.id,
+      changes: { lead_id, status: "draft" },
+    });
+
     return Response.json(
       {
         success: true,
@@ -208,11 +220,40 @@ export async function PUT(request) {
 
     // Verify the estimate exists and ownership if non-owner
     const existingEstimate =
-      await sql`SELECT id, created_by FROM estimates WHERE id = ${id}`;
+      await sql`SELECT id, created_by, status FROM estimates WHERE id = ${id}`;
     if (!existingEstimate || existingEstimate.length === 0) {
       return Response.json(
         { success: false, error: "Estimate not found" },
         { status: 404 },
+      );
+    }
+    if (existingEstimate[0].status === "approved") {
+      return Response.json(
+        {
+          success: false,
+          error:
+            "Approved estimates are read-only; use a change order for sold scope",
+        },
+        { status: 409 },
+      );
+    }
+    if (status === "approved") {
+      return Response.json(
+        {
+          success: false,
+          error:
+            "Use the approval action so the lead and project are updated transactionally",
+        },
+        { status: 409 },
+      );
+    }
+    if (
+      status !== undefined &&
+      !["draft", "sent", "rejected", "expired", "cancelled"].includes(status)
+    ) {
+      return Response.json(
+        { success: false, error: "Estimate status is invalid" },
+        { status: 400 },
       );
     }
 
@@ -302,6 +343,19 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedEstimate = result[0];
 
+    await auditLog({
+      request,
+      action: "estimate.update",
+      userId: user.id,
+      username: user.username,
+      resource: "estimate",
+      resourceId: id,
+      changes: {
+        fields: Object.keys(body).filter((field) => field !== "id"),
+        status: updatedEstimate.status,
+      },
+    });
+
     return Response.json({
       success: true,
       message: "Estimate updated successfully",
@@ -353,6 +407,19 @@ export async function DELETE(request) {
 
     // Delete the estimate
     await sql`DELETE FROM estimates WHERE id = ${id}`;
+
+    await auditLog({
+      request,
+      action: "estimate.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "estimate",
+      resourceId: id,
+      changes: {
+        estimate_number: existingEstimate[0].estimate_number,
+        project_title: existingEstimate[0].project_title,
+      },
+    });
 
     return Response.json({
       success: true,

@@ -4,8 +4,6 @@ import { useState } from "react";
 export function ContractDetailModal({ contract, isOpen, onClose, onUpdated }) {
   // hooks must be called unconditionally
   const [sending, setSending] = useState(false);
-  const [signing, setSigning] = useState(false);
-  const [signedUrl, setSignedUrl] = useState("");
   const [error, setError] = useState(null);
 
   if (!isOpen || !contract) return null;
@@ -25,33 +23,6 @@ export function ContractDetailModal({ contract, isOpen, onClose, onUpdated }) {
       setError(e.message);
     } finally {
       setSending(false);
-    }
-  };
-
-  const handleMarkSigned = async () => {
-    try {
-      setSigning(true);
-      setError(null);
-      const body = {
-        id: contract.id,
-        status: "signed",
-        client_signed_at: new Date().toISOString(),
-      };
-      if (signedUrl.trim()) body.signed_contract_pdf_url = signedUrl.trim();
-      const res = await fetch(`/api/contracts`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j.error || "Failed to mark signed");
-      onUpdated?.();
-      onClose();
-    } catch (e) {
-      console.error(e);
-      setError(e.message);
-    } finally {
-      setSigning(false);
     }
   };
 
@@ -148,19 +119,12 @@ export function ContractDetailModal({ contract, isOpen, onClose, onUpdated }) {
             {contract.status !== "signed" && (
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                 <h3 className="font-semibold text-slate-900 mb-2">Finalize</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                  <div className="md:col-span-2">
-                    <label className="text-sm font-medium text-slate-700">
-                      Signed PDF URL (optional)
-                    </label>
-                    <input
-                      value={signedUrl}
-                      onChange={(e) => setSignedUrl(e.target.value)}
-                      placeholder="https://.../signed.pdf"
-                      className="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
-                  <div className="flex gap-2">
+                <p className="mb-3 text-sm text-slate-600">
+                  Send the contract for customer review. Signature status is
+                  recorded only through the consent-backed customer portal.
+                </p>
+                <div className="flex gap-2">
+                  {["draft", "sent"].includes(contract.status) && (
                     <button
                       onClick={handleSend}
                       disabled={sending}
@@ -168,14 +132,7 @@ export function ContractDetailModal({ contract, isOpen, onClose, onUpdated }) {
                     >
                       {sending ? "Sending..." : "Send"}
                     </button>
-                    <button
-                      onClick={handleMarkSigned}
-                      disabled={signing}
-                      className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white rounded-lg text-sm"
-                    >
-                      {signing ? "Saving..." : "Mark Signed"}
-                    </button>
-                  </div>
+                  )}
                 </div>
               </div>
             )}

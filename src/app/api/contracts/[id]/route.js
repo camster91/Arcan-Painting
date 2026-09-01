@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
 
 // GET /api/contracts/[id] - Get contract details
 export async function GET(request, { params }) {
@@ -75,6 +76,24 @@ export async function PUT(request, { params }) {
         { status: 400 },
       );
     }
+    if (["signed", "completed"].includes(body.status)) {
+      return Response.json(
+        {
+          error:
+            "Customer signatures must be recorded through the consent-backed portal",
+        },
+        { status: 409 },
+      );
+    }
+    if (
+      body.status !== undefined &&
+      !["draft", "sent", "cancelled"].includes(body.status)
+    ) {
+      return Response.json(
+        { error: "Contract status is invalid" },
+        { status: 400 },
+      );
+    }
 
     // Build dynamic update query
     const updateFields = [];
@@ -145,6 +164,16 @@ export async function PUT(request, { params }) {
 
     const [updatedContract] = await sql(query, values);
 
+    await auditLog({
+      request,
+      action: "contract.update",
+      userId: user.id,
+      username: user.username,
+      resource: "contract",
+      resourceId: id,
+      changes: { fields: Object.keys(body) },
+    });
+
     return Response.json(updatedContract);
   } catch (error) {
     console.error("Error updating contract:", error);
@@ -185,6 +214,16 @@ export async function DELETE(request, { params }) {
     }
 
     await sql`DELETE FROM contracts WHERE id = ${id}`;
+
+    await auditLog({
+      request,
+      action: "contract.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "contract",
+      resourceId: id,
+      changes: { status: contract.status },
+    });
 
     return Response.json({ message: "Contract deleted successfully" });
   } catch (error) {

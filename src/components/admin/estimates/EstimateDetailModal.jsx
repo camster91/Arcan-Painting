@@ -176,7 +176,6 @@ export function EstimateDetailModal({
                       >
                         <option value="draft">Draft</option>
                         <option value="sent">Sent</option>
-                        <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                         <option value="expired">Expired</option>
                       </select>
@@ -423,19 +422,23 @@ export function EstimateDetailModal({
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Edit Estimate
-                  </button>
-                  <button
-                    onClick={handleSend}
-                    disabled={sending}
-                    className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    {sending ? "Sending..." : "Send to Customer"}
-                  </button>
+                  {estimate.status !== "approved" && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Edit Estimate
+                    </button>
+                  )}
+                  {["draft", "sent"].includes(estimate.status) && (
+                    <button
+                      onClick={handleSend}
+                      disabled={sending}
+                      className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      {sending ? "Sending..." : "Send to Customer"}
+                    </button>
+                  )}
                   <button
                     onClick={handleDownload}
                     className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"

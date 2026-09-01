@@ -310,3 +310,11 @@ operations, and real external communications require explicit action-time approv
   The full suite records 92 files and 281 tests. The portfolio SQL executed successfully against
   the real staging schema, health and the anonymous authorization boundary passed, and production
   remained healthy on `arcan-painting:175d567`.
+- 2026-09-01: Closed customer-document lifecycle and audit bypasses found during the completion
+  audit. Estimate, contract, and invoice sends now require the matching role permission, reject
+  terminal document states, use conditional state updates, and write central audit evidence.
+  Generic estimate updates cannot approve or mutate sold estimates. Contract creation can no
+  longer approve an estimate, and the admin UI/API can no longer fabricate a customer signature;
+  consent-backed portal signing is authoritative. Contract templates now update all legal fields
+  atomically, validate deposit percentages, and audit create/update/delete. Settings, team-member
+  permissions, invitations, accounting exports, and marketing exports also gained audit coverage.

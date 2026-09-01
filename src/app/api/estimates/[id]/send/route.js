@@ -2,6 +2,9 @@ import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
+import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
+import { customerDocumentSendError } from "@/app/api/utils/customer-document-domain";
 
 async function getAppSettings() {
   try {
@@ -24,6 +27,8 @@ export async function POST(request, { params }) {
   try {
     const user = await getCurrentUser(request);
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!hasPermission(user, "estimates.write"))
+      return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const id = parseInt(params.id, 10);
     if (!id)
@@ -40,6 +45,9 @@ export async function POST(request, { params }) {
     if (!rows.length)
       return Response.json({ error: "Not found" }, { status: 404 });
     const e = rows[0];
+    const stateError = customerDocumentSendError("estimate", e.status);
+    if (stateError)
+      return Response.json({ error: stateError }, { status: 409 });
     if (!e.lead_email) {
       return Response.json({ error: "Lead has no email" }, { status: 400 });
     }
@@ -100,7 +108,13 @@ export async function POST(request, { params }) {
     });
 
     // update status → sent
-    await sql`UPDATE estimates SET status = 'sent', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
+    const updated =
+      await sql`UPDATE estimates SET status = 'sent', updated_at = CURRENT_TIMESTAMP WHERE id = ${id} AND status IN ('draft', 'sent') RETURNING id`;
+    if (!updated.length)
+      return Response.json(
+        { error: "Estimate state changed before delivery completed" },
+        { status: 409 },
+      );
 
     const automation = await queueEmailWorkflows({
       event: "estimate_sent",
@@ -108,6 +122,16 @@ export async function POST(request, { params }) {
       relatedType: "estimate",
       relatedId: id,
       data: vars,
+    });
+
+    await auditLog({
+      request,
+      action: "estimate.send",
+      userId: user.id,
+      username: user.username,
+      resource: "estimate",
+      resourceId: id,
+      changes: { status: "sent", automation_queued: automation?.queued || 0 },
     });
 
     return Response.json({ success: true, automation });

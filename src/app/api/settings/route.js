@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
 
 async function ensureSettingsTable() {
   await sql`
@@ -136,6 +137,15 @@ export async function PUT(request) {
 
       const q = `UPDATE app_settings SET ${fields.join(", ")} WHERE id = $${i} RETURNING *`;
       const updated = await sql(q, values);
+      await auditLog({
+        request,
+        action: "settings.update",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: id,
+        changes: { fields: Object.keys(body || {}) },
+      });
       return Response.json({ success: true, settings: updated[0] });
     } else {
       const inserted = await sql`
@@ -157,6 +167,15 @@ export async function PUT(request) {
           ${contract_email_template || null}
         ) RETURNING *
       `;
+      await auditLog({
+        request,
+        action: "settings.create",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: inserted[0].id,
+        changes: { fields: Object.keys(body || {}) },
+      });
       return Response.json({ success: true, settings: inserted[0] });
     }
   } catch (e) {

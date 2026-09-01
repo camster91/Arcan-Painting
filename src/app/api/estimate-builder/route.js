@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
 
 // (estimate_settings / estimate_areas / estimate_surfaces /
 // estimate_prep_items / estimate_materials are now created by
@@ -301,6 +302,16 @@ export async function POST(request) {
         `;
       }
     }
+
+    await auditLog({
+      request,
+      action: "estimate.create",
+      userId: user.id,
+      username: user.username,
+      resource: "estimate",
+      resourceId: estimateId,
+      changes: { lead_id, status: "draft", area_count: areas.length },
+    });
 
     return Response.json({
       success: true,

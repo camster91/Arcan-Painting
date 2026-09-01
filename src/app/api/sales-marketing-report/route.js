@@ -4,6 +4,7 @@ import { hasPermission } from "@/app/api/utils/permissions";
 import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { summarizeFunnel } from "@/app/api/utils/funnel-domain";
 import { toCsv } from "@/app/api/utils/accounting-export-domain";
+import { auditLog } from "@/app/api/utils/audit";
 
 const allowedDays = new Set([7, 30, 90, 365]);
 
@@ -87,6 +88,14 @@ export async function GET(request) {
       "average_ticket",
       "average_sales_cycle_days",
     ];
+    await auditLog({
+      request,
+      action: "marketing.export",
+      userId: user.id,
+      username: user.username,
+      resource: "sales_marketing_report",
+      changes: { format: "csv", days, record_count: breakdown.length },
+    });
     return new Response(toCsv(breakdown, columns), {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
