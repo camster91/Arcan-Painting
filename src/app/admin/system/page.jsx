@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Settings,
-  Server,
   Database,
   Cpu,
   Mail,
@@ -14,16 +13,12 @@ import {
   Clock,
   ArrowLeft,
   ShieldCheck,
-  Zap,
-  Terminal,
-  ChevronRight,
   Loader2,
 } from "lucide-react";
 
 export default function SystemHealthPage() {
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [restarting, setRestarting] = useState(false);
 
   const fetchHealth = async () => {
     setLoading(true);
@@ -41,22 +36,6 @@ export default function SystemHealthPage() {
   useEffect(() => {
     fetchHealth();
   }, []);
-
-  const handleRestart = async () => {
-    if (!confirm("Are you sure you want to trigger a service restart?")) return;
-    setRestarting(true);
-    try {
-      const res = await fetch("/api/admin/system", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "restart_services" }),
-      });
-      const data = await res.json();
-      alert(data.message || "Restart initiated");
-    } finally {
-      setRestarting(false);
-    }
-  };
 
   if (loading && !health) {
     return (
@@ -107,13 +86,13 @@ export default function SystemHealthPage() {
                 <StatusBadge status={health?.database?.status} />
               </div>
               <h3 className="text-lg font-bold text-gray-900">PostgreSQL DB</h3>
-              <p className="text-sm text-gray-500 mt-1">Neon Cloud Database</p>
+              <p className="text-sm text-gray-500 mt-1">Primary operational database</p>
               {health?.database?.message && (
                 <p className="text-xs text-red-600 mt-2 bg-red-50 p-2 rounded">{health.database.message}</p>
               )}
             </div>
             <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Latency: ~12ms</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Latency: {health?.database?.latency_ms ?? "—"}ms</span>
             </div>
           </div>
 
@@ -126,17 +105,14 @@ export default function SystemHealthPage() {
                 </div>
                 <StatusBadge status={health?.ollama?.status} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Ollama AI</h3>
-              <p className="text-sm text-gray-500 mt-1">Running on Coolify VPS</p>
+              <h3 className="text-lg font-bold text-gray-900">OpenClaw AI</h3>
+              <p className="text-sm text-gray-500 mt-1">Assistant integration</p>
               <p className="text-[10px] text-gray-400 mt-2 truncate font-mono">{health?.ollama?.url}</p>
             </div>
             <div className="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-between">
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Models: {health?.ollama?.models?.length || 0}
+                Provider: {health?.ollama?.provider || "OpenClaw"}
               </span>
-              {health?.ollama?.models?.length > 0 && (
-                 <span className="text-[10px] font-bold text-purple-600">{health.ollama.models[0].name}</span>
-              )}
             </div>
           </div>
 
@@ -151,10 +127,10 @@ export default function SystemHealthPage() {
               </div>
               <h3 className="text-lg font-bold text-gray-900">Maton → Gmail</h3>
               <p className="text-sm text-gray-500 mt-1">Outbound Email & Sequences</p>
-              <p className="text-[10px] text-gray-400 mt-2 font-mono">{health?.env?.GOOGLE_EMAIL || "info@arcanpainting.ca"}</p>
+              <p className="text-[10px] text-gray-400 mt-2 font-mono">Automations: {health?.email?.automations_enabled ? "enabled" : "disabled"}</p>
             </div>
             <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Daily Limit: 500</span>
+               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pending: {health?.queue?.pending || 0} · Failed: {health?.queue?.failed || 0}</span>
             </div>
           </div>
         </div>
@@ -187,28 +163,11 @@ export default function SystemHealthPage() {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="bg-slate-900 rounded-2xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-          <div className="flex items-center gap-5 text-center md:text-left">
-            <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center flex-shrink-0 border border-slate-700">
-              <Zap className="w-8 h-8 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">Maintenance Actions</h3>
-              <p className="text-slate-400 text-sm mt-1 max-w-md">
-                Trigger a manual refresh of all container services. This will temporarily disrupt 
-                active sessions but clears stuck background processes.
-              </p>
-            </div>
-          </div>
-          <button 
-            onClick={handleRestart}
-            disabled={restarting}
-            className="px-8 py-4 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50 active:scale-95 whitespace-nowrap shadow-lg shadow-white/5"
-          >
-            {restarting ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
-            Full System Restart
-          </button>
+        <div className="bg-slate-900 rounded-2xl p-8 text-white shadow-xl">
+          <h3 className="text-xl font-bold">Recovery is runbook-controlled</h3>
+          <p className="text-slate-400 text-sm mt-2 max-w-3xl">
+            Service restarts, rollback, backup verification, and database restoration run through the authenticated Ashbi workflow so each action has an exact artifact and operator record.
+          </p>
         </div>
       </div>
     </div>
@@ -216,7 +175,7 @@ export default function SystemHealthPage() {
 }
 
 function StatusBadge({ status }) {
-  if (status === "healthy") {
+  if (status === "healthy" || status === "configured") {
     return (
       <span className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100">
         <CheckCircle2 className="w-3.5 h-3.5" />
@@ -224,7 +183,7 @@ function StatusBadge({ status }) {
       </span>
     );
   }
-  if (status === "error" || status === "unreachable" || status === "auth_error") {
+  if (status === "error" || status === "unreachable" || status === "auth_error" || status === "missing") {
     return (
       <span className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold border border-red-100">
         <AlertTriangle className="w-3.5 h-3.5" />

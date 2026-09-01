@@ -117,7 +117,7 @@ follow-up action without unsupported claims or silent data gaps.
 ### P2 — Owner control plane and hardening
 
 - [x] Replace mock trends with period-over-period source data and documented KPI definitions.
-- [ ] Add role-based permissions for owner, office, estimator, project manager, crew, and read-only finance.
+- [x] Add role-based permissions for owner, office, estimator, project manager, crew, and read-only finance.
 - [ ] Complete audit coverage for sensitive, financial, permission, export, and customer-facing actions.
 - [ ] Verify privacy, retention, export, deletion, secret handling, dependency risk, abuse controls, accessibility, responsive behavior, performance, backups, and restores.
 - [ ] Publish operator, incident, integration, staging, rollback, and release runbooks.

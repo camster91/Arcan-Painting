@@ -18,7 +18,9 @@ SHA="${1:-$(git rev-parse --short HEAD)}"
 VPS="${VPS:-hostinger}"
 NAME="arcan-app"
 PROJECT_DIR="/opt/arcan-painting"
+BACKUP_DIR="/opt/arcan-backups"
 TMP_TARBALL="/tmp/${NAME}.tar.gz"
+RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)-$(git rev-parse --short "${SHA}")"
 
 echo "[deploy] verifying local build (commit ${SHA})…"
 if ! git diff --quiet HEAD -- .; then
@@ -37,8 +39,27 @@ echo "[deploy] bundling source (no node_modules / no dist)…"
 git archive --format=tar "${SHA}" | gzip -c > "${TMP_TARBALL}"
 
 echo "[deploy] uploading to ${VPS}:${PROJECT_DIR}/…"
-ssh "${VPS}" "mkdir -p ${PROJECT_DIR}"
+ssh "${VPS}" "mkdir -p ${PROJECT_DIR} ${BACKUP_DIR}"
 cat "${TMP_TARBALL}" | ssh "${VPS}" "cat > ${PROJECT_DIR}/${NAME}.tar.gz"
+
+echo "[deploy] capturing database, source, and image rollback artifacts…"
+ssh "${VPS}" "bash -s" -- "${PROJECT_DIR}" "${BACKUP_DIR}" "${RELEASE_ID}" <<'REMOTE_BACKUP'
+set -euo pipefail
+project_dir="$1"; backup_dir="$2"; release_id="$3"
+cd "$project_dir"
+set -a; [ -f .env ] && . ./.env; set +a
+db_user="${POSTGRES_USER:-arcan}"; db_name="${POSTGRES_DB:-arcan_painting}"
+docker compose exec -T db pg_dump -U "$db_user" -d "$db_name" -Fc > "$backup_dir/${release_id}.dump"
+test -s "$backup_dir/${release_id}.dump"
+docker compose exec -T db pg_restore -l < "$backup_dir/${release_id}.dump" >/dev/null
+tar --exclude='./.env' --exclude='./node_modules' --exclude='./build' --exclude='./arcan-app.tar.gz' -czf "$backup_dir/${release_id}-source.tar.gz" .
+previous_image_id="$(docker inspect arcan-app --format '{{.Image}}' 2>/dev/null || true)"
+previous_image_name="$(docker inspect arcan-app --format '{{.Config.Image}}' 2>/dev/null || true)"
+if [ -n "$previous_image_id" ] && [ -n "$previous_image_name" ]; then
+  docker image tag "$previous_image_id" "arcan-painting-rollback:${release_id}"
+fi
+printf '%s\n' "release_id=$release_id" "previous_image_name=$previous_image_name" > "$backup_dir/${release_id}.manifest"
+REMOTE_BACKUP
 
 echo "[deploy] extracting on host…"
 ssh "${VPS}" "
@@ -77,7 +98,8 @@ for i in {1..30}; do
 done
 
 if [ "$healthy" != true ]; then
-  echo "[deploy] container did not become healthy after 30 seconds — aborting before proxy sync" >&2
+  echo "[deploy] container unhealthy — restoring previous image automatically" >&2
+  ssh "${VPS}" "cd ${PROJECT_DIR} && previous_image_name=\$(sed -n 's/^previous_image_name=//p' ${BACKUP_DIR}/${RELEASE_ID}.manifest) && if [ -n \"\$previous_image_name\" ]; then docker image tag arcan-painting-rollback:${RELEASE_ID} \"\$previous_image_name\" && docker compose up -d --force-recreate app; fi"
   exit 1
 fi
 
@@ -86,4 +108,4 @@ bash "$(dirname "$0")/sync-caddy.sh"
 
 echo "[deploy] live check…"
 curl -sI -m 10 https://arcanpainting.ca/ 2>&1 | head -3
-echo "[deploy] done — verify at https://arcanpainting.ca/"
+echo "[deploy] done — release ${RELEASE_ID}; verify at https://arcanpainting.ca/"
