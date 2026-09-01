@@ -290,3 +290,8 @@ operations, and real external communications require explicit action-time approv
   area notes, exclusions, and production assumptions; the crew API returns that operational
   scope without pricing or cost data. Local gates pass with 90 test files and 269 tests,
   typecheck, and the production build. Authenticated rendered staging proof remains open.
+- 2026-09-01: Built and deployed exact sold-scope candidate `65e69c3` to the isolated Ashbi
+  staging stack as `arcan-painting-staging:65e69c3` (image ID
+  `sha256:d3564c6559bdc6b705afd035993f4ef89d1626d3ca83fb7308aec11dc65792cc`).
+  The additive schema migration, health, public PWA assets, anonymous authorization boundary,
+  and admin sign-in redirect passed. Production remained healthy on `arcan-painting:175d567`.

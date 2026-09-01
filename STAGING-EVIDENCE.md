@@ -4,14 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `cd0a963`
+Candidate revision: `65e69c3`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:cd0a963`
-- Image ID: `sha256:cd973d974ed14dc096acb2d53100d7bb50c22fb683fff8facc5449c69ae56756`
-- OCI revision label: `cd0a963`
+- Ashbi image: `arcan-painting-staging:65e69c3`
+- Image ID: `sha256:d3564c6559bdc6b705afd035993f4ef89d1626d3ca83fb7308aec11dc65792cc`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -20,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 89 files, 266 tests passed.
+- `npm test -- --run`: 90 files, 269 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -32,19 +31,23 @@ Production release: not performed
 
 The following were checked against the isolated origin through a private SSH tunnel:
 
-| Route | Result |
-| --- | --- |
-| `/`, `/privacy`, `/contact` | `200 text/html` |
-| `/interior-painting`, `/exterior-painting`, `/commercial-painting` | `200 text/html` |
-| `/wallpaper-services`, `/specialty-finishes` | `200 text/html` |
-| `/robots.txt`, `/sitemap.xml` | `200` |
-| `/api/health` | `200 application/json` |
-| unknown API route | `404 application/json` |
-| `/admin` | `302` to sign-in |
-| `/api/admin/privacy` | `401 application/json` |
-| `/sw.js` | `200 text/javascript` |
-| `/manifest.json` | `200 application/json` |
-| `/icons/icon-192x192.png`, `/icons/icon-512x512.png` | `200 image/png` |
+| Route                                                              | Result                 |
+| ------------------------------------------------------------------ | ---------------------- |
+| `/`, `/privacy`, `/contact`                                        | `200 text/html`        |
+| `/interior-painting`, `/exterior-painting`, `/commercial-painting` | `200 text/html`        |
+| `/wallpaper-services`, `/specialty-finishes`                       | `200 text/html`        |
+| `/robots.txt`, `/sitemap.xml`                                      | `200`                  |
+| `/api/health`                                                      | `200 application/json` |
+| unknown API route                                                  | `404 application/json` |
+| `/admin`                                                           | `302` to sign-in       |
+| `/api/admin/privacy`                                               | `401 application/json` |
+| `/sw.js`                                                           | `200 text/javascript`  |
+| `/manifest.json`                                                   | `200 application/json` |
+| `/icons/icon-192x192.png`, `/icons/icon-512x512.png`               | `200 image/png`        |
+
+The `65e69c3` startup migration added the five sold-scope fields to the isolated staging
+database: area exclusions and production assumptions, plus surface coating product, color,
+and sheen. The anonymous field API returns `401`, and `/admin/today` redirects to sign-in.
 
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
@@ -80,5 +83,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `cd0a963` (or a
+Production deployment requires explicit action-time approval naming revision `65e69c3` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
