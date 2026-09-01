@@ -283,7 +283,7 @@ export default function EmailHealthPage() {
                   href="/admin/settings"
                   className="text-red-800 underline text-sm font-medium hover:text-red-900"
                 >
-                  Check Settings → Secrets to configure MATON_API_KEY
+                  Check Settings → Secrets to configure an approved email provider
                 </a>
               </div>
             </div>

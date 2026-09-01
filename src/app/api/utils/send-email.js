@@ -1,24 +1,5 @@
 import sql from "./sql.js";
-
-/**
- * Build an RFC 2822 email message and base64url-encode it for the Gmail API.
- */
-function buildRawMessage({ from, to, subject, html, text }) {
-  const headers = [
-    `From: ${from}`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    `MIME-Version: 1.0`,
-    `Content-Type: text/html; charset="UTF-8"`,
-  ];
-  const body = html || text || "";
-  const raw = [...headers, "", body].join("\r\n");
-  return Buffer.from(raw)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
+import { deliverEmail, getEmailProviderConfig } from "./email-delivery-provider.js";
 
 export async function sendEmail({
   to,
@@ -32,9 +13,9 @@ export async function sendEmail({
   userId,
   metadata = {},
 }) {
-  const matonKey = process.env.MATON_API_KEY;
+  const providerConfig = getEmailProviderConfig();
 
-  if (!matonKey) {
+  if (!providerConfig.configured) {
     // Log the failure to email_logs so it's visible in the admin UI even
     // when the throw short-circuits the rest of the function. Without this,
     // a missing key would produce zero log output.
@@ -46,7 +27,7 @@ export async function sendEmail({
         ) VALUES (
           ${Array.isArray(to) ? to[0] : (to || "")}, ${from || process.env.GOOGLE_EMAIL || "info@arcanpainting.ca"}, ${subject},
           ${templateName || null}, "failed",
-          "Maton API key not configured. Set MATON_API_KEY in env.",
+          ${providerConfig.reason},
           ${relatedType || null}, ${relatedId || null}, ${userId || null},
           ${JSON.stringify(metadata || {})}, CURRENT_TIMESTAMP
         )
@@ -55,11 +36,11 @@ export async function sendEmail({
       // best-effort; don't mask the original error
     }
     throw new Error(
-      "Maton API key is not configured. Please set MATON_API_KEY in your project secrets.",
+      providerConfig.reason,
     );
   }
 
-  const defaultFrom = `Arcan Painting <${process.env.GOOGLE_EMAIL || "info@arcanpainting.ca"}>`;
+  const defaultFrom = `Arcan Painting <${providerConfig.sender || "info@arcanpainting.ca"}>`;
   const finalFrom = from || defaultFrom;
   const toArray = Array.isArray(to) ? to : [to];
   const finalTo = toArray[0];
@@ -69,37 +50,10 @@ export async function sendEmail({
   let errorMessage = null;
 
   try {
-    // Send each recipient via Maton → Gmail gateway
+    // Record success only after the configured provider accepts each recipient.
     for (const recipient of toArray) {
-      const raw = buildRawMessage({ from: finalFrom, to: recipient, subject, html, text });
-
-      const response = await fetch(
-        "https://gateway.maton.ai/google-mail/gmail/v1/users/me/messages/send",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${matonKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ raw }),
-        },
-      );
-
-      let data = null;
-      try {
-        data = await response.json();
-      } catch (e) {
-        // no-op
-      }
-
-      if (!response.ok) {
-        errorMessage =
-          data?.error?.message ||
-          `Failed to send email [${response.status}] ${response.statusText}`;
-        throw new Error(errorMessage);
-      }
-
-      messageId = data?.id;
+      const delivery = await deliverEmail({ from: finalFrom, to: recipient, subject, html, text });
+      messageId = delivery.id;
     }
 
     status = "sent";
@@ -120,7 +74,7 @@ export async function sendEmail({
       console.error("Failed to log email send:", logError);
     }
 
-    return { id: messageId };
+    return { id: messageId, provider: providerConfig.provider, accepted: true };
   } catch (error) {
     errorMessage = error.message;
 

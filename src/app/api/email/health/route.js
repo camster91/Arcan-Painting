@@ -1,16 +1,18 @@
 import { getCurrentUser, unauthorizedResponse } from "@/app/api/utils/auth";
+import { getEmailProviderConfig } from "@/app/api/utils/email-delivery-provider";
 
 export async function GET(request) {
   const user = await getCurrentUser(request);
   if (!user) return unauthorizedResponse();
-  const configured = Boolean(process.env.MATON_API_KEY && process.env.GOOGLE_EMAIL);
+  const config = getEmailProviderConfig();
   return Response.json({
-    ok: configured,
-    configured,
-    provider: "Maton Gmail gateway",
-    sender: process.env.GOOGLE_EMAIL || null,
-    message: configured
+    ok: config.configured,
+    configured: config.configured,
+    provider: config.label,
+    provider_key: config.provider,
+    sender: config.sender,
+    message: config.configured
       ? "Email credentials are configured. Use a test delivery to verify provider acceptance."
-      : "Email is unavailable until MATON_API_KEY and GOOGLE_EMAIL are configured.",
-  }, { status: configured ? 200 : 503 });
+      : `Email is unavailable: ${config.reason}.`,
+  }, { status: config.configured ? 200 : 503 });
 }

@@ -74,10 +74,10 @@ every transition persisted, attributed, auditable, and visible after reload.
 ### P1 — Customer communication and self-service
 
 - [x] Remove or repair every admin screen whose backing route is absent.
-- [ ] Implement provider-neutral message delivery with delivery state, failure state, retries, and logs.
+- [x] Implement provider-neutral message delivery with delivery state, failure state, retries, and logs.
 - [ ] Add configurable email/SMS providers only after credentials and commercial approval.
 - [ ] Build a secure customer portal for estimates, contracts, approvals, signatures, invoices, receipts, project updates, and change orders. (Core approval/document slice implemented; remaining scope and rendered QA pending.)
-- [ ] Add template governance, reminders, opt-out/consent controls, and a unified communication timeline.
+- [x] Add template governance, reminders, opt-out/consent controls, and a unified communication timeline.
 
 Acceptance: no message is reported as sent unless the provider confirms it; customers can
 complete the required document and payment actions without staff intervention.
@@ -250,3 +250,8 @@ operations, and real external communications require explicit action-time approv
   image `sha256:813bd11dca80df42c3a6689285417098d25d9a4e409ac7e9cd7cb711fd1e3d5d`.
   The gate records 86 passing test files and 256 tests plus typecheck and production build;
   staging health passed and production remained unchanged.
+- 2026-09-01: Replaced hard-coded email health and delivery assumptions with an explicit
+  provider seam supporting disabled, Maton Gmail, and approved HTTPS email transports.
+  Configuration validation, provider acceptance, failures, retries, queue state, logs,
+  templates, consent rechecks, and customer timeline evidence remain truthful when no
+  provider is enabled; no external message was sent.

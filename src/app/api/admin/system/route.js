@@ -1,5 +1,6 @@
 import { getCurrentUser } from "../../utils/auth.js";
 import sql from "../../utils/sql.js";
+import { getEmailProviderConfig } from "../../utils/email-delivery-provider.js";
 
 export async function GET(request) {
   const user = await getCurrentUser(request);
@@ -7,13 +8,14 @@ export async function GET(request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const emailProvider = getEmailProviderConfig();
   const health = {
     database: { status: "unknown", message: "" },
     ollama: { status: "unknown", provider: "OpenClaw", url: process.env.OPENCLAW_URL || "not configured" },
-    email: { status: process.env.MATON_API_KEY && process.env.GOOGLE_EMAIL ? "configured" : "missing", provider: "Maton / Gmail", automations_enabled: process.env.EMAIL_AUTOMATIONS_ENABLED === "true" },
+    email: { status: emailProvider.configured ? "configured" : "missing", provider: emailProvider.label, sender: emailProvider.sender, reason: emailProvider.reason, automations_enabled: process.env.EMAIL_AUTOMATIONS_ENABLED === "true" },
     env: {
       DATABASE_URL: !!process.env.DATABASE_URL,
-      EMAIL_PROVIDER: !!(process.env.MATON_API_KEY && process.env.GOOGLE_EMAIL),
+      EMAIL_PROVIDER: emailProvider.configured,
       STRIPE: !!(process.env.STRIPE_SECRET_KEY && (process.env.ARCAN_STRIPE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET)),
       OPENCLAW: !!(process.env.OPENCLAW_URL && process.env.OPENCLAW_TOKEN),
       GOOGLE_MAPS: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
