@@ -154,9 +154,15 @@ export default function EmailWorkflowsAdminPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div role="status" className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-          <strong>Configuration only:</strong> automatic trigger execution is not active yet. Saving an active workflow will not send customer email until the event dispatcher and retry-safe queue are verified.
-        </div>
+        {workflowsData?.execution_enabled ? (
+          <div role="status" className="mb-6 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-900">
+            <strong>Automation enabled:</strong> active workflows are queued after supported business events and delivered by the configured worker.
+          </div>
+        ) : (
+          <div role="status" className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            <strong>Configuration only:</strong> automatic trigger execution is disabled. Saving an active workflow will not send customer email until the provider, consent rules, worker, and staging delivery are approved.
+          </div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <form
             onSubmit={onSubmit}

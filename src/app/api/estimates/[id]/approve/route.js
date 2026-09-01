@@ -1,6 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { auditLog } from "@/app/api/utils/audit";
+import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 
 export async function POST(request, { params }) {
   try {
@@ -23,9 +24,10 @@ export async function POST(request, { params }) {
     // Lock the estimate so retries and double-clicks cannot create duplicate jobs.
     const result = await sql.transaction(async (txn) => {
       const estimates = await txn`
-        SELECT id, lead_id, project_title, total_cost, status
-        FROM estimates
-        WHERE id = ${id}
+        SELECT e.id, e.lead_id, e.project_title, e.total_cost, e.status,
+          l.name AS lead_name, l.email AS lead_email
+        FROM estimates e LEFT JOIN leads l ON e.lead_id = l.id
+        WHERE e.id = ${id}
         FOR UPDATE
       `;
       if (!estimates.length) return { error: "Estimate not found", status: 404 };
@@ -45,7 +47,7 @@ export async function POST(request, { params }) {
         if (estimate.status !== "approved") {
           await txn`UPDATE estimates SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
         }
-        return { project: existingProjects[0], created: false };
+        return { project: existingProjects[0], estimate, created: false };
       }
 
       await txn`UPDATE estimates SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
@@ -56,7 +58,7 @@ export async function POST(request, { params }) {
           ${id}, ${estimate.lead_id}, ${projectName?.trim() || estimate.project_title}, 'scheduled', ${estimate.total_cost || null}, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
         ) RETURNING id, project_name, status
       `;
-      return { project: projects[0], created: true };
+      return { project: projects[0], estimate, created: true };
     });
 
     if (result.error) return Response.json({ error: result.error }, { status: result.status });
@@ -72,7 +74,19 @@ export async function POST(request, { params }) {
       status: "success",
     });
 
-    return Response.json({ success: true, project: result.project, created: result.created });
+    const automation = await queueEmailWorkflows({
+      event: "estimate_approved",
+      recipientEmail: result.estimate.lead_email,
+      relatedType: "estimate",
+      relatedId: id,
+      data: {
+        lead_name: result.estimate.lead_name,
+        project_title: result.project.project_name,
+        total_cost: Number(result.estimate.total_cost || 0).toFixed(2),
+      },
+    });
+
+    return Response.json({ success: true, project: result.project, created: result.created, automation });
   } catch (err) {
     console.error("approve estimate error", err);
     return Response.json({ error: "Failed to approve" }, { status: 500 });

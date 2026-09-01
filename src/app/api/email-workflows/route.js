@@ -4,6 +4,7 @@ import { generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 
 const triggers = new Set(["estimate_sent", "estimate_approved", "invoice_sent", "payment_received", "project_start"]);
+const executionEnabled = () => process.env.EMAIL_AUTOMATIONS_ENABLED === "true";
 async function operator(request) {
   const user = await getCurrentUser(request);
   return user && ["owner", "admin"].includes(user.role) ? user : null;
@@ -17,7 +18,7 @@ export async function GET(request) {
     FROM email_workflows w LEFT JOIN email_templates t ON w.template_id = t.id
     ORDER BY w.created_at DESC
   `;
-  return Response.json({ workflows, execution_enabled: false });
+  return Response.json({ workflows, execution_enabled: executionEnabled() });
 }
 
 export async function POST(request) {
@@ -34,8 +35,8 @@ export async function POST(request) {
     VALUES (${body.name.trim()}, ${body.trigger_event}, ${templateId}, ${delay}, ${JSON.stringify(body.conditions || {})}, ${Boolean(body.is_active)})
     RETURNING *
   `;
-  await auditLog({ request, action: "email_workflow.create", userId: user.id, username: user.username, resource: "email_workflow", resourceId: workflow.id, changes: { trigger_event: body.trigger_event, execution_enabled: false }, status: "success" });
-  return Response.json({ workflow, execution_enabled: false }, { status: 201 });
+  await auditLog({ request, action: "email_workflow.create", userId: user.id, username: user.username, resource: "email_workflow", resourceId: workflow.id, changes: { trigger_event: body.trigger_event, execution_enabled: executionEnabled() }, status: "success" });
+  return Response.json({ workflow, execution_enabled: executionEnabled() }, { status: 201 });
 }
 
 export async function PUT(request) {
@@ -54,7 +55,7 @@ export async function PUT(request) {
   `;
   if (!workflow) return Response.json({ error: "Workflow not found" }, { status: 404 });
   await auditLog({ request, action: "email_workflow.update", userId: user.id, username: user.username, resource: "email_workflow", resourceId: id, changes: body, status: "success" });
-  return Response.json({ workflow, execution_enabled: false });
+  return Response.json({ workflow, execution_enabled: executionEnabled() });
 }
 
 export async function DELETE(request) {

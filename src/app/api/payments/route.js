@@ -13,6 +13,7 @@ import { getCurrentUser } from "@/app/api/utils/auth";
 import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
 import { validateBody, schemas } from "@/app/api/utils/validate";
+import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 
 // GET /api/payments - List payments with filtering or get single payment
 export async function GET(request) {
@@ -285,7 +286,35 @@ export async function POST(request) {
       status: "success",
     });
 
-    return Response.json({ payment, updated_invoice: updatedInvoice || null }, { status: 201 });
+    let automation = { enabled: process.env.EMAIL_AUTOMATIONS_ENABLED === "true", queued: 0 };
+    if (status === "cleared") {
+      const recipients = await sql`
+        SELECT l.name AS lead_name, l.email AS lead_email,
+          i.invoice_number, c.contract_number
+        FROM payments pay
+        LEFT JOIN invoices i ON pay.invoice_id = i.id
+        LEFT JOIN contracts c ON pay.contract_id = c.id
+        LEFT JOIN leads l ON COALESCE(pay.lead_id, i.lead_id, c.lead_id) = l.id
+        WHERE pay.id = ${payment.id}
+      `;
+      const recipient = recipients[0] || {};
+      automation = await queueEmailWorkflows({
+        event: "payment_received",
+        recipientEmail: recipient.lead_email,
+        relatedType: "payment",
+        relatedId: payment.id,
+        data: {
+          lead_name: recipient.lead_name,
+          payment_number,
+          amount: paymentAmount.toFixed(2),
+          payment_method,
+          invoice_number: recipient.invoice_number,
+          contract_number: recipient.contract_number,
+        },
+      });
+    }
+
+    return Response.json({ payment, updated_invoice: updatedInvoice || null, automation }, { status: 201 });
   } catch (error) {
     console.error("Error recording payment:", error);
     return Response.json({ error: "Failed to record payment" }, { status: 500 });

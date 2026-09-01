@@ -145,6 +145,7 @@ export async function runMigrations() {
     `;
     await sql`CREATE INDEX IF NOT EXISTS idx_delayed_emails_pending ON delayed_emails(scheduled_for) WHERE status = 'pending'`;
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_delayed_emails_unique ON delayed_emails(workflow_id, related_id) WHERE related_id IS NOT NULL`;
+    await sql`ALTER TABLE delayed_emails ADD COLUMN IF NOT EXISTS processing_started_at TIMESTAMP`;
 
     // ── auth_verification_codes (magic code auth) ───────────────────────────
     await sql`

@@ -1,6 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 
 async function getAppSettings() {
   try {
@@ -101,7 +102,15 @@ export async function POST(request, { params }) {
     // update status → sent and sent_date
     await sql`UPDATE invoices SET status = 'sent', sent_date = CURRENT_DATE, updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
 
-    return Response.json({ success: true });
+    const automation = await queueEmailWorkflows({
+      event: "invoice_sent",
+      recipientEmail: inv.client_email,
+      relatedType: "invoice",
+      relatedId: id,
+      data: vars,
+    });
+
+    return Response.json({ success: true, automation });
   } catch (err) {
     console.error("send invoice error", err);
     return Response.json({ error: "Failed to send" }, { status: 500 });

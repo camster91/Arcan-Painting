@@ -22,24 +22,44 @@ const BATCH_LIMIT = 50;
 const MAX_ATTEMPTS = 3;
 
 export async function POST(request) {
-  // Allow cron OR admin
+  if (process.env.EMAIL_AUTOMATIONS_ENABLED !== "true") {
+    return Response.json({ error: "Email automations are disabled" }, { status: 503 });
+  }
+
+  // Allow a configured cron secret OR an explicit owner action.
   const cronSecret = request.headers.get("x-cron-secret");
-  if (cronSecret !== process.env.CRON_SECRET) {
+  const configuredCronSecret = process.env.CRON_SECRET;
+  const validCron = Boolean(configuredCronSecret && cronSecret && cronSecret === configuredCronSecret);
+  if (!validCron) {
     const user = await getCurrentUser(request);
-    if (!user) return unauthorizedResponse();
+    if (!user || user.role !== "owner") return unauthorizedResponse();
   }
 
   try {
-    // Find pending emails whose time has come. Skip rows that have failed too many times.
-    const due = await sql`
-      SELECT id, workflow_id, template_name, recipient_email, data, scheduled_for, attempts, related_type, related_id
-      FROM delayed_emails
-      WHERE status = 'pending'
-        AND scheduled_for <= NOW()
-        AND attempts < ${MAX_ATTEMPTS}
-      ORDER BY scheduled_for ASC
-      LIMIT ${BATCH_LIMIT}
+    // Recover jobs abandoned by a crashed worker. Delivery providers can still accept a
+    // request just before a crash, so provider message IDs and downstream deduplication
+    // remain part of the staging acceptance gate.
+    await sql`
+      UPDATE delayed_emails
+      SET status = 'pending', processing_started_at = NULL,
+        last_error = COALESCE(last_error, 'Recovered abandoned worker claim')
+      WHERE status = 'processing'
+        AND processing_started_at < CURRENT_TIMESTAMP - INTERVAL '15 minutes'
     `;
+
+    // Find pending emails whose time has come. Skip rows that have failed too many times.
+    const due = await sql.transaction(async (txn) => txn`
+      UPDATE delayed_emails SET status = 'processing', processing_started_at = CURRENT_TIMESTAMP
+      WHERE id IN (
+        SELECT id FROM delayed_emails
+        WHERE status = 'pending' AND scheduled_for <= NOW() AND attempts < ${MAX_ATTEMPTS}
+        ORDER BY scheduled_for ASC
+        FOR UPDATE SKIP LOCKED
+        LIMIT ${BATCH_LIMIT}
+      )
+      RETURNING id, workflow_id, template_name, recipient_email, data, scheduled_for,
+        attempts, related_type, related_id
+    `);
 
     if (due.length === 0) {
       return Response.json({ processed: 0, message: "No delayed emails due" });
@@ -62,14 +82,16 @@ export async function POST(request) {
         );
         await sql`
           UPDATE delayed_emails
-          SET status = 'sent', sent_at = NOW(), attempts = attempts + 1, last_error = NULL
+          SET status = 'sent', sent_at = NOW(), attempts = attempts + 1,
+            last_error = NULL, processing_started_at = NULL
           WHERE id = ${row.id}
         `;
         sent++;
       } catch (err) {
         await sql`
           UPDATE delayed_emails
-          SET attempts = attempts + 1, last_error = ${err.message || String(err)}
+          SET status = 'pending', attempts = attempts + 1,
+            last_error = ${err.message || String(err)}, processing_started_at = NULL
           WHERE id = ${row.id}
         `;
         // If we hit MAX_ATTEMPTS, mark as failed so it doesn't keep retrying

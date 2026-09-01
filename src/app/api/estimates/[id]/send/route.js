@@ -1,6 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
 
 async function getAppSettings() {
   try {
@@ -101,7 +102,15 @@ export async function POST(request, { params }) {
     // update status → sent
     await sql`UPDATE estimates SET status = 'sent', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;
 
-    return Response.json({ success: true });
+    const automation = await queueEmailWorkflows({
+      event: "estimate_sent",
+      recipientEmail: e.lead_email,
+      relatedType: "estimate",
+      relatedId: id,
+      data: vars,
+    });
+
+    return Response.json({ success: true, automation });
   } catch (err) {
     console.error("send estimate error", err);
     return Response.json({ error: "Failed to send" }, { status: 500 });

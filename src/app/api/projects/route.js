@@ -1,5 +1,19 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { auditLog } from "@/app/api/utils/audit";
+import { queueEmailWorkflows } from "@/app/api/utils/email-workflows";
+
+const projectTransitions = {
+  scheduled: new Set(["in_progress", "paused", "cancelled"]),
+  in_progress: new Set(["paused", "completed", "cancelled"]),
+  paused: new Set(["in_progress", "cancelled"]),
+  completed: new Set(),
+  cancelled: new Set(),
+};
+
+export function canTransitionProject(from, to) {
+  return from === to || Boolean(projectTransitions[from]?.has(to));
+}
 
 // GET /api/projects - Get all projects with role-based filtering
 export async function GET(request) {
@@ -211,12 +225,16 @@ export async function PUT(request) {
     // Verify the project exists and user has access
     let projectCheck;
     if (user.role === "owner") {
-      projectCheck = await sql`SELECT id FROM projects WHERE id = ${id}`;
+      projectCheck = await sql`
+        SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email
+        FROM projects p LEFT JOIN leads l ON p.lead_id = l.id WHERE p.id = ${id}
+      `;
     } else {
       // Painters can only update their assigned projects
       projectCheck = await sql`
-        SELECT p.id FROM projects p
+        SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email FROM projects p
         LEFT JOIN team_members tm ON p.assigned_painter_id = tm.id
+        LEFT JOIN leads l ON p.lead_id = l.id
         WHERE p.id = ${id} AND tm.email = ${user.username}
       `;
     }
@@ -225,6 +243,13 @@ export async function PUT(request) {
       return Response.json(
         { success: false, error: "Project not found or access denied" },
         { status: 404 },
+      );
+    }
+    const previousProject = projectCheck[0];
+    if (status !== undefined && !canTransitionProject(previousProject.status, status)) {
+      return Response.json(
+        { success: false, error: `Project cannot move from ${previousProject.status} to ${status}` },
+        { status: 409 },
       );
     }
 
@@ -338,10 +363,33 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedProject = result[0];
 
+    await auditLog({
+      request,
+      action: "project.update",
+      userId: user.id,
+      username: user.username,
+      resource: "project",
+      resourceId: id,
+      changes: { from_status: previousProject.status, to_status: updatedProject.status, completion_percentage },
+      status: "success",
+    });
+
+    let automation = { enabled: process.env.EMAIL_AUTOMATIONS_ENABLED === "true", queued: 0 };
+    if (previousProject.status !== "in_progress" && updatedProject.status === "in_progress") {
+      automation = await queueEmailWorkflows({
+        event: "project_start",
+        recipientEmail: previousProject.lead_email,
+        relatedType: "project",
+        relatedId: id,
+        data: { lead_name: previousProject.lead_name, project_title: updatedProject.project_name },
+      });
+    }
+
     return Response.json({
       success: true,
       message: "Project updated successfully",
       project: updatedProject,
+      automation,
     });
   } catch (error) {
     console.error("Error updating project:", error);

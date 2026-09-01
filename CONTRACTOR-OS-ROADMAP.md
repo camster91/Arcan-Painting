@@ -160,3 +160,10 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Restored missing email administration APIs for provider health, owner-only
   test delivery, templates, workflow configuration, and delivery logs. The UI now states
   honestly that automatic workflow execution is not active; no external email was sent.
+- 2026-09-01: Added a retry-safe business-event dispatcher and concurrency-safe delayed
+  email worker for estimate sent/approved and invoice sent events. Automation is opt-in
+  through `EMAIL_AUTOMATIONS_ENABLED`; disabled is the documented default. Closed an
+  authentication bypass where an unset cron secret could previously authorize a worker.
+- 2026-09-01: Enforced audited project lifecycle transitions and connected project-start
+  and cleared-payment events to the gated workflow queue. Added row claiming, parallel
+  worker protection, and recovery of abandoned email jobs after worker failure.
