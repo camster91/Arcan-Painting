@@ -1852,9 +1852,31 @@ async function ensureMissingTables() {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
     await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS customer_visible BOOLEAN DEFAULT FALSE`;
     await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+
+  // Field issues turn site discoveries and blockers into owned, auditable work.
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_issues (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      issue_type VARCHAR(50) NOT NULL DEFAULT 'other',
+      severity VARCHAR(20) NOT NULL DEFAULT 'medium',
+      title VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      status VARCHAR(30) NOT NULL DEFAULT 'open',
+      resolution TEXT,
+      assigned_to INTEGER REFERENCES team_members(id) ON DELETE SET NULL,
+      due_date DATE,
+      created_by INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+      created_by_name VARCHAR(255),
+      resolved_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_project_issues_project_status ON project_issues(project_id, status, severity)`;
 
   // Change orders connect field discoveries to approved scope, schedule, and value.
   await sql`

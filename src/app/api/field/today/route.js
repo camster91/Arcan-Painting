@@ -20,6 +20,8 @@ export async function GET(request) {
       COUNT(DISTINCT cw.id)::int AS checklist_total,
       COUNT(DISTINCT cw.id) FILTER (WHERE cw.is_completed = TRUE)::int AS checklist_completed,
       MAX(pp.report_date) AS last_report_date,
+      COUNT(DISTINCT pi.id) FILTER (WHERE pi.status IN ('open', 'in_progress'))::int AS open_issue_count,
+      COUNT(DISTINCT pi.id) FILTER (WHERE pi.status IN ('open', 'in_progress') AND pi.severity IN ('critical', 'high'))::int AS urgent_issue_count,
       CASE WHEN p.status = 'in_progress' THEN 'active'
         WHEN p.start_date < CURRENT_DATE THEN 'overdue_start' ELSE 'scheduled_today' END AS schedule_state
     FROM projects p
@@ -27,6 +29,7 @@ export async function GET(request) {
     LEFT JOIN team_members tm ON tm.id = p.assigned_painter_id
     LEFT JOIN completion_workflows cw ON cw.project_id = p.id
     LEFT JOIN project_progress pp ON pp.project_id = p.id
+    LEFT JOIN project_issues pi ON pi.project_id = p.id
     WHERE (p.status = 'in_progress' OR (p.status = 'scheduled' AND p.start_date IS NOT NULL AND p.start_date <= CURRENT_DATE))
       ${assignment}
     GROUP BY p.id, l.name, l.phone, l.address, tm.name

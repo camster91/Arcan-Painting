@@ -294,6 +294,7 @@ export default function TodayOperationsPage() {
                       <span className={`rounded-full px-2 py-1 font-semibold ${p.schedule_state === "overdue_start" ? "bg-red-100 text-red-700" : p.schedule_state === "scheduled_today" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>{String(p.schedule_state || p.status).replaceAll("_", " ")}</span>
                       <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Checklist {p.checklist_completed || 0}/{p.checklist_total || 0}</span>
                       {p.last_report_date && <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Last report {new Date(p.last_report_date).toLocaleDateString("en-CA")}</span>}
+                      {Number(p.open_issue_count) > 0 && <span className={`rounded-full px-2 py-1 font-semibold ${Number(p.urgent_issue_count) > 0 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{p.open_issue_count} open issue{Number(p.open_issue_count) === 1 ? "" : "s"}</span>}
                     </div>
                   </div>
                   <div className="text-right">
