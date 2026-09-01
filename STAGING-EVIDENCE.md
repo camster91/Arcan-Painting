@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `65e69c3`
+Candidate revision: `70e1bd5`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:65e69c3`
-- Image ID: `sha256:d3564c6559bdc6b705afd035993f4ef89d1626d3ca83fb7308aec11dc65792cc`
+- Ashbi image: `arcan-painting-staging:70e1bd5`
+- Image ID: `sha256:b076d2fcbb5cce45026e21b6b288ec9b692da666b49fe7b2685ff3d829ee607e`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 90 files, 269 tests passed.
+- `npm test -- --run`: 92 files, 281 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -48,6 +48,11 @@ The following were checked against the isolated origin through a private SSH tun
 The `65e69c3` startup migration added the five sold-scope fields to the isolated staging
 database: area exclusions and production assumptions, plus surface coating product, color,
 and sheen. The anonymous field API returns `401`, and `/admin/today` redirects to sign-in.
+
+The `70e1bd5` portfolio-margin SQL executed successfully against the real isolated staging
+schema for the 90-day period. The staging dataset currently has no projects in that period, so
+rendered non-empty totals still require the authenticated disposable lifecycle fixture. The
+anonymous margin endpoint correctly returns `401`.
 
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
@@ -83,5 +88,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `65e69c3` (or a
+Production deployment requires explicit action-time approval naming revision `70e1bd5` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.

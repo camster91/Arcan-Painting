@@ -305,3 +305,8 @@ operations, and real external communications require explicit action-time approv
   expenses, open purchase commitments, invoices, and cleared payments; ranks lowest projected
   margins first; and highlights jobs below 25% for review. Restricted dashboard roles do not see
   a misleading authorization error. Targeted tests, typecheck, and production build pass.
+- 2026-09-01: Built and deployed exact reporting candidate `70e1bd5` to isolated Ashbi staging
+  as image `sha256:b076d2fcbb5cce45026e21b6b288ec9b692da666b49fe7b2685ff3d829ee607e`.
+  The full suite records 92 files and 281 tests. The portfolio SQL executed successfully against
+  the real staging schema, health and the anonymous authorization boundary passed, and production
+  remained healthy on `arcan-painting:175d567`.
