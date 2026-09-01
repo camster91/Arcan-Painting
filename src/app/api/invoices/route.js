@@ -9,8 +9,28 @@ function generateInvoiceNumber() {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-  const timestamp = Date.now().toString().slice(-4);
-  return `INV-${year}${month}${day}-${timestamp}`;
+  const suffix = crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase();
+  return `INV-${year}${month}${day}-${suffix}`;
+}
+
+export function calculateInvoiceTotals(lineItems, taxRate) {
+  if (!Array.isArray(lineItems) || lineItems.length === 0) {
+    throw new Error("At least one line item is required");
+  }
+  const normalized = lineItems.map((item) => {
+    const description = typeof item.description === "string" ? item.description.trim() : "";
+    const quantity = Number(item.quantity);
+    const unitPrice = Number(item.unit_price);
+    if (!description || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) {
+      throw new Error("Each line item needs a description, positive quantity, and non-negative price");
+    }
+    return { ...item, description, quantity, unit_price: unitPrice, line_total: quantity * unitPrice };
+  });
+  const rate = Number(taxRate);
+  if (!Number.isFinite(rate) || rate < 0 || rate > 100) throw new Error("Tax rate must be between 0 and 100");
+  const subtotal = normalized.reduce((sum, item) => sum + item.line_total, 0);
+  const taxAmount = subtotal * rate / 100;
+  return { lineItems: normalized, subtotal, taxRate: rate, taxAmount, totalAmount: subtotal + taxAmount };
 }
 
 // GET /api/invoices - List invoices with filtering
@@ -42,14 +62,23 @@ export async function GET(request) {
         l.phone as client_phone,
         c.contract_number,
         p.project_name,
-        COUNT(ili.id) as line_items_count,
-        COALESCE(SUM(payments.amount), 0) as total_paid
+        COALESCE(items.line_items_count, 0) as line_items_count,
+        COALESCE(payment_totals.total_paid, 0) as total_paid
       FROM invoices i
       LEFT JOIN leads l ON i.lead_id = l.id
       LEFT JOIN contracts c ON i.contract_id = c.id
       LEFT JOIN projects p ON i.project_id = p.id
-      LEFT JOIN invoice_line_items ili ON i.id = ili.invoice_id
-      LEFT JOIN payments ON i.id = payments.invoice_id AND payments.status = 'cleared'
+      LEFT JOIN (
+        SELECT invoice_id, COUNT(*) AS line_items_count
+        FROM invoice_line_items
+        GROUP BY invoice_id
+      ) items ON i.id = items.invoice_id
+      LEFT JOIN (
+        SELECT invoice_id, SUM(amount) AS total_paid
+        FROM payments
+        WHERE status = 'cleared'
+        GROUP BY invoice_id
+      ) payment_totals ON i.id = payment_totals.invoice_id
       WHERE 1=1
     `;
 
@@ -91,7 +120,6 @@ export async function GET(request) {
     }
 
     query += ` 
-      GROUP BY i.id, l.name, l.email, l.phone, c.contract_number, p.project_name
       ORDER BY i.created_at DESC 
       LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
     `;
@@ -204,24 +232,17 @@ export async function POST(request) {
       );
     }
 
-    if (!line_items || line_items.length === 0) {
-      return Response.json(
-        {
-          error: "At least one line item is required",
-        },
-        { status: 400 },
-      );
+    if (new Date(due_date) < new Date(issue_date)) {
+      return Response.json({ error: "Due date cannot be before issue date" }, { status: 400 });
     }
 
-    // Calculate totals
-    const subtotal = line_items.reduce((sum, item) => {
-      return (
-        sum + parseFloat(item.quantity || 1) * parseFloat(item.unit_price || 0)
-      );
-    }, 0);
-
-    const tax_amount = (subtotal * parseFloat(tax_rate)) / 100;
-    const total_amount = subtotal + tax_amount;
+    let totals;
+    try {
+      totals = calculateInvoiceTotals(line_items, tax_rate);
+    } catch (validationError) {
+      return Response.json({ error: validationError.message }, { status: 400 });
+    }
+    const { lineItems, subtotal, taxRate, taxAmount, totalAmount } = totals;
     const invoice_number = generateInvoiceNumber();
 
     // Create invoice and line items in a single transaction
@@ -235,29 +256,38 @@ export async function POST(request) {
           created_by, notes
         ) VALUES (
           ${invoice_number}, ${contract_id}, ${project_id}, ${lead_id},
-          ${title}, ${description}, ${invoice_type}, ${subtotal}, ${tax_rate},
-          ${tax_amount}, ${total_amount}, ${total_amount}, ${issue_date}, ${due_date},
+          ${title.trim()}, ${description || null}, ${invoice_type}, ${subtotal}, ${taxRate},
+          ${taxAmount}, ${totalAmount}, ${totalAmount}, ${issue_date}, ${due_date},
           ${user.id}, ${notes}
         ) RETURNING *
       `;
 
       // Insert line items with the invoice_id
       const lineItemResults = [];
-      for (const item of line_items) {
-        const line_total =
-          parseFloat(item.quantity || 1) * parseFloat(item.unit_price || 0);
+      for (const item of lineItems) {
         const [lineItem] = await txn`
           INSERT INTO invoice_line_items (
             invoice_id, description, quantity, unit_price, line_total, category
           ) VALUES (
-            ${invoice.id}, ${item.description}, ${item.quantity || 1}, 
-            ${item.unit_price}, ${line_total}, ${item.category || null}
+            ${invoice.id}, ${item.description}, ${item.quantity},
+            ${item.unit_price}, ${item.line_total}, ${item.category || null}
           ) RETURNING *
         `;
         lineItemResults.push(lineItem);
       }
 
       return { invoice, lineItems: lineItemResults };
+    });
+
+    await auditLog({
+      request,
+      action: "invoice.create",
+      userId: user.id,
+      username: user.username,
+      resource: "invoice",
+      resourceId: results.invoice.id,
+      changes: { total_amount: totalAmount, lead_id, project_id, contract_id },
+      status: "success",
     });
 
     return Response.json(
