@@ -1,11 +1,12 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import CreateInvoiceModal from "@/components/admin/invoices/CreateInvoiceModal";
 
 const fetchMock = vi.fn();
 global.fetch = fetchMock;
 
 describe("CreateInvoiceModal", () => {
+  afterEach(cleanup);
   beforeEach(() => {
     fetchMock.mockReset();
     fetchMock

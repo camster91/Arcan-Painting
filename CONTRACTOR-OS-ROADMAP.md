@@ -49,7 +49,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Contracts | Partial | CRUD, templates, PDF, send, and signature fields exist; customer e-sign journey is unverified |
 | Projects and field progress | Partial | Projects, crews, progress, workflows, time tracking, and daily notes exist; mobile field journey and change control are incomplete |
 | Invoices and payments | Partial | APIs, PDFs, send, payment records, and receipts exist; invoice creation UI is a placeholder |
-| Customer communications | Broken / partial | Admin email screens reference absent APIs; outbound email and Telegram are explicit no-ops |
+| Customer communications | Partial | Template, workflow-configuration, delivery-log, health, and owner-only test APIs now exist locally; automatic workflow dispatch and production provider verification remain incomplete |
 | Customer portal | Missing | No secure self-service approvals, documents, updates, or payment history |
 | Job costing and margin | Missing / partial | Estimate costs, project final cost, time and payments exist but are not reconciled into job budgets and actual margin |
 | Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
@@ -154,3 +154,9 @@ operations, and real external communications require explicit action-time approv
 - 2026-09-01: Reconciled `origin/main`, production release records, schema, admin pages,
   APIs, and historical plans. Established this roadmap. Began P0 with invoice creation
   and financial-integrity validation.
+- 2026-09-01: Made estimate-to-project approval transactional and retry-safe, rejecting
+  invalid terminal-state conversions. Added the authenticated customer activity timeline
+  across sales, scheduling, delivery, billing, payment, follow-up, and email records.
+- 2026-09-01: Restored missing email administration APIs for provider health, owner-only
+  test delivery, templates, workflow configuration, and delivery logs. The UI now states
+  honestly that automatic workflow execution is not active; no external email was sent.

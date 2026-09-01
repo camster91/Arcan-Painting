@@ -119,6 +119,8 @@ export async function runMigrations() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    await sql`ALTER TABLE email_templates ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'general'`;
+    await sql`ALTER TABLE email_templates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
     await sql`CREATE INDEX IF NOT EXISTS idx_email_workflows_trigger ON email_workflows(trigger_event) WHERE is_active = true`;
 
     // ── delayed_emails (queue for delay_hours > 0 workflows) ───────────────────
