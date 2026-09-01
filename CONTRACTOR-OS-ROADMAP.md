@@ -222,3 +222,15 @@ operations, and real external communications require explicit action-time approv
   for estimate follow-up, dormant-lead reactivation, review, and referral candidates.
   Lifecycle templates and workflows seed inactive; queueing requires owner confirmation and
   the delayed worker rechecks consent immediately before delivery, cancelling unsafe jobs.
+- 2026-09-01: Added contractor-specific RBAC for owner, office, estimator, project manager,
+  crew, and finance read-only users. Navigation, invitations, protected route policy, and
+  representative financial, sales, project, and marketing APIs now enforce method-aware roles.
+- 2026-09-01: Added owner-only audited customer export and anonymization with exact
+  confirmation and retention holds, plus privacy retention policy, backup verification,
+  restore tooling, rollback-aware deployment, and an operator runbook. Dependency audit
+  reported no production vulnerabilities.
+- 2026-09-01: Built and deployed exact revision `f185122` to the isolated Ashbi staging
+  application. Recorded 84 passing test files (250 tests), typecheck, production build,
+  zero production dependency vulnerabilities, public route/auth-boundary checks, image ID,
+  and a 60-table backup restore drill in `STAGING-EVIDENCE.md`. Production remained on
+  `arcan-painting:175d567`; authenticated rendered and mobile journeys remain open.
