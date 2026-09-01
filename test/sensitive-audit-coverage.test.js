@@ -50,6 +50,23 @@ describe("sensitive operation audit coverage", () => {
       "src/app/api/availability/bulk/route.js",
       ["availability_slot.bulk_create"],
     ],
+    [
+      "src/app/api/onboarding/route.js",
+      [
+        "onboarding.business_info_update",
+        "onboarding.step_update",
+        "onboarding.complete",
+        "onboarding.google_prompted",
+      ],
+    ],
+    [
+      "src/app/api/team-availability/route.js",
+      [
+        "team_availability.create",
+        "team_availability.update",
+        "team_availability.delete",
+      ],
+    ],
   ])("retains required audit actions in %s", (path, actions) => {
     const source = read(path);
     expect(source).toContain("auditLog");

@@ -1,6 +1,11 @@
 import sql from "@/app/api/utils/sql";
-import { requireAdmin } from "@/app/api/utils/auth";
+import { getCurrentUser, requireAdmin } from "@/app/api/utils/auth";
 import { requireCsrf } from "@/app/api/utils/csrf";
+import { auditLog } from "@/app/api/utils/audit";
+
+function canManageTeamAvailability(user) {
+  return user?.role === "owner" || user?.role === "admin";
+}
 
 // ADD: Ensure table exists before operations
 async function ensureTeamAvailabilityTable() {
@@ -101,7 +106,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!canManageTeamAvailability(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const csrfError = requireCsrf(request);
@@ -141,6 +147,20 @@ export async function POST(request) {
       RETURNING *
     `;
 
+    await auditLog({
+      request,
+      action: "team_availability.create",
+      userId: user.id,
+      username: user.username,
+      resource: "team_availability",
+      resourceId: result[0].id,
+      changes: {
+        team_member_id: result[0].team_member_id,
+        date: result[0].date,
+        availability_type: result[0].availability_type,
+      },
+    });
+
     return Response.json({ availability: result[0] }, { status: 201 });
   } catch (error) {
     console.error("Error creating team availability:", error);
@@ -164,7 +184,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!canManageTeamAvailability(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const csrfError = requireCsrf(request);
@@ -234,6 +255,16 @@ export async function PUT(request) {
       );
     }
 
+    await auditLog({
+      request,
+      action: "team_availability.update",
+      userId: user.id,
+      username: user.username,
+      resource: "team_availability",
+      resourceId: id,
+      changes: { fields: Object.keys(updateFields).filter((field) => allowedFields.includes(field)) },
+    });
+
     return Response.json({ availability: result[0] });
   } catch (error) {
     console.error("Error updating team availability:", error);
@@ -245,7 +276,8 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
-  if (!(await requireAdmin(request))) {
+  const user = await getCurrentUser(request);
+  if (!canManageTeamAvailability(user)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const csrfError = requireCsrf(request);
@@ -275,6 +307,15 @@ export async function DELETE(request) {
         { status: 404 },
       );
     }
+
+    await auditLog({
+      request,
+      action: "team_availability.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "team_availability",
+      resourceId: result[0].id,
+    });
 
     return Response.json({ message: "Availability deleted successfully" });
   } catch (error) {

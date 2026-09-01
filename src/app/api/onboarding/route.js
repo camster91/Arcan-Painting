@@ -1,9 +1,16 @@
 import { getCurrentUser } from "@/app/api/utils/auth";
 import sql from "@/app/api/utils/sql";
+import { auditLog } from "@/app/api/utils/audit";
+
+function canManageOnboarding(user) {
+  return user?.role === "owner" || user?.role === "admin";
+}
 
 export async function GET(request) {
   const user = await getCurrentUser(request);
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canManageOnboarding(user))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     // Ensure onboarding columns exist
@@ -76,6 +83,8 @@ export async function GET(request) {
 export async function POST(request) {
   const user = await getCurrentUser(request);
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canManageOnboarding(user))
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const body = await request.json();
@@ -103,6 +112,23 @@ export async function POST(request) {
           VALUES (${company_name || null}, ${company_phone || null}, ${company_email || null}, ${company_address || null}, ${company_tagline || null}, 3)
         `;
       }
+      await auditLog({
+        request,
+        action: "onboarding.business_info_update",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: settingsId || "latest",
+        changes: {
+          fields: [
+            "company_name",
+            "company_phone",
+            "company_email",
+            "company_address",
+            "company_tagline",
+          ],
+        },
+      });
       return Response.json({ success: true });
     }
 
@@ -115,6 +141,15 @@ export async function POST(request) {
       } else {
         await sql`INSERT INTO app_settings (onboarding_step) VALUES (${step})`;
       }
+      await auditLog({
+        request,
+        action: "onboarding.step_update",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: settingsId || "latest",
+        changes: { onboarding_step: step },
+      });
       return Response.json({ success: true });
     }
 
@@ -130,6 +165,15 @@ export async function POST(request) {
           INSERT INTO app_settings (onboarding_completed, onboarding_step) VALUES (true, 4)
         `;
       }
+      await auditLog({
+        request,
+        action: "onboarding.complete",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: settingsId || "latest",
+        changes: { onboarding_completed: true, onboarding_step: 4 },
+      });
       return Response.json({ success: true, onboardingCompleted: true });
     }
 
@@ -145,6 +189,15 @@ export async function POST(request) {
           INSERT INTO app_settings (google_prompted_at) VALUES (CURRENT_TIMESTAMP)
         `;
       }
+      await auditLog({
+        request,
+        action: "onboarding.google_prompted",
+        userId: user.id,
+        username: user.username,
+        resource: "app_settings",
+        resourceId: settingsId || "latest",
+        changes: { google_prompted: true },
+      });
       return Response.json({ success: true });
     }
 

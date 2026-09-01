@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const sql = vi.fn();
 const requireAdmin = vi.fn();
+const getCurrentUser = vi.fn();
 const requireCsrf = vi.fn();
+const auditLog = vi.fn();
 
 vi.mock("@/app/api/utils/sql", () => ({ default: sql }));
-vi.mock("@/app/api/utils/auth", () => ({ requireAdmin }));
+vi.mock("@/app/api/utils/auth", () => ({ requireAdmin, getCurrentUser }));
 vi.mock("@/app/api/utils/csrf", () => ({ requireCsrf }));
+vi.mock("@/app/api/utils/audit", () => ({ auditLog }));
 
 const { GET, POST } = await import("@/app/api/team-availability/route.js");
 
@@ -14,6 +17,7 @@ describe("team availability API", () => {
   beforeEach(() => {
     sql.mockReset();
     requireAdmin.mockReset();
+    getCurrentUser.mockReset();
     requireCsrf.mockReset();
   });
 
@@ -27,7 +31,7 @@ describe("team availability API", () => {
   });
 
   test("rejects unauthenticated schedule writes before changing availability", async () => {
-    requireAdmin.mockResolvedValue(false);
+    getCurrentUser.mockResolvedValue(null);
 
     const response = await POST(new Request("https://arcanpainting.ca/api/team-availability", {
       method: "POST",

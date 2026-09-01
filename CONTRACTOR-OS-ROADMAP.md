@@ -352,3 +352,6 @@ operations, and real external communications require explicit action-time approv
   The full gate records 103 files and 328 tests. The live schema accepted the retention and status
   queries, anonymous mutations were rejected at the CSRF boundary, and both staging and unchanged
   production remain healthy with zero restarts.
+- 2026-09-01: Restricted onboarding company identity, progression, completion, and Google-prompt
+  state to owner/admin users and added audit evidence for every action. Team availability
+  create/update/delete now uses the same explicit trust boundary and central audit trail.
