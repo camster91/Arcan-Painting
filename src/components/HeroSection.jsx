@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
@@ -14,6 +15,15 @@ const HERO_IMAGES = [
 export default function HeroSection() {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
+  const containerRef = useRef(null);
+
+  // Parallax scroll effect on background
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   // Theme colors
   const themeColors = {
@@ -26,12 +36,14 @@ export default function HeroSection() {
   return (
     <section
       id="home"
+      ref={containerRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: themeColors.bg }}
     >
       {/* Background Slideshow with parallax — <img> for better mobile support */}
-      <div
+      <motion.div
         className="absolute inset-0 z-0"
+        style={shouldReduceMotion ? {} : { y: bgY, willChange: "transform" }}
       >
           <picture key={HERO_IMAGES[currentSlide]} style={{
             position: "absolute",
@@ -77,7 +89,7 @@ export default function HeroSection() {
             background: `linear-gradient(to top, ${themeColors.bg}cc, transparent, transparent)`,
           }}
         />
-      </div>
+      </motion.div>
 
       {/* Dot Indicators */}
       <div
@@ -156,20 +168,31 @@ export default function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               {/* Primary CTA */}
               <div className="flex flex-col items-center sm:items-start gap-1 w-full sm:w-auto">
-                <button
-                  className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl shadow-xl relative overflow-hidden transition-transform motion-safe:hover:scale-105 motion-safe:active:scale-[.97]"
+                <motion.button
+                  className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl shadow-xl relative overflow-hidden"
                   style={{
                     background: "linear-gradient(135deg, #fbbf24 0%, #fde047 50%, #fbbf24 100%)",
                     backgroundSize: "200% 200%",
                     color: "#0f172a",
                     boxShadow: "0 10px 40px rgba(251, 191, 36, 0.35)",
                   }}
+                  whileHover={
+                    shouldReduceMotion
+                      ? {}
+                      : {
+                          scale: 1.05,
+                          boxShadow: "0 15px 50px rgba(251, 191, 36, 0.55)",
+                          backgroundPosition: "right center",
+                        }
+                  }
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+                  transition={{ duration: 0.2 }}
                   onClick={() => {
                     setIsLeadFormOpen(true);
                   }}
                 >
                    Discuss Your Project
-                </button>
+                </motion.button>
                 <span
                   className="text-xs font-medium"
                   style={{ color: "#fbbf2499" }}
@@ -178,13 +201,22 @@ export default function HeroSection() {
                 </span>
               </div>
 
-              <button
-                className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl border transition-all hover:bg-white/20 motion-safe:active:scale-[.97]"
+              <motion.button
+                className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl border transition-colors"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.1)",
                   color: themeColors.text,
                   borderColor: "rgba(255,255,255,0.2)",
                 }}
+                whileHover={
+                  shouldReduceMotion
+                    ? {}
+                    : {
+                        backgroundColor: "rgba(255,255,255,0.18)",
+                        borderColor: "rgba(255,255,255,0.35)",
+                      }
+                }
+                whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
                 onClick={() => {
                   const portfolioSection = document.getElementById("portfolio");
                   if (portfolioSection) {
@@ -193,7 +225,7 @@ export default function HeroSection() {
                 }}
               >
                 View Our Work
-              </button>
+              </motion.button>
             </div>
 
             {/* Keep the primary conversion path factual until client proof
@@ -247,11 +279,11 @@ export default function HeroSection() {
               {/* Floating Bubbles */}
               <div className="absolute inset-0 pointer-events-none">
                 {[
-                   { label: "Project planning", top: 24, left: 24 },
-                   { label: "Your priorities", top: "40%", right: 24 },
-                   { label: "Next steps", bottom: 24, left: 28 },
-                ].map(({ label, ...pos }) => (
-                  <div
+                   { label: "Project planning", top: 24, left: 24, delay: 0 },
+                   { label: "Your priorities", top: "40%", right: 24, delay: 0.3 },
+                   { label: "Next steps", bottom: 24, left: 28, delay: 0.6 },
+                ].map(({ label, delay, ...pos }) => (
+                  <motion.div
                     key={label}
                     className="pointer-events-auto backdrop-blur-lg rounded-2xl shadow-xl border ring-1 px-4 py-3 flex items-center gap-3 max-w-[280px] absolute"
                     style={{
@@ -259,7 +291,21 @@ export default function HeroSection() {
                       backgroundColor: "rgba(15, 23, 42, 0.75)",
                       borderColor: "rgba(251, 191, 36, 0.4)",
                       color: themeColors.text,
+                      willChange: "transform",
                     }}
+                    animate={
+                      shouldReduceMotion
+                        ? {}
+                        : {
+                            y: [0, -10, 0],
+                            transition: {
+                              duration: 4 + delay,
+                              delay,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            },
+                          }
+                    }
                   >
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
@@ -268,7 +314,7 @@ export default function HeroSection() {
                       <span className="text-sm font-bold" style={{ color: "#0f172a" }}>✓</span>
                     </div>
                     <h4 className="font-semibold leading-tight">{label}</h4>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -287,9 +333,11 @@ export default function HeroSection() {
             className="w-6 h-10 border-2 rounded-full flex justify-center"
             style={{ borderColor: `${themeColors.textMuted}66` }}
           >
-            <div
-              className="w-1 h-3 rounded-full mt-2 motion-safe:animate-bounce"
+            <motion.div
+              className="w-1 h-3 rounded-full mt-2"
               style={{ backgroundColor: `${themeColors.textMuted}99` }}
+              animate={shouldReduceMotion ? {} : { y: [0, 6, 0] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
         </div>
