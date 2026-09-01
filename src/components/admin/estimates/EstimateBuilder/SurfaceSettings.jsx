@@ -57,6 +57,35 @@ export function SurfaceSettings({ area, onUpdate }) {
               </label>
             </div>
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              aria-label="Wall coating product"
+              value={area.wallsCoating}
+              onChange={(e) =>
+                onUpdate(area.id, { wallsCoating: e.target.value })
+              }
+              placeholder="Product"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+            <input
+              aria-label="Wall color"
+              value={area.wallsColor}
+              onChange={(e) =>
+                onUpdate(area.id, { wallsColor: e.target.value })
+              }
+              placeholder="Color"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+            <input
+              aria-label="Wall sheen"
+              value={area.wallsSheen}
+              onChange={(e) =>
+                onUpdate(area.id, { wallsSheen: e.target.value })
+              }
+              placeholder="Sheen"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
         </div>
       </div>
 
@@ -132,6 +161,35 @@ export function SurfaceSettings({ area, onUpdate }) {
                   <span className="ml-2 text-sm text-slate-700">Primer</span>
                 </label>
               </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input
+                aria-label="Ceiling coating product"
+                value={area.ceilCoating}
+                onChange={(e) =>
+                  onUpdate(area.id, { ceilCoating: e.target.value })
+                }
+                placeholder="Product"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              />
+              <input
+                aria-label="Ceiling color"
+                value={area.ceilColor}
+                onChange={(e) =>
+                  onUpdate(area.id, { ceilColor: e.target.value })
+                }
+                placeholder="Color"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              />
+              <input
+                aria-label="Ceiling sheen"
+                value={area.ceilSheen}
+                onChange={(e) =>
+                  onUpdate(area.id, { ceilSheen: e.target.value })
+                }
+                placeholder="Sheen"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              />
             </div>
           </div>
         ) : (

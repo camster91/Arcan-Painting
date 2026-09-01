@@ -291,10 +291,34 @@ export default function TodayOperationsPage() {
                       </div>
                     )}
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <span className={`rounded-full px-2 py-1 font-semibold ${p.schedule_state === "overdue_start" ? "bg-red-100 text-red-700" : p.schedule_state === "scheduled_today" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>{String(p.schedule_state || p.status).replaceAll("_", " ")}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Checklist {p.checklist_completed || 0}/{p.checklist_total || 0}</span>
-                      {p.last_report_date && <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Last report {new Date(p.last_report_date).toLocaleDateString("en-CA")}</span>}
-                      {Number(p.open_issue_count) > 0 && <span className={`rounded-full px-2 py-1 font-semibold ${Number(p.urgent_issue_count) > 0 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{p.open_issue_count} open issue{Number(p.open_issue_count) === 1 ? "" : "s"}</span>}
+                      <span
+                        className={`rounded-full px-2 py-1 font-semibold ${p.schedule_state === "overdue_start" ? "bg-red-100 text-red-700" : p.schedule_state === "scheduled_today" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}
+                      >
+                        {String(p.schedule_state || p.status).replaceAll(
+                          "_",
+                          " ",
+                        )}
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">
+                        Checklist {p.checklist_completed || 0}/
+                        {p.checklist_total || 0}
+                      </span>
+                      {p.last_report_date && (
+                        <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">
+                          Last report{" "}
+                          {new Date(p.last_report_date).toLocaleDateString(
+                            "en-CA",
+                          )}
+                        </span>
+                      )}
+                      {Number(p.open_issue_count) > 0 && (
+                        <span
+                          className={`rounded-full px-2 py-1 font-semibold ${Number(p.urgent_issue_count) > 0 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}
+                        >
+                          {p.open_issue_count} open issue
+                          {Number(p.open_issue_count) === 1 ? "" : "s"}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
@@ -314,6 +338,91 @@ export default function TodayOperationsPage() {
                     </div>
                   </div>
                 </div>
+
+                {p.job_scope && (
+                  <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <summary className="cursor-pointer font-medium text-slate-900">
+                      Sold painting scope
+                    </summary>
+                    <div className="mt-3 space-y-4 text-sm text-slate-700">
+                      {p.job_scope.project_description && (
+                        <p>{p.job_scope.project_description}</p>
+                      )}
+                      {p.job_scope.estimate_notes && (
+                        <p>
+                          <span className="font-medium">Estimate notes:</span>{" "}
+                          {p.job_scope.estimate_notes}
+                        </p>
+                      )}
+                      {(p.job_scope.areas || []).map((area, areaIndex) => (
+                        <section
+                          key={`${p.id}-scope-${areaIndex}`}
+                          className="rounded-md bg-white p-3"
+                        >
+                          <h4 className="font-semibold text-slate-900">
+                            {area.name || `Area ${areaIndex + 1}`}
+                          </h4>
+                          {(area.surfaces || []).length > 0 && (
+                            <ul className="mt-2 list-disc space-y-1 pl-5">
+                              {area.surfaces.map((surface, surfaceIndex) => (
+                                <li
+                                  key={`${p.id}-surface-${areaIndex}-${surfaceIndex}`}
+                                >
+                                  {String(
+                                    surface.surface_type || "surface",
+                                  ).replaceAll("_", " ")}
+                                  {surface.measurement
+                                    ? ` — ${surface.measurement} ${surface.unit || ""}`
+                                    : ""}
+                                  {surface.coats
+                                    ? `, ${surface.coats} coat${Number(surface.coats) === 1 ? "" : "s"}`
+                                    : ""}
+                                  {surface.primer ? ", primer" : ""}
+                                  {surface.method ? `, ${surface.method}` : ""}
+                                  {[
+                                    surface.coating_product,
+                                    surface.color_name,
+                                    surface.sheen,
+                                  ].filter(Boolean).length > 0
+                                    ? ` — ${[surface.coating_product, surface.color_name, surface.sheen].filter(Boolean).join(" / ")}`
+                                    : ""}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {(area.prep_items || []).length > 0 && (
+                            <p className="mt-2">
+                              <span className="font-medium">Prep:</span>{" "}
+                              {area.prep_items
+                                .map((item) =>
+                                  `${String(item.prep_type || "prep").replaceAll("_", " ")} ${item.quantity || ""} ${item.unit || ""}`.trim(),
+                                )
+                                .join("; ")}
+                            </p>
+                          )}
+                          {area.notes && (
+                            <p className="mt-2">
+                              <span className="font-medium">Notes:</span>{" "}
+                              {area.notes}
+                            </p>
+                          )}
+                          {area.exclusions && (
+                            <p className="mt-2">
+                              <span className="font-medium">Exclusions:</span>{" "}
+                              {area.exclusions}
+                            </p>
+                          )}
+                          {area.production_assumptions && (
+                            <p className="mt-2">
+                              <span className="font-medium">Verify:</span>{" "}
+                              {area.production_assumptions}
+                            </p>
+                          )}
+                        </section>
+                      ))}
+                    </div>
+                  </details>
+                )}
 
                 {/* Actions */}
                 <div className="mt-4 flex flex-wrap gap-2">

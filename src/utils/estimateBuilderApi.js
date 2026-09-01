@@ -76,6 +76,22 @@ export async function saveEstimate({
       length: parseFloat(area.length) || null,
       width: parseFloat(area.width) || null,
       height: parseFloat(area.height) || null,
+      notes: area.notes || null,
+      exclusions: area.exclusions || null,
+      production_assumptions: area.productionAssumptions || null,
+      prep_items: [
+        ["taping", area.prepWork?.tapeLf, "lf"],
+        ["floor_protection", area.prepWork?.plasticSqft, "sqft"],
+        ["minor_patch", area.prepWork?.minorPatches, "count"],
+        ["major_patch", area.prepWork?.majorPatchSqft, "sqft"],
+        ["caulk", area.prepWork?.caulkLf, "lf"],
+      ]
+        .filter(([, quantity]) => Number(quantity) > 0)
+        .map(([prep_type, quantity, unit]) => ({
+          prep_type,
+          quantity: Number(quantity),
+          unit,
+        })),
       surfaces: [
         {
           surface_type: "walls",
@@ -83,6 +99,9 @@ export async function saveEstimate({
           method: area.wallsMethod,
           coats: parseInt(area.wallsCoats),
           primer: area.wallsPrimer,
+          coating_product: area.wallsCoating || null,
+          color_name: area.wallsColor || null,
+          sheen: area.wallsSheen || null,
         },
         // Only include ceiling if paintCeiling is enabled
         ...(area.paintCeiling
@@ -93,6 +112,9 @@ export async function saveEstimate({
                 method: area.ceilMethod,
                 coats: parseInt(area.ceilCoats),
                 primer: area.ceilPrimer,
+                coating_product: area.ceilCoating || null,
+                color_name: area.ceilColor || null,
+                sheen: area.ceilSheen || null,
               },
             ]
           : []),

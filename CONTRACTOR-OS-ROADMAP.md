@@ -21,14 +21,14 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 
 ## Users and jobs to be done
 
-| User | Critical job |
-| --- | --- |
-| Owner / operator | See pipeline, schedule, cash, margin, risks, and next actions in one place |
-| Estimator / salesperson | Qualify, visit, scope, price, follow up, and win work quickly |
-| Project manager | Turn sold work into a staffed, documented, profitable job |
-| Crew member | See today's scope and record time, materials, progress, photos, and issues on mobile |
-| Office / bookkeeper | Control contracts, deposits, invoices, receivables, records, and exports |
-| Customer | Review, approve, sign, pay, receive updates, and close out the project simply |
+| User                    | Critical job                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| Owner / operator        | See pipeline, schedule, cash, margin, risks, and next actions in one place           |
+| Estimator / salesperson | Qualify, visit, scope, price, follow up, and win work quickly                        |
+| Project manager         | Turn sold work into a staffed, documented, profitable job                            |
+| Crew member             | See today's scope and record time, materials, progress, photos, and issues on mobile |
+| Office / bookkeeper     | Control contracts, deposits, invoices, receivables, records, and exports             |
+| Customer                | Review, approve, sign, pay, receive updates, and close out the project simply        |
 
 ## Status rules
 
@@ -40,22 +40,22 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 
 ## Current-state scorecard
 
-| Capability | Status | Evidence / gap |
-| --- | --- | --- |
-| Public inquiry capture and CRM persistence | Complete | Contact and quote submissions were verified through isolated staging data |
-| Leads and clients | Partial | CRUD/search, aligned lifecycle stages, durable attribution, stage timestamps, lost reasons, and a unified customer activity timeline exist; automated nurture remains incomplete |
-| Site visits and scheduling | Partial | Appointments, availability, calendar, and schedules exist; external calendar transport is disabled |
-| Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified |
-| Contracts | Partial | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified |
-| Projects and field progress | Partial | Multi-person assignment-scoped Today queue, scheduled-job start, concurrency-safe time tracking, progress, checklists, audited change orders, and severity-ranked site issues exist; materials, offline retry, and closeout remain incomplete |
-| Invoices and payments | Partial | Validated deposit/progress/final invoices, APIs, PDFs, send, owner-controlled immutable payment records, cleared-cash reconciliation, aging, refunds, receipts, and accounting export exist; hosted payment remains incomplete |
-| Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
-| Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
-| Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains |
-| Marketing operations | Partial | Durable attribution, cleared-revenue funnel reporting, consent-aware follow-up/reactivation/review/referral queues, inactive seed templates, and send-time consent rechecks exist; external platform connections remain approval-gated |
-| Owner reporting | Partial | Real period trends, sales funnel, attribution, lost reasons, job margin, cash, commitments, and receivable aging exist; cross-project margin reporting remains incomplete |
-| AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
-| Security, audit, recovery | Partial | Auth, CSRF, rate limits, audit and recovery routes exist; full permission, privacy, restore, and field-device validation remains |
+| Capability                                 | Status          | Evidence / gap                                                                                                                                                                                                                                |
+| ------------------------------------------ | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public inquiry capture and CRM persistence | Complete        | Contact and quote submissions were verified through isolated staging data                                                                                                                                                                     |
+| Leads and clients                          | Partial         | CRUD/search, aligned lifecycle stages, durable attribution, stage timestamps, lost reasons, and a unified customer activity timeline exist; automated nurture remains incomplete                                                              |
+| Site visits and scheduling                 | Partial         | Appointments, availability, calendar, and schedules exist; external calendar transport is disabled                                                                                                                                            |
+| Painting estimate builder                  | Partial         | Areas, surfaces, prep, coatings, colors, sheen, exclusions, production assumptions, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified                                      |
+| Contracts                                  | Partial         | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified                                                                                                                               |
+| Projects and field progress                | Partial         | Multi-person assignment-scoped Today queue, scheduled-job start, concurrency-safe time tracking, progress, checklists, audited change orders, and severity-ranked site issues exist; materials, offline retry, and closeout remain incomplete |
+| Invoices and payments                      | Partial         | Validated deposit/progress/final invoices, APIs, PDFs, send, owner-controlled immutable payment records, cleared-cash reconciliation, aging, refunds, receipts, and accounting export exist; hosted payment remains incomplete                |
+| Customer communications                    | Partial         | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete                                                                                            |
+| Customer portal                            | Partial         | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain                             |
+| Job costing and margin                     | Partial         | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains  |
+| Marketing operations                       | Partial         | Durable attribution, cleared-revenue funnel reporting, consent-aware follow-up/reactivation/review/referral queues, inactive seed templates, and send-time consent rechecks exist; external platform connections remain approval-gated        |
+| Owner reporting                            | Partial         | Real period trends, sales funnel, attribution, lost reasons, job margin, cash, commitments, and receivable aging exist; cross-project margin reporting remains incomplete                                                                     |
+| AI assistance                              | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path                                                                                                                                       |
+| Security, audit, recovery                  | Partial         | Auth, CSRF, rate limits, audit and recovery routes exist; full permission, privacy, restore, and field-device validation remains                                                                                                              |
 
 ## Delivery plan
 
@@ -84,7 +84,7 @@ complete the required document and payment actions without staff intervention.
 
 ### P1 — Painting-specific field operations
 
-- [ ] Turn estimate scope into job scope: rooms/areas, surfaces, prep, coatings, colors, sheen, quantities, exclusions, and production assumptions.
+- [x] Turn estimate scope into job scope: rooms/areas, surfaces, prep, coatings, colors, sheen, quantities, exclusions, and production assumptions. (Code and automated gates complete; authenticated rendered staging proof remains in the release gate.)
 - [ ] Add crew assignments, mobile daily view, arrival/departure, time, material usage, photos, notes, delays, and safety/issues.
 - [x] Add change orders with scope, price, schedule impact, approval, and audit trail.
 - [ ] Add punch list, final walkthrough, completion evidence, care instructions, and closeout package.
@@ -285,3 +285,8 @@ operations, and real external communications require explicit action-time approv
   with correct JavaScript, JSON, and PNG media types. Image
   `sha256:cd973d974ed14dc096acb2d53100d7bb50c22fb683fff8facc5449c69ae56756`
   is healthy; the gate records 89 files and 266 tests; production remains unchanged.
+- 2026-09-01: Completed the sold-scope handoff from estimate creation to the assignment-scoped
+  field Today view. The estimator now records coating product, color, sheen, prep quantities,
+  area notes, exclusions, and production assumptions; the crew API returns that operational
+  scope without pricing or cost data. Local gates pass with 90 test files and 269 tests,
+  typecheck, and the production build. Authenticated rendered staging proof remains open.

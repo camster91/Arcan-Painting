@@ -106,6 +106,38 @@ export function AreaCard({
         onUpdate={(prepUpdates) => onUpdatePrepWork(area.id, prepUpdates)}
       />
 
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <label className="text-sm font-medium text-slate-700">
+          Area notes
+          <textarea
+            value={area.notes}
+            onChange={(e) => onUpdate(area.id, { notes: e.target.value })}
+            placeholder="Access, protection, or finish notes"
+            className="mt-1 min-h-24 w-full px-3 py-2 border border-slate-300 rounded-lg font-normal"
+          />
+        </label>
+        <label className="text-sm font-medium text-slate-700">
+          Exclusions
+          <textarea
+            value={area.exclusions}
+            onChange={(e) => onUpdate(area.id, { exclusions: e.target.value })}
+            placeholder="Items explicitly not included"
+            className="mt-1 min-h-24 w-full px-3 py-2 border border-slate-300 rounded-lg font-normal"
+          />
+        </label>
+        <label className="text-sm font-medium text-slate-700">
+          Production assumptions
+          <textarea
+            value={area.productionAssumptions}
+            onChange={(e) =>
+              onUpdate(area.id, { productionAssumptions: e.target.value })
+            }
+            placeholder="Conditions the crew should verify"
+            className="mt-1 min-h-24 w-full px-3 py-2 border border-slate-300 rounded-lg font-normal"
+          />
+        </label>
+      </div>
+
       {/* Area Summary */}
       <div className="mt-4 p-3 bg-slate-50 rounded-lg">
         <div className="flex justify-between items-center text-sm">

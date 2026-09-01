@@ -281,16 +281,16 @@ export async function POST(request) {
     // insert areas + surfaces + prep
     for (const area of areas) {
       const areaInsert = await sql`
-        INSERT INTO estimate_areas (estimate_id, name, length, width, height, wall_sqft, ceiling_sqft, notes)
-        VALUES (${estimateId}, ${area.name || null}, ${area.length || null}, ${area.width || null}, ${area.height || null}, ${area.wall_sqft || null}, ${area.ceiling_sqft || null}, ${area.notes || null})
+        INSERT INTO estimate_areas (estimate_id, name, length, width, height, wall_sqft, ceiling_sqft, notes, exclusions, production_assumptions)
+        VALUES (${estimateId}, ${area.name || null}, ${area.length || null}, ${area.width || null}, ${area.height || null}, ${area.wall_sqft || null}, ${area.ceiling_sqft || null}, ${area.notes || null}, ${area.exclusions || null}, ${area.production_assumptions || null})
         RETURNING id
       `;
       const areaId = areaInsert[0].id;
 
       for (const s of area.surfaces || []) {
         await sql`
-          INSERT INTO estimate_surfaces (area_id, surface_type, measurement, unit, method, coats, primer, production_rate, coverage_rate, door_sides, profile_type, opening_sqft)
-          VALUES (${areaId}, ${s.surface_type || null}, ${s.measurement || null}, ${s.unit || null}, ${s.method || null}, ${s.coats || null}, ${s.primer || null}, ${s.production_rate || null}, ${s.coverage_rate || null}, ${s.door_sides || null}, ${s.profile_type || null}, ${s.opening_sqft || null})
+          INSERT INTO estimate_surfaces (area_id, surface_type, measurement, unit, method, coats, primer, production_rate, coverage_rate, door_sides, profile_type, opening_sqft, coating_product, color_name, sheen)
+          VALUES (${areaId}, ${s.surface_type || null}, ${s.measurement || null}, ${s.unit || null}, ${s.method || null}, ${s.coats || null}, ${s.primer || null}, ${s.production_rate || null}, ${s.coverage_rate || null}, ${s.door_sides || null}, ${s.profile_type || null}, ${s.opening_sqft || null}, ${s.coating_product || null}, ${s.color_name || null}, ${s.sheen || null})
         `;
       }
 

@@ -481,6 +481,8 @@ export async function runMigrations() {
         wall_sqft NUMERIC(12,2),
         ceiling_sqft NUMERIC(12,2),
         notes TEXT,
+        exclusions TEXT,
+        production_assumptions TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -502,10 +504,18 @@ export async function runMigrations() {
         door_sides INTEGER,
         profile_type VARCHAR(50),
         opening_sqft NUMERIC(12,2),
+        coating_product TEXT,
+        color_name TEXT,
+        sheen TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    await sql`ALTER TABLE estimate_areas ADD COLUMN IF NOT EXISTS exclusions TEXT`;
+    await sql`ALTER TABLE estimate_areas ADD COLUMN IF NOT EXISTS production_assumptions TEXT`;
+    await sql`ALTER TABLE estimate_surfaces ADD COLUMN IF NOT EXISTS coating_product TEXT`;
+    await sql`ALTER TABLE estimate_surfaces ADD COLUMN IF NOT EXISTS color_name TEXT`;
+    await sql`ALTER TABLE estimate_surfaces ADD COLUMN IF NOT EXISTS sheen TEXT`;
 
     // ── estimate_prep_items (added 2026-06-11) ──────────────────────────────
     await sql`
