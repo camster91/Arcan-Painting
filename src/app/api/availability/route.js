@@ -1,6 +1,11 @@
 import sql from "../utils/sql.js";
-import { requireAdmin } from "../utils/auth.js";
+import { getCurrentUser, requireAdmin } from "../utils/auth.js";
 import { requireCsrf } from "../utils/csrf.js";
+import { auditLog } from "../utils/audit.js";
+
+function isAdminUser(user) {
+  return user?.role === "owner" || user?.role === "admin";
+}
 
 // Public: list available slots
 export async function GET(request) {
@@ -105,8 +110,8 @@ export async function POST(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!isAdminUser(user)) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -136,10 +141,62 @@ export async function POST(request) {
       RETURNING id
     `;
 
+    await auditLog({
+      request,
+      action: "availability_slot.create",
+      userId: user.id,
+      username: user.username,
+      resource: "availability_slot",
+      resourceId: rows[0].id,
+      changes: { slot_date: slotDate, start_time: startTime, end_time: endTime },
+    });
+
     return Response.json({ success: true, id: rows[0].id });
   } catch (error) {
     console.error("Error creating slot:", error);
     return Response.json({ error: "Failed to create slot" }, { status: 500 });
+  }
+}
+
+// Admin: close or reopen a slot without deleting appointment history.
+export async function PUT(request) {
+  const csrfError = requireCsrf(request);
+  if (csrfError) return csrfError;
+
+  try {
+    const user = await getCurrentUser(request);
+    if (!isAdminUser(user)) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { id, status } = (await request.json().catch(() => null)) || {};
+    if (!Number.isInteger(Number(id)) || !["open", "closed"].includes(status)) {
+      return Response.json(
+        { error: "A valid id and status of open or closed are required" },
+        { status: 400 },
+      );
+    }
+    const rows = await sql`
+      UPDATE availability_slots
+      SET status = ${status}
+      WHERE id = ${Number(id)}
+      RETURNING id, status
+    `;
+    if (!rows.length) {
+      return Response.json({ error: "Availability slot not found" }, { status: 404 });
+    }
+    await auditLog({
+      request,
+      action: "availability_slot.status_update",
+      userId: user.id,
+      username: user.username,
+      resource: "availability_slot",
+      resourceId: rows[0].id,
+      changes: { status: rows[0].status },
+    });
+    return Response.json({ success: true, slot: rows[0] });
+  } catch (error) {
+    console.error("Error updating slot:", error);
+    return Response.json({ error: "Failed to update slot" }, { status: 500 });
   }
 }
 
@@ -149,8 +206,8 @@ export async function DELETE(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!isAdminUser(user)) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -158,7 +215,46 @@ export async function DELETE(request) {
     const { id } = body || {};
     if (!id) return Response.json({ error: "id is required" }, { status: 400 });
 
-    await sql`DELETE FROM availability_slots WHERE id = ${id}`;
+    const outcome = await sql.transaction(async (txn) => {
+      const [slot] = await txn`
+        SELECT id, slot_date, start_time, end_time
+        FROM availability_slots
+        WHERE id = ${id}
+        FOR UPDATE
+      `;
+      if (!slot) return { status: "missing" };
+      const [appointments] = await txn`
+        SELECT COUNT(*)::integer AS count
+        FROM appointments
+        WHERE slot_id = ${id}
+      `;
+      if (appointments.count > 0) return { status: "retained", slot };
+      await txn`DELETE FROM availability_slots WHERE id = ${id}`;
+      return { status: "deleted", slot };
+    });
+    if (outcome.status === "missing") {
+      return Response.json({ error: "Availability slot not found" }, { status: 404 });
+    }
+    if (outcome.status === "retained") {
+      return Response.json(
+        { error: "Slots with appointment history cannot be deleted. Close the slot instead." },
+        { status: 409 },
+      );
+    }
+
+    await auditLog({
+      request,
+      action: "availability_slot.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "availability_slot",
+      resourceId: id,
+      changes: {
+        slot_date: outcome.slot.slot_date,
+        start_time: outcome.slot.start_time,
+        end_time: outcome.slot.end_time,
+      },
+    });
     return Response.json({ success: true });
   } catch (error) {
     console.error("Error deleting slot:", error);

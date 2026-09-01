@@ -30,6 +30,26 @@ describe("sensitive operation audit coverage", () => {
     ["src/app/api/team-invites/route.js", ["team_invite.create"]],
     ["src/app/api/financial-report/route.js", ["finance.export"]],
     ["src/app/api/sales-marketing-report/route.js", ["marketing.export"]],
+    [
+      "src/app/api/follow-ups/route.js",
+      ["follow_up.create", "follow_up.update", "follow_up.delete"],
+    ],
+    [
+      "src/app/api/estimates/[id]/duplicate/route.js",
+      ["estimate.duplicate"],
+    ],
+    [
+      "src/app/api/availability/route.js",
+      [
+        "availability_slot.create",
+        "availability_slot.status_update",
+        "availability_slot.delete",
+      ],
+    ],
+    [
+      "src/app/api/availability/bulk/route.js",
+      ["availability_slot.bulk_create"],
+    ],
   ])("retains required audit actions in %s", (path, actions) => {
     const source = read(path);
     expect(source).toContain("auditLog");

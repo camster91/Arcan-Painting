@@ -343,3 +343,7 @@ operations, and real external communications require explicit action-time approv
   image `sha256:c8c7195b61839eb20fc3e5123b54fc68a22cd125f5e8d20986282edf7f925e63`.
   All five sold-scope columns were confirmed in the live staging schema, the duplicate boundary
   returns `401` anonymously, and production remains healthy and restart-free on `175d567`.
+- 2026-09-01: Closed scheduling and sales audit gaps. Follow-ups now enforce customer read/write
+  permissions and audit create/update/delete. Availability slot creation, bulk generation, status
+  changes, and deletion are audited. Slots with appointment history can no longer cascade-delete
+  bookings; operators close or reopen them while deletion remains available only for unused slots.

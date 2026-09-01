@@ -1,6 +1,7 @@
 import sql from "../../utils/sql.js";
-import { requireAdmin } from "../../utils/auth.js";
+import { getCurrentUser } from "../../utils/auth.js";
 import { requireCsrf } from "../../utils/csrf.js";
+import { auditLog } from "../../utils/audit.js";
 
 function addDays(date, days) {
   const d = new Date(date.getTime());
@@ -25,8 +26,8 @@ export async function POST(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!user || !["owner", "admin"].includes(user.role)) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -100,6 +101,15 @@ export async function POST(request) {
         }
       }
     }
+
+    await auditLog({
+      request,
+      action: "availability_slot.bulk_create",
+      userId: user.id,
+      username: user.username,
+      resource: "availability_slot",
+      changes: { attempted, inserted, start_date: toDateStr(startDate), days },
+    });
 
     return Response.json({ success: true, attempted, inserted });
   } catch (error) {

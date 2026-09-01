@@ -1,5 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { hasPermission } from "@/app/api/utils/permissions";
+import { auditLog } from "@/app/api/utils/audit";
 
 // GET /api/follow-ups - Get all follow-ups with optional filtering (ADMIN)
 export async function GET(request) {
@@ -7,6 +9,9 @@ export async function GET(request) {
     const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!hasPermission(user, "customers.read")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -65,6 +70,9 @@ export async function POST(request) {
     const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!hasPermission(user, "customers.write")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -130,6 +138,20 @@ export async function POST(request) {
 
     const newFollowUp = result[0];
 
+    await auditLog({
+      request,
+      action: "follow_up.create",
+      userId: user.id,
+      username: user.username,
+      resource: "follow_up",
+      resourceId: newFollowUp.id,
+      changes: {
+        lead_id: newFollowUp.lead_id,
+        follow_up_type: newFollowUp.follow_up_type,
+        status: newFollowUp.status,
+      },
+    });
+
     return Response.json(
       {
         success: true,
@@ -153,6 +175,9 @@ export async function PUT(request) {
     const user = await getCurrentUser(request);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!hasPermission(user, "customers.write")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -253,6 +278,19 @@ export async function PUT(request) {
     const result = await sql(updateQuery, updateValues);
     const updatedFollowUp = result[0];
 
+    await auditLog({
+      request,
+      action: "follow_up.update",
+      userId: user.id,
+      username: user.username,
+      resource: "follow_up",
+      resourceId: id,
+      changes: {
+        fields: Object.keys(body).filter((field) => field !== "id"),
+        status: updatedFollowUp.status,
+      },
+    });
+
     return Response.json({
       success: true,
       message: "Follow-up updated successfully",
@@ -274,6 +312,9 @@ export async function DELETE(request) {
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!hasPermission(user, "customers.write")) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -285,18 +326,31 @@ export async function DELETE(request) {
       );
     }
 
-    // Verify the follow-up exists
-    const existingFollowUp =
-      await sql`SELECT id FROM follow_ups WHERE id = ${id}`;
-    if (!existingFollowUp || existingFollowUp.length === 0) {
+    const deleted = await sql`
+      DELETE FROM follow_ups
+      WHERE id = ${id}
+      RETURNING id, lead_id, follow_up_type, status
+    `;
+    if (!deleted.length) {
       return Response.json(
         { success: false, error: "Follow-up not found" },
         { status: 404 },
       );
     }
 
-    // Delete the follow-up
-    await sql`DELETE FROM follow_ups WHERE id = ${id}`;
+    await auditLog({
+      request,
+      action: "follow_up.delete",
+      userId: user.id,
+      username: user.username,
+      resource: "follow_up",
+      resourceId: id,
+      changes: {
+        lead_id: deleted[0].lead_id,
+        follow_up_type: deleted[0].follow_up_type,
+        status: deleted[0].status,
+      },
+    });
 
     return Response.json({
       success: true,

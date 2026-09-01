@@ -90,6 +90,22 @@ export default function AdminAvailabilityPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-availability"] }),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, status }) => {
+      const res = await fetch("/api/availability", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Status update failed");
+      return data;
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin-availability"] }),
+    onError: (e) => setError(e.message || "Failed to update slot"),
+  });
+
   // NEW: Bulk generate mutation
   const bulkMutation = useMutation({
     mutationFn: async (payload) => {
@@ -421,10 +437,28 @@ export default function AdminAvailabilityPage() {
                       <td className="py-2 px-3">{s.notes || ""}</td>
                       <td className="py-2 px-3 text-right">
                         <button
-                          onClick={() => deleteMutation.mutate(s.id)}
-                          className="text-sm text-red-600 hover:text-red-700"
+                          onClick={() =>
+                            statusMutation.mutate({
+                              id: s.id,
+                              status: s.status === "open" ? "closed" : "open",
+                            })
+                          }
+                          disabled={statusMutation.isPending}
+                          className="mr-3 text-sm text-amber-700 hover:text-amber-800 disabled:opacity-50"
                         >
-                          Delete
+                          {s.status === "open" ? "Close" : "Reopen"}
+                        </button>
+                        <button
+                          onClick={() => deleteMutation.mutate(s.id)}
+                          disabled={Number(s.booked_count) > 0}
+                          className="text-sm text-red-600 hover:text-red-700"
+                          title={
+                            Number(s.booked_count) > 0
+                              ? "Appointment history is retained; close this slot instead"
+                              : "Delete unused slot"
+                          }
+                        >
+                          {Number(s.booked_count) > 0 ? "Retained" : "Delete"}
                         </button>
                       </td>
                     </tr>
