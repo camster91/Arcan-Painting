@@ -347,3 +347,8 @@ operations, and real external communications require explicit action-time approv
   permissions and audit create/update/delete. Availability slot creation, bulk generation, status
   changes, and deletion are audited. Slots with appointment history can no longer cascade-delete
   bookings; operators close or reopen them while deletion remains available only for unused slots.
+- 2026-09-01: Built and deployed exact scheduling-retention candidate `0a49675` to isolated Ashbi
+  staging as image `sha256:ac5cd807b7c7a358aa97063b22132dd63464ac5979be8a48d9bf13a2e4e61e7c`.
+  The full gate records 103 files and 328 tests. The live schema accepted the retention and status
+  queries, anonymous mutations were rejected at the CSRF boundary, and both staging and unchanged
+  production remain healthy with zero restarts.

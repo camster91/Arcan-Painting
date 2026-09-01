@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `d8eac46`
+Candidate revision: `0a49675`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:d8eac46`
-- Image ID: `sha256:c8c7195b61839eb20fc3e5123b54fc68a22cd125f5e8d20986282edf7f925e63`
+- Ashbi image: `arcan-painting-staging:0a49675`
+- Image ID: `sha256:ac5cd807b7c7a358aa97063b22132dd63464ac5979be8a48d9bf13a2e4e61e7c`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 101 files, 318 tests passed.
+- `npm test -- --run`: 103 files, 328 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -69,6 +69,12 @@ confirmed all five operational handoff columns: area exclusions and production a
 surface coating product, `color_name`, and sheen. The public duplicate endpoint rejects anonymous
 access with `401`; health and PWA assets remain available with `200` responses.
 
+The `0a49675` scheduling and sales-operations candidate passed its real-schema slot-retention
+query and close/reopen update. Anonymous PUT and DELETE attempts are rejected at the CSRF boundary
+with `403`. Follow-up permissions and create/update/delete audit coverage, availability mutation
+audits, appointment-history retention, and the operator close/reopen controls are covered by the
+expanded local gate. Staging and production both report zero restarts.
+
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
 images missing alternative text.
@@ -103,5 +109,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `d8eac46` (or a
+Production deployment requires explicit action-time approval naming revision `0a49675` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
