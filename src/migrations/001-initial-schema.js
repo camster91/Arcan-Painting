@@ -95,6 +95,9 @@ export async function runMigrations() {
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS won_at TIMESTAMP`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS lost_at TIMESTAMP`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS status_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketing_consent_status VARCHAR(20) DEFAULT 'unknown'`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketing_consent_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketing_consent_source VARCHAR(100)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_lead_source ON leads(lead_source) WHERE deleted_at IS NULL`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_meta_lead_id ON leads(meta_lead_id) WHERE deleted_at IS NULL`;
     await sql`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;
@@ -557,15 +560,19 @@ export async function runMigrations() {
     await sql`ALTER TABLE follow_ups ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP`;
 
     // ── Seed initial team_members from existing auth_users (added 2026-06-11)
-    const existingTeamMembers = await sql`SELECT COUNT(*)::int as count FROM team_members`;
+    const existingTeamMembers =
+      await sql`SELECT COUNT(*)::int as count FROM team_members`;
     if (existingTeamMembers[0].count === 0) {
       const users = await sql`SELECT username, role FROM auth_users`;
       for (const user of users) {
-        const namePart = user.username.split('@')[0];
-        const displayName = namePart.split(/[._-]/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+        const namePart = user.username.split("@")[0];
+        const displayName = namePart
+          .split(/[._-]/)
+          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .join(" ");
         await sql`
           INSERT INTO team_members (name, email, role)
-          VALUES (${displayName}, ${user.username}, ${user.role || 'painter'})
+          VALUES (${displayName}, ${user.username}, ${user.role || "painter"})
           ON CONFLICT (email) DO NOTHING
         `;
       }
@@ -814,7 +821,8 @@ export async function runMigrations() {
 
     // ── Seed default cold email templates ────────────────────────────────────
     // Only insert if table is empty (idempotent)
-    const existingTemplates = await sql`SELECT COUNT(*)::int as count FROM cold_email_templates`;
+    const existingTemplates =
+      await sql`SELECT COUNT(*)::int as count FROM cold_email_templates`;
     if (existingTemplates[0].count === 0) {
       await sql`
         INSERT INTO cold_email_templates (name, target_role, sequence_step, subject_template, body_template) VALUES
@@ -951,7 +959,8 @@ Arcan Painting
     // ── Seed default email template + workflow for new_lead trigger ──────
     // Required so the Meta webhook's triggerWorkflow('new_lead', ...) call
     // has a template to send and a workflow to fire.
-    const existingEmailTemplates = await sql`SELECT COUNT(*)::int as count FROM email_templates`;
+    const existingEmailTemplates =
+      await sql`SELECT COUNT(*)::int as count FROM email_templates`;
     if (existingEmailTemplates[0].count === 0) {
       await sql`
         INSERT INTO email_templates (name, subject_template, body_template) VALUES
@@ -969,9 +978,11 @@ Arcan Painting
       `;
     }
 
-    const existingEmailWorkflows = await sql`SELECT COUNT(*)::int as count FROM email_workflows`;
+    const existingEmailWorkflows =
+      await sql`SELECT COUNT(*)::int as count FROM email_workflows`;
     if (existingEmailWorkflows[0].count === 0) {
-      const newLeadTemplate = await sql`SELECT id FROM email_templates WHERE name = 'new_lead_notification' LIMIT 1`;
+      const newLeadTemplate =
+        await sql`SELECT id FROM email_templates WHERE name = 'new_lead_notification' LIMIT 1`;
       if (newLeadTemplate[0]) {
         await sql`
           INSERT INTO email_workflows (name, trigger_event, template_id, delay_hours, conditions, is_active) VALUES
@@ -979,6 +990,29 @@ Arcan Painting
         `;
       }
     }
+
+    // Consent-aware lifecycle templates and workflows ship inactive. The owner must
+    // review content and explicitly activate them before the gated queue can use them.
+    await sql`
+      INSERT INTO email_templates (name, display_name, subject_template, body_template, text_template, is_active) VALUES
+      ('estimate_follow_up', 'Estimate follow-up', 'Any questions about your Arcan Painting estimate?', '<p>Hi {{lead_name}},</p><p>We wanted to check whether you have any questions about estimate {{reference}}.</p>', 'Hi {{lead_name}}, we wanted to check whether you have any questions about estimate {{reference}}.', true),
+      ('dormant_lead', 'Dormant lead reactivation', 'Still planning your painting project?', '<p>Hi {{lead_name}},</p><p>If your painting project is still on your list, we would be happy to help when the timing is right.</p>', 'Hi {{lead_name}}, if your painting project is still on your list, we would be happy to help.', true),
+      ('review_request', 'Review request', 'How did we do on {{reference}}?', '<p>Hi {{lead_name}},</p><p>Thank you for choosing Arcan Painting for {{reference}}. We would value your honest feedback.</p>', 'Hi {{lead_name}}, thank you for choosing Arcan Painting. We would value your honest feedback.', true),
+      ('referral_request', 'Referral request', 'Know someone who needs a painter?', '<p>Hi {{lead_name}},</p><p>If you know someone who would benefit from careful painting work, we would appreciate an introduction.</p>', 'Hi {{lead_name}}, if you know someone who needs a painter, we would appreciate an introduction.', true)
+      ON CONFLICT (name) DO NOTHING
+    `;
+    await sql`
+      INSERT INTO email_workflows (name, trigger_event, template_id, delay_hours, conditions, is_active)
+      SELECT seed.name, seed.event, t.id, 0, '{"requires_marketing_consent":true}'::jsonb, false
+      FROM (VALUES
+        ('estimate_follow_up_consent', 'estimate_follow_up', 'estimate_follow_up'),
+        ('dormant_lead_consent', 'dormant_lead', 'dormant_lead'),
+        ('review_request_consent', 'review_request', 'review_request'),
+        ('referral_request_consent', 'referral_request', 'referral_request')
+      ) AS seed(name, event, template_name)
+      JOIN email_templates t ON t.name = seed.template_name
+      WHERE NOT EXISTS (SELECT 1 FROM email_workflows existing WHERE existing.name = seed.name)
+    `;
 
     // ── linkedin_posts ─────────────────────────────────────────────────────
     await sql`
@@ -1052,7 +1086,8 @@ Arcan Painting
     `;
 
     // ── Seed default workflow skills ────────────────────────────────────
-    const existingSkills = await sql`SELECT COUNT(*)::int as count FROM workflow_skills`;
+    const existingSkills =
+      await sql`SELECT COUNT(*)::int as count FROM workflow_skills`;
     if (existingSkills[0].count === 0) {
       await sql`
         INSERT INTO workflow_skills (name, description, category, trigger_type, trigger_config, actions, is_active) VALUES
@@ -1179,7 +1214,8 @@ Arcan Painting
     `;
 
     // ── Seed citation directories ──────────────────────────────────────────
-    const existingDirs = await sql`SELECT COUNT(*)::int as count FROM citation_directories`;
+    const existingDirs =
+      await sql`SELECT COUNT(*)::int as count FROM citation_directories`;
     if (existingDirs[0].count === 0) {
       await sql`
         INSERT INTO citation_directories (name, url, category, domain_authority, is_free, submission_url, priority) VALUES
@@ -1299,7 +1335,9 @@ Arcan Painting
         const { hash: bootstrapHash } = await import("argon2");
         const hash = await bootstrapHash(bootstrapPassword);
         await sql`INSERT INTO auth_users (username, password, role, password_is_hashed) VALUES (${bootstrapEmail}, ${hash}, 'owner', true)`;
-        console.log(`[bootstrap] Created initial owner account: ${bootstrapEmail}`);
+        console.log(
+          `[bootstrap] Created initial owner account: ${bootstrapEmail}`,
+        );
       }
     }
 
@@ -1418,14 +1456,16 @@ GTA homes swing from humid summers to dry winters. That affects paint performanc
 **Lower sheen on large surfaces, higher sheen on trim and details.** Ceilings = flat. Walls = eggshell. Trim = semi-gloss. Cabinets = satin or semi-gloss.
 
 Follow that framework and you'll never regret a paint job.`,
-      cover_image_url: "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
       meta_description:
         "Eggshell vs satin vs semi-gloss: a Toronto painter's guide to choosing the right paint finish for every room in your GTA home.",
       tags: ["interior-painting", "toronto", "paint-finish", "guide"],
     },
     {
       slug: "exterior-paint-prep-toronto-winter",
-      title: "Why Skipping Prep Work Is the Costliest Mistake in Exterior Painting",
+      title:
+        "Why Skipping Prep Work Is the Costliest Mistake in Exterior Painting",
       excerpt:
         "Pressure washing, scraping, priming — every step that gets skipped shows up 18 months later. Here's exactly what our crews do before the first brush stroke.",
       body: `## The Horror Story We Clean Up Every Spring
@@ -1489,7 +1529,8 @@ The ideal painting window in the GTA:
 - **Never** when rain is forecast within 24 hours
 
 The most common failure we see from other companies: painting in October because "the customer wanted it done." The paint didn't fully cure before the first frost. Result: complete peel job the following spring.`,
-      cover_image_url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",
       meta_description:
         "Pressure washing, scraping, priming — every skipped prep step shows up within 18 months. Here's exactly what proper exterior paint prep looks like.",
       tags: ["exterior-painting", "prep", "toronto", "guide"],
@@ -1554,7 +1595,8 @@ The "greige" category has been diluted by thousands of variants, but Manchester 
 ## Our Recommendation
 
 If you're stuck, start with one of the five above. They're proven in GTA conditions, work with the architectural stock we have in this city, and won't look dated in five years.`,
-      cover_image_url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
       meta_description:
         "We painted 200+ GTA homes in 2025-2026. These are the five colors that showed up most often — and why they work in Toronto's climate and architecture.",
       tags: ["color-guide", "toronto", "trends", "interior-painting"],
@@ -1652,14 +1694,16 @@ Standard 8 ft: Normal rolling. Included in standard rates.
 5. **Furniture moving terms** — Who moves what, and what happens if something is damaged?
 
 A quote that doesn't answer these questions is a quote you shouldn't sign.`,
-      cover_image_url: "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1562663474-6cbb3eaace17?w=800&q=80",
       meta_description:
         "What interior painting actually costs in the GTA in 2026. Room-by-room breakdown from real Arcan quotes. Includes the variables that make quotes vary by 4x.",
       tags: ["cost-guide", "toronto", "interior-painting", "guide"],
     },
     {
       slug: "diy-vs-hire-professional-painter",
-      title: "DIY vs. Hiring a Pro: An Honest Cost-Benefit Analysis for GTA Homeowners",
+      title:
+        "DIY vs. Hiring a Pro: An Honest Cost-Benefit Analysis for GTA Homeowners",
       excerpt:
         "We get calls from people who just want a quote — and then they disappear for three months and come back frustrated. Here's the math, without the sales pitch.",
       body: `## Why We Write This Honestly
@@ -1717,7 +1761,8 @@ For a straightforward repaint in good condition, with no major prep, the DIY cos
 We think professional painting is worth it for most interior work above 600 sq ft, any exterior work, and any situation where the walls need more than minor patching. We also think DIY is completely reasonable for a single room refresh with similar colors and good wall conditions.
 
 The homeowners who get frustrated are the ones who underestimate the time and skill required, and overestimate their ability to fix mistakes once made. If you're honest with yourself about your skill level and available time, you'll make the right call — whether that's calling us or doing it yourself.`,
-      cover_image_url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80",
       meta_description:
         "An honest cost-benefit analysis of DIY vs. hiring a professional painter in the GTA. Real numbers, no sales pitch. When it's worth it to DIY and when it isn't.",
       tags: ["diy-vs-pro", "toronto", "guide", "cost-guide"],
@@ -1860,8 +1905,8 @@ async function ensureMissingTables() {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
-    await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS customer_visible BOOLEAN DEFAULT FALSE`;
-    await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+  await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS customer_visible BOOLEAN DEFAULT FALSE`;
+  await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
 
   // Field issues turn site discoveries and blockers into owned, auditable work.
   await sql`

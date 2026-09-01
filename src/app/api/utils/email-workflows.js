@@ -6,6 +6,10 @@ const supportedEvents = new Set([
   "invoice_sent",
   "payment_received",
   "project_start",
+  "estimate_follow_up",
+  "dormant_lead",
+  "review_request",
+  "referral_request",
 ]);
 
 /**
@@ -13,12 +17,21 @@ const supportedEvents = new Set([
  * This never sends email inline. Production automation remains inert unless the
  * operator explicitly enables EMAIL_AUTOMATIONS_ENABLED=true and configures the worker.
  */
-export async function queueEmailWorkflows({ event, recipientEmail, data = {}, relatedType, relatedId }) {
+export async function queueEmailWorkflows({
+  event,
+  recipientEmail,
+  data = {},
+  relatedType,
+  relatedId,
+}) {
   if (process.env.EMAIL_AUTOMATIONS_ENABLED !== "true") {
     return { enabled: false, queued: 0 };
   }
-  if (!supportedEvents.has(event)) throw new Error(`Unsupported email workflow event: ${event}`);
-  const recipient = String(recipientEmail || "").trim().toLowerCase();
+  if (!supportedEvents.has(event))
+    throw new Error(`Unsupported email workflow event: ${event}`);
+  const recipient = String(recipientEmail || "")
+    .trim()
+    .toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
     return { enabled: true, queued: 0, reason: "missing_recipient" };
   }

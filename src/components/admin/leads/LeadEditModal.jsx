@@ -26,6 +26,8 @@ export default function LeadEditModal({
     project_description: lead?.project_description || "",
     notes: lead?.notes || "",
     lost_reason: lead?.lost_reason || "",
+    marketing_consent_status: lead?.marketing_consent_status || "unknown",
+    marketing_consent_source: lead?.marketing_consent_source || "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -337,6 +339,36 @@ export default function LeadEditModal({
                 />
               </div>
             )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Marketing consent
+                </label>
+                <select
+                  name="marketing_consent_status"
+                  value={form.marketing_consent_status}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="unknown">Unknown — do not market</option>
+                  <option value="opted_in">Opted in</option>
+                  <option value="opted_out">Opted out</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Consent source
+                </label>
+                <input
+                  name="marketing_consent_source"
+                  value={form.marketing_consent_source}
+                  onChange={handleChange}
+                  placeholder="Form, email, phone…"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg"
+                />
+              </div>
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">

@@ -52,7 +52,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
 | Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains |
-| Marketing operations | Partial | Durable source/campaign/landing-page/service attribution and cleared-revenue funnel reporting exist; platform connections, nurture, reviews, and referrals remain incomplete |
+| Marketing operations | Partial | Durable attribution, cleared-revenue funnel reporting, consent-aware follow-up/reactivation/review/referral queues, inactive seed templates, and send-time consent rechecks exist; external platform connections remain approval-gated |
 | Owner reporting | Partial | Real period trends, sales funnel, attribution, lost reasons, job margin, cash, commitments, and receivable aging exist; cross-project margin reporting remains incomplete |
 | AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
 | Security, audit, recovery | Partial | Auth, CSRF, rate limits, audit and recovery routes exist; full permission, privacy, restore, and field-device validation remains |
@@ -107,7 +107,7 @@ gross margin reconcile to source transactions.
 
 - [x] Report source, campaign, landing page, service, and lead-to-revenue conversion.
 - [x] Add qualified-lead, estimate, win/loss, sales-cycle, close-rate, average-ticket, and lost-reason reporting.
-- [ ] Add consent-aware nurture, estimate follow-up, dormant-lead reactivation, review requests, referrals, and repeat-customer campaigns.
+- [x] Add consent-aware nurture, estimate follow-up, dormant-lead reactivation, review requests, referrals, and repeat-customer campaigns.
 - [ ] Add approved portfolio/case-study workflow and local search profile operations without inventing business proof.
 - [ ] Integrate ad, analytics, call-tracking, Search Console, and business-profile sources only after access and identifier approval.
 
@@ -218,3 +218,7 @@ operations, and real external communications require explicit action-time approv
   timestamps and required lost reasons now support an owner funnel by source, campaign,
   landing page, and service, with qualified/estimate/win conversion, sales cycle, average
   ticket, close rate, spend efficiency, cleared revenue, and CSV export.
+- 2026-09-01: Added explicit unknown/opted-in/opted-out consent records plus owner previews
+  for estimate follow-up, dormant-lead reactivation, review, and referral candidates.
+  Lifecycle templates and workflows seed inactive; queueing requires owner confirmation and
+  the delayed worker rechecks consent immediately before delivery, cancelling unsafe jobs.

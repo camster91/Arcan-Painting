@@ -124,6 +124,8 @@ export const schemas = {
       .optional().nullable(),
     lead_source: yup.string().max(100).optional().nullable(),
     lost_reason: yup.string().max(255).optional().nullable(),
+    marketing_consent_status: yup.string().oneOf(["unknown", "opted_in", "opted_out"]).optional(),
+    marketing_consent_source: yup.string().max(100).optional().nullable(),
     estimated_value: yup.number().min(0).optional().nullable(),
     follow_up_date: dateString,
     tags: yup.array().of(yup.string().max(50)).max(20, "Too many tags").optional().nullable(),

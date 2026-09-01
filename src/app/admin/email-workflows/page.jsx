@@ -10,6 +10,7 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
+import MarketingAutomationQueue from "@/components/admin/MarketingAutomationQueue";
 
 export default function EmailWorkflowsAdminPage() {
   const qc = useQueryClient();
@@ -155,14 +156,26 @@ export default function EmailWorkflowsAdminPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {workflowsData?.execution_enabled ? (
-          <div role="status" className="mb-6 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-900">
-            <strong>Automation enabled:</strong> active workflows are queued after supported business events and delivered by the configured worker.
+          <div
+            role="status"
+            className="mb-6 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-900"
+          >
+            <strong>Automation enabled:</strong> active workflows are queued
+            after supported business events and delivered by the configured
+            worker.
           </div>
         ) : (
-          <div role="status" className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-            <strong>Configuration only:</strong> automatic trigger execution is disabled. Saving an active workflow will not send customer email until the provider, consent rules, worker, and staging delivery are approved.
+          <div
+            role="status"
+            className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"
+          >
+            <strong>Configuration only:</strong> automatic trigger execution is
+            disabled. Saving an active workflow will not send customer email
+            until the provider, consent rules, worker, and staging delivery are
+            approved.
           </div>
         )}
+        <MarketingAutomationQueue />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <form
             onSubmit={onSubmit}
@@ -193,6 +206,10 @@ export default function EmailWorkflowsAdminPage() {
                 <option value="invoice_sent">Invoice Sent</option>
                 <option value="payment_received">Payment Received</option>
                 <option value="project_start">Project Start</option>
+                <option value="estimate_follow_up">Estimate Follow-up</option>
+                <option value="dormant_lead">Dormant Lead Reactivation</option>
+                <option value="review_request">Review Request</option>
+                <option value="referral_request">Referral Request</option>
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">

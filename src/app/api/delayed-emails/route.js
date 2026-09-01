@@ -23,13 +23,18 @@ const MAX_ATTEMPTS = 3;
 
 export async function POST(request) {
   if (process.env.EMAIL_AUTOMATIONS_ENABLED !== "true") {
-    return Response.json({ error: "Email automations are disabled" }, { status: 503 });
+    return Response.json(
+      { error: "Email automations are disabled" },
+      { status: 503 },
+    );
   }
 
   // Allow a configured cron secret OR an explicit owner action.
   const cronSecret = request.headers.get("x-cron-secret");
   const configuredCronSecret = process.env.CRON_SECRET;
-  const validCron = Boolean(configuredCronSecret && cronSecret && cronSecret === configuredCronSecret);
+  const validCron = Boolean(
+    configuredCronSecret && cronSecret && cronSecret === configuredCronSecret,
+  );
   if (!validCron) {
     const user = await getCurrentUser(request);
     if (!user || user.role !== "owner") return unauthorizedResponse();
@@ -48,7 +53,8 @@ export async function POST(request) {
     `;
 
     // Find pending emails whose time has come. Skip rows that have failed too many times.
-    const due = await sql.transaction(async (txn) => txn`
+    const due = await sql.transaction(
+      async (txn) => txn`
       UPDATE delayed_emails SET status = 'processing', processing_started_at = CURRENT_TIMESTAMP
       WHERE id IN (
         SELECT id FROM delayed_emails
@@ -59,7 +65,8 @@ export async function POST(request) {
       )
       RETURNING id, workflow_id, template_name, recipient_email, data, scheduled_for,
         attempts, related_type, related_id
-    `);
+    `,
+    );
 
     if (due.length === 0) {
       return Response.json({ processed: 0, message: "No delayed emails due" });
@@ -71,6 +78,16 @@ export async function POST(request) {
 
     for (const row of due) {
       try {
+        if (row.data?.requires_marketing_consent) {
+          const leadId = Number(row.data.lead_id);
+          const [lead] = Number.isInteger(leadId)
+            ? await sql`SELECT marketing_consent_status FROM leads WHERE id = ${leadId} AND deleted_at IS NULL`
+            : [];
+          if (lead?.marketing_consent_status !== "opted_in") {
+            await sql`UPDATE delayed_emails SET status = 'cancelled', last_error = 'Marketing consent is not active', processing_started_at = NULL WHERE id = ${row.id}`;
+            continue;
+          }
+        }
         await sendTemplatedEmail(
           row.template_name,
           row.data || {},
@@ -78,7 +95,7 @@ export async function POST(request) {
           {
             relatedType: row.related_type,
             relatedId: row.related_id,
-          }
+          },
         );
         await sql`
           UPDATE delayed_emails
@@ -112,7 +129,7 @@ export async function POST(request) {
     console.error("delayed-emails worker error:", error);
     return Response.json(
       { error: "Worker failed", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

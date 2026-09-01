@@ -304,6 +304,8 @@ export async function PUT(request) {
       notes,
       tags,
       lost_reason,
+      marketing_consent_status,
+      marketing_consent_source,
     } = body;
 
     if (!id) {
@@ -369,6 +371,13 @@ export async function PUT(request) {
     if (lost_reason !== undefined) {
       setClauses.push(`lost_reason = $${i++}`);
       values.push(lost_reason?.trim() || null);
+    }
+    if (marketing_consent_status !== undefined) {
+      setClauses.push(`marketing_consent_status = $${i++}`);
+      values.push(marketing_consent_status);
+      setClauses.push(`marketing_consent_at = CURRENT_TIMESTAMP`);
+      setClauses.push(`marketing_consent_source = $${i++}`);
+      values.push(marketing_consent_source?.trim() || "owner_recorded");
     }
     if (lead_source !== undefined) {
       setClauses.push(`lead_source = $${i++}`);
