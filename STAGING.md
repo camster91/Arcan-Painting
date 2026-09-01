@@ -1,63 +1,88 @@
 # Staging Verification
 
-Verified: 2026-08-28
-Verified code revision: PR branch through `c2d88a7`
-Preview: `https://along-upgrades-cashiers-florist.trycloudflare.com`
+Verified: 2026-08-31
 
-This is a reversible Cloudflare Quick Tunnel to the local production build. It has no
-uptime guarantee and remains available only while the local server and tunnel are
-running. It does not change DNS, Coolify, or the production website.
+Verified application revision: `bc3335e`
 
-## Isolation and indexing
+Branch: `codex/seo-geo-aeo-cro-staging`
 
-- `PUBLIC_SITE_MODE=staging` is enabled.
-- Every page emits `noindex, nofollow`.
-- `/robots.txt` returns `User-agent: *` and `Disallow: /`.
-- No production database, Gmail, Telegram, analytics ID, Sentry DSN, or AI key is
-  connected. Submission persistence is therefore intentionally unavailable.
+Preview: `https://booth-supports-engines-dad.trycloudflare.com`
+
+This preview runs the repository's production Node container on the Ashbi VPS. It is
+isolated from the production Arcan containers, database, port, and Docker network. A
+Cloudflare Quick Tunnel provides HTTPS without changing production DNS or routing.
+The tunnel has no uptime guarantee and its generated hostname can change after a
+restart, so this is a review environment rather than a permanent public hostname.
+
+## Isolation, rollback, and indexing
+
+- App container: `arcan-staging-app`, image `arcan-painting-staging:bc3335e`, bound to
+  VPS loopback port `3215` only.
+- Database: `arcan-staging-db`, PostgreSQL 16 on the isolated
+  `arcan-staging-net` Docker network with staging-only credentials.
+- Production `arcan-app`, `arcan-db`, port `3000`, DNS, and Caddy routing were not
+  changed.
+- The previous app container and image remain stopped as
+  `arcan-staging-app-86aa737` for immediate rollback.
+- `PUBLIC_SITE_MODE=staging` is enabled. Every rendered page emits
+  `noindex, nofollow`; `/robots.txt` disallows `/`.
+- No GA4 measurement ID, Gmail sender, Telegram transport, Sentry DSN, or AI key is
+  connected. The source currently implements Gmail and Telegram delivery as explicit
+  no-ops; new inquiries remain visible through the persisted CRM lead and in-app
+  notification.
 
 ## Verified scope
 
-- HTTPS and 200 responses for the homepage, five service pages, contact, privacy,
-  sitemap, robots, and favicon.
-- Homepage on 390x844 and 1440x900: one H1, modal opens and closes, no browser page
-  errors, staging noindex present.
-- All public page titles, descriptions, canonicals, H1 counts, and JSON-LD parsed in a
-  browser crawl. The quote page H1 defect found by this crawl was corrected.
-- Production dependency audit: zero known vulnerabilities.
-- GitGuardian secret check: passed.
+- HTTPS and HTTP 200 for all nine sitemap pages, `/robots.txt`, `/sitemap.xml`, the
+  configured favicon, and `/api/health`; a deliberately invalid page returns 404.
+- Browser crawl of every sitemap page: one H1, non-empty title and description,
+  canonical, staging noindex, parseable JSON-LD, no page errors, and no broken links
+  among ten discovered internal URLs.
+- Homepage at 1440x900 and 390x844: zero horizontal overflow; the project dialog opens,
+  traps interaction, closes with Escape, and produces no browser page errors.
+- Real isolated contact and quote submissions return success, persist CRM leads, and
+  create `new_lead` in-app notifications. Invalid contact data returns HTTP 400 and
+  campaign attribution persists in the notification payload.
+- The live quote response at `bc3335e` was rechecked after deployment and contains no
+  unapproved response-time promise.
+- Authenticated admin verification used a temporary staging-only operator: secure
+  sign-in succeeded, the Dashboard rendered, and the protected leads endpoint returned
+  200. The operator and its sessions were removed immediately afterward.
+- Dependency audit: zero known production-package vulnerabilities. GitGuardian passed
+  against the PR revision.
 - Local release verification: typecheck, 50 test files / 149 tests, production build,
-  desktop/mobile Playwright smoke suite.
-- Mobile Lighthouse through the staging tunnel: performance 84, accessibility 100,
-  best practices 100, FCP 2.1 s, LCP 3.8 s, TBT 0 ms, CLS 0, 634 KiB transferred.
-  The SEO score is intentionally suppressed by staging `noindex`; production metadata
-  scored 100 in the local production-mode audit.
+  lint with no errors, and desktop/mobile Playwright smoke tests.
+- Mobile Lighthouse 12.8.2 through this staging tunnel: performance 86,
+  accessibility 100, best practices 100, FCP 2.2 s, LCP 3.7 s, TBT 0 ms, CLS 0,
+  and 634 KiB transferred. The staging SEO score is 69 because `noindex` is
+  intentionally enabled; production-mode metadata tests and the earlier local audit
+  pass the indexability checks.
 
-## QA verdict
+## Release-gate result
 
-**Ready with conditions** for owner review and content approval. It is not yet ready for
-production publication because the staging integrations below are unavailable and the
-business-proof and production-infrastructure decisions in `REMEDIATION.md` remain open.
+**Ready with conditions** for owner review, business-proof approval, and a deliberate
+production publication decision. It is not approval to merge or deploy production.
 
-## Known limits and rollback
+Remaining external conditions:
 
-- A durable staging host remains needed; the historical Vercel preview integration did
-  not respond to the branch push. An anonymous Vercel deployment was also tested on
-  2026-08-28: its build completed, but all routes returned HTTP 500
-  `FUNCTION_INVOCATION_FAILED` because Vercel's zero-config React Router runtime did not
-  package the repository's custom Hono server. The temporary deployment was rejected as
-  a staging candidate and no project token was retained in the repository.
-- The supported deployment artifact is the repository's Node 22.20 container. The PR
-  workflow is configured to publish `ghcr.io/camster91/arcan-painting:pr-109`. GitHub
-  Actions were enabled on 2026-08-28, but GitHub rejected both hosted jobs before any
-  step ran because recent account payments failed or the Actions spending limit must be
-  increased. The repository's `Preview` environment currently has no secrets or
-  variables. The manual `deploy-preview.yml` workflow is bound to that environment and
-  validates health, `robots.txt`, and page-level `noindex` after deployment. After
-  billing access is restored and the Preview environment is configured, it can run the
-  PR image in a separate Coolify staging service with `PUBLIC_SITE_MODE=staging`,
-  isolated credentials, and a non-production hostname.
-- End-to-end lead persistence, notifications, analytics vendor delivery, authenticated
-  admin, and production headers require isolated staging credentials before they can be
-  verified safely.
-- Stop the `cloudflared` and local Node processes to remove this preview immediately.
+- Supply and approve the business proof listed in `REMEDIATION.md`, including genuine
+  service areas and any response-time commitment. Until then, the site makes no SLA
+  promise and location pages stay out of the sitemap.
+- Configure an approved GA4 measurement ID and verify vendor-side receipt if analytics
+  is wanted. The vendor-neutral event layer and attribution persistence work without it.
+- Exercise the tested Caddy security-header configuration at the production ingress
+  during the production release check. This Quick Tunnel terminates directly at the
+  staging app and therefore does not validate production Caddy behavior.
+- Decide whether an external notification transport is required. Gmail and Telegram
+  are not pending credentials in the current implementation; they were removed and are
+  no-op integrations. CRM persistence plus in-app notification is the verified path.
+- Obtain explicit owner approval before merge, production deployment, or DNS changes.
+
+## Operations
+
+- Health: `curl -fsS http://127.0.0.1:3215/api/health` from the VPS.
+- Rollback: stop and remove only `arcan-staging-app`, rename
+  `arcan-staging-app-86aa737` back to `arcan-staging-app`, and start it. The isolated
+  staging database can remain in place.
+- Teardown: stop and remove only the `arcan-staging-*` app/database/tunnel resources and
+  `arcan-staging-net`. Do not target production `arcan-app` or `arcan-db`.

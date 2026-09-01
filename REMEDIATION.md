@@ -1,6 +1,7 @@
 # Arcan Painting Remediation Roadmap
 
-Last reconciled: 2026-08-28  
+Last reconciled: 2026-08-31
+
 Branch: `codex/seo-geo-aeo-cro-staging`  
 Status: active source of truth
 
@@ -29,7 +30,7 @@ production approval.
 
 - 50 test files and 149 tests pass.
 - Type checking passes.
-- Lint passes with 319 pre-existing warnings and no errors.
+- Lint passes with 320 pre-existing warnings and no errors.
 - Production Lighthouse mobile baseline: performance 60, accessibility 93,
   best practices 96, SEO checklist 100.
 - Production technical/content/CRO audit is stored outside this checkout in the Codex
@@ -74,7 +75,8 @@ production approval.
 - [x] Do not add project city/postal area and timing fields in this release: the current
       CRM has no dedicated attribution-safe fields and the extra friction is not yet
       supported by funnel evidence. Scope remains available in project description.
-- [ ] State response expectations only after the client approves an operational SLA.
+- [x] Remove unapproved response-time promises. State a specific response expectation
+      only after the client approves an operational SLA.
 - [x] Add tests for event payloads, form semantics, validation, and successful handoff.
 
 ## Phase 4 — Accessibility and performance
@@ -98,20 +100,28 @@ production approval.
 - [x] Verify desktop/mobile public pages, client-side form validation and failure states,
       metadata, schema, redirects, staging headers, analytics debug events, and
       accessibility on the isolated preview.
-- [ ] Verify database persistence, outbound notifications, vendor-side analytics
-      receipt, authenticated admin, and production-ingress headers after isolated
-      staging credentials and a durable host are supplied.
+- [x] Verify isolated database persistence and in-app `new_lead` notifications through
+      real contact and quote submissions.
+- [x] Verify authenticated admin sign-in, dashboard rendering, and protected lead access
+      with a temporary staging-only operator, then remove that operator and its sessions.
+- [x] Confirm the current outbound-email and Telegram implementations are explicit
+      no-ops rather than credential-blocked transports; record CRM persistence and
+      in-app notifications as the current operational handoff.
+- [ ] Verify vendor-side analytics receipt after an approved measurement ID is supplied;
+      the vendor-neutral events and persisted attribution are already verified.
+- [ ] Exercise production-ingress security headers during the production release check;
+      the Caddy configuration is test-covered, while the staging Quick Tunnel bypasses
+      Caddy by design.
 - [x] Run independent client-deliverable QA and reconcile every roadmap checkbox.
 - [x] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
       production approval request.
 
 ## External approvals and evidence still required
 
-- GitHub Actions are enabled, but GitHub rejected hosted jobs before execution because
-  recent account payments failed or the Actions spending limit must be increased. The
-  repository `Preview` environment also requires isolated staging host identifiers and
-  credentials before a durable preview workflow can be connected without reusing
-  production infrastructure.
+- GitHub-hosted CI is not a release dependency for this branch. At the owner's direction,
+  the exact application revision was built and verified in an isolated container on the
+  Ashbi VPS. Native GitHub jobs still fail before execution because of account billing
+  or spending-limit state, so their red status is not application test evidence.
 - Valid certificate and redirect for `www.arcanpainting.ca` require production ingress
   or DNS authority and are not part of the staging code change.
 - GA4/Search Console/Google Business Profile/Bing access and identifiers are not present.
