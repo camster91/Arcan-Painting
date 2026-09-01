@@ -280,3 +280,8 @@ operations, and real external communications require explicit action-time approv
   Root cause was an explicit Docker ignore for `public/sw.js` plus a missing manifest and
   install icons. The runtime artifact now includes the worker, a field-focused manifest,
   192/512 install icons, and the notification badge; reachability must be re-proven after rebuild.
+- 2026-09-01: Rebuilt exact PWA artifact candidate `cd0a963` on isolated Ashbi staging.
+  `/sw.js`, `/manifest.json`, both install icons, and the notification badge now return `200`
+  with correct JavaScript, JSON, and PNG media types. Image
+  `sha256:cd973d974ed14dc096acb2d53100d7bb50c22fb683fff8facc5449c69ae56756`
+  is healthy; the gate records 89 files and 266 tests; production remains unchanged.

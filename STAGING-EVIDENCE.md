@@ -4,14 +4,14 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `124a4ec`
+Candidate revision: `cd0a963`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:124a4ec`
-- Image ID: `sha256:73b9f4e8b7e4a84ba3b7bbbdec7d05b0bb9cf9a0452c9523353939d1d5109cad`
-- OCI revision label: `124a4ec`
+- Ashbi image: `arcan-painting-staging:cd0a963`
+- Image ID: `sha256:cd973d974ed14dc096acb2d53100d7bb50c22fb683fff8facc5449c69ae56756`
+- OCI revision label: `cd0a963`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -20,7 +20,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 89 files, 265 tests passed.
+- `npm test -- --run`: 89 files, 266 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -42,6 +42,9 @@ The following were checked against the isolated origin through a private SSH tun
 | unknown API route | `404 application/json` |
 | `/admin` | `302` to sign-in |
 | `/api/admin/privacy` | `401 application/json` |
+| `/sw.js` | `200 text/javascript` |
+| `/manifest.json` | `200 application/json` |
+| `/icons/icon-192x192.png`, `/icons/icon-512x512.png` | `200 image/png` |
 
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
@@ -77,5 +80,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `124a4ec` (or a
+Production deployment requires explicit action-time approval naming revision `cd0a963` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.
