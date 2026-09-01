@@ -37,15 +37,24 @@ export function validateLeadInput({
     ["Name", name, PUBLIC_LEAD_FIELD_LIMITS.name],
     ["Email", email, PUBLIC_LEAD_FIELD_LIMITS.email],
     ["Phone", phone, PUBLIC_LEAD_FIELD_LIMITS.phone],
-    ["Service type", serviceType ?? service_type, PUBLIC_LEAD_FIELD_LIMITS.serviceType],
-    ["Project description", projectDescription ?? project_description, PUBLIC_LEAD_FIELD_LIMITS.projectDescription],
+    [
+      "Service type",
+      serviceType ?? service_type,
+      PUBLIC_LEAD_FIELD_LIMITS.serviceType,
+    ],
+    [
+      "Project description",
+      projectDescription ?? project_description,
+      PUBLIC_LEAD_FIELD_LIMITS.projectDescription,
+    ],
     ["Address", address, PUBLIC_LEAD_FIELD_LIMITS.address],
   ];
 
   for (const [label, value, limit] of fields) {
     if (value == null || value === "") continue;
     if (typeof value !== "string") return `${label} must be text`;
-    if (value.length > limit) return `${label} must be ${limit} characters or fewer`;
+    if (value.length > limit)
+      return `${label} must be ${limit} characters or fewer`;
   }
 
   return null;
@@ -87,7 +96,8 @@ export async function insertLead({
   const _phone = (phone || "").trim();
   const _serviceType = serviceType || service_type;
   const _projectDescription = projectDescription ?? project_description ?? null;
-  const _preferredContact = preferredContact || preferred_contact || (_email ? "email" : "phone");
+  const _preferredContact =
+    preferredContact || preferred_contact || (_email ? "email" : "phone");
   const _address = address || null;
   const _leadSource = leadSource || lead_source || "website";
   const _metaLeadId = metaLeadId || meta_lead_id || null;
@@ -103,7 +113,7 @@ export async function insertLead({
     const result = await tx`
       INSERT INTO leads (
         name, email, phone, service_type, project_description,
-        preferred_contact, address, status, lead_source, meta_lead_id
+        preferred_contact, address, status, lead_source, meta_lead_id, attribution
       ) VALUES (
         ${_name},
         ${_email},
@@ -114,7 +124,8 @@ export async function insertLead({
         ${_address},
         'new',
         ${_leadSource},
-        ${_metaLeadId}
+        ${_metaLeadId},
+        ${JSON.stringify(attribution || {})}::jsonb
       )
       RETURNING id
     `;

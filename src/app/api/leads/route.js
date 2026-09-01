@@ -57,8 +57,10 @@ export async function POST(request) {
     }
 
     // Sanitize lengths
-    if (body.name.trim().length > 255) return Response.json({ error: "Name too long" }, { status: 400 });
-    if (body.email.trim().length > 255) return Response.json({ error: "Email too long" }, { status: 400 });
+    if (body.name.trim().length > 255)
+      return Response.json({ error: "Name too long" }, { status: 400 });
+    if (body.email.trim().length > 255)
+      return Response.json({ error: "Email too long" }, { status: 400 });
 
     // Calculate follow-up date (24 hours from now)
     const followUpDate = new Date();
@@ -279,7 +281,10 @@ export async function PUT(request) {
     }
 
     // Validate request body with yup schema
-    const [body, validationError] = await validateBody(request, schemas.leadUpdate);
+    const [body, validationError] = await validateBody(
+      request,
+      schemas.leadUpdate,
+    );
     if (validationError) return validationError;
 
     const {
@@ -298,13 +303,15 @@ export async function PUT(request) {
       project_description,
       notes,
       tags,
+      lost_reason,
     } = body;
 
     if (!id) {
       return Response.json({ error: "Lead ID is required" }, { status: 400 });
     }
 
-    const exists = await sql`SELECT id FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
+    const exists =
+      await sql`SELECT id FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
     if (!exists || exists.length === 0) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }
@@ -334,8 +341,34 @@ export async function PUT(request) {
       values.push(preferred_contact || contact_method);
     }
     if (status !== undefined) {
+      if (
+        status === "lost" &&
+        (!lost_reason || lost_reason.trim().length < 3)
+      ) {
+        return Response.json(
+          { error: "A lost reason of at least 3 characters is required" },
+          { status: 400 },
+        );
+      }
       setClauses.push(`status = $${i++}`);
       values.push(status);
+      setClauses.push(`status_changed_at = CURRENT_TIMESTAMP`);
+      if (status === "qualified")
+        setClauses.push(
+          `qualified_at = COALESCE(qualified_at, CURRENT_TIMESTAMP)`,
+        );
+      if (status === "proposal_sent")
+        setClauses.push(
+          `proposal_sent_at = COALESCE(proposal_sent_at, CURRENT_TIMESTAMP)`,
+        );
+      if (status === "won")
+        setClauses.push(`won_at = COALESCE(won_at, CURRENT_TIMESTAMP)`);
+      if (status === "lost")
+        setClauses.push(`lost_at = COALESCE(lost_at, CURRENT_TIMESTAMP)`);
+    }
+    if (lost_reason !== undefined) {
+      setClauses.push(`lost_reason = $${i++}`);
+      values.push(lost_reason?.trim() || null);
     }
     if (lead_source !== undefined) {
       setClauses.push(`lead_source = $${i++}`);
@@ -408,7 +441,8 @@ export async function DELETE(request) {
     }
 
     // Check if lead exists and is not already deleted
-    const existingLead = await sql`SELECT id, name FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
+    const existingLead =
+      await sql`SELECT id, name FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
     if (!existingLead || existingLead.length === 0) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }

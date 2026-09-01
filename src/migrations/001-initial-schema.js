@@ -88,6 +88,13 @@ export async function runMigrations() {
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS qualification_notes TEXT`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMP`;
     await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_contact_method VARCHAR(20)`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS attribution JSONB DEFAULT '{}'::jsonb`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS lost_reason VARCHAR(255)`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS proposal_sent_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS won_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS lost_at TIMESTAMP`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS status_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_lead_source ON leads(lead_source) WHERE deleted_at IS NULL`;
     await sql`CREATE INDEX IF NOT EXISTS idx_leads_meta_lead_id ON leads(meta_lead_id) WHERE deleted_at IS NULL`;
     await sql`ALTER TABLE auth_sessions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL`;

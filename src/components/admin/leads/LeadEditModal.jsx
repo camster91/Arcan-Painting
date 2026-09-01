@@ -25,6 +25,7 @@ export default function LeadEditModal({
     address: lead?.address || "",
     project_description: lead?.project_description || "",
     notes: lead?.notes || "",
+    lost_reason: lead?.lost_reason || "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -288,8 +289,8 @@ export default function LeadEditModal({
                 >
                   <option value="new">New</option>
                   <option value="contacted">Contacted</option>
-                  <option value="estimate_scheduled">Estimate Scheduled</option>
-                  <option value="estimate_sent">Estimate Sent</option>
+                  <option value="qualified">Qualified</option>
+                  <option value="proposal_sent">Proposal Sent</option>
                   <option value="follow_up">Follow Up</option>
                   <option value="won">Won</option>
                   <option value="lost">Lost</option>
@@ -318,6 +319,24 @@ export default function LeadEditModal({
                 </div>
               </div>
             </div>
+
+            {form.status === "lost" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Lost reason
+                </label>
+                <input
+                  required
+                  minLength="3"
+                  maxLength="255"
+                  name="lost_reason"
+                  value={form.lost_reason}
+                  onChange={handleChange}
+                  placeholder="Price, timing, competitor, no response…"
+                  className="w-full px-4 py-4 lg:py-3 border border-slate-300 rounded-xl lg:rounded-lg focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">

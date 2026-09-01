@@ -19,6 +19,7 @@ import { CreateEstimateModal } from "@/components/admin/estimates/CreateEstimate
 import CreateProjectModal from "@/components/admin/projects/CreateProjectModal";
 import { usePerformanceCache } from "@/hooks/usePerformanceCache";
 import EmailHealthWidget from "@/components/admin/EmailHealthWidget";
+import SalesMarketingFunnel from "@/components/admin/dashboard/SalesMarketingFunnel";
 // AdsKpiBar stripped 2026-06-15: it fetched /api/ads/dashboard-summary
 // (deleted in the 5b22bee marketing cut). Both the component file and
 // the import here are gone. The dashboard continues with the rest of
@@ -69,7 +70,7 @@ export default function DashboardOverview() {
       const response = await fetch("/api/estimates", { signal });
       if (response.ok) {
         const data = await response.json();
-        const list = Array.isArray(data) ? data : (data.estimates || []);
+        const list = Array.isArray(data) ? data : data.estimates || [];
         return list.filter((est) => est.status === "approved");
       }
       return [];
@@ -115,7 +116,9 @@ export default function DashboardOverview() {
       <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
         <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
         <p className="text-red-700 font-medium">Failed to load dashboard</p>
-        <p className="text-red-600 text-sm mt-1">{error.message || String(error)}</p>
+        <p className="text-red-600 text-sm mt-1">
+          {error.message || String(error)}
+        </p>
         <button
           onClick={refreshDashboard}
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -197,12 +200,24 @@ export default function DashboardOverview() {
                   <IconComponent className="w-6 h-6" />
                 </div>
                 {hasComparison ? (
-                  <div title={`${stat.comparison} versus the previous ${stats.comparisonDays || 30} days`} className={`flex items-center gap-1 text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}>
-                    {isPositive ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                  <div
+                    title={`${stat.comparison} versus the previous ${stats.comparisonDays || 30} days`}
+                    className={`flex items-center gap-1 text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {isPositive ? (
+                      <ArrowUpRight className="w-4 h-4" />
+                    ) : (
+                      <ArrowDownRight className="w-4 h-4" />
+                    )}
                     {Math.abs(stat.change)}%
                   </div>
                 ) : (
-                  <span title="No prior-period baseline" className="text-xs font-medium text-slate-500">No baseline</span>
+                  <span
+                    title="No prior-period baseline"
+                    className="text-xs font-medium text-slate-500"
+                  >
+                    No baseline
+                  </span>
                 )}
               </div>
 
@@ -218,6 +233,8 @@ export default function DashboardOverview() {
           );
         })}
       </div>
+
+      <SalesMarketingFunnel />
 
       {/* Email Health Alert */}
       <EmailHealthWidget />

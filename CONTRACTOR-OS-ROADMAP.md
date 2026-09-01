@@ -43,7 +43,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Capability | Status | Evidence / gap |
 | --- | --- | --- |
 | Public inquiry capture and CRM persistence | Complete | Contact and quote submissions were verified through isolated staging data |
-| Leads and clients | Partial | CRUD/search and a unified customer activity timeline exist; attribution reporting and full lifecycle conversion remain incomplete |
+| Leads and clients | Partial | CRUD/search, aligned lifecycle stages, durable attribution, stage timestamps, lost reasons, and a unified customer activity timeline exist; automated nurture remains incomplete |
 | Site visits and scheduling | Partial | Appointments, availability, calendar, and schedules exist; external calendar transport is disabled |
 | Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified |
 | Contracts | Partial | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified |
@@ -52,8 +52,8 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
 | Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, vendor purchase commitments, projected costs, billing, cleared collections, credits, gross profit, and margin reconcile per job; portfolio reporting remains |
-| Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
-| Owner reporting | Partial | Core dashboard trends use real preceding-period data; broader KPI and margin reporting remain incomplete |
+| Marketing operations | Partial | Durable source/campaign/landing-page/service attribution and cleared-revenue funnel reporting exist; platform connections, nurture, reviews, and referrals remain incomplete |
+| Owner reporting | Partial | Real period trends, sales funnel, attribution, lost reasons, job margin, cash, commitments, and receivable aging exist; cross-project margin reporting remains incomplete |
 | AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
 | Security, audit, recovery | Partial | Auth, CSRF, rate limits, audit and recovery routes exist; full permission, privacy, restore, and field-device validation remains |
 
@@ -105,8 +105,8 @@ gross margin reconcile to source transactions.
 
 ### P2 — Marketing, reputation, and sales operations
 
-- [ ] Report source, campaign, landing page, service, and lead-to-revenue conversion.
-- [ ] Add qualified-lead, estimate, win/loss, sales-cycle, close-rate, average-ticket, and lost-reason reporting.
+- [x] Report source, campaign, landing page, service, and lead-to-revenue conversion.
+- [x] Add qualified-lead, estimate, win/loss, sales-cycle, close-rate, average-ticket, and lost-reason reporting.
 - [ ] Add consent-aware nurture, estimate follow-up, dormant-lead reactivation, review requests, referrals, and repeat-customer campaigns.
 - [ ] Add approved portfolio/case-study workflow and local search profile operations without inventing business proof.
 - [ ] Integrate ad, analytics, call-tracking, Search Console, and business-profile sources only after access and identifier approval.
@@ -213,3 +213,8 @@ operations, and real external communications require explicit action-time approv
   owner-only accounting CSV across invoices, payments, expenses, and purchase commitments.
   The export is deliberately vendor-neutral and non-cacheable pending an explicit accounting
   platform choice, while the invoice workspace surfaces current through 90-plus-day balances.
+- 2026-09-01: Made acquisition attribution durable on lead records and aligned the admin
+  lifecycle to new, contacted, qualified, proposal sent, follow-up, won, and lost. Stage
+  timestamps and required lost reasons now support an owner funnel by source, campaign,
+  landing page, and service, with qualified/estimate/win conversion, sales cycle, average
+  ticket, close rate, spend efficiency, cleared revenue, and CSV export.
