@@ -51,7 +51,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, payment records, receipts, and corrected aggregation exist; hosted payment remains incomplete |
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
-| Job costing and margin | Missing / partial | Estimate costs, project final cost, time and payments exist but are not reconciled into job budgets and actual margin |
+| Job costing and margin | Partial | Estimate budgets, server-priced labor actuals, receipt-backed project expenses, billing, collections, gross profit, and margin reconcile per job; commitments, purchasing, refunds, and portfolio reporting remain |
 | Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
 | Owner reporting | Partial | Core dashboard trends use real preceding-period data; broader KPI and margin reporting remain incomplete |
 | AI assistance | Non-operational | UI and routes exist, but required providers are absent or disabled; AI must not be on the critical path |
@@ -196,3 +196,8 @@ operations, and real external communications require explicit action-time approv
   safety, quality, and customer blockers. Assigned crews can raise, start, and resolve
   issues with required resolution evidence; only owners can void or reassign them. Today
   surfaces open and urgent counts, while every mutation is audited.
+- 2026-09-01: Connected field activity to job costing. Time entries now use the protected
+  team-member cost rate, while assigned crews can record categorized, tax-separated expenses
+  with HTTPS receipt evidence. Owners receive a project reconciliation of estimate budgets,
+  labor and expense actuals, contract value, gross profit/margin, invoicing, collections,
+  and receivables; expense creation and voids are audited.

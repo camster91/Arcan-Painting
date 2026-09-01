@@ -12,6 +12,7 @@ import ChangeOrdersPanel from "@/components/admin/projects/ChangeOrdersPanel";
 import CustomerPortalLinks from "@/components/admin/projects/CustomerPortalLinks";
 import ProjectCrewPanel from "@/components/admin/projects/ProjectCrewPanel";
 import ProjectIssuesPanel from "@/components/admin/projects/ProjectIssuesPanel";
+import ProjectCostsPanel from "@/components/admin/projects/ProjectCostsPanel";
 
 export default function ProjectDetailModal({ project, onClose, onUpdate, canManage = true }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -515,6 +516,8 @@ export default function ProjectDetailModal({ project, onClose, onUpdate, canMana
         <ChangeOrdersPanel project={project} onChanged={onUpdate} canManage={canManage} />
 
         <ProjectIssuesPanel projectId={project.id} canManage={canManage} onChanged={onUpdate} />
+
+        <ProjectCostsPanel projectId={project.id} canManage={canManage} onChanged={onUpdate} />
 
         {canManage && <ProjectCrewPanel projectId={project.id} />}
 

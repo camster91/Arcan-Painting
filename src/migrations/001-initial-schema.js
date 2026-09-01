@@ -1878,6 +1878,30 @@ async function ensureMissingTables() {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_issues_project_status ON project_issues(project_id, status, severity)`;
 
+  // Actual non-labor job costs, including receipt evidence and tax separation.
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_expenses (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      category VARCHAR(50) NOT NULL,
+      description VARCHAR(500) NOT NULL,
+      vendor VARCHAR(255),
+      amount NUMERIC(12, 2) NOT NULL,
+      tax_amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+      total_amount NUMERIC(12, 2) NOT NULL,
+      incurred_on DATE NOT NULL,
+      receipt_url TEXT,
+      status VARCHAR(30) NOT NULL DEFAULT 'recorded',
+      recorded_by INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+      recorded_by_name VARCHAR(255),
+      voided_at TIMESTAMP,
+      voided_by INTEGER REFERENCES auth_users(id) ON DELETE SET NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_project_expenses_project ON project_expenses(project_id, status, incurred_on DESC)`;
+
   // Change orders connect field discoveries to approved scope, schedule, and value.
   await sql`
     CREATE TABLE IF NOT EXISTS change_orders (

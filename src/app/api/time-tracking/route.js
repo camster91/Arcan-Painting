@@ -9,10 +9,10 @@ const integer = (value) => Number.isInteger(Number(value)) ? Number(value) : nul
 
 async function resolveTeamMember(query, user, requestedId) {
   if (owner(user) && integer(requestedId)) {
-    const [member] = await query`SELECT id, email FROM team_members WHERE id = ${integer(requestedId)} AND status = 'active' FOR UPDATE`;
+    const [member] = await query`SELECT id, email, hourly_rate FROM team_members WHERE id = ${integer(requestedId)} AND status = 'active' FOR UPDATE`;
     return member || null;
   }
-  const [member] = await query`SELECT id, email FROM team_members WHERE LOWER(email) = LOWER(${user.username}) AND status = 'active' LIMIT 1 FOR UPDATE`;
+  const [member] = await query`SELECT id, email, hourly_rate FROM team_members WHERE LOWER(email) = LOWER(${user.username}) AND status = 'active' LIMIT 1 FOR UPDATE`;
   return member || null;
 }
 
@@ -77,7 +77,7 @@ export async function POST(request) {
         const active = await txn`SELECT id FROM time_tracking WHERE team_member_id = ${member.id} AND status = 'active' FOR UPDATE`;
         if (active.length) return { error: "This team member already has an active timer", status: 409 };
       }
-      const rate = owner(user) && body.hourly_rate != null ? Number(body.hourly_rate) : null;
+      const rate = owner(user) && body.hourly_rate != null ? Number(body.hourly_rate) : (member.hourly_rate == null ? null : Number(member.hourly_rate));
       if (rate != null && (!Number.isFinite(rate) || rate < 0 || rate > 1000)) return { error: "Hourly rate is invalid", status: 400 };
       const totalCost = rate != null && parsed.totalHours != null ? rate * parsed.totalHours : null;
       const [entry] = await txn`
