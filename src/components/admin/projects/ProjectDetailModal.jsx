@@ -35,6 +35,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
   const [upload, { loading: uploading }] = useUpload();
   const [progressError, setProgressError] = useState(null);
   const [progressSuccess, setProgressSuccess] = useState(false);
+  const [shareProgressWithCustomer, setShareProgressWithCustomer] = useState(false);
 
   const statusInfo = getStatusInfo(project.status);
   const StatusIcon = statusInfo.icon;
@@ -102,6 +103,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
           work_description: progressDescription || "Progress update",
           progress_percentage: editData.completion_percentage,
           photos: urls,
+          customer_visible: shareProgressWithCustomer,
         }),
       });
       if (!res.ok) {
@@ -111,6 +113,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
       setProgressSuccess(true);
       setProgressDescription("");
       setProgressFiles([]);
+      setShareProgressWithCustomer(false);
       // refresh parent data
       onUpdate();
     } catch (e) {
@@ -481,6 +484,10 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
                 }
                 className="block text-sm"
               />
+              <label className="flex items-start gap-2 text-sm text-slate-700">
+                <input type="checkbox" checked={shareProgressWithCustomer} onChange={(e) => setShareProgressWithCustomer(e.target.checked)} className="mt-1" />
+                <span>Share this description, progress percentage, and uploaded photos in the customer portal.</span>
+              </label>
               {progressError && (
                 <div className="bg-red-50 border border-red-200 rounded p-2 text-sm text-red-700">
                   {progressError}

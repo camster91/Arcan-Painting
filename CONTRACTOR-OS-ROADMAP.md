@@ -50,7 +50,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Projects and field progress | Partial | Projects, crews, progress, workflows, time tracking, daily notes, and audited change orders exist; the mobile field journey remains incomplete |
 | Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, payment records, receipts, and corrected aggregation exist; hosted payment remains incomplete |
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
-| Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, and invoice visibility exist; payments, receipts, project updates, and rendered staging QA remain |
+| Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
 | Job costing and margin | Missing / partial | Estimate costs, project final cost, time and payments exist but are not reconciled into job budgets and actual margin |
 | Marketing operations | Partial | Attribution capture and dormant marketing tables/pages exist; platform connections, nurture, reviews, referrals, and reporting are not operational |
 | Owner reporting | Partial | Core dashboard trends use real preceding-period data; broader KPI and margin reporting remain incomplete |
@@ -178,3 +178,7 @@ operations, and real external communications require explicit action-time approv
   contract signature, retry-safe change-order decisions, and non-draft invoice visibility.
   Bearer tokens are excluded from SEO metadata and referrers. Rendered staging verification,
   hosted payment, receipts, and project-update presentation remain open.
+- 2026-09-01: Extended the portal with customer-safe project progress, milestone photos,
+  and cleared-payment receipts. Internal job notes, labor/cost data, issues, and payment
+  references remain excluded from the public response; progress is private unless staff
+  explicitly checks the customer-visible control. Hosted payment remains approval-gated.

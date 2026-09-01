@@ -35,3 +35,16 @@ export function canCustomerSignContract(status) {
 export function canCustomerDecideChangeOrder(status) {
   return status === "sent";
 }
+
+export function sanitizeCustomerPhotoUrls(value) {
+  if (!Array.isArray(value)) return [];
+  return value.filter((url) => {
+    if (typeof url !== "string" || url.length > 2048) return false;
+    try { return new URL(url).protocol === "https:"; }
+    catch { return false; }
+  }).slice(0, 20);
+}
+
+export function shouldNotifyCustomerProgress({ customerVisible, isMilestone, progressPercentage }) {
+  return Boolean(customerVisible) && (Boolean(isMilestone) || Number(progressPercentage) >= 25);
+}

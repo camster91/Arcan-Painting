@@ -8,6 +8,8 @@ import {
   hashCustomerPortalToken,
   isCustomerPortalToken,
   normalizePortalExpiryDays,
+  sanitizeCustomerPhotoUrls,
+  shouldNotifyCustomerProgress,
 } from "@/app/api/utils/customer-portal";
 import { getPublicSeo } from "@/utils/publicSeo";
 
@@ -33,6 +35,16 @@ describe("customer portal bearer links", () => {
     expect(normalizePortalExpiryDays("1")).toBe(1);
     expect(normalizePortalExpiryDays(CUSTOMER_PORTAL_MAX_DAYS)).toBe(90);
     for (const days of [0, 91, 1.5, "nope"]) expect(() => normalizePortalExpiryDays(days)).toThrow();
+  });
+
+  it("only exposes safe HTTPS project photos", () => {
+    expect(sanitizeCustomerPhotoUrls(["https://cdn.example.test/photo.jpg", "javascript:alert(1)", "/private.jpg", null])).toEqual(["https://cdn.example.test/photo.jpg"]);
+  });
+
+  it("keeps progress private unless staff explicitly shares it", () => {
+    expect(shouldNotifyCustomerProgress({ customerVisible: false, isMilestone: true, progressPercentage: 100 })).toBe(false);
+    expect(shouldNotifyCustomerProgress({ customerVisible: true, isMilestone: true, progressPercentage: 0 })).toBe(true);
+    expect(shouldNotifyCustomerProgress({ customerVisible: true, isMilestone: false, progressPercentage: 25 })).toBe(true);
   });
 
   it("does not place a bearer token in SEO metadata", () => {

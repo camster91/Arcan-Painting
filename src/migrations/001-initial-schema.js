@@ -1815,11 +1815,13 @@ async function ensureMissingTables() {
       reported_by VARCHAR(255),
       is_milestone BOOLEAN DEFAULT FALSE,
       milestone_description TEXT,
+      customer_visible BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_project ON project_progress(project_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_project_progress_date ON project_progress(report_date DESC)`;
+    await sql`ALTER TABLE project_progress ADD COLUMN IF NOT EXISTS customer_visible BOOLEAN DEFAULT FALSE`;
 
   // Change orders connect field discoveries to approved scope, schedule, and value.
   await sql`

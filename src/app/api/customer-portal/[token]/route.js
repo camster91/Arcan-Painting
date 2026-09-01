@@ -7,6 +7,7 @@ import {
   canCustomerSignContract,
   hashCustomerPortalToken,
   isCustomerPortalToken,
+  sanitizeCustomerPhotoUrls,
 } from "@/app/api/utils/customer-portal";
 
 const portalLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: "customer-portal" });
@@ -25,16 +26,19 @@ async function resolveAccess(token, { touch = true } = {}) {
 }
 
 async function portalSnapshot(leadId) {
-  const [[customer], estimates, contracts, projects, changeOrders, invoices] = await Promise.all([
+  const [[customer], estimates, contracts, projects, changeOrders, invoices, payments, projectUpdates] = await Promise.all([
     sql`SELECT id, name FROM leads WHERE id = ${leadId} AND deleted_at IS NULL`,
     sql`SELECT id, estimate_number, project_title, project_description, total_cost, estimated_duration_days, status, valid_until, created_at FROM estimates WHERE lead_id = ${leadId} AND status IN ('sent', 'approved') ORDER BY created_at DESC`,
     sql`SELECT id, contract_number, title, description, scope_of_work, terms_and_conditions, payment_terms, warranty_terms, total_amount, deposit_amount, deposit_percentage, status, start_date, completion_date, estimated_duration_days, client_signed_at, signed_by_name, sent_at FROM contracts WHERE lead_id = ${leadId} AND status NOT IN ('draft', 'cancelled', 'void') ORDER BY created_at DESC`,
     sql`SELECT id, project_name, start_date, end_date, status, final_cost, completion_percentage FROM projects WHERE lead_id = ${leadId} AND status <> 'cancelled' ORDER BY created_at DESC`,
     sql`SELECT id, change_order_number, project_id, title, description, reason, amount, tax_rate, tax_amount, total_amount, schedule_impact_days, status, approved_at, rejected_at FROM change_orders WHERE lead_id = ${leadId} AND status IN ('sent', 'approved', 'rejected') ORDER BY created_at DESC`,
     sql`SELECT id, invoice_number, project_id, title, description, invoice_type, status, payment_status, issue_date, due_date, subtotal, tax_amount, total_amount, amount_paid, amount_due, sent_at, paid_at FROM invoices WHERE lead_id = ${leadId} AND status <> 'draft' ORDER BY created_at DESC`,
+    sql`SELECT id, payment_number, invoice_id, amount, payment_method, payment_date, status, created_at FROM payments WHERE lead_id = ${leadId} AND status = 'cleared' ORDER BY COALESCE(payment_date, created_at::date) DESC, created_at DESC`,
+    sql`SELECT pp.id, pp.project_id, pp.report_date, pp.work_description, pp.progress_percentage, pp.photos, pp.is_milestone, pp.milestone_description, pp.created_at, p.project_name FROM project_progress pp JOIN projects p ON p.id = pp.project_id WHERE p.lead_id = ${leadId} AND pp.customer_visible = TRUE ORDER BY pp.report_date DESC, pp.created_at DESC LIMIT 100`,
   ]);
   if (!customer) return null;
-  return { customer, estimates, contracts, projects, change_orders: changeOrders, invoices };
+  const safeProjectUpdates = projectUpdates.map((update) => ({ ...update, photos: sanitizeCustomerPhotoUrls(update.photos) }));
+  return { customer, estimates, contracts, projects, change_orders: changeOrders, invoices, payments, project_updates: safeProjectUpdates };
 }
 
 async function approveEstimate(leadId, estimateId) {

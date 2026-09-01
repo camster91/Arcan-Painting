@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { createNotification } from "@/app/api/notifications/route";
 import { requireAdmin } from "@/app/api/utils/auth";
 import { requireCsrf } from "@/app/api/utils/csrf";
+import { shouldNotifyCustomerProgress } from "@/app/api/utils/customer-portal";
 
 export async function GET(request) {
   if (!(await requireAdmin(request))) {
@@ -89,6 +90,7 @@ export async function POST(request) {
       reported_by,
       is_milestone = false,
       milestone_description,
+      customer_visible = false,
     } = body;
 
     if (!project_id || !report_date || !work_description) {
@@ -105,12 +107,12 @@ export async function POST(request) {
         project_id, report_date, work_description, progress_percentage,
         hours_worked, team_members_present, materials_used, challenges_faced,
         next_steps, weather_conditions, client_interaction, quality_notes,
-        photos, reported_by, is_milestone, milestone_description
+        photos, reported_by, is_milestone, milestone_description, customer_visible
       ) VALUES (
         ${project_id}, ${report_date}, ${work_description}, ${progress_percentage},
         ${hours_worked}, ${team_members_present}, ${materials_used}, ${challenges_faced},
         ${next_steps}, ${weather_conditions}, ${client_interaction}, ${quality_notes},
-        ${JSON.stringify(photos)}, ${reported_by}, ${is_milestone}, ${milestone_description}
+        ${JSON.stringify(photos)}, ${reported_by}, ${is_milestone}, ${milestone_description}, ${Boolean(customer_visible)}
       )
       RETURNING *
     `;
@@ -137,7 +139,7 @@ export async function POST(request) {
     // Send notification to client if significant progress or milestone
     if (
       projectDetails.length > 0 &&
-      (is_milestone || progress_percentage >= 25)
+      shouldNotifyCustomerProgress({ customerVisible: customer_visible, isMilestone: is_milestone, progressPercentage: progress_percentage })
     ) {
       const project = projectDetails[0];
 
@@ -212,6 +214,7 @@ export async function PUT(request) {
       "photos",
       "is_milestone",
       "milestone_description",
+      "customer_visible",
     ];
 
     const setClause = [];
