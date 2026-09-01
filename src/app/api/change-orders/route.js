@@ -31,6 +31,13 @@ export async function GET(request) {
   const user = await getCurrentUser(request); if (!user) return unauthorizedResponse();
   const projectId = Number(new URL(request.url).searchParams.get("project_id"));
   if (!Number.isInteger(projectId)) return Response.json({ error: "Valid project_id is required" }, { status: 400 });
+  if (!owner(user)) {
+    const access = await sql`SELECT p.id FROM projects p LEFT JOIN team_members tm ON tm.id = p.assigned_painter_id WHERE p.id = ${projectId} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (
+      SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
+      WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER(${user.username})
+    ))`;
+    if (!access.length) return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
   const rows = await sql`
     SELECT co.*, p.project_name, l.name AS client_name
     FROM change_orders co

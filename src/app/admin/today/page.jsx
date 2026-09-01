@@ -382,6 +382,7 @@ export default function TodayOperationsPage() {
       {showDetails && selectedProject && (
         <ProjectDetailModal
           project={selectedProject}
+          canManage={canManage}
           onClose={() => {
             setShowDetails(false);
             setSelectedProject(null);

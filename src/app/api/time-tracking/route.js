@@ -20,7 +20,9 @@ async function canUseProject(query, user, teamMemberId, projectId) {
   if (!projectId) return true;
   const rows = owner(user)
     ? await query`SELECT id FROM projects WHERE id = ${projectId} AND status NOT IN ('completed', 'cancelled')`
-    : await query`SELECT id FROM projects WHERE id = ${projectId} AND assigned_painter_id = ${teamMemberId} AND status NOT IN ('completed', 'cancelled')`;
+    : await query`SELECT p.id FROM projects p WHERE p.id = ${projectId} AND (p.assigned_painter_id = ${teamMemberId} OR EXISTS (
+        SELECT 1 FROM project_crew_members pcm WHERE pcm.project_id = p.id AND pcm.team_member_id = ${teamMemberId} AND pcm.removed_at IS NULL
+      )) AND p.status NOT IN ('completed', 'cancelled')`;
   return rows.length > 0;
 }
 

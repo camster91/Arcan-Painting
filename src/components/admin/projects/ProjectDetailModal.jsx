@@ -10,8 +10,9 @@ import {
 import useUpload from "@/utils/useUpload";
 import ChangeOrdersPanel from "@/components/admin/projects/ChangeOrdersPanel";
 import CustomerPortalLinks from "@/components/admin/projects/CustomerPortalLinks";
+import ProjectCrewPanel from "@/components/admin/projects/ProjectCrewPanel";
 
-export default function ProjectDetailModal({ project, onClose, onUpdate }) {
+export default function ProjectDetailModal({ project, onClose, onUpdate, canManage = true }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     completion_percentage: project.completion_percentage || 0,
@@ -146,13 +147,13 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
           </>
         ) : (
           <>
-            <button
+            {canManage && <button
               onClick={() => setIsEditing(true)}
               className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
               Edit Project
-            </button>
-            {project.lead_email && (
+            </button>}
+            {canManage && project.lead_email && (
               <a
                 href={`mailto:${project.lead_email}?subject=Project Update - ${project.project_name}&body=Hi ${project.lead_name},%0D%0A%0D%0AHere's an update on your ${project.project_name} project.`}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -510,9 +511,11 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
           )}
         </div>
 
-        <ChangeOrdersPanel project={project} onChanged={onUpdate} />
+        <ChangeOrdersPanel project={project} onChanged={onUpdate} canManage={canManage} />
 
-        {project.lead_id && <CustomerPortalLinks leadId={project.lead_id} />}
+        {canManage && <ProjectCrewPanel projectId={project.id} />}
+
+        {canManage && project.lead_id && <CustomerPortalLinks leadId={project.lead_id} />}
 
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">

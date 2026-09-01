@@ -10,7 +10,10 @@ async function ensureProjectAccess(user, projectId) {
     SELECT p.id
     FROM projects p
     LEFT JOIN team_members tm ON p.assigned_painter_id = tm.id
-    WHERE p.id = ${projectId} AND tm.email = ${user.username}
+    WHERE p.id = ${projectId} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (
+      SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
+      WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER(${user.username})
+    ))
     LIMIT 1
   `;
   return rows.length > 0;

@@ -47,7 +47,7 @@ without duplicate entry, an offline spreadsheet, or an untracked customer handof
 | Site visits and scheduling | Partial | Appointments, availability, calendar, and schedules exist; external calendar transport is disabled |
 | Painting estimate builder | Partial | Areas, surfaces, prep, materials, PDF, send, transactional approval, and duplicate code exist; rendered staging approval remains unverified |
 | Contracts | Partial | CRUD, templates, PDF, send, and portal e-sign exist; rendered staging and legal-policy review remain unverified |
-| Projects and field progress | Partial | Assignment-scoped mobile Today queue, scheduled-job start, concurrency-safe time tracking, progress reports, completion checklists, and audited change orders exist; multi-person crews, materials, issues, offline retry, and closeout remain incomplete |
+| Projects and field progress | Partial | Multi-person assignment-scoped Today queue, scheduled-job start, concurrency-safe time tracking, progress reports, completion checklists, and audited change orders exist; materials, issues, offline retry, and closeout remain incomplete |
 | Invoices and payments | Partial | Validated invoice creation, APIs, PDFs, send, payment records, receipts, and corrected aggregation exist; hosted payment remains incomplete |
 | Customer communications | Partial | Template, workflow, logs, health, gated dispatch, and a concurrency-safe delayed worker exist; production provider verification remains incomplete |
 | Customer portal | Partial | Revocable hashed links, estimate approval, contract signature, change-order decisions, invoices, cleared-payment receipts, and customer-safe project updates exist; hosted payment and rendered staging QA remain |
@@ -188,3 +188,7 @@ operations, and real external communications require explicit action-time approv
   transactionally starts scheduled work. Repaired missing fresh-schema fields for project
   progress and completion checklists, enabled assigned painters to report progress, and
   separated owner-authored checklist structure from crew execution.
+- 2026-09-01: Added durable multi-person project crews with owner controls and audited,
+  transactional membership replacement. Project lists, field queues, progress, checklists,
+  change-order visibility, and time entry access now recognize either the primary painter
+  or an active crew membership. Also repaired missing fresh-schema team cost fields.

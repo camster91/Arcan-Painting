@@ -48,7 +48,10 @@ export async function GET(request) {
     // Role-based filtering
     if (user.role !== "owner") {
       // Painters only see their assigned projects
-      query += ` AND tm.email = $${params.length + 1}`;
+      query += ` AND (LOWER(tm.email) = LOWER($${params.length + 1}) OR EXISTS (
+        SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
+        WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER($${params.length + 1})
+      ))`;
       params.push(user.username);
     }
 
@@ -235,7 +238,10 @@ export async function PUT(request) {
         SELECT p.id, p.status, p.project_name, l.name AS lead_name, l.email AS lead_email FROM projects p
         LEFT JOIN team_members tm ON p.assigned_painter_id = tm.id
         LEFT JOIN leads l ON p.lead_id = l.id
-        WHERE p.id = ${id} AND tm.email = ${user.username}
+        WHERE p.id = ${id} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (
+          SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
+          WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER(${user.username})
+        ))
       `;
     }
 

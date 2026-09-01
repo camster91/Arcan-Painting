@@ -7,7 +7,10 @@ import { auditLog } from "@/app/api/utils/audit";
 async function canAccessProject(user, projectId) {
   if (!user || !Number.isInteger(Number(projectId))) return false;
   if (["owner", "admin"].includes(user.role)) return true;
-  const rows = await sql`SELECT p.id FROM projects p JOIN team_members tm ON tm.id = p.assigned_painter_id WHERE p.id = ${Number(projectId)} AND LOWER(tm.email) = LOWER(${user.username})`;
+  const rows = await sql`SELECT p.id FROM projects p LEFT JOIN team_members tm ON tm.id = p.assigned_painter_id WHERE p.id = ${Number(projectId)} AND (LOWER(tm.email) = LOWER(${user.username}) OR EXISTS (
+    SELECT 1 FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id
+    WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL AND LOWER(ctm.email) = LOWER(${user.username})
+  ))`;
   return rows.length > 0;
 }
 

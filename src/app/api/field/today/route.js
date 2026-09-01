@@ -10,12 +10,13 @@ export async function GET(request) {
   if (!member && user.role !== "owner") return Response.json({ error: "Your account is not linked to an active field team member" }, { status: 409 });
 
   const values = []; let assignment = "";
-  if (user.role !== "owner") { values.push(member.id); assignment = `AND p.assigned_painter_id = $${values.length}`; }
+  if (user.role !== "owner") { values.push(member.id); assignment = `AND (p.assigned_painter_id = $${values.length} OR EXISTS (SELECT 1 FROM project_crew_members pcm WHERE pcm.project_id = p.id AND pcm.team_member_id = $${values.length} AND pcm.removed_at IS NULL))`; }
   const projects = await sql(`
     SELECT p.id, p.lead_id, p.project_name, p.start_date, p.end_date, p.status,
       p.completion_percentage, p.assigned_painter_id, p.crew_assigned, p.site_lat, p.site_lng,
       l.name AS lead_name, l.phone AS lead_phone, l.address,
       tm.name AS painter_name,
+      COALESCE((SELECT STRING_AGG(ctm.name, ', ' ORDER BY ctm.name) FROM project_crew_members pcm JOIN team_members ctm ON ctm.id = pcm.team_member_id WHERE pcm.project_id = p.id AND pcm.removed_at IS NULL), '') AS crew_names,
       COUNT(DISTINCT cw.id)::int AS checklist_total,
       COUNT(DISTINCT cw.id) FILTER (WHERE cw.is_completed = TRUE)::int AS checklist_completed,
       MAX(pp.report_date) AS last_report_date,

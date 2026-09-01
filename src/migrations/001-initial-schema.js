@@ -381,6 +381,23 @@ export async function runMigrations() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    await sql`ALTER TABLE team_members ADD COLUMN IF NOT EXISTS hourly_rate NUMERIC(10, 2)`;
+    await sql`ALTER TABLE team_members ADD COLUMN IF NOT EXISTS specialties TEXT`;
+    await sql`ALTER TABLE team_members ADD COLUMN IF NOT EXISTS notes TEXT`;
+
+    // A project may have a lead painter plus any number of active crew members.
+    await sql`
+      CREATE TABLE IF NOT EXISTS project_crew_members (
+        id SERIAL PRIMARY KEY,
+        project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+        team_member_id INTEGER NOT NULL REFERENCES team_members(id) ON DELETE CASCADE,
+        crew_role VARCHAR(50) DEFAULT 'crew',
+        assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        removed_at TIMESTAMP,
+        UNIQUE(project_id, team_member_id)
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_project_crew_active_member ON project_crew_members(team_member_id, project_id) WHERE removed_at IS NULL`;
 
     // ── team_invites ────────────────────────────────────────────────────────
     await sql`
@@ -567,7 +584,7 @@ export async function runMigrations() {
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_estimate_id ON projects(estimate_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_projects_assigned_painter_id ON projects(assigned_painter_id)`;
-  await sql`CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at DESC)`;
     await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS last_progress_update TIMESTAMP`;
     await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS progress_notes TEXT`;
 
