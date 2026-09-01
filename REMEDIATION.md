@@ -1,9 +1,9 @@
 # Arcan Painting Remediation Roadmap
 
-Last reconciled: 2026-08-31
+Last reconciled: 2026-09-01
 
 Branch: `codex/seo-geo-aeo-cro-staging`  
-Status: active source of truth
+Status: published; post-launch measurement active
 
 This roadmap supersedes unchecked work in `TODO.md`, historical deployment notes in
 `BUGS.md`, and completion claims in `FIXES_SUMMARY.md`. Those files remain historical
@@ -28,11 +28,12 @@ production approval.
 
 ## Baseline evidence
 
-- 50 test files and 149 tests pass.
+- 51 test files and 150 tests pass.
 - Type checking passes.
 - Lint passes with 320 pre-existing warnings and no errors.
-- Production Lighthouse mobile baseline: performance 60, accessibility 93,
-  best practices 96, SEO checklist 100.
+- Three-run production Lighthouse mobile median after ingress compression:
+  performance 86, accessibility 100, best practices 100, SEO 100, FCP 2.3 s,
+  LCP 3.8 s, TBT 0 ms, CLS 0, and 660 KiB transferred.
 - Production technical/content/CRO audit is stored outside this checkout in the Codex
   audit artifact for 2026-08-28.
 
@@ -109,12 +110,13 @@ production approval.
       in-app notifications as the current operational handoff.
 - [ ] Verify vendor-side analytics receipt after an approved measurement ID is supplied;
       the vendor-neutral events and persisted attribution are already verified.
-- [ ] Exercise production-ingress security headers during the production release check;
-      the Caddy configuration is test-covered, while the staging Quick Tunnel bypasses
-      Caddy by design.
+- [x] Exercise production-ingress security headers, canonical `www` redirect, trusted
+      certificates, and compression through the live Traefik ingress.
 - [x] Run independent client-deliverable QA and reconcile every roadmap checkbox.
 - [x] Document staging URL, revision, evidence, residual blockers, rollback, and the exact
       production approval request.
+- [x] Receive owner approval, merge the release, publish an exact-revision production
+      container, preserve database and container rollback, and complete post-release QA.
 
 ## External approvals and evidence still required
 
@@ -122,10 +124,10 @@ production approval.
   the exact application revision was built and verified in an isolated container on the
   Ashbi VPS. Native GitHub jobs still fail before execution because of account billing
   or spending-limit state, so their red status is not application test evidence.
-- Valid certificate and redirect for `www.arcanpainting.ca` require production ingress
-  or DNS authority and are not part of the staging code change.
 - GA4/Search Console/Google Business Profile/Bing access and identifiers are not present.
 - Business proof still requires client approval: service areas, hours, address-display
   policy, insurance/WSIB, warranties, years operating, crew model, paint brands, reviews,
   response time, and approved project case-study facts.
-- Production publication remains approval-gated after staging verification.
+- New accountable business facts remain approval-gated before they can be published;
+  the current release avoids the unapproved SLA and keeps unverified location pages out
+  of the sitemap.
