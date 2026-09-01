@@ -263,3 +263,7 @@ operations, and real external communications require explicit action-time approv
   resolution, completion photos, and care instructions. Project creation and estimate
   conversion seed them transactionally. Completion is now rejected unless progress is 100%,
   all required steps are evidenced, site issues are resolved, and every crew timer is stopped.
+- 2026-09-01: Deployed exact closeout candidate `bf15a56` to isolated Ashbi staging as
+  image `sha256:784ea2c1a934c0cb891ec249b02ce7a9ee996cc2aaff2be9dd9e87b5be1d5082`.
+  The gate records 88 passing test files and 262 tests plus typecheck and production build;
+  staging is healthy and production remains unchanged.
