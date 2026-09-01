@@ -288,6 +288,28 @@ function AdminLayoutContent({ children }) {
         showNotificationBadge: unreadCount > 0,
       },
       {
+        key: "marketing",
+        permissions: ["marketing.read"],
+        label: "Marketing",
+        icon: Megaphone,
+        entryHref: "/admin/gallery",
+        tabs: [
+          {
+            label: "Portfolio",
+            href: "/admin/gallery",
+            description: "Approve project proof",
+          },
+          {
+            label: "Follow-ups",
+            href: "/admin/follow-ups",
+            description: "Campaign candidates",
+          },
+        ],
+        matchers: ["/admin/gallery"],
+        description: "Portfolio & campaigns",
+        showNotificationBadge: false,
+      },
+      {
         key: "ai-chat",
         permissions: ["ai.manage"],
         label: "AI Help",

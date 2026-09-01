@@ -108,7 +108,7 @@ gross margin reconcile to source transactions.
 - [x] Report source, campaign, landing page, service, and lead-to-revenue conversion.
 - [x] Add qualified-lead, estimate, win/loss, sales-cycle, close-rate, average-ticket, and lost-reason reporting.
 - [x] Add consent-aware nurture, estimate follow-up, dormant-lead reactivation, review requests, referrals, and repeat-customer campaigns.
-- [ ] Add approved portfolio/case-study workflow and local search profile operations without inventing business proof.
+- [x] Add approved portfolio/case-study workflow without inventing business proof; local search profile publication remains access-gated.
 - [ ] Integrate ad, analytics, call-tracking, Search Console, and business-profile sources only after access and identifier approval.
 
 Acceptance: every campaign can be connected to qualified leads, won revenue, cost, and
@@ -234,3 +234,7 @@ operations, and real external communications require explicit action-time approv
   zero production dependency vulnerabilities, public route/auth-boundary checks, image ID,
   and a 60-table backup restore drill in `STAGING-EVIDENCE.md`. Production remained on
   `arcan-painting:175d567`; authenticated rendered and mobile journeys remain open.
+- 2026-09-01: Added the missing portfolio operations workspace. Managed gallery items now
+  move through draft, review, and approved states; customer consent and business proof are
+  mandatory before approval or public visibility, and approval/publication changes are
+  audited. Google Business Profile publication remains external-access gated.
