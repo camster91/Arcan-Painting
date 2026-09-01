@@ -4,13 +4,13 @@ Recorded: 2026-09-01
 
 Candidate branch: `codex/arcan-contractor-os`
 
-Candidate revision: `d3a736b`
+Candidate revision: `78038d7`
 Production release: not performed
 
 ## Artifact and isolation
 
-- Ashbi image: `arcan-painting-staging:d3a736b`
-- Image ID: `sha256:41c4c088f7cca5ef0052301f016e3c605013c8f8274a87cd0b565a557821e016`
+- Ashbi image: `arcan-painting-staging:78038d7`
+- Image ID: `sha256:de3a3224309cac0a632972ff39621ca81b4b15cd2d5a813b07de69680e760451`
 - Container: `arcan-staging-app` (`healthy`)
 - Database: isolated `arcan-staging-db` on `arcan-staging-net`
 - Origin binding: `127.0.0.1:3215`; the temporary public URL is a Cloudflare tunnel to this staging-only origin.
@@ -19,7 +19,7 @@ Production release: not performed
 
 ## Exact-candidate gates
 
-- `npm test -- --run`: 107 files, 341 tests passed.
+- `npm test -- --run`: 109 files, 352 tests passed.
 - `npm run typecheck`: passed.
 - `npm run build`: client and SSR production bundles passed.
 - `npm audit --omit=dev`: 0 vulnerabilities.
@@ -94,6 +94,15 @@ and agent reads and notification creation return `401`; an anonymous migration r
 at the CSRF boundary with `403`. Public health and PWA assets return `200`, and both exact staging
 and unchanged production are healthy with zero restarts.
 
+The `78038d7` financial-delivery candidate enforces CSRF checks in estimate, contract, invoice,
+and payment-receipt send handlers. Receipts additionally require `finance.write`, a cleared
+payment, and a PII-minimized delivery audit event; UI receipt/refund actions are limited to cleared
+payments. Team-invite acceptance records the created user, role, and invite identifier without the
+credential token or account PII in audit changes. Anonymous send probes are denied at either the
+shared permission boundary (`401`) or route CSRF boundary (`403`); malformed invite acceptance
+returns `400`. Public health and PWA assets return `200`, and exact staging plus unchanged
+production remain healthy with zero restarts.
+
 Rendered desktop checks confirmed one H1, the production canonical URL, two JSON-LD blocks,
 staging `noindex, nofollow`, no horizontal overflow at the observed desktop widths, and no
 images missing alternative text.
@@ -128,5 +137,5 @@ development server; it is not application HTML and was not treated as an applica
 - Legal review is required for contract terms, retention policy, consent language, warranties,
   and public business claims.
 
-Production deployment requires explicit action-time approval naming revision `d3a736b` (or a
+Production deployment requires explicit action-time approval naming revision `78038d7` (or a
 later replacement candidate) after the remaining feasible staging checks are recorded.

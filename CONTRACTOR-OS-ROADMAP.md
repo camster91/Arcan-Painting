@@ -386,3 +386,8 @@ operations, and real external communications require explicit action-time approv
   user, role, and invite identifier without storing the credential token or account PII in audit
   changes. The full gate records 109 files and 352 tests, passing typecheck, production build, and
   the production-dependency audit with zero vulnerabilities.
+- 2026-09-01: Built and deployed exact financial-delivery candidate `78038d7` to isolated Ashbi
+  staging as image `sha256:de3a3224309cac0a632972ff39621ca81b4b15cd2d5a813b07de69680e760451`.
+  Anonymous customer-document and receipt sends are denied at the shared permission or CSRF
+  boundary; malformed invite acceptance is rejected. Public health and PWA assets return `200`;
+  exact staging and unchanged production are healthy with zero restarts.
