@@ -120,7 +120,7 @@ follow-up action without unsupported claims or silent data gaps.
 - [x] Add role-based permissions for owner, office, estimator, project manager, crew, and read-only finance.
 - [ ] Complete audit coverage for sensitive, financial, permission, export, and customer-facing actions.
 - [ ] Verify privacy, retention, export, deletion, secret handling, dependency risk, abuse controls, accessibility, responsive behavior, performance, backups, and restores.
-- [ ] Publish operator, incident, integration, staging, rollback, and release runbooks.
+- [x] Publish operator, incident, integration, staging, rollback, and release runbooks.
 
 Acceptance: the owner can understand the business, control access, recover data, and run
 the product without repository knowledge.
@@ -295,3 +295,8 @@ operations, and real external communications require explicit action-time approv
   `sha256:d3564c6559bdc6b705afd035993f4ef89d1626d3ca83fb7308aec11dc65792cc`).
   The additive schema migration, health, public PWA assets, anonymous authorization boundary,
   and admin sign-in redirect passed. Production remained healthy on `arcan-painting:175d567`.
+- 2026-09-01: Expanded the consolidated operations runbook into an independent owner handoff
+  covering daily operations, isolated staging, exact-artifact release approval, post-release
+  evidence, image-first rollback, backup/restore, privacy, severity-based incident response,
+  integration governance, and a reusable handoff checklist. Automated coverage prevents those
+  required operating sections from silently disappearing.
