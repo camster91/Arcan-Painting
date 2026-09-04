@@ -1,23 +1,13 @@
 name: Build and Push Image
 
-# Reusable build workflow for camster91/* Node.js web apps.
-# Triggered on push to main and on tag. Builds a multi-stage Docker image
-# and pushes it to ghcr.io. The image becomes the canonical deployable
-# artifact — any host (Coolify, Hostinger, Render, Fly, local docker) can
-# run it without needing source code, Node, or build tools on the host.
-#
-# Conventions:
-#   - Image: ghcr.io/camster91/<repo>:main (or :<tag> for releases)
-#   - Multi-arch: linux/amd64 + linux/arm64 (Raspberry Pi, Apple Silicon hosts)
-#   - Buildx cache pushed to GHCR type=cache (saves ~3min per build)
-#   - SBOM + provenance attestations enabled (for supply-chain trust)
+# Publish deployable images only after changes land on the default branch or a
+# version tag is created. Pull requests are verified by ci.yml and must not
+# publish write-capable GHCR artifacts.
 
 on:
   push:
     branches: [main, master]
     tags: ['v*']
-  pull_request:
-    branches: [main, master]
   workflow_call:
     inputs:
       image_name:
@@ -43,6 +33,7 @@ permissions:
 
 concurrency:
   group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -67,13 +58,11 @@ jobs:
             TAG="${TAG//\//-}"
           elif [[ "$REF" == refs/heads/main || "$REF" == refs/heads/master ]]; then
             TAG="main"
-          elif [[ "$REF" == refs/pull/* ]]; then
-            TAG="pr-${{ github.event.pull_request.number }}"
           else
             TAG="${REF#refs/heads/}"
             TAG="${TAG//\//-}"
           fi
-          SHA_SHORT=$(printf '%s' "${{ github.event.pull_request.head.sha || github.sha }}" | head -c 7)
+          SHA_SHORT=$(printf '%s' "${{ github.sha }}" | head -c 7)
           {
             echo "image=ghcr.io/camster91/${REPO_NAME}"
             echo "tag=${TAG}"
