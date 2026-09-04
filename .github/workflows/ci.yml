@@ -5,8 +5,14 @@ name: CI Build
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 
 permissions:
@@ -14,6 +20,7 @@ permissions:
 
 concurrency:
   group: ci-build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -46,9 +53,11 @@ jobs:
           CI: true
 
       - name: Install Chromium for smoke tests
+        if: github.actor != 'dependabot[bot]'
         run: npx playwright install --with-deps chromium
 
       - name: Public smoke tests
+        if: github.actor != 'dependabot[bot]'
         run: npm run test:e2e
         env:
           CI: true
