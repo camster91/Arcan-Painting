@@ -10,6 +10,29 @@
   :focus-visible {
     @apply outline-none ring-2 ring-amber-500 ring-offset-2;
   }
+
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Small uppercase label above a section heading. */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep;
+  }
+
+  .btn-solid {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[15px] font-medium text-paper transition-colors hover:bg-ink-soft;
+  }
+
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-[15px] font-medium text-ink transition-colors hover:bg-[#E5A30F];
+  }
+
+  .link-underline {
+    @apply inline-flex items-center gap-1.5 border-b border-current pb-0.5 text-[15px] font-medium transition-colors;
+  }
 }
 
 .btn-primary {

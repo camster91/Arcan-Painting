@@ -1,15 +1,11 @@
 import { useState, useMemo, useCallback } from "react";
 import {
   Mail,
-  MapPin,
-  Clock,
-  Send,
   Phone,
+  Send,
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
-  Sparkles,
-  Shield,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
@@ -133,10 +129,10 @@ export default function ContactSection() {
 
   // Reusable button styles - simplified for light mode only
   const optionBtn =
-    "px-4 py-3 rounded-lg border transition-all text-sm sm:text-base font-medium";
-  const optionBtnActive = "border-amber-600 text-white shadow bg-amber-500";
+    "min-h-[48px] px-4 py-3 rounded-sm border transition-colors text-sm sm:text-base font-medium";
+  const optionBtnActive = "border-ink bg-ink text-paper";
   const optionBtnIdle =
-    "border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700 bg-white hover:bg-slate-50";
+    "border-line bg-white text-ink-soft hover:border-ink hover:text-ink";
 
   // QUIZ CONTENT by step
   let stepTitle = "";
@@ -189,7 +185,7 @@ export default function ContactSection() {
               next();
             }
           }}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-slate-900 transition-all duration-150 text-base"
+          className="w-full px-4 py-3 border border-line rounded-sm focus:ring-2 focus:ring-ink focus:border-transparent bg-white text-ink transition-all duration-150 text-base"
           placeholder="Full name"
           aria-label="Full name"
           name="name"
@@ -272,7 +268,7 @@ export default function ContactSection() {
               next();
             }
           }}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-slate-900 transition-all duration-150 text-base"
+          className="w-full px-4 py-3 border border-line rounded-sm focus:ring-2 focus:ring-ink focus:border-transparent bg-white text-ink transition-all duration-150 text-base"
           placeholder={inputProps.placeholder}
           aria-label={inputProps.ariaLabel}
           name={inputProps.name}
@@ -280,7 +276,7 @@ export default function ContactSection() {
           autoComplete={inputProps.autoComplete}
           inputMode={inputProps.inputMode}
         />
-        <p className="text-xs text-slate-500 mt-2">
+        <p className="text-xs text-muted mt-2">
           We only need one contact method.
         </p>
       </div>
@@ -293,10 +289,10 @@ export default function ContactSection() {
           rows={4}
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-slate-900 transition-all duration-150 text-base resize-none"
+          className="w-full px-4 py-3 border border-line rounded-sm focus:ring-2 focus:ring-ink focus:border-transparent bg-white text-ink transition-all duration-150 text-base resize-none"
           placeholder="Tell us about your project, size, timing, or any special requests..."
         />
-        <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-lg p-3 mt-3 text-sm">
+        <div className="flex items-center gap-2 text-ink-soft bg-paper border border-line rounded-sm p-3 mt-3 text-sm">
           <CheckCircle2 size={18} />
           <span>Your details are used to respond to this request. See our <a href="/privacy" className="underline font-medium">Privacy Notice</a>.</span>
         </div>
@@ -305,303 +301,124 @@ export default function ContactSection() {
   }
 
   return (
-    <section
-      id="contact"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
-      style={{
-        fontFamily:
-          'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-    >
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-green-400/5 to-teal-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-
-        {/* Geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              backgroundSize: "60px 60px",
-            }}
-          ></div>
-        </div>
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Section Header */}
-        <div className="text-center mb-16 lg:mb-20">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
-              <Sparkles size={18} className="text-white" />
-            </div>
-            <span className="text-white/90 text-base lg:text-lg font-medium">
-              Get In Touch
-            </span>
-          </div>
-
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8">
-            Discuss your project
+    <section id="contact" className="border-t border-line bg-paper">
+      <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-16 lg:py-28">
+        {/* Intro + direct contact */}
+        <div className="lg:col-span-5">
+          <p className="eyebrow mb-5">Start a project</p>
+          <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl">
+            Tell us about the space.
           </h2>
-          <p className="text-xl lg:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
-            Quick 60-second quiz. One question at a time. No spam—just your
-            <span className="text-amber-400 font-semibold">
-              {" "}
-              preferred contact method
-            </span>
-            .
+          <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-soft">
+            Five short questions, about a minute. We'll reply using the contact
+            method you choose — nothing else.
           </p>
+
+          <dl className="mt-12 divide-y divide-line border-y border-line">
+            <div className="flex items-baseline justify-between gap-6 py-5">
+              <dt className="text-sm text-muted">Phone</dt>
+              <dd>
+                <a href="tel:+14167272148" className="font-display text-2xl text-ink hover:text-brand-deep">
+                  (416) 727-2148
+                </a>
+              </dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-6 py-5">
+              <dt className="text-sm text-muted">Email</dt>
+              <dd>
+                <a href="mailto:info@arcanpainting.ca" className="font-display text-2xl text-ink hover:text-brand-deep">
+                  info@arcanpainting.ca
+                </a>
+              </dd>
+            </div>
+          </dl>
+
+          <div className="mt-10">
+            <p className="text-sm font-medium text-ink">Useful to include</p>
+            <ul className="mt-3 space-y-2 text-ink-soft">
+              <li>— Rooms or surfaces, and their current condition</li>
+              <li>— Colours or finishes you have in mind</li>
+              <li>— Any dates you need to work around</li>
+            </ul>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Enhanced Quiz Form */}
-          <div className="space-y-6">
-            <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
-              {/* Subtle glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-yellow-500/5 rounded-3xl"></div>
-
-              <div className="relative z-10">
-                <h3 className="text-slate-900 text-2xl lg:text-3xl font-bold mb-6 lg:mb-8">
-                  Share Your Project Details
-                </h3>
-
-                {/* Enhanced Progress */}
-                <div className="mb-8">
-                  <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
-                    <span className="font-medium" aria-live="polite" aria-atomic="true">
-                      Step {step + 1} of {stepsTotal}
-                    </span>
-                    <span className="font-bold text-amber-600" aria-hidden="true">
-                      {progressPercent}%
-                    </span>
-                  </div>
-                  <div
-                    role="progressbar"
-                    aria-valuenow={step + 1}
-                    aria-valuemin={1}
-                    aria-valuemax={stepsTotal}
-                    aria-label={`Form progress: step ${step + 1} of ${stepsTotal}`}
-                    className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner"
-                  >
-                    <div
-                      className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Step content */}
-                <div className="mb-8">
-                  <h4 className="text-xl lg:text-2xl font-bold text-slate-900 mb-4 lg:mb-5">
-                    {stepTitle}
-                  </h4>
-                  {stepBody}
-                  {error && (
-                    <div className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
-                      {error}
-                    </div>
-                  )}
-                </div>
-
-                {/* Enhanced Nav buttons */}
-                <div className="flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={back}
-                    disabled={step === 0 || submitMutation.isLoading}
-                    aria-label="Back"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition-all duration-200 font-medium"
-                  >
-                    <ChevronLeft size={18} aria-hidden="true" /> Back
-                  </button>
-
-                  {step < stepsTotal - 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => next()}
-                      disabled={!canGoNext || submitMutation.isLoading}
-                      aria-label="Go to next step"
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
-                    >
-                      Next <ChevronRight size={18} aria-hidden="true" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={submitMutation.isLoading}
-                      aria-busy={submitMutation.isLoading}
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
-                    >
-                      {submitMutation.isLoading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-                          <span>Submitting…</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send size={18} aria-hidden="true" /> Submit
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+        {/* Quiz form */}
+        <div className="lg:col-span-7">
+          <div className="rounded-sm border border-line bg-white p-6 sm:p-10">
+            <div className="mb-8">
+              <div className="mb-3 flex items-center justify-between text-sm text-muted">
+                <span className="font-medium" aria-live="polite" aria-atomic="true">
+                  Step {step + 1} of {stepsTotal}
+                </span>
+                <span aria-hidden="true">{progressPercent}%</span>
+              </div>
+              <div
+                role="progressbar"
+                aria-valuenow={step + 1}
+                aria-valuemin={1}
+                aria-valuemax={stepsTotal}
+                aria-label={`Form progress: step ${step + 1} of ${stepsTotal}`}
+                className="h-1 w-full overflow-hidden rounded-full bg-paper-deep"
+              >
+                <div
+                  className="h-full bg-brand transition-all duration-500 ease-out"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
             </div>
 
-            {/* Enhanced Emergency Contact */}
-            <div className="relative bg-gradient-to-br from-amber-500 to-yellow-500 border border-amber-400/30 rounded-3xl p-8 lg:p-10 shadow-2xl overflow-hidden">
-              {/* Background effects */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-2xl"></div>
-              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-white/20 rounded-xl p-2">
-                    <Shield size={24} className="text-white" />
-                  </div>
-                  <h3 className="text-white text-xl lg:text-2xl font-bold">
-                    Project Support
-                  </h3>
+            <div className="mb-10">
+              <h3 className="mb-6 font-display text-2xl text-ink sm:text-3xl">{stepTitle}</h3>
+              {stepBody}
+              {error && (
+                <div className="mt-4 rounded-sm border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                  {error}
                 </div>
-                <p className="text-white/90 mb-6 leading-relaxed text-base lg:text-lg">
-                  Share the details of your project and any timing considerations.
-                  A team member can review them before confirming next steps.
-                </p>
-                <a
-                  href="#contact"
-                  className="inline-flex items-center gap-2 bg-white hover:bg-white/90 text-amber-700 font-bold px-6 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto justify-center text-base lg:text-lg"
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-4 border-t border-line pt-6">
+              <button
+                type="button"
+                onClick={back}
+                disabled={step === 0 || submitMutation.isLoading}
+                aria-label="Back"
+                className="inline-flex items-center gap-2 px-2 py-3 font-medium text-ink-soft transition-colors hover:text-ink disabled:opacity-40"
+              >
+                <ChevronLeft size={18} aria-hidden="true" /> Back
+              </button>
+
+              {step < stepsTotal - 1 ? (
+                <button
+                  type="button"
+                  onClick={() => next()}
+                  disabled={!canGoNext || submitMutation.isLoading}
+                  aria-label="Go to next step"
+                  className="btn-solid disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Discuss Your Project
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Enhanced Contact Information */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Enhanced Business Hours & Contact */}
-            <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-3xl"></div>
-
-              <div className="relative z-10">
-                <h3 className="text-slate-900 text-xl lg:text-2xl font-bold mb-6 lg:mb-8">
-                  Contact Information
-                </h3>
-
-                <div className="space-y-6">
-                  <a
-                    href="mailto:info@arcanpainting.ca"
-                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all duration-200 group"
-                  >
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
-                      <Mail size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-lg">
-                        Email
-                      </div>
-                      <div className="text-amber-600 font-medium">
-                        info@arcanpainting.ca
-                      </div>
-                    </div>
-                  </a>
-
-                  <a
-                    href="tel:+14167272148"
-                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all duration-200 group"
-                  >
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
-                      <Phone size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-lg">
-                        Phone
-                      </div>
-                      <div className="text-amber-600 font-medium">
-                        +1 (416) 727-2148
-                      </div>
-                    </div>
-                  </a>
-
-                  <div className="flex items-center gap-4 p-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
-                      <MapPin size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-lg">
-                        Service Availability
-                      </div>
-                      <div className="text-slate-600 font-medium">
-                        Confirm service availability with the team when you
-                        submit your project details.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
-                      <Clock size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-lg">
-                        Project Timing
-                      </div>
-                      <div className="text-slate-600 font-medium">
-                        Include any timing requirements in your request so the
-                        team can discuss the next steps.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Enhanced Quality Guarantee */}
-            <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 rounded-3xl"></div>
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl p-2">
-                    <CheckCircle2 size={24} className="text-white" />
-                  </div>
-                  <h3 className="text-slate-900 text-xl lg:text-2xl font-bold">
-                    What to include
-                  </h3>
-                </div>
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
-                    <span className="text-slate-700 font-medium">
-                      The scope and condition of the space
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
-                    <span className="text-slate-700 font-medium">
-                      Your goals, preferences, and questions
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
-                    <span className="text-slate-700 font-medium">
-                      Relevant timing or material considerations
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
-                    <span className="text-slate-700 font-medium">
-                      The best way for the team to contact you
-                    </span>
-                  </li>
-                </ul>
-              </div>
+                  Next <ChevronRight size={18} aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={submitMutation.isLoading}
+                  aria-busy={submitMutation.isLoading}
+                  className="btn-brand disabled:opacity-50"
+                >
+                  {submitMutation.isLoading ? (
+                    <>
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-ink border-t-transparent" aria-hidden="true" />
+                      <span>Submitting…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={18} aria-hidden="true" /> Send details
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>

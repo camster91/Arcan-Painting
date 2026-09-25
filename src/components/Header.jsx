@@ -70,12 +70,7 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ease-out ${isScrolled ? "shadow-lg backdrop-blur-sm" : ""}`}
-      style={{
-        backgroundColor: themeColors.bg,
-        borderBottom: `1px solid ${themeColors.border}`,
-        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
+      className={`sticky top-0 z-50 border-b transition-colors duration-300 ease-out ${isScrolled ? "border-line bg-paper/95 backdrop-blur-sm" : "border-transparent bg-paper"}`}
     >
       <a
         href="#main"
@@ -95,7 +90,7 @@ export default function Header() {
               loading="eager"
               fetchpriority="high"
               decoding="async"
-              className={`transition-all duration-300 object-contain ${isScrolled ? "w-[112px] h-[62px] sm:w-[145px] sm:h-[75px]" : "w-[120px] h-[66px] sm:w-[170px] sm:h-[95px]"}`}
+              className={`mix-blend-multiply transition-all duration-300 object-contain ${isScrolled ? "w-[112px] h-[62px] sm:w-[145px] sm:h-[75px]" : "w-[120px] h-[66px] sm:w-[170px] sm:h-[95px]"}`}
             />
           </a>
 
@@ -104,8 +99,7 @@ export default function Header() {
             {/* Services dropdown */}
             <div className="relative">
               <button
-                className="flex items-center gap-1 text-base font-medium transition-colors py-2"
-                style={{ color: activeDropdown === "services" ? "#f59e0b" : themeColors.textSecondary }}
+                className={`flex items-center gap-1 text-[15px] font-medium transition-colors py-2 ${activeDropdown === "services" ? "text-ink" : "text-ink-soft hover:text-ink"}`}
                 onClick={() => toggleDropdown("services")}
                 aria-haspopup="true"
                 aria-expanded={activeDropdown === "services"}
@@ -113,16 +107,16 @@ export default function Header() {
                 Services <ChevronDown size={16} className={`transition-transform ${activeDropdown === "services" ? "rotate-180" : ""}`} />
               </button>
               {activeDropdown === "services" && (
-                <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-3 min-w-[240px] z-50">
+                <div className="absolute top-full left-0 mt-3 bg-paper rounded-lg shadow-xl border border-line py-2 min-w-[240px] z-50">
                   {SERVICES_NAV.map((svc) => (
                     <a
                       key={svc.href}
                       href={svc.href}
-                      className="flex flex-col px-5 py-3 hover:bg-amber-50 transition-colors group"
+                      className="flex flex-col px-5 py-3 hover:bg-paper-deep transition-colors"
                       onClick={() => setActiveDropdown(null)}
                     >
-                      <span className="font-semibold text-slate-900 group-hover:text-amber-700">{svc.label}</span>
-                      <span className="text-xs text-slate-500">{svc.desc}</span>
+                      <span className="font-medium text-ink">{svc.label}</span>
+                      <span className="text-xs text-muted">{svc.desc}</span>
                     </a>
                   ))}
                 </div>
@@ -131,16 +125,14 @@ export default function Header() {
 
             {/* Regular nav items */}
             {[
-              { label: "Portfolio", href: "/#portfolio" },
+              { label: "Work", href: "/#portfolio" },
+              { label: "Process", href: "/#process" },
               { label: "FAQ", href: "/#faq" },
             ].map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="text-base font-medium transition-colors"
-                style={{ color: themeColors.textSecondary }}
-                onMouseEnter={(e) => (e.target.style.color = "#f59e0b")}
-                onMouseLeave={(e) => (e.target.style.color = themeColors.textSecondary)}
+                className="text-[15px] font-medium text-ink-soft transition-colors hover:text-ink"
               >
                 {item.label}
               </a>
@@ -151,25 +143,20 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <a
               href="tel:+14167272148"
-              className="hidden md:inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-              style={{ color: themeColors.textSecondary }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "#f59e0b"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = themeColors.textSecondary; }}
+              className="hidden lg:inline-flex items-center gap-2 text-[15px] font-medium px-3 py-1.5 text-ink-soft transition-colors hover:text-ink"
             >
-              <Phone size={16} aria-hidden="true" /> +1 (416) 727-2148
+              <Phone size={15} aria-hidden="true" /> (416) 727-2148
             </a>
 
             <button
-              className="font-semibold text-sm sm:text-lg px-3 sm:px-6 py-2 sm:py-3 rounded-lg transition-all duration-300 active:scale-[0.98] shadow-lg hover:shadow-xl group relative overflow-hidden"
-              style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
+              className="font-medium text-sm sm:text-[15px] px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-ink text-paper transition-colors hover:bg-ink-soft active:scale-[0.98]"
               onClick={() => setIsLeadFormOpen(true)}
             >
-              <span className="relative z-10 inline-flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5">
                 <span className="hidden sm:inline">Discuss Your Project</span>
                 <span className="sm:hidden whitespace-nowrap">Contact</span>
-                <ChevronRight size={18} className="hidden sm:inline" aria-hidden="true" />
+                <ChevronRight size={16} className="hidden sm:inline" aria-hidden="true" />
               </span>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(to right, #fbbf24, #f59e0b)" }} />
             </button>
 
             <button
@@ -193,7 +180,7 @@ export default function Header() {
           <div
             id="mobile-menu-panel"
             className="absolute inset-y-0 right-0 w-[88%] max-w-[360px] shadow-2xl flex flex-col z-10"
-            style={{ backgroundColor: themeColors.bg, borderLeft: `1px solid ${themeColors.border}` }}
+            style={{ backgroundColor: "#F6F2EA", borderLeft: "1px solid #DCD2C1" }}
             role="dialog"
             aria-modal="true"
             aria-label="Mobile Menu"
@@ -242,7 +229,8 @@ export default function Header() {
                 </div>
 
                 {[
-                  { label: "Portfolio", href: "#portfolio" },
+                  { label: "Work", href: "#portfolio" },
+                  { label: "Process", href: "#process" },
                   { label: "FAQ", href: "#faq" },
                 ].map((item) => (
                   <a
@@ -262,7 +250,7 @@ export default function Header() {
                 <a
                   href="tel:+14167272148"
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-lg font-semibold text-base"
-                  style={{ backgroundColor: "#0f172a", color: "#ffffff" }}
+                  style={{ backgroundColor: "#16213A", color: "#F6F2EA" }}
                 >
                   <Phone size={18} aria-hidden="true" />
                   (416) 727-2148
@@ -273,8 +261,7 @@ export default function Header() {
             <div className="p-4 border-t" style={{ borderColor: themeColors.border }}>
               <button
                 onClick={() => { setIsMenuOpen(false); setIsLeadFormOpen(true); }}
-                className="w-full py-4 rounded-lg font-semibold text-lg"
-                style={{ background: "linear-gradient(to right, #f59e0b, #fbbf24)", color: "#1e293b" }}
+                className="w-full py-4 rounded-full font-medium text-base bg-brand text-ink"
               >
                 Discuss Your Project
               </button>

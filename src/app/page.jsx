@@ -12,7 +12,7 @@ import Footer from "../components/Footer";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white transition-colors duration-300">
+    <div className="min-h-screen bg-paper text-ink">
       {/* Header - critical path, loaded synchronously */}
       <Header />
 
