@@ -9,6 +9,7 @@ initSentryServer();
 import { migratePasswords } from '../src/app/api/utils/migrate-passwords.js';
 import { ensureSchema } from '../src/migrations/001-initial-schema.js';
 import { Hono } from 'hono';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
 import { requestId } from 'hono/request-id';
@@ -101,6 +102,14 @@ if (process.env.CORS_ORIGINS) {
 // get auto-mounted. Mount them here explicitly.
 import * as sitemapRoute from '../src/app/sitemap.xml/route.js';
 import * as robotsRoute from '../src/app/robots.txt/route.js';
+// Keep migrated images outside Hostinger's replaceable deployment directory.
+if (process.env.GALLERY_ROOT) {
+  app.use('/gallery/*', serveStatic({
+    root: process.env.GALLERY_ROOT,
+    rewriteRequestPath: (path) => path.replace(/^\/gallery/, ''),
+  }));
+  app.get('/gallery/*', (c) => c.notFound());
+}
 app.route(API_BASENAME, api);
 app.get('/sitemap.xml', (c) => sitemapRoute.GET(c.req.raw));
 app.get('/robots.txt', (c) => robotsRoute.GET(c.req.raw));

@@ -136,10 +136,10 @@ export async function getAgentStats() {
   const rows = await sql`
     SELECT
       COUNT(*)::int AS total,
-      COUNT(*) FILTER (WHERE status = 'success')::int AS success,
-      COUNT(*) FILTER (WHERE status = 'failure')::int AS failure,
-      COUNT(*) FILTER (WHERE status = 'running')::int AS running,
-      COALESCE(AVG(duration_ms) FILTER (WHERE duration_ms IS NOT NULL), 0)::int AS avg_duration
+      COUNT(CASE WHEN status = 'success' THEN 1 END)::int AS success,
+      COUNT(CASE WHEN status = 'failure' THEN 1 END)::int AS failure,
+      COUNT(CASE WHEN status = 'running' THEN 1 END)::int AS running,
+      ROUND(COALESCE(AVG(duration_ms), 0))::int AS avg_duration
     FROM agent_runs
     WHERE started_at >= ${todayStart.toISOString()}
   `;

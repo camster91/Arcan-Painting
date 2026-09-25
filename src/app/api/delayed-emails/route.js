@@ -115,10 +115,10 @@ export async function GET(request) {
 
     const stats = await sql`
       SELECT
-        COUNT(*) FILTER (WHERE status = 'pending')::int as pending,
-        COUNT(*) FILTER (WHERE status = 'sent')::int as sent,
-        COUNT(*) FILTER (WHERE status = 'failed')::int as failed,
-        COUNT(*) FILTER (WHERE status = 'pending' AND scheduled_for <= NOW())::int as due_now
+        COUNT(CASE WHEN status = 'pending' THEN 1 END)::int as pending,
+        COUNT(CASE WHEN status = 'sent' THEN 1 END)::int as sent,
+        COUNT(CASE WHEN status = 'failed' THEN 1 END)::int as failed,
+        COUNT(CASE WHEN status = 'pending' AND scheduled_for <= NOW() THEN 1 END)::int as due_now
       FROM delayed_emails
     `;
 

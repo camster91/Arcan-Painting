@@ -48,6 +48,7 @@ export default defineConfig({
         const serverOnlyPkgs = [
           'pg',
           'pg-native',
+          'mysql2',
           'pg-pool',
           'argon2',
           'ws',

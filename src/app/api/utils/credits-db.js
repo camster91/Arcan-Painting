@@ -7,7 +7,7 @@ async function ensureSchema() {
     schemaReady = (async () => {
       await sql`
         CREATE TABLE IF NOT EXISTS credits (
-          user_id TEXT PRIMARY KEY,
+          user_id VARCHAR(255) PRIMARY KEY,
           balance INTEGER NOT NULL DEFAULT 0 CHECK (balance >= 0),
           updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
@@ -15,11 +15,11 @@ async function ensureSchema() {
       await sql`
         CREATE TABLE IF NOT EXISTS credit_transactions (
           id SERIAL PRIMARY KEY,
-          user_id TEXT NOT NULL,
+          user_id VARCHAR(255) NOT NULL,
           amount INTEGER NOT NULL,
           type TEXT NOT NULL,
           description TEXT,
-          stripe_session_id TEXT,
+          stripe_session_id VARCHAR(255),
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
       `;

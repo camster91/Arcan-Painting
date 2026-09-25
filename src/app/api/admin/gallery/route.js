@@ -50,7 +50,7 @@ export async function GET(request) {
       params.push(category);
     }
 
-    query += ` ORDER BY sort_order ASC, quality_score DESC NULLS LAST`;
+    query += ` ORDER BY sort_order ASC, (quality_score IS NULL) ASC, quality_score DESC`;
     const items = await sql(query, params);
 
     return Response.json({ items });
