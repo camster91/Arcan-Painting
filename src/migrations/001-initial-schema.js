@@ -1207,6 +1207,20 @@ Arcan Painting
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false`;
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS google_prompted_at TIMESTAMP`;
 
+    // Settings columns used by /api/settings and the estimate builder. They
+    // used to exist only in the settings route's own CREATE TABLE, which is a
+    // no-op once this migration has created app_settings.
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS tax_rate NUMERIC(5,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS markup_pct NUMERIC(5,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'CAD'`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS hourly_rate NUMERIC(10,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS logo_url TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS email_from VARCHAR(255)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS invoice_notes_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS estimate_email_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS invoice_email_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS contract_email_template TEXT`;
+
     // Workflow indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_category ON workflow_skills(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_is_active ON workflow_skills(is_active)`;

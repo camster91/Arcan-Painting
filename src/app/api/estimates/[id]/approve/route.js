@@ -27,6 +27,15 @@ export async function POST(request, { params }) {
       return Response.json({ error: "Estimate not found" }, { status: 404 });
     const est = estRows[0];
 
+    // Approving twice must not create a second job for the same estimate.
+    const existing = await sql`SELECT id, project_name, status FROM projects WHERE estimate_id = ${id} LIMIT 1`;
+    if (existing.length) {
+      return Response.json(
+        { error: "This estimate already has a project", project: existing[0] },
+        { status: 409 },
+      );
+    }
+
     // Approve estimate and create project in a transaction
     const [_, projectRows] = await sql.transaction(async (txn) => {
       const updateResult = await txn`UPDATE estimates SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ${id}`;

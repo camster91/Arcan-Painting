@@ -247,7 +247,7 @@ export default function SettingsPage() {
                   Currency
                 </label>
                 <input
-                  defaultValue={settings.currency || "USD"}
+                  defaultValue={settings.currency || "CAD"}
                   onBlur={(e) => mutation.mutate({ currency: e.target.value })}
                   className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                 />
