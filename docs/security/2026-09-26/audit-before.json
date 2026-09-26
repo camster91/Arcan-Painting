@@ -1,0 +1,393 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@vitest/mocker": {
+      "name": "@vitest/mocker",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193684,
+          "name": "@vitest/mocker",
+          "dependency": "@vitest/mocker",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "2.1.0 - 4.1.10",
+      "nodes": [
+        "node_modules/@vitest/mocker"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.2",
+        "isSemVerMajor": true
+      }
+    },
+    "baseline-browser-mapping": {
+      "name": "baseline-browser-mapping",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193686,
+          "name": "baseline-browser-mapping",
+          "dependency": "baseline-browser-mapping",
+          "title": "baseline-browser-mapping process termination on invalid input causes denial of service",
+          "url": "https://github.com/advisories/GHSA-w5vr-8v7q-w6rv",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-705"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=2.0.0 <2.11.0"
+        }
+      ],
+      "effects": [],
+      "range": ">=2.0.0 <2.11.0",
+      "nodes": [
+        "node_modules/baseline-browser-mapping"
+      ],
+      "fixAvailable": true
+    },
+    "body-parser": {
+      "name": "body-parser",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "qs"
+      ],
+      "effects": [],
+      "range": "1.20.5 - 1.20.6",
+      "nodes": [
+        "node_modules/body-parser"
+      ],
+      "fixAvailable": true
+    },
+    "browserslist": {
+      "name": "browserslist",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1153171,
+          "name": "browserslist",
+          "dependency": "browserslist",
+          "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+          "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+          "severity": "high",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=4.28.6"
+        },
+        {
+          "source": 1153172,
+          "name": "browserslist",
+          "dependency": "browserslist",
+          "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+          "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g",
+          "severity": "high",
+          "cwe": [
+            "CWE-248",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=4.28.6"
+        }
+      ],
+      "effects": [],
+      "range": "<=4.28.6",
+      "nodes": [
+        "node_modules/browserslist"
+      ],
+      "fixAvailable": true
+    },
+    "express": {
+      "name": "express",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "qs"
+      ],
+      "effects": [],
+      "range": "4.22.2",
+      "nodes": [
+        "node_modules/express"
+      ],
+      "fixAvailable": true
+    },
+    "hono": {
+      "name": "hono",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1193729,
+          "name": "hono",
+          "dependency": "hono",
+          "title": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory",
+          "url": "https://github.com/advisories/GHSA-gqvv-2mrq-wpjv",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N"
+          },
+          "range": "<4.13.5"
+        },
+        {
+          "source": 1193730,
+          "name": "hono",
+          "dependency": "hono",
+          "title": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion",
+          "url": "https://github.com/advisories/GHSA-g6gw-c38x-mqfc",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<4.13.5"
+        },
+        {
+          "source": 1193731,
+          "name": "hono",
+          "dependency": "hono",
+          "title": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials",
+          "url": "https://github.com/advisories/GHSA-crvj-82cr-hjcx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": "<4.13.5"
+        }
+      ],
+      "effects": [],
+      "range": "<=4.13.4",
+      "nodes": [
+        "node_modules/hono"
+      ],
+      "fixAvailable": true
+    },
+    "js-yaml": {
+      "name": "js-yaml",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193726,
+          "name": "js-yaml",
+          "dependency": "js-yaml",
+          "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+          "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=3.0.0 <3.15.2"
+        }
+      ],
+      "effects": [],
+      "range": "3.0.0 - 3.15.1",
+      "nodes": [
+        "node_modules/js-yaml"
+      ],
+      "fixAvailable": true
+    },
+    "morgan": {
+      "name": "morgan",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193794,
+          "name": "morgan",
+          "dependency": "morgan",
+          "title": "morgan vulnerable to Log Forging via unescaped Unicode line separators",
+          "url": "https://github.com/advisories/GHSA-jxfw-x594-9x9m",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-117"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<1.12.0"
+        }
+      ],
+      "effects": [],
+      "range": "<1.12.0",
+      "nodes": [
+        "node_modules/morgan"
+      ],
+      "fixAvailable": true
+    },
+    "qs": {
+      "name": "qs",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1158506,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs array-limit bypass via bracket-key comma parsing",
+          "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=6.14.2 <=6.15.3"
+        },
+        {
+          "source": 1158507,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-248",
+            "CWE-703"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=2.2.5 <6.16.0"
+        }
+      ],
+      "effects": [
+        "body-parser",
+        "express"
+      ],
+      "range": "2.2.5 - 6.15.3",
+      "nodes": [
+        "node_modules/qs"
+      ],
+      "fixAvailable": true
+    },
+    "valibot": {
+      "name": "valibot",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1124298,
+          "name": "valibot",
+          "dependency": "valibot",
+          "title": "Valibot: record() issue paths can make flatten() throw for inherited Object property names",
+          "url": "https://github.com/advisories/GHSA-5qjj-4xww-7phc",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-755"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=1.4.1"
+        }
+      ],
+      "effects": [],
+      "range": "<=1.4.1",
+      "nodes": [
+        "node_modules/valibot"
+      ],
+      "fixAvailable": true
+    },
+    "vitest": {
+      "name": "vitest",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@vitest/mocker",
+        {
+          "source": 1193683,
+          "name": "vitest",
+          "dependency": "vitest",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "effects": [],
+      "range": "2.1.0-beta.1 - 4.1.10",
+      "nodes": [
+        "node_modules/vitest"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.2",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 9,
+      "high": 2,
+      "critical": 0,
+      "total": 11
+    },
+    "dependencies": {
+      "prod": 407,
+      "dev": 353,
+      "optional": 54,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 760
+    }
+  }
+}
