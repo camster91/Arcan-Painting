@@ -18,7 +18,6 @@ import LeadEditModal from "@/components/admin/leads/LeadEditModal";
 import { CreateEstimateModal } from "@/components/admin/estimates/CreateEstimateModal";
 import CreateProjectModal from "@/components/admin/projects/CreateProjectModal";
 import { usePerformanceCache } from "@/hooks/usePerformanceCache";
-import EmailHealthWidget from "@/components/admin/EmailHealthWidget";
 // AdsKpiBar stripped 2026-06-15: it fetched /api/ads/dashboard-summary
 // (deleted in the 5b22bee marketing cut). Both the component file and
 // the import here are gone. The dashboard continues with the rest of
@@ -219,7 +218,6 @@ export default function DashboardOverview() {
       </div>
 
       {/* Email Health Alert */}
-      <EmailHealthWidget />
 
       {/* Recent Activity & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

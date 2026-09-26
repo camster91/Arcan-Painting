@@ -1,31 +1,19 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { Outlet } from "react-router";
 import {
   Menu,
   X,
   LayoutGrid,
+  Inbox,
   Users,
   FileText,
   Briefcase,
   Wallet,
-  Calendar,
   Settings,
-  Bot,
-  Megaphone,
-  Image,
-  Search,
-  Sparkles,
-  TrendingUp,
-  BarChart2,
-  Linkedin,
-  MapPin,
-  Mail,
-  Zap,
-  Cpu,
 } from "lucide-react";
 import BottomTabNav from "@/components/BottomTabNav";
-import FloatingActionButton from "@/components/FloatingActionButton";
 import MobileBreadcrumb from "@/components/MobileBreadcrumb";
 import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
 import { ModalProvider, useModal } from "@/contexts/ModalContext";
@@ -61,22 +49,6 @@ function AdminLayoutContent({ children }) {
       };
     }
   }, []);
-
-  // Redirect to onboarding wizard if not completed
-  useEffect(() => {
-    if (!authChecked || !user) return;
-    if (typeof window !== "undefined" && window.location.pathname === "/admin/onboarding") return;
-    let mounted = true;
-    fetch("/api/onboarding", { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (mounted && !data.completed && data.needsOnboarding) {
-          window.location.href = "/admin/onboarding";
-        }
-      })
-      .catch(() => {});
-    return () => { mounted = false; };
-  }, [authChecked, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -115,235 +87,98 @@ function AdminLayoutContent({ children }) {
     }
   }, [logout]);
 
-  // Grouped left sidebar structure with enhanced organization
+  // One menu item per step of the business: lead → customer → estimate →
+  // job → invoice. Secondary screens are tabs inside the step they belong to.
   const groups = useMemo(
     () => [
       {
-        key: "dashboard",
-        label: "Dashboard",
+        key: "home",
+        label: "Home",
         icon: LayoutGrid,
         entryHref: "/admin",
         tabs: [],
         matchers: ["/admin$"],
-        description: "Overview & analytics",
+        description: "What needs attention",
         showNotificationBadge: false,
       },
       {
-        key: "customers",
-        label: "Customer Management",
-        icon: Users,
+        key: "leads",
+        label: "Leads",
+        icon: Inbox,
         entryHref: "/admin/leads",
         tabs: [
-          {
-            label: "Leads",
-            href: "/admin/leads",
-            description: "New inquiries",
-          },
-          {
-            label: "Clients",
-            href: "/admin/clients",
-            description: "Active customers",
-          },
-          {
-            label: "Follow-ups",
-            href: "/admin/follow-ups",
-            description: "Scheduled contacts",
-          },
+          { label: "Leads", href: "/admin/leads", description: "New enquiries" },
+          { label: "Follow-ups", href: "/admin/follow-ups", description: "Scheduled calls" },
+          { label: "Notifications", href: "/admin/messages", description: "New activity", badge: unreadCount > 0 ? unreadCount : null },
         ],
-        matchers: ["/admin/leads", "/admin/clients", "/admin/follow-ups"],
-        description: "Lead & client management",
-        showNotificationBadge: false,
-      },
-      {
-        key: "sales",
-        label: "Sales & Contracts",
-        icon: FileText,
-        entryHref: "/admin/estimates",
-        tabs: [
-          {
-            label: "Estimates",
-            href: "/admin/estimates",
-            description: "Quote builder",
-          },
-          {
-            label: "Contracts",
-            href: "/admin/contracts",
-            description: "Signed agreements",
-          },
-          {
-            label: "Templates",
-            href: "/admin/contracts/templates",
-            description: "Contract templates",
-          },
-        ],
-        matchers: [
-          "/admin/estimates",
-          "/admin/contracts",
-          "/admin/contracts/templates",
-        ],
-        description: "Quotes & agreements",
-        showNotificationBadge: false,
-      },
-      {
-        key: "projects",
-        label: "Project Management",
-        icon: Briefcase,
-        entryHref: "/admin/projects",
-        tabs: [
-          {
-            label: "Projects",
-            href: "/admin/projects",
-            description: "Active work",
-          },
-          { label: "Tasks", href: "/admin/tasks", description: "To-do items" },
-        ],
-        matchers: ["/admin/projects", "/admin/tasks"],
-        description: "Work management",
-        showNotificationBadge: false,
-      },
-      {
-        key: "financial",
-        label: "Financial",
-        icon: Wallet,
-        entryHref: "/admin/invoices",
-        tabs: [
-          {
-            label: "Invoices",
-            href: "/admin/invoices",
-            description: "Bills & payments",
-          },
-          {
-            label: "Payments",
-            href: "/admin/payments",
-            description: "Payment tracking",
-          },
-        ],
-        matchers: ["/admin/invoices", "/admin/payments"],
-        description: "Revenue & payments",
-        showNotificationBadge: false,
-      },
-      {
-        key: "scheduling",
-        label: "Scheduling",
-        icon: Calendar,
-        entryHref: "/admin/calendar",
-        tabs: [
-          {
-            label: "Calendar",
-            href: "/admin/calendar",
-            description: "Schedule overview",
-          },
-          {
-            label: "Availability",
-            href: "/admin/availability",
-            description: "Set work hours",
-          },
-          {
-            label: "Team Schedule",
-            href: "/admin/scheduling",
-            description: "Staff planning",
-          },
-        ],
-        matchers: [
-          "/admin/calendar",
-          "/admin/availability",
-          "/admin/scheduling",
-        ],
-        description: "Time & resources",
-        showNotificationBadge: false,
-      },
-      {
-        key: "operations",
-        label: "Operations",
-        icon: Briefcase,
-        entryHref: "/admin/today",
-        tabs: [
-          {
-            label: "Today",
-            href: "/admin/today",
-            description: "Daily overview",
-          },
-          {
-            label: "Messages",
-            href: "/admin/messages",
-            description: "Notifications",
-            badge: unreadCount > 0 ? unreadCount : null,
-          },
-          {
-            label: "Capture",
-            href: "/admin/capture",
-            description: "Quick entry",
-          },
-        ],
-        matchers: ["/admin/today", "/admin/messages", "/admin/capture"],
-        description: "Daily operations",
+        matchers: ["/admin/leads", "/admin/follow-ups", "/admin/messages"],
+        description: "Enquiries and follow-ups",
         showNotificationBadge: unreadCount > 0,
       },
       {
-        key: "ai-chat",
-        label: "AI Help",
-        icon: Bot,
-        entryHref: "/admin/ai-chat",
+        key: "customers",
+        label: "Customers",
+        icon: Users,
+        entryHref: "/admin/clients",
         tabs: [],
-        matchers: ["/admin/ai-chat"],
-        description: "Ask the AI assistant",
+        matchers: ["/admin/clients"],
+        description: "Won customers",
         showNotificationBadge: false,
       },
       {
-        key: "agents",
-        label: "AI Agents",
-        icon: Cpu,
-        entryHref: "/admin/agents",
+        key: "estimates",
+        label: "Estimates",
+        icon: FileText,
+        entryHref: "/admin/estimates",
         tabs: [
-          { label: "Dashboard", href: "/admin/agents", description: "Run history & stats" },
-          { label: "Run Agent", href: "/admin/agents/run", description: "Manual execution" },
+          { label: "Estimates", href: "/admin/estimates", description: "Quotes" },
+          { label: "Contracts", href: "/admin/contracts", description: "Existing agreements" },
         ],
-        matchers: ["/admin/agents"],
-        description: "Agent monitoring & execution",
+        matchers: ["/admin/estimates", "/admin/contracts"],
+        description: "Quotes for customers",
         showNotificationBadge: false,
       },
       {
-        key: "team",
-        label: "Team & Settings",
+        key: "jobs",
+        label: "Jobs",
+        icon: Briefcase,
+        entryHref: "/admin/projects",
+        tabs: [
+          { label: "Jobs", href: "/admin/projects", description: "Sold work" },
+          { label: "Calendar", href: "/admin/calendar", description: "Visits and job dates" },
+          { label: "Today", href: "/admin/today", description: "Jobs in progress" },
+          { label: "Capture", href: "/admin/capture", description: "Progress photos" },
+        ],
+        matchers: ["/admin/projects", "/admin/calendar", "/admin/today", "/admin/capture"],
+        description: "Scheduled and active work",
+        showNotificationBadge: false,
+      },
+      {
+        key: "invoices",
+        label: "Invoices",
+        icon: Wallet,
+        entryHref: "/admin/invoices",
+        tabs: [
+          { label: "Invoices", href: "/admin/invoices", description: "Bills" },
+          { label: "Payments", href: "/admin/payments", description: "Money received" },
+        ],
+        matchers: ["/admin/invoices", "/admin/payments"],
+        description: "Billing and payments",
+        showNotificationBadge: false,
+      },
+      {
+        key: "settings",
+        label: "Settings",
         icon: Settings,
-        entryHref: "/admin/team",
+        entryHref: "/admin/settings",
         tabs: [
-          {
-            label: "Team Members",
-            href: "/admin/team",
-            description: "Staff management",
-          },
-          {
-            label: "Settings",
-            href: "/admin/settings",
-            description: "System config",
-          },
-          { label: "Email", href: "/admin/email", description: "Email system" },
-          {
-            label: "Email Templates",
-            href: "/admin/email-templates",
-            description: "Message templates",
-          },
-          {
-            label: "Email Workflows",
-            href: "/admin/email-workflows",
-            description: "Automation rules",
-          },
-          {
-            label: "Change Password",
-            href: "/account/change-password",
-            description: "Security settings",
-          },
+          { label: "Company", href: "/admin/settings", description: "Business details" },
+          { label: "Booking slots", href: "/admin/availability", description: "Estimate visit times" },
+          { label: "Team", href: "/admin/team", description: "Staff accounts" },
+          { label: "Password", href: "/account/change-password", description: "Your sign-in" },
         ],
-        matchers: [
-          "/admin/team",
-          "/admin/settings",
-          "/admin/email",
-          "/admin/email-templates",
-          "/admin/email-workflows",
-          "/account/change-password",
-        ],
-        description: "Configuration",
+        matchers: ["/admin/settings", "/admin/availability", "/admin/team", "/account/change-password"],
+        description: "Business setup",
         showNotificationBadge: false,
       },
     ],
@@ -601,23 +436,6 @@ function AdminLayoutContent({ children }) {
               })}
             </nav>
 
-            {/* Quick stats or tips section */}
-            <div className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-slate-900 mb-2">
-                Quick Tip
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Use keyboard shortcuts:{" "}
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[10px]">
-                  Ctrl+K
-                </kbd>{" "}
-                for quick search,{" "}
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[10px]">
-                  Ctrl+1
-                </kbd>{" "}
-                for dashboard.
-              </p>
-            </div>
           </aside>
 
           {/* Main content area */}
@@ -661,8 +479,7 @@ function AdminLayoutContent({ children }) {
 
       {/* Mobile Components - conditionally show based on modal state */}
       <div className={`${isModalOpen ? "hidden" : "block"} lg:block`}>
-        <BottomTabNav />
-        <FloatingActionButton />
+        <BottomTabNav unreadCount={unreadCount} />
       </div>
 
     </div>
@@ -671,12 +488,15 @@ function AdminLayoutContent({ children }) {
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
+// Rendered as a React Router layout route (see src/app/routes.ts), so the
+// page arrives through <Outlet />.
 export default function AdminLayout({ children }) {
+  const content = children ?? <Outlet />;
   return (
     <ErrorBoundary name="admin-dashboard" fullPage>
       <AdminAuthProvider>
         <ModalProvider>
-          <AdminLayoutContent>{children}</AdminLayoutContent>
+          <AdminLayoutContent>{content}</AdminLayoutContent>
         </ModalProvider>
       </AdminAuthProvider>
     </ErrorBoundary>

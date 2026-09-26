@@ -28,16 +28,19 @@ export default function MobileBreadcrumb({
     if (pathSegments.length > 1) {
       const pageMap = {
         leads: { label: "Leads", href: "/admin/leads" },
-        clients: { label: "Clients", href: "/admin/clients" },
+        clients: { label: "Customers", href: "/admin/clients" },
         calendar: { label: "Calendar", href: "/admin/calendar" },
         contracts: { label: "Contracts", href: "/admin/contracts" },
         invoices: { label: "Invoices", href: "/admin/invoices" },
         payments: { label: "Payments", href: "/admin/payments" },
-        availability: { label: "Availability", href: "/admin/availability" },
+        availability: { label: "Booking slots", href: "/admin/availability" },
         estimates: { label: "Estimates", href: "/admin/estimates" },
-        projects: { label: "Projects", href: "/admin/projects" },
+        projects: { label: "Jobs", href: "/admin/projects" },
         "follow-ups": { label: "Follow-ups", href: "/admin/follow-ups" },
-        tasks: { label: "Tasks", href: "/admin/tasks" },
+        messages: { label: "Notifications", href: "/admin/messages" },
+        today: { label: "Today", href: "/admin/today" },
+        capture: { label: "Capture", href: "/admin/capture" },
+        settings: { label: "Company", href: "/admin/settings" },
         team: { label: "Team", href: "/admin/team" },
       };
 

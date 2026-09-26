@@ -118,7 +118,7 @@ export async function GET(request) {
         title as subject,
         message,
         email as to_email,
-        is_read as read,
+        is_read AS "read",
         created_at as sent_at,
         'sent' as status
       FROM notifications
@@ -328,22 +328,6 @@ export async function sendAutomatedNotification(eventType, data) {
           related_id: data.payment_id,
           related_type: "payment",
           send_email: true,
-        });
-        break;
-
-      case "task_reminder":
-        notifications.push({
-          type: "task",
-          title: "Task Reminder",
-          message: `Task "${data.task_title}" is due ${data.due_date}`,
-          email: data.assignee_email,
-          related_id: data.task_id,
-          related_type: "task",
-          send_email: true,
-          data: {
-            action_url: `${process.env.APP_URL}/admin/tasks`,
-            action_text: "View Tasks",
-          },
         });
         break;
 
