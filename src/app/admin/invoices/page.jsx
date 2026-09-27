@@ -9,6 +9,7 @@ import {
   Download,
   Send,
   Ban,
+  Link2,
   AlertCircle,
   DollarSign,
   Calendar as CalendarIcon,
@@ -22,6 +23,7 @@ import {
 import RecordPaymentModal from "@/components/admin/invoices/RecordPaymentModal";
 import PaymentsListModal from "@/components/admin/invoices/PaymentsListModal";
 import CreateInvoiceModal from "@/components/admin/invoices/CreateInvoiceModal";
+import { copyCustomerLink } from "@/utils/copyCustomerLink";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState([]);
@@ -539,6 +541,16 @@ export default function InvoicesPage() {
                                 sendingId === inv.id ? "animate-pulse" : ""
                               }
                             />
+                          </button>
+                          <button
+                            className="p-2 text-slate-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Copy customer link"
+                            onClick={async () => {
+                              setNotification(await copyCustomerLink("invoices", inv.id));
+                              setTimeout(() => setNotification(null), 8000);
+                            }}
+                          >
+                            <Link2 size={16} />
                           </button>
                           {inv.status !== "cancelled" && inv.payment_status === "unpaid" && (
                             <button

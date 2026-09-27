@@ -27,6 +27,13 @@ export default function CreateInvoiceModal({ onClose, onCreated, initialProjectI
       })
       .catch(() => active && setError("Could not load jobs. Refresh and try again."))
       .finally(() => active && setProjectsLoading(false));
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        const pct = data?.settings?.deposit_pct;
+        if (active && pct != null) setDepositPercent(Number(pct));
+      })
+      .catch(() => {});
     return () => {
       active = false;
     };

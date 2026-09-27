@@ -110,6 +110,13 @@ if (process.env.GALLERY_ROOT) {
   }));
   app.get('/gallery/*', (c) => c.notFound());
 }
+// Uploaded job photos and logos (see src/app/api/utils/uploads.js). File
+// names are random, so URLs are not guessable; keep UPLOAD_ROOT persistent.
+app.use('/uploads/*', serveStatic({
+  root: process.env.UPLOAD_ROOT || 'uploads',
+  rewriteRequestPath: (path) => path.replace(/^\/uploads/, ''),
+}));
+app.get('/uploads/*', (c) => c.notFound());
 app.route(API_BASENAME, api);
 app.get('/sitemap.xml', (c) => sitemapRoute.GET(c.req.raw));
 app.get('/robots.txt', (c) => robotsRoute.GET(c.req.raw));

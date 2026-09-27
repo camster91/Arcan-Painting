@@ -4,6 +4,7 @@ import {
   formatDateLong,
 } from "@/utils/estimatesUtils";
 import { useState } from "react";
+import { copyCustomerLink } from "@/utils/copyCustomerLink";
 
 export function EstimateDetailModal({
   estimate,
@@ -435,6 +436,12 @@ export function EstimateDetailModal({
                     className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
                     {sending ? "Sending..." : "Send to Customer"}
+                  </button>
+                  <button
+                    onClick={async () => onNotification?.(await copyCustomerLink("estimates", estimate.id))}
+                    className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Copy Customer Link
                   </button>
                   <button
                     onClick={handleDownload}

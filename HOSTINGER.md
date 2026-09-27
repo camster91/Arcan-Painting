@@ -42,6 +42,11 @@ the hosting-local connection uses loopback. Do not expose the database publicly.
 remain available at the existing `/gallery/...` URLs. Missing files return 404.
 Leave this variable unset to use the repository's existing `public/gallery`.
 
+`UPLOAD_ROOT` is the absolute path of a persistent **uploads directory** (job progress
+photos, company logo), also outside `public_html` and deployment releases. Files are
+served at `/uploads/...` with random names. Without it, uploads go to `./uploads`
+inside the release and are lost on the next deploy.
+
 ### Repeatable copy and verification
 
 1. Keep the existing VPS serving traffic during preparation. Preserve a custom

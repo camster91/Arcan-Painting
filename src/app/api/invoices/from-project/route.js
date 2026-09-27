@@ -2,6 +2,7 @@ import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { auditLog } from "@/app/api/utils/audit";
 import { createProjectInvoice } from "@/app/api/utils/project-invoice";
+import { companySettings } from "@/app/api/utils/public-documents";
 
 // POST { project_id, kind: "deposit" | "final", deposit_percent?, due_days? }
 export async function POST(request) {
@@ -18,7 +19,7 @@ export async function POST(request) {
     const result = await createProjectInvoice(sql, {
       projectId,
       kind: body.kind,
-      depositPercent: body.deposit_percent ?? 25,
+      depositPercent: body.deposit_percent ?? (await companySettings(sql)).deposit_pct,
       dueDays: body.due_days,
       userId: user.id,
     });
