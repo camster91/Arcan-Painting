@@ -45,8 +45,8 @@ export async function sendEmail({
           related_type, related_id, user_id, metadata, sent_at
         ) VALUES (
           ${Array.isArray(to) ? to[0] : (to || "")}, ${from || process.env.GOOGLE_EMAIL || "info@arcanpainting.ca"}, ${subject},
-          ${templateName || null}, "failed",
-          "Maton API key not configured. Set MATON_API_KEY in env.",
+          ${templateName || null}, 'failed',
+          'Maton API key not configured. Set MATON_API_KEY in env.',
           ${relatedType || null}, ${relatedId || null}, ${userId || null},
           ${JSON.stringify(metadata || {})}, CURRENT_TIMESTAMP
         )

@@ -87,6 +87,11 @@ export const links = () => [];
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
 
+  if (url.pathname === '/crew' || url.pathname.startsWith('/crew/')) {
+    const { protectCrewRoute } = await import('./admin/route-guard.server.js');
+    return protectCrewRoute(request);
+  }
+
   if (!url.pathname.startsWith('/admin')) {
     return { siteMode: process.env.PUBLIC_SITE_MODE || 'production' };
   }

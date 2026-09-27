@@ -55,7 +55,7 @@ const PUBLIC_PAGES = {
 export function getPublicSeo(pathname = "/") {
   const path = pathname !== "/" ? pathname.replace(/\/$/, "") : "/";
   const page = PUBLIC_PAGES[path];
-  const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path === "/thank-you";
+  const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path.startsWith("/crew") || path.startsWith("/e/") || path.startsWith("/i/") || path === "/thank-you";
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
   const indexable = Boolean(page) && !isPrivate && !isGeneratedLocation;
 

@@ -34,7 +34,7 @@ export async function GET(request) {
         params.push(category);
       }
 
-      query += ` ORDER BY sort_order ASC, quality_score DESC NULLS LAST`;
+      query += ` ORDER BY sort_order ASC, (quality_score IS NULL) ASC, quality_score DESC`;
       query += ` LIMIT $${paramIdx++} OFFSET $${paramIdx++}`;
       params.push(limit, offset);
 

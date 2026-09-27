@@ -11,7 +11,7 @@ async function ensureSettingsTable() {
       company_address TEXT,
       tax_rate NUMERIC(5,2),
       markup_pct NUMERIC(5,2),
-      currency VARCHAR(10) DEFAULT 'USD',
+      currency VARCHAR(10) DEFAULT 'CAD',
       hourly_rate NUMERIC(10,2),
       logo_url TEXT,
       email_from VARCHAR(255),
@@ -40,7 +40,7 @@ export async function GET(request) {
       company_address: "",
       tax_rate: 13.0,
       markup_pct: 0,
-      currency: "USD",
+      currency: "CAD",
       hourly_rate: null,
       logo_url: "",
       email_from: "",
@@ -86,7 +86,14 @@ export async function PUT(request) {
       estimate_email_template,
       invoice_email_template,
       contract_email_template,
+      etransfer_email,
+      etransfer_instructions,
+      estimate_terms,
+      deposit_pct,
     } = body || {};
+    if (deposit_pct !== undefined && deposit_pct !== null && !(parseFloat(deposit_pct) >= 0 && parseFloat(deposit_pct) <= 100)) {
+      return Response.json({ error: "Deposit must be between 0% and 100%" }, { status: 400 });
+    }
 
     // Upsert behavior: update latest row if exists, else insert new
     const existing =
@@ -128,6 +135,12 @@ export async function PUT(request) {
         push("invoice_email_template", invoice_email_template);
       if (contract_email_template !== undefined)
         push("contract_email_template", contract_email_template);
+      if (etransfer_email !== undefined) push("etransfer_email", etransfer_email);
+      if (etransfer_instructions !== undefined)
+        push("etransfer_instructions", etransfer_instructions);
+      if (estimate_terms !== undefined) push("estimate_terms", estimate_terms);
+      if (deposit_pct !== undefined)
+        push("deposit_pct", deposit_pct === null ? null : parseFloat(deposit_pct));
 
       // updated_at
       push("updated_at", new Date().toISOString());
@@ -142,19 +155,24 @@ export async function PUT(request) {
         INSERT INTO app_settings (
           company_name, company_email, company_phone, company_address,
           tax_rate, markup_pct, currency, hourly_rate, logo_url, email_from,
-          invoice_notes_template, estimate_email_template, invoice_email_template, contract_email_template
+          invoice_notes_template, estimate_email_template, invoice_email_template, contract_email_template,
+          etransfer_email, etransfer_instructions, estimate_terms, deposit_pct
         ) VALUES (
           ${company_name || null}, ${company_email || null}, ${company_phone || null}, ${company_address || null},
           ${tax_rate !== undefined ? parseFloat(tax_rate) : null},
           ${markup_pct !== undefined ? parseFloat(markup_pct) : null},
-          ${currency || "USD"},
+          ${currency || "CAD"},
           ${hourly_rate !== undefined ? parseFloat(hourly_rate) : null},
           ${logo_url || null},
           ${email_from || null},
           ${invoice_notes_template || null},
           ${estimate_email_template || null},
           ${invoice_email_template || null},
-          ${contract_email_template || null}
+          ${contract_email_template || null},
+          ${etransfer_email || null},
+          ${etransfer_instructions || null},
+          ${estimate_terms || null},
+          ${deposit_pct !== undefined && deposit_pct !== null ? parseFloat(deposit_pct) : 25}
         ) RETURNING *
       `;
       return Response.json({ success: true, settings: inserted[0] });

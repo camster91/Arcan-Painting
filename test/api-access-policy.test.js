@@ -6,7 +6,7 @@ describe("company-wide API access policy", () => {
     expect(requiresAdminApiAccess("/contracts/42/send")).toBe(true);
     expect(requiresAdminApiAccess("/api/invoices/42/pdf")).toBe(true);
     expect(requiresAdminApiAccess("/admin/gallery")).toBe(true);
-    expect(requiresAdminApiAccess("/api/admin/chat")).toBe(true);
+    expect(requiresAdminApiAccess("/api/admin/audit-logs")).toBe(true);
     expect(requiresAdminApiAccess("/api/admin/migrate-passwords")).toBe(true);
     expect(requiresAdminApiAccess("/contract-templates")).toBe(true);
     expect(requiresAdminApiAccess("/payments")).toBe(true);

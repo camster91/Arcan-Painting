@@ -34,7 +34,7 @@ export async function GET(request) {
     const params = [];
     let p = 1;
 
-    if (action) { conditions.push(`action ILIKE $${p}`); params.push(`%${action}%`); p++; }
+    if (action) { conditions.push(`LOWER(action) LIKE LOWER($${p})`); params.push(`%${action}%`); p++; }
     if (userId) { conditions.push(`user_id = $${p}`); params.push(parseInt(userId)); p++; }
     if (status) { conditions.push(`status = $${p}`); params.push(status); p++; }
     if (from) { conditions.push(`created_at >= $${p}`); params.push(from); p++; }

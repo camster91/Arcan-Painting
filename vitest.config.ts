@@ -9,8 +9,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
       lodash: "lodash-es",
-      "npm:stripe": "stripe",
-      stripe: path.resolve(__dirname, "./src/__create/stripe"),
     },
     dedupe: ["react", "react-dom"],
   },

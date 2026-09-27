@@ -1,3 +1,4 @@
+import { mysqlQuery, mysqlTransaction } from "./mysql.js";
 import pg from "pg";
 const { Pool } = pg;
 
@@ -30,6 +31,7 @@ function getPool() {
 async function sql(strings, ...values) {
   // If called with a single string (not a template literal), execute directly
   if (typeof strings === "string") {
+    if (isMysql()) return mysqlQuery(strings, values[0] || []);
     const result = await getPool().query(strings, values[0] || []);
     return result.rows;
   }
@@ -43,6 +45,7 @@ async function sql(strings, ...values) {
       params.push(values[i]);
     }
   }
+  if (isMysql()) return mysqlQuery(text, params);
   const result = await getPool().query(text, params);
   return result.rows;
 }
@@ -57,7 +60,13 @@ async function sql(strings, ...values) {
  *     return [p];
  *   });
  */
+function isMysql() { return /^mysql:/.test(process.env.DATABASE_URL || ""); }
+
 sql.transaction = async (fn) => {
+  if (isMysql()) return mysqlTransaction((query) => fn(async (strings, ...values) => {
+    if (typeof strings === "string") return query(strings, values[0] || []);
+    return query(strings.reduce((text, part, i) => text + (i ? "$" + i : "") + part, ""), values);
+  }));
   const client = await getPool().connect();
   try {
     await client.query("BEGIN");

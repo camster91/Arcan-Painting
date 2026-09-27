@@ -24,3 +24,6 @@ dev-server*.log
 # Bun lockfile — npm only
 bun.lock
 bun.lockb
+
+# Local uploaded files (UPLOAD_ROOT default)
+/uploads/

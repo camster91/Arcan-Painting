@@ -1,23 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Home,
+  Inbox,
   Users,
-  FolderOpen,
-  Calendar,
-  UserCheck,
-  MoreHorizontal,
-  FileText,
-  Wallet,
   Briefcase,
+  Wallet,
+  FileText,
+  Calendar,
   Settings,
+  MoreHorizontal,
   X,
   ChevronUp,
 } from "lucide-react";
 
-export default function BottomTabNav() {
+export default function BottomTabNav({ unreadCount = 0 }) {
   const [currentPath, setCurrentPath] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -25,155 +23,31 @@ export default function BottomTabNav() {
     }
   }, []);
 
-  // Load notification count for badges
-  useEffect(() => {
-    let mounted = true;
-    const loadUnreadCount = async () => {
-      try {
-        const res = await fetch("/api/notifications?status=unread");
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!mounted) return;
-        const count = Array.isArray(data?.notifications)
-          ? data.notifications.length
-          : 0;
-        setUnreadCount(count);
-      } catch (error) {
-        // Silently fail - not critical
-      }
-    };
-
-    loadUnreadCount();
-    const interval = setInterval(loadUnreadCount, 60000); // Check every minute
-
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, []);
-
   const closeMoreMenu = useCallback(() => setMoreOpen(false), []);
 
+  // Same structure as the desktop menu in src/app/admin/layout.jsx.
   const tabs = [
-    {
-      href: "/admin",
-      icon: Home,
-      label: "Dashboard",
-      exact: true,
-    },
-    {
-      href: "/admin/leads",
-      icon: Users,
-      label: "Leads",
-      exact: false,
-    },
-    {
-      href: "/admin/projects",
-      icon: FolderOpen,
-      label: "Projects",
-      exact: false,
-    },
-    {
-      href: "/admin/calendar",
-      icon: Calendar,
-      label: "Calendar",
-      exact: false,
-    },
-    {
-      href: "#",
-      icon: MoreHorizontal,
-      label: "More",
-      exact: false,
-      isMore: true,
-    },
+    { href: "/admin", icon: Home, label: "Home", exact: true },
+    { href: "/admin/leads", icon: Inbox, label: "Leads", exact: false },
+    { href: "/admin/projects", icon: Briefcase, label: "Jobs", exact: false },
+    { href: "/admin/invoices", icon: Wallet, label: "Invoices", exact: false },
+    { href: "#", icon: MoreHorizontal, label: "More", exact: false, isMore: true },
   ];
 
   const moreLinks = [
-    {
-      href: "/admin/clients",
-      icon: UserCheck,
-      label: "Clients",
-      category: "Customer Management",
-    },
-    {
-      href: "/admin/follow-ups",
-      icon: UserCheck,
-      label: "Follow-ups",
-      category: "Customer Management",
-    },
-    {
-      href: "/admin/estimates",
-      icon: FileText,
-      label: "Estimates",
-      category: "Sales & Contracts",
-    },
-    {
-      href: "/admin/estimates/calculator",
-      icon: FileText,
-      label: "Calculator",
-      category: "Sales & Contracts",
-    },
-    {
-      href: "/admin/contracts",
-      icon: FileText,
-      label: "Contracts",
-      category: "Sales & Contracts",
-    },
-    {
-      href: "/admin/invoices",
-      icon: Wallet,
-      label: "Invoices",
-      category: "Financial",
-    },
-    {
-      href: "/admin/payments",
-      icon: Wallet,
-      label: "Payments",
-      category: "Financial",
-    },
-    {
-      href: "/admin/tasks",
-      icon: Briefcase,
-      label: "Tasks",
-      category: "Project Management",
-    },
-    {
-      href: "/admin/availability",
-      icon: Calendar,
-      label: "Availability",
-      category: "Scheduling",
-    },
-    {
-      href: "/admin/scheduling",
-      icon: Calendar,
-      label: "Team Schedule",
-      category: "Scheduling",
-    },
-    {
-      href: "/admin/team",
-      icon: Users,
-      label: "Team",
-      category: "Team & Settings",
-    },
-    {
-      href: "/admin/messages",
-      icon: UserCheck,
-      label: "Messages",
-      category: "Operations",
-      badge: unreadCount > 0 ? unreadCount : null,
-    },
-    {
-      href: "/admin/today",
-      icon: Calendar,
-      label: "Today",
-      category: "Operations",
-    },
-    {
-      href: "/account/change-password",
-      icon: Settings,
-      label: "Settings",
-      category: "Team & Settings",
-    },
+    { href: "/admin/follow-ups", icon: Inbox, label: "Follow-ups", category: "Leads" },
+    { href: "/admin/messages", icon: Inbox, label: "Notifications", category: "Leads", badge: unreadCount > 0 ? unreadCount : null },
+    { href: "/admin/clients", icon: Users, label: "Customers", category: "Customers" },
+    { href: "/admin/estimates", icon: FileText, label: "Estimates", category: "Estimates" },
+    { href: "/admin/contracts", icon: FileText, label: "Contracts", category: "Estimates" },
+    { href: "/admin/calendar", icon: Calendar, label: "Calendar", category: "Jobs" },
+    { href: "/admin/today", icon: Briefcase, label: "Today", category: "Jobs" },
+    { href: "/admin/capture", icon: Briefcase, label: "Capture", category: "Jobs" },
+    { href: "/admin/payments", icon: Wallet, label: "Payments", category: "Invoices" },
+    { href: "/admin/settings", icon: Settings, label: "Company", category: "Settings" },
+    { href: "/admin/availability", icon: Calendar, label: "Booking slots", category: "Settings" },
+    { href: "/admin/team", icon: Users, label: "Team", category: "Settings" },
+    { href: "/account/change-password", icon: Settings, label: "Password", category: "Settings" },
   ];
 
   // Group more links by category

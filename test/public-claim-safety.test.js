@@ -14,7 +14,6 @@ describe("public claim safety", () => {
     const llms = readProjectFile("public/llms.txt");
     const seo = readProjectFile("src/utils/seoUtils.js");
     const faq = readProjectFile("src/components/FAQSection.jsx");
-    const chat = readProjectFile("src/app/api/utils/gemini.js");
     const quote = readProjectFile("src/app/api/quote/route.js");
     const quoteForm = readProjectFile("src/components/QuoteRequestForm.jsx");
     const cityServiceRoute = readProjectFile("src/app/[service]/[city]/page.jsx");
@@ -34,7 +33,7 @@ describe("public claim safety", () => {
       "src/app/wallpaper-services/page.jsx",
       "src/app/specialty-finishes/page.jsx",
     ].map(readProjectFile);
-    const publicSurfaces = [homepage, hero, root, llms, seo, faq, chat, quote, quoteForm, cityServiceRoute, sitemap, header, footer, serviceInquiry, services, contact, leadPopup, process, portfolio, ...servicePages].join("\n");
+    const publicSurfaces = [homepage, hero, root, llms, seo, faq, quote, quoteForm, cityServiceRoute, sitemap, header, footer, serviceInquiry, services, contact, leadPopup, process, portfolio, ...servicePages].join("\n");
 
     for (const unsupportedClaim of [
       "500+ Happy Clients",

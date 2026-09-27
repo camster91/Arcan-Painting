@@ -360,8 +360,14 @@ export async function DELETE(request) {
       );
     }
 
-    // Delete related records first (due to foreign key constraints)
-    await sql`DELETE FROM projects WHERE estimate_id = ${id}`;
+    // Never delete jobs as a side effect of deleting their estimate.
+    const linkedProjects = await sql`SELECT id FROM projects WHERE estimate_id = ${id} LIMIT 1`;
+    if (linkedProjects.length) {
+      return Response.json(
+        { success: false, error: "This estimate has a project. Delete or cancel the project first." },
+        { status: 409 },
+      );
+    }
 
     // Delete the estimate
     await sql`DELETE FROM estimates WHERE id = ${id}`;
