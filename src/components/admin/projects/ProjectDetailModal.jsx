@@ -147,6 +147,14 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
             >
               Edit Project
             </button>
+            {project.estimate_id && (
+              <a
+                href={`/admin/invoices?new=1&project_id=${project.id}`}
+                className="bg-slate-900 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Create Invoice
+              </a>
+            )}
             {project.lead_email && (
               <a
                 href={`mailto:${project.lead_email}?subject=Project Update - ${project.project_name}&body=Hi ${project.lead_name},%0D%0A%0D%0AHere's an update on your ${project.project_name} project.`}

@@ -1,5 +1,6 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { ensureCustomerForLead } from "@/app/api/utils/customers";
 
 export async function POST(request, { params }) {
   try {
@@ -46,6 +47,7 @@ export async function POST(request, { params }) {
           ${id}, ${est.lead_id}, ${projectName || est.project_title}, 'scheduled', ${est.total_cost || null}, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
         ) RETURNING id, project_name, status
       `;
+      if (est.lead_id) await ensureCustomerForLead(txn, est.lead_id);
       return [updateResult, insertResult];
     });
 

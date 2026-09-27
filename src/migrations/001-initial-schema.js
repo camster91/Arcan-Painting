@@ -4,6 +4,7 @@
  * Idempotent — safe to re-run (uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
  */
 import sql from "@/app/api/utils/sql.js";
+import { backfillCustomers } from "@/app/api/utils/customers.js";
 
 let migrationRun = false;
 
@@ -1221,6 +1222,26 @@ Arcan Painting
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS invoice_email_template TEXT`;
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS contract_email_template TEXT`;
 
+    // Invoices generated from a job remember the estimate they bill.
+    await sql`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS estimate_id INTEGER`;
+
+    // Customers: one record per household, linked from their leads.
+    await sql`
+      CREATE TABLE IF NOT EXISTS customers (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        address TEXT,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email)`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS customer_id INTEGER`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_customer_id ON leads(customer_id)`;
+
     // Workflow indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_category ON workflow_skills(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_is_active ON workflow_skills(is_active)`;
@@ -1906,6 +1927,7 @@ export function ensureSchema() {
   if (!_migrationPromise) {
     _migrationPromise = runMigrations()
       .then(() => ensureMissingTables())
+      .then(() => backfillCustomers(sql))
       .catch((err) => {
         _migrationPromise = null; // Allow retry on next call
         throw err;

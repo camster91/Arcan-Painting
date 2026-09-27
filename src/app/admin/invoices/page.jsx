@@ -8,7 +8,7 @@ import {
   Filter,
   Download,
   Send,
-  Eye,
+  Ban,
   AlertCircle,
   DollarSign,
   Calendar as CalendarIcon,
@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import RecordPaymentModal from "@/components/admin/invoices/RecordPaymentModal";
 import PaymentsListModal from "@/components/admin/invoices/PaymentsListModal";
+import CreateInvoiceModal from "@/components/admin/invoices/CreateInvoiceModal";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState([]);
@@ -31,6 +32,16 @@ export default function InvoicesPage() {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForProjectId, setCreateForProjectId] = useState(null);
+
+  // /admin/invoices?new=1&project_id=12 opens the form for that job (linked from the job screen).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new")) {
+      setCreateForProjectId(params.get("project_id"));
+      setShowCreateModal(true);
+    }
+  }, []);
   const [notification, setNotification] = useState(null);
   const [sendingId, setSendingId] = useState(null);
   const [payInvoice, setPayInvoice] = useState(null);
@@ -71,6 +82,24 @@ export default function InvoicesPage() {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const handleVoidInvoice = async (inv) => {
+    if (!window.confirm(`Void ${inv.invoice_number}? The customer will no longer owe it.`)) return;
+    try {
+      const res = await fetch("/api/invoices", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: inv.id, status: "cancelled" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not void the invoice");
+      setNotification(`${inv.invoice_number} voided`);
+      loadInvoices(true);
+    } catch (e) {
+      setNotification(e.message);
+    }
+    setTimeout(() => setNotification(null), 5000);
   };
 
   const handleSendInvoice = async (inv) => {
@@ -511,13 +540,15 @@ export default function InvoicesPage() {
                               }
                             />
                           </button>
-                          <a
-                            href={`/admin/invoices/${inv.id}`}
-                            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                            title="View Details"
-                          >
-                            <Eye size={16} />
-                          </a>
+                          {inv.status !== "cancelled" && inv.payment_status === "unpaid" && (
+                            <button
+                              className="p-2 text-slate-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Void invoice"
+                              onClick={() => handleVoidInvoice(inv)}
+                            >
+                              <Ban size={16} />
+                            </button>
+                          )}
                           <button
                             className="p-2 text-slate-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
                             title="Record Payment"
@@ -546,9 +577,12 @@ export default function InvoicesPage() {
       {/* Modals */}
       {showCreateModal && (
         <CreateInvoiceModal
+          initialProjectId={createForProjectId}
           onClose={() => setShowCreateModal(false)}
-          onCreated={() => {
+          onCreated={(msg) => {
             setShowCreateModal(false);
+            setNotification(msg);
+            setTimeout(() => setNotification(null), 5000);
             loadInvoices(true);
           }}
         />
@@ -580,36 +614,6 @@ export default function InvoicesPage() {
           }}
         />
       )}
-    </div>
-  );
-}
-
-// Simplified CreateInvoiceModal placeholder - should be moved to separate component file
-function CreateInvoiceModal({ onClose, onCreated }) {
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-slate-900">Create Invoice</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="text-center py-8">
-          <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <p className="text-slate-600">Invoice creation form coming soon!</p>
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg"
-          >
-            Close
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

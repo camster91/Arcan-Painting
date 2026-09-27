@@ -122,7 +122,7 @@ function AdminLayoutContent({ children }) {
         entryHref: "/admin/clients",
         tabs: [],
         matchers: ["/admin/clients"],
-        description: "Won customers",
+        description: "Everyone you have sold to",
         showNotificationBadge: false,
       },
       {

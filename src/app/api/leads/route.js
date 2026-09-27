@@ -4,6 +4,7 @@ import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
 import { validateBody, schemas } from "../utils/validate.js";
 import { requireCsrf } from "../utils/csrf.js";
+import { ensureCustomerForLead } from "@/app/api/utils/customers";
 
 // Create a new lead (admin/CRM endpoint — requires CSRF + admin session).
 // The public contact form goes through /api/contact (exempt) which inserts
@@ -381,6 +382,9 @@ export async function PUT(request) {
 
     const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} AND deleted_at IS NULL RETURNING *`;
     const result = await sql(query, values);
+    if (status === "won" && result[0]) {
+      result[0].customer_id = await ensureCustomerForLead(sql, result[0].id);
+    }
 
     return Response.json({ success: true, lead: result[0] });
   } catch (error) {

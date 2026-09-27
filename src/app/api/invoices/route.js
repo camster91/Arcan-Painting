@@ -275,3 +275,64 @@ export async function POST(request) {
     );
   }
 }
+
+// PUT { id, title?, due_date?, notes?, status? } — edit an invoice or void it.
+// Amounts are not editable here; void the invoice and create a new one.
+export async function PUT(request) {
+  const limited = generalLimiter(request);
+  if (limited) return limited;
+
+  try {
+    const user = await getCurrentUser(request);
+    if (!user) return unauthorizedResponse();
+
+    const body = await request.json().catch(() => ({}));
+    const id = parseInt(body.id, 10);
+    if (!id) return Response.json({ error: "Invoice id is required" }, { status: 400 });
+
+    const [invoice] = await sql`SELECT id, status FROM invoices WHERE id = ${id}`;
+    if (!invoice) return Response.json({ error: "Invoice not found" }, { status: 404 });
+
+    const allowedStatuses = ["draft", "sent", "cancelled"];
+    if (body.status !== undefined && !allowedStatuses.includes(body.status)) {
+      return Response.json({ error: "Status can only be set to draft, sent or cancelled" }, { status: 400 });
+    }
+    if (body.status === "cancelled") {
+      const [paid] = await sql`
+        SELECT COUNT(*) AS n FROM payments WHERE invoice_id = ${id} AND status IN ('cleared', 'pending')
+      `;
+      if (Number(paid?.n) > 0) {
+        return Response.json(
+          { error: "This invoice has payments recorded. Remove them before voiding it." },
+          { status: 409 },
+        );
+      }
+    }
+
+    const [updated] = await sql`
+      UPDATE invoices SET
+        title = COALESCE(${body.title ?? null}, title),
+        due_date = COALESCE(${body.due_date ?? null}, due_date),
+        notes = COALESCE(${body.notes ?? null}, notes),
+        status = COALESCE(${body.status ?? null}, status),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id}
+      RETURNING *
+    `;
+
+    await auditLog({
+      request,
+      action: body.status === "cancelled" ? "invoice.void" : "invoice.update",
+      userId: user.id,
+      username: user.username,
+      resource: "invoice",
+      resourceId: id,
+      changes: { title: body.title, due_date: body.due_date, status: body.status },
+      status: "success",
+    });
+    return Response.json(updated);
+  } catch (error) {
+    console.error("Error updating invoice:", error);
+    return Response.json({ error: "Failed to update invoice" }, { status: 500 });
+  }
+}

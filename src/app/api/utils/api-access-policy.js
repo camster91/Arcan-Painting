@@ -7,6 +7,7 @@ const ADMIN_ONLY_PREFIXES = [
   "/admin",
   "/contract-templates",
   "/contracts",
+  "/customers",
   "/invoices",
   "/payments",
 ];
