@@ -1,5 +1,9 @@
 # September 25 dependency alert remediation — arcanpainting.ca
 
+Update, September 27: PR #133 was merged locally with current `main` at `9735bbca82a09bacb265f2ee31161d5629596a27`, which includes admin release PR #134 and the Hostinger migration source. The combined lockfile still audits to zero findings. The tables below preserve the original `48c6e66` baseline and first security commit for comparison; final checks against the combined head must be read separately. The repository requires an App-produced `Ashbi Local CI` check for the current PR head before merge.
+
+Against that combined head under Node 22.23.2: clean `npm ci`, 169 tests passed with 3 MariaDB tests skipped, typecheck passed, lint passed with 0 errors and 247 warnings, and the production build passed. An initial parallel test run hit local `ENOSPC`; the rerun after removing only disposable build/cache files passed. No source or assertion was changed to address disk pressure. The three MariaDB tests passed previously on the migration branch against a disposable MariaDB 11.8 database, but this exact combined head has not had a database-backed run.
+
 Baseline: `48c6e664160ccc675d5792830a23c0dcbf5390fd` on `main`. Alert: Gmail `1a0d6399a2cae927`.
 
 Hostinger scan dated September 25: 14 findings: 4 high, 9 moderate, 1 low; 722 packages scanned.
