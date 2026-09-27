@@ -1,0 +1,1386 @@
+===== lint-before =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> lint
+> eslint src --cache
+
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/agents/run/page.jsx
+  106:17  warning  'agentsStatus' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/capture/page.jsx
+  3:20  warning  'useMemo' is defined but never used  no-unused-vars
+  6:35  warning  'ImgIcon' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/clients/page.jsx
+  26:9  warning  The 'clients' logical expression could make the dependencies of useMemo Hook (at line 38) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'clients' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/contracts/page.jsx
+  68:34  warning  'newContract' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-logs/page.jsx
+  11:3  warning  'Search' is defined but never used                                                                            no-unused-vars
+  12:3  warning  'Download' is defined but never used                                                                          no-unused-vars
+  84:6  warning  React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-templates/page.jsx
+  24:12  warning  'qErr' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-workflows/page.jsx
+  3:10  warning  'useMemo' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/estimates/page.jsx
+    5:3   warning  'Plus' is defined but never used                                                   no-unused-vars
+    8:3   warning  'Filter' is defined but never used                                                 no-unused-vars
+    9:3   warning  'Grid' is defined but never used                                                   no-unused-vars
+   10:3   warning  'List' is defined but never used                                                   no-unused-vars
+   13:3   warning  'Edit' is defined but never used                                                   no-unused-vars
+   14:3   warning  'Trash2' is defined but never used                                                 no-unused-vars
+   15:3   warning  'Copy' is defined but never used                                                   no-unused-vars
+   16:3   warning  'Download' is defined but never used                                               no-unused-vars
+   17:3   warning  'Eye' is defined but never used                                                    no-unused-vars
+   37:10  warning  'viewMode' is assigned a value but never used                                      no-unused-vars
+   37:20  warning  'setViewMode' is assigned a value but never used                                   no-unused-vars
+   48:22  warning  'leads' is assigned a value but never used                                         no-unused-vars
+   48:38  warning  'error' is assigned a value but never used                                         no-unused-vars
+  183:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  195:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  207:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  214:9   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/install-guide/page.jsx
+   9:3  warning  'Wifi' is defined but never used          no-unused-vars
+  13:3  warning  'MoreVertical' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/invoices/page.jsx
+   43:6   warning  React Hook useEffect has a missing dependency: 'loadInvoices'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  588:40  warning  'onCreated' is defined but never used. Allowed unused args must match /^_/u                                      no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/layout.jsx
+   15:3   warning  'Megaphone' is defined but never used                                    no-unused-vars
+   16:3   warning  'Image' is defined but never used                                        no-unused-vars
+   17:3   warning  'Search' is defined but never used                                       no-unused-vars
+   18:3   warning  'Sparkles' is defined but never used                                     no-unused-vars
+   19:3   warning  'TrendingUp' is defined but never used                                   no-unused-vars
+   20:3   warning  'BarChart2' is defined but never used                                    no-unused-vars
+   21:3   warning  'Linkedin' is defined but never used                                     no-unused-vars
+   22:3   warning  'MapPin' is defined but never used                                       no-unused-vars
+   23:3   warning  'Mail' is defined but never used                                         no-unused-vars
+   24:3   warning  'Zap' is defined but never used                                          no-unused-vars
+   35:58  warning  'refreshAuth' is assigned a value but never used                         no-unused-vars
+  513:31  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/leads/page.jsx
+    6:3   warning  'Mail' is defined but never used                                                                               no-unused-vars
+    7:3   warning  'User' is defined but never used                                                                               no-unused-vars
+    8:3   warning  'MapPin' is defined but never used                                                                             no-unused-vars
+   36:18  warning  'setSortBy' is assigned a value but never used                                                                 no-unused-vars
+   77:6   warning  React Hook useEffect has a missing dependency: 'fetchLeads'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  214:9   warning  Unexpected console statement. Only these console methods are allowed: warn, error                              no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/messages/page.jsx
+  10:3  warning  'Square' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/page.jsx
+  87:26  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  92:28  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/projects/page.jsx
+  17:5  warning  'projects' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/scheduling/page.jsx
+  19:10  warning  'selectedTeamMember' is assigned a value but never used     no-unused-vars
+  19:30  warning  'setSelectedTeamMember' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/settings/page.jsx
+  37:28  warning  'error' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/system/page.jsx
+   6:3  warning  'Server' is defined but never used        no-unused-vars
+  18:3  warning  'Terminal' is defined but never used      no-unused-vars
+  19:3  warning  'ChevronRight' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/tasks/page.jsx
+  59:28  warning  'error' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/team/page.jsx
+   12:10  warning  'meError' is assigned a value but never used                                       no-unused-vars
+  508:23  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/today/page.jsx
+  3:31  warning  'useMemo' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/admin/dashboard/route.js
+  28:7  warning  'appointmentsStats' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/migrate.js
+  63:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/runs/route.js
+  10:10  warning  'getAgentRun' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/store.js
+  115:34  warning  The value assigned to 'i' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contract-templates/route.js
+  144:11  warning  'allowedFields' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/[id]/pdf/route.js
+  8:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  77:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  77:79   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:66   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:80   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:113  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:137  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:163  warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:20   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:37   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:55   warning  Unnecessary escape character: \"                                              no-useless-escape
+  90:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  90:51   warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/route.js
+   4:10  warning  'auditLog' is defined but never used             no-unused-vars
+  37:9   warning  'queryParts' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimate-builder/route.js
+  15:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/approve/route.js
+  31:12  warning  '_' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/pdf/route.js
+   8:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  34:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  34:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:67   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:76   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:114  warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:125  warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:140  warning  Unnecessary escape character: \"                                              no-useless-escape
+  37:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  37:29   warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:106  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:115  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:144  warning  Unnecessary escape character: \"                                              no-useless-escape
+  46:17   warning  Unnecessary escape character: \"                                              no-useless-escape
+  46:24   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:24   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:35   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:72   warning  Unnecessary escape character: \"                                              no-useless-escape
+  67:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  67:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  69:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  69:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  73:41   warning  Unnecessary escape character: \"                                              no-useless-escape
+  73:50   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:20   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:29   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:46   warning  Unnecessary escape character: \"                                              no-useless-escape
+  76:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  76:21   warning  Unnecessary escape character: \"                                              no-useless-escape
+  79:38   warning  Unnecessary escape character: \"                                              no-useless-escape
+  79:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  80:38   warning  Unnecessary escape character: \"                                              no-useless-escape
+  80:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  81:40   warning  Unnecessary escape character: \"                                              no-useless-escape
+  81:49   warning  Unnecessary escape character: \"                                              no-useless-escape
+  83:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  83:21   warning  Unnecessary escape character: \"                                              no-useless-escape
+  86:37   warning  Unnecessary escape character: \"                                              no-useless-escape
+  86:55   warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:41   warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:59   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:25   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:28   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:54   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:72   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:81   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:88   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:51   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:60   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:71   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:89   warning  Unnecessary escape character: \"                                              no-useless-escape
+  92:39   warning  Unnecessary escape character: \"                                              no-useless-escape
+  92:48   warning  Unnecessary escape character: \"                                              no-useless-escape
+  96:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  96:50   warning  Unnecessary escape character: \"                                              no-useless-escape
+  98:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  98:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  74:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:75   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:97   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:135  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:102  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:149  warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/internal-tasks/route.js
+  60:5  warning  The value assigned to 'i' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/[id]/pdf/route.js
+  8:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  74:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:75   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:97   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:135  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:102  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:149  warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/route.js
+  4:10  warning  'auditLog' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/lead-webhook/meta/route.js
+  146:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  186:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  210:13  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/leads/route.js
+   3:10  warning  'auditLog' is defined but never used  no-unused-vars
+  50:35  warning  Unnecessary escape character: \(      no-useless-escape
+  50:37  warning  Unnecessary escape character: \)      no-useless-escape
+  50:39  warning  Unnecessary escape character: \+      no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/local-auth/verify-code/route.js
+  4:31  warning  'parseCookies' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/team-invites/accept/route.js
+  56:9  warning  The value assigned to 'userId' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/auth.js
+  1:10  warning  'createHash' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/migrate-passwords.js
+  12:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  25:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  29:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  51:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  57:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  65:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/send-email.js
+  54:14  warning  'logError' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  69:7   warning  The value assigned to 'errorMessage' is not used in subsequent statements            no-useless-assignment
+  91:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u         no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/validate.js
+  14:7   warning  'optionalPassword' is assigned a value but never used  no-unused-vars
+  15:43  warning  Unnecessary escape character: \+                       no-useless-escape
+  15:47  warning  Unnecessary escape character: \(                       no-useless-escape
+  15:49  warning  Unnecessary escape character: \)                       no-useless-escape
+  15:51  warning  Unnecessary escape character: \.                       no-useless-escape
+  19:7   warning  'url' is assigned a value but never used               no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/thank-you/page.jsx
+  2:23  warning  'Calendar' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/client-integrations/react-google-maps.jsx
+  42:3  warning  React Hook useCallback has a missing dependency: 'rest'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  51:3  warning  React Hook useCallback has a missing dependency: 'rest'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/client-integrations/react-markdown.jsx
+   3:8   warning  'React' is defined but never used                                       no-unused-vars
+   8:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  11:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  14:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  15:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  16:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  19:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  22:8   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  25:8   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  28:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  31:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  34:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  37:11  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  40:17  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  43:10  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  46:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  49:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  52:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  53:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  58:13  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  59:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  60:10  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  61:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ActivityFeed.jsx
+  9:3  warning  'Mail' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/AdaptiveContentArea.jsx
+  47:9  warning  'isDesktop' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/BottomTabNav.jsx
+  41:16  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/EnhancedActivityFeed.jsx
+   5:3  warning  'FileText' is defined but never used                                                                                no-unused-vars
+  10:3  warning  'Mail' is defined but never used                                                                                    no-unused-vars
+  25:6  warning  React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/EnhancedMetricsCarousel.jsx
+    9:3  warning  'BarChart3' is defined but never used                                                                                  no-unused-vars
+   10:3  warning  'Activity' is defined but never used                                                                                   no-unused-vars
+   19:3  warning  'XAxis' is defined but never used                                                                                      no-unused-vars
+   20:3  warning  'YAxis' is defined but never used                                                                                      no-unused-vars
+   22:3  warning  'Tooltip' is defined but never used                                                                                    no-unused-vars
+   36:6  warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  171:9  warning  'nextSlide' is assigned a value but never used                                                                         no-unused-vars
+  175:9  warning  'prevSlide' is assigned a value but never used                                                                         no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadCard.jsx
+  10:3  warning  'Eye' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadFormPopup.jsx
+  85:6  warning  React Hook useEffect has a missing dependency: 'source'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadQuickView.jsx
+  12:3  warning  'MessageSquare' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LocalAreaSection.jsx
+  1:18  warning  'Car' is defined but never used    no-unused-vars
+  1:23  warning  'Home' is defined but never used   no-unused-vars
+  1:29  warning  'Brush' is defined but never used  no-unused-vars
+  1:36  warning  'Star' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MetricsCarousel.jsx
+  118:9  warning  'prevSlide' is assigned a value but never used                                                                no-unused-vars
+  130:6  warning  React Hook useEffect has a missing dependency: 'nextSlide'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MobileBreadcrumb.jsx
+  44:47  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MobileSearchFilter.jsx
+    1:20  warning  'useEffect' is defined but never used             no-unused-vars
+    6:3   warning  'ChevronDown' is defined but never used           no-unused-vars
+    9:3   warning  'MapPin' is defined but never used                no-unused-vars
+  151:9   warning  'focusSearch' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PWAInstaller.jsx
+   31:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   45:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   90:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   93:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  113:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PerformanceMetrics.jsx
+    3:3   warning  'TrendingUp' is defined but never used                                   no-unused-vars
+    6:3   warning  'Users' is defined but never used                                        no-unused-vars
+    7:3   warning  'Calendar' is defined but never used                                     no-unused-vars
+    9:3   warning  'AlertCircle' is defined but never used                                  no-unused-vars
+   19:3   warning  'BarChart' is defined but never used                                     no-unused-vars
+   20:3   warning  'Bar' is defined but never used                                          no-unused-vars
+   29:3   warning  'Legend' is defined but never used                                       no-unused-vars
+  418:61  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PricingSection.jsx
+  15:3  warning  'Clock' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/QuoteCalculatorSection.jsx
+    6:3  warning  'Paintbrush' is defined but never used                                                                                                      no-unused-vars
+  149:6  warning  React Hook useEffect has missing dependencies: 'handleMouseMove' and 'handleTouchMove'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/SwipeableProjectCard.jsx
+  11:3  warning  'X' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/TimelineCarousel.jsx
+  7:3  warning  'MapPin' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/EmailHealthWidget.jsx
+   4:37  warning  'Mail' is defined but never used                                                no-unused-vars
+  17:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/OnboardingModal.jsx
+   4:10  warning  'X' is defined but never used                                                 no-unused-vars
+   4:53  warning  'Check' is defined but never used                                             no-unused-vars
+  14:43  warning  'onComplete' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/calendar/AvailabilityChips.jsx
+  13:3  warning  'startDateISO' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  14:3  warning  'endDateISO' is defined but never used. Allowed unused args must match /^_/u    no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/contracts/ContractsTable.jsx
+  2:10  warning  'getStatusColor' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/contracts/CreateContractModal.jsx
+  39:6  warning  React Hook useEffect has a missing dependency: 'loadAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/dashboard/DashboardOverview.jsx
+  1:20  warning  'useEffect' is defined but never used  no-unused-vars
+  1:31  warning  'Suspense' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/estimates/EstimateCard.jsx
+  14:3  warning  'Building' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/CompletionWorkflowsModal.jsx
+   1:8   warning  'React' is defined but never used                                                                                 no-unused-vars
+   9:3   warning  'Trash2' is defined but never used                                                                                no-unused-vars
+  10:3   warning  'Edit3' is defined but never used                                                                                 no-unused-vars
+  11:3   warning  'Save' is defined but never used                                                                                  no-unused-vars
+  12:3   warning  'X' is defined but never used                                                                                     no-unused-vars
+  20:10  warning  'editingStep' is assigned a value but never used                                                                  no-unused-vars
+  20:23  warning  'setEditingStep' is assigned a value but never used                                                               no-unused-vars
+  31:6   warning  React Hook useEffect has a missing dependency: 'loadWorkflows'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/ProjectCard.jsx
+  6:3  warning  'Clock' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/ProjectProgressModal.jsx
+   1:8  warning  'React' is defined but never used                                                                                       no-unused-vars
+   9:3  warning  'Filter' is defined but never used                                                                                      no-unused-vars
+  55:6  warning  React Hook useEffect has a missing dependency: 'loadProgressReports'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/scheduling/TeamScheduleView.jsx
+  1:10  warning  'MapPin' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/team/TeamMemberCard.jsx
+  13:3  warning  'MapPin' is defined but never used  no-unused-vars
+  14:3  warning  'Clock' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/contexts/AdminAuthContext.jsx
+  3:8  warning  'React' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useContracts.js
+  10:6  warning  React Hook useEffect has a missing dependency: 'loadContracts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useEstimateCalculator.js
+   60:9   warning  'settingsQuery' is assigned a value but never used                            no-unused-vars
+  197:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useEstimates.js
+  43:6  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useFollowUps.js
+  46:6  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePaymentFilters.js
+  12:6  warning  React Hook useEffect has a missing dependency: 'filterPayments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePaymentStats.js
+  13:6  warning  React Hook useEffect has a missing dependency: 'calculateStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePerformanceCache.js
+  191:49  warning  'cacheTime' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/lib/google.js
+  13:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  30:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/migrations/001-initial-schema.js
+  1271:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1310:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1713:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1885:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/sentry.client.js
+  19:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/sentry.server.js
+  17:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  47:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/utils/pagePreloader.js
+  78:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/utils/useTheme.jsx
+   72:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  125:32  warning  'isDark' is defined but never used. Allowed unused args must match /^_/u       no-unused-vars
+
+✖ 320 problems (0 errors, 320 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+
+===== typecheck-before =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> typecheck
+> react-router typegen && tsc --noEmit
+
+
+===== test-before =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/scratch/ca4f8c67d9e0/Arcan-Painting
+
+ ✓ test/estimatesUtils.test.js (24 tests) 32ms
+ ✓ test/team-invites-security.test.js (6 tests) 33ms
+ ✓ test/account-flows.test.jsx (5 tests) 210ms
+ ✓ test/contractsUtils.test.js (16 tests) 3ms
+stderr | test/contact-persistence.test.js > POST /api/contact > does not confirm a lead when the CRM write fails
+Database error while saving lead: Error: database unavailable
+    at /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/test/contact-persistence.test.js:30:34
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ test/contact-persistence.test.js (4 tests) 12ms
+ ✓ test/appointment-persistence.test.js (3 tests) 5ms
+stderr | test/chat-internal-token.test.js > public chat handoff > bounds untrusted conversation history before sending it to Gemini
+Customer support triage skipped: INTERNAL_API_TOKEN is not configured
+
+ ✓ test/chat-internal-token.test.js (3 tests) 6ms
+stderr | src/app/admin/contracts/page.test.jsx > ContractsPage > shows error state when fetch fails
+Error loading contracts: Error: Failed to fetch
+    at /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/contracts/page.test.jsx:113:37
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+ ✓ src/app/admin/contracts/page.test.jsx (6 tests) 145ms
+ ✓ test/credits-checkout-auth.test.js (4 tests) 3ms
+ ✓ test/customer-support-auth.test.js (3 tests) 3ms
+ ✓ test/public-claim-safety.test.js (1 test) 4ms
+stderr | test/meta-lead-webhook.test.js > POST /api/lead-webhook/meta > rejects an invalid signature before a lead is persisted
+[meta-leads] invalid signature
+
+ ✓ test/meta-lead-webhook.test.js (2 tests) 6ms
+ ✓ test/credits-ledger.test.js (3 tests) 2ms
+ ✓ test/estimateCalculations.test.js (4 tests) 1ms
+ ✓ test/useTheme.test.jsx (3 tests) 4ms
+ ✓ test/magic-code-attempts.test.js (2 tests) 4ms
+ ✓ test/portfolio-lightbox-accessibility.test.jsx (2 tests) 707ms
+   ✓ PortfolioSection lightbox accessibility > defers gallery thumbnails and prioritizes the opened project photo  428ms
+stderr | test/quote-persistence.test.js > POST /api/quote > does not report success when the quote cannot be persisted
+Failed to save quote as lead: database unavailable
+
+ ✓ test/quote-persistence.test.js (2 tests) 2ms
+ ✓ test/scheduler-accessibility.test.jsx (2 tests) 446ms
+   ✓ SchedulerSection accessibility > connects every booking input to a label and exposes the selected time  436ms
+ ✓ test/agent-tools-auth.test.js (3 tests) 3ms
+ ✓ test/analytics.test.js (2 tests) 18ms
+ ✓ test/calendar-auth.test.js (2 tests) 3ms
+ ✓ test/insert-lead-notification.test.js (2 tests) 1ms
+ ✓ test/password-reset-session-revocation.test.js (1 test) 2ms
+ ✓ test/availability-public-response.test.js (2 tests) 2ms
+ ✓ test/public-seo.test.js (3 tests) 2ms
+ ✓ test/change-password-csrf.test.js (1 test) 1ms
+ ✓ test/project-progress-auth.test.js (2 tests) 1ms
+ ✓ test/notifications-auth.test.js (2 tests) 2ms
+ ✓ test/vision-tagger-input.test.js (2 tests) 2ms
+ ✓ test/team-availability-auth.test.js (2 tests) 4ms
+ ✓ test/error-response.test.js (2 tests) 4ms
+ ✓ test/header-mobile-layout.test.jsx (1 test) 45ms
+ ✓ test/internal-request.test.js (2 tests) 1ms
+ ✓ test/caddy-security-headers.test.js (1 test) 1ms
+ ✓ test/rate-limit-proxy-trust.test.js (2 tests) 1ms
+ ✓ test/stripe-webhook-config.test.js (1 test) 1ms
+ ✓ test/api-access-policy.test.js (2 tests) 1ms
+ ✓ test/admin-route-guard.test.js (2 tests) 3ms
+ ✓ test/csrf-boundary.test.js (2 tests) 1ms
+ ✓ test/lead-input-validation.test.js (2 tests) 1ms
+stderr | test/health-route.test.js > GET /api/health > does not mark the CRM healthy when Postgres is unavailable
+[health] database check failed: connection refused
+
+ ✓ test/health-route.test.js (2 tests) 1ms
+ ✓ test/leads-search-query.test.js (1 test) 1ms
+ ✓ test/not-found-route.test.jsx (2 tests) 11ms
+ ✓ test/lead-form-popup-accessibility.test.jsx (1 test) 42ms
+ ✓ test/appointments-auth.test.js (1 test) 1ms
+ ✓ test/sitemap-service-areas.test.js (1 test) 1ms
+ ✓ test/city-service-route.test.js (2 tests) 0ms
+ ✓ test/login-cookies.test.js (1 test) 1ms
+ ✓ test/auth-expiry.test.js (2 tests) 0ms
+ ✓ test/hero-lcp-stability.test.js (1 test) 0ms
+
+ Test Files  51 passed (51)
+      Tests  150 passed (150)
+   Start at  23:27:12
+   Duration  4.23s (transform 648ms, setup 107ms, collect 1.51s, tests 1.79s, environment 364ms, prepare 139ms)
+
+
+===== build-before =====
+src/app/quote/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/availability/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/today/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/projects/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/messages/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/system/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/payments/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/scheduling/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/tasks/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/settings/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/onboarding/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/team/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/leads/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/estimates/EstimateBuilder.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/AdaptiveContentArea.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/projects/CreateProjectModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/QuoteCalculatorSection.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/projects/ProjectDetailModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/SchedulerSection.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/leads/LeadEditModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/MobileModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/EmailHealthWidget.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/contexts/ModalContext.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+"createHash" is imported from external module "crypto" but never used in "src/app/api/utils/auth.js".
+"default" is imported from external module "react" but never used in "src/components/admin/projects/CompletionWorkflowsModal.jsx" and "src/components/admin/projects/ProjectProgressModal.jsx".
+"Wifi", "Server" and "Terminal" are imported from external module "lucide-react" but never used in "src/app/admin/install-guide/page.jsx" and "src/app/admin/system/page.jsx".
+✓ 273 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadFormPopup.jsx is dynamically imported by /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/HeroSection.jsx but also statically imported by /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/[service]/[city]/page.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/FAQSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/Header.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PortfolioSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ProcessSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ServiceInquiryPage.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ServicesSection.jsx, dynamic import will not move module into another chunk.
+
+build/server/.vite/manifest.json                        1.58 kB
+build/server/assets/server-build-CEpBwhK0.css          94.51 kB
+build/server/assets/sentry.client-3_d2Ac7N.js           0.39 kB
+build/server/index.js                                   0.54 kB
+build/server/assets/route-guard.server-CiZIi-rt.js      0.85 kB
+build/server/assets/sentry.server-CMiZjmBH.js           3.24 kB
+build/server/assets/gallery-tags-BcEZIrbf.js           37.06 kB
+build/server/assets/index-BEXPeDNR.js                 503.07 kB
+build/server/assets/server-build.js                 1,271.72 kB
+
+✓ 1 asset cleaned from React Router server build.
+build/server/assets/server-build-CEpBwhK0.css
+
+✓ built in 2.00s
+
+===== lint-after =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> lint
+> eslint src --cache
+
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/agents/run/page.jsx
+  106:17  warning  'agentsStatus' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/capture/page.jsx
+  3:20  warning  'useMemo' is defined but never used  no-unused-vars
+  6:35  warning  'ImgIcon' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/clients/page.jsx
+  26:9  warning  The 'clients' logical expression could make the dependencies of useMemo Hook (at line 38) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'clients' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/contracts/page.jsx
+  68:34  warning  'newContract' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-logs/page.jsx
+  11:3  warning  'Search' is defined but never used                                                                            no-unused-vars
+  12:3  warning  'Download' is defined but never used                                                                          no-unused-vars
+  84:6  warning  React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-templates/page.jsx
+  24:12  warning  'qErr' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/email-workflows/page.jsx
+  3:10  warning  'useMemo' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/estimates/page.jsx
+    5:3   warning  'Plus' is defined but never used                                                   no-unused-vars
+    8:3   warning  'Filter' is defined but never used                                                 no-unused-vars
+    9:3   warning  'Grid' is defined but never used                                                   no-unused-vars
+   10:3   warning  'List' is defined but never used                                                   no-unused-vars
+   13:3   warning  'Edit' is defined but never used                                                   no-unused-vars
+   14:3   warning  'Trash2' is defined but never used                                                 no-unused-vars
+   15:3   warning  'Copy' is defined but never used                                                   no-unused-vars
+   16:3   warning  'Download' is defined but never used                                               no-unused-vars
+   17:3   warning  'Eye' is defined but never used                                                    no-unused-vars
+   37:10  warning  'viewMode' is assigned a value but never used                                      no-unused-vars
+   37:20  warning  'setViewMode' is assigned a value but never used                                   no-unused-vars
+   48:22  warning  'leads' is assigned a value but never used                                         no-unused-vars
+   48:38  warning  'error' is assigned a value but never used                                         no-unused-vars
+  183:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  195:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  207:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  214:9   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/install-guide/page.jsx
+   9:3  warning  'Wifi' is defined but never used          no-unused-vars
+  13:3  warning  'MoreVertical' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/invoices/page.jsx
+   43:6   warning  React Hook useEffect has a missing dependency: 'loadInvoices'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  588:40  warning  'onCreated' is defined but never used. Allowed unused args must match /^_/u                                      no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/layout.jsx
+   15:3   warning  'Megaphone' is defined but never used                                    no-unused-vars
+   16:3   warning  'Image' is defined but never used                                        no-unused-vars
+   17:3   warning  'Search' is defined but never used                                       no-unused-vars
+   18:3   warning  'Sparkles' is defined but never used                                     no-unused-vars
+   19:3   warning  'TrendingUp' is defined but never used                                   no-unused-vars
+   20:3   warning  'BarChart2' is defined but never used                                    no-unused-vars
+   21:3   warning  'Linkedin' is defined but never used                                     no-unused-vars
+   22:3   warning  'MapPin' is defined but never used                                       no-unused-vars
+   23:3   warning  'Mail' is defined but never used                                         no-unused-vars
+   24:3   warning  'Zap' is defined but never used                                          no-unused-vars
+   35:58  warning  'refreshAuth' is assigned a value but never used                         no-unused-vars
+  513:31  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/leads/page.jsx
+    6:3   warning  'Mail' is defined but never used                                                                               no-unused-vars
+    7:3   warning  'User' is defined but never used                                                                               no-unused-vars
+    8:3   warning  'MapPin' is defined but never used                                                                             no-unused-vars
+   36:18  warning  'setSortBy' is assigned a value but never used                                                                 no-unused-vars
+   77:6   warning  React Hook useEffect has a missing dependency: 'fetchLeads'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  214:9   warning  Unexpected console statement. Only these console methods are allowed: warn, error                              no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/messages/page.jsx
+  10:3  warning  'Square' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/page.jsx
+  87:26  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  92:28  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/projects/page.jsx
+  17:5  warning  'projects' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/scheduling/page.jsx
+  19:10  warning  'selectedTeamMember' is assigned a value but never used     no-unused-vars
+  19:30  warning  'setSelectedTeamMember' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/settings/page.jsx
+  37:28  warning  'error' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/system/page.jsx
+   6:3  warning  'Server' is defined but never used        no-unused-vars
+  18:3  warning  'Terminal' is defined but never used      no-unused-vars
+  19:3  warning  'ChevronRight' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/tasks/page.jsx
+  59:28  warning  'error' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/team/page.jsx
+   12:10  warning  'meError' is assigned a value but never used                                       no-unused-vars
+  508:23  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/today/page.jsx
+  3:31  warning  'useMemo' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/admin/dashboard/route.js
+  28:7  warning  'appointmentsStats' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/migrate.js
+  63:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/runs/route.js
+  10:10  warning  'getAgentRun' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/agents/store.js
+  115:34  warning  The value assigned to 'i' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contract-templates/route.js
+  144:11  warning  'allowedFields' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/[id]/pdf/route.js
+  8:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  77:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  77:79   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:66   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:80   warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:113  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:137  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  78:163  warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:20   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:37   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:55   warning  Unnecessary escape character: \"                                              no-useless-escape
+  90:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  90:51   warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/contracts/route.js
+   4:10  warning  'auditLog' is defined but never used             no-unused-vars
+  37:9   warning  'queryParts' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimate-builder/route.js
+  15:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/approve/route.js
+  31:12  warning  '_' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/pdf/route.js
+   8:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  34:18   warning  Unnecessary escape character: \"                                              no-useless-escape
+  34:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:67   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:76   warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:114  warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:125  warning  Unnecessary escape character: \"                                              no-useless-escape
+  35:140  warning  Unnecessary escape character: \"                                              no-useless-escape
+  37:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  37:29   warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:106  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:115  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  38:144  warning  Unnecessary escape character: \"                                              no-useless-escape
+  46:17   warning  Unnecessary escape character: \"                                              no-useless-escape
+  46:24   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:24   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:35   warning  Unnecessary escape character: \"                                              no-useless-escape
+  47:72   warning  Unnecessary escape character: \"                                              no-useless-escape
+  67:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  67:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  69:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  69:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+  73:41   warning  Unnecessary escape character: \"                                              no-useless-escape
+  73:50   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:20   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:29   warning  Unnecessary escape character: \"                                              no-useless-escape
+  75:46   warning  Unnecessary escape character: \"                                              no-useless-escape
+  76:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  76:21   warning  Unnecessary escape character: \"                                              no-useless-escape
+  79:38   warning  Unnecessary escape character: \"                                              no-useless-escape
+  79:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  80:38   warning  Unnecessary escape character: \"                                              no-useless-escape
+  80:47   warning  Unnecessary escape character: \"                                              no-useless-escape
+  81:40   warning  Unnecessary escape character: \"                                              no-useless-escape
+  81:49   warning  Unnecessary escape character: \"                                              no-useless-escape
+  83:16   warning  Unnecessary escape character: \"                                              no-useless-escape
+  83:21   warning  Unnecessary escape character: \"                                              no-useless-escape
+  86:37   warning  Unnecessary escape character: \"                                              no-useless-escape
+  86:55   warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:41   warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:59   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:25   warning  Unnecessary escape character: \"                                              no-useless-escape
+  88:28   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:54   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:72   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:81   warning  Unnecessary escape character: \"                                              no-useless-escape
+  89:88   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:51   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:60   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:71   warning  Unnecessary escape character: \"                                              no-useless-escape
+  91:89   warning  Unnecessary escape character: \"                                              no-useless-escape
+  92:39   warning  Unnecessary escape character: \"                                              no-useless-escape
+  92:48   warning  Unnecessary escape character: \"                                              no-useless-escape
+  96:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  96:50   warning  Unnecessary escape character: \"                                              no-useless-escape
+  98:14   warning  Unnecessary escape character: \"                                              no-useless-escape
+  98:22   warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/estimates/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  74:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:75   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:97   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:135  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:102  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:149  warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/internal-tasks/route.js
+  60:5  warning  The value assigned to 'i' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/[id]/pdf/route.js
+  8:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/[id]/send/route.js
+   9:12   warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  74:43   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:63   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:75   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:97   warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:104  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:126  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:135  warning  Unnecessary escape character: \"                                              no-useless-escape
+  74:148  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:102  warning  Unnecessary escape character: \"                                              no-useless-escape
+  87:149  warning  Unnecessary escape character: \"                                              no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/invoices/route.js
+  4:10  warning  'auditLog' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/lead-webhook/meta/route.js
+  146:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  186:12  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u       no-unused-vars
+  210:13  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/leads/route.js
+   3:10  warning  'auditLog' is defined but never used  no-unused-vars
+  50:35  warning  Unnecessary escape character: \(      no-useless-escape
+  50:37  warning  Unnecessary escape character: \)      no-useless-escape
+  50:39  warning  Unnecessary escape character: \+      no-useless-escape
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/local-auth/verify-code/route.js
+  4:31  warning  'parseCookies' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/team-invites/accept/route.js
+  56:9  warning  The value assigned to 'userId' is not used in subsequent statements  no-useless-assignment
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/auth.js
+  1:10  warning  'createHash' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/migrate-passwords.js
+  12:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  25:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  29:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  51:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  57:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  65:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/send-email.js
+  54:14  warning  'logError' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+  69:7   warning  The value assigned to 'errorMessage' is not used in subsequent statements            no-useless-assignment
+  91:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u         no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/api/utils/validate.js
+  14:7   warning  'optionalPassword' is assigned a value but never used  no-unused-vars
+  15:43  warning  Unnecessary escape character: \+                       no-useless-escape
+  15:47  warning  Unnecessary escape character: \(                       no-useless-escape
+  15:49  warning  Unnecessary escape character: \)                       no-useless-escape
+  15:51  warning  Unnecessary escape character: \.                       no-useless-escape
+  19:7   warning  'url' is assigned a value but never used               no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/thank-you/page.jsx
+  2:23  warning  'Calendar' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/client-integrations/react-google-maps.jsx
+  42:3  warning  React Hook useCallback has a missing dependency: 'rest'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  51:3  warning  React Hook useCallback has a missing dependency: 'rest'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/client-integrations/react-markdown.jsx
+   3:8   warning  'React' is defined but never used                                       no-unused-vars
+   8:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  11:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  14:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  15:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  16:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  19:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  22:8   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  25:8   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  28:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  31:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  34:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  37:11  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  40:17  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  43:10  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  46:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  49:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  52:12  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  53:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  58:13  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  59:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  60:10  warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  61:9   warning  'node' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ActivityFeed.jsx
+  9:3  warning  'Mail' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/AdaptiveContentArea.jsx
+  47:9  warning  'isDesktop' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/BottomTabNav.jsx
+  41:16  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/EnhancedActivityFeed.jsx
+   5:3  warning  'FileText' is defined but never used                                                                                no-unused-vars
+  10:3  warning  'Mail' is defined but never used                                                                                    no-unused-vars
+  25:6  warning  React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/EnhancedMetricsCarousel.jsx
+    9:3  warning  'BarChart3' is defined but never used                                                                                  no-unused-vars
+   10:3  warning  'Activity' is defined but never used                                                                                   no-unused-vars
+   19:3  warning  'XAxis' is defined but never used                                                                                      no-unused-vars
+   20:3  warning  'YAxis' is defined but never used                                                                                      no-unused-vars
+   22:3  warning  'Tooltip' is defined but never used                                                                                    no-unused-vars
+   36:6  warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  171:9  warning  'nextSlide' is assigned a value but never used                                                                         no-unused-vars
+  175:9  warning  'prevSlide' is assigned a value but never used                                                                         no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadCard.jsx
+  10:3  warning  'Eye' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadFormPopup.jsx
+  85:6  warning  React Hook useEffect has a missing dependency: 'source'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadQuickView.jsx
+  12:3  warning  'MessageSquare' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LocalAreaSection.jsx
+  1:18  warning  'Car' is defined but never used    no-unused-vars
+  1:23  warning  'Home' is defined but never used   no-unused-vars
+  1:29  warning  'Brush' is defined but never used  no-unused-vars
+  1:36  warning  'Star' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MetricsCarousel.jsx
+  118:9  warning  'prevSlide' is assigned a value but never used                                                                no-unused-vars
+  130:6  warning  React Hook useEffect has a missing dependency: 'nextSlide'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MobileBreadcrumb.jsx
+  44:47  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/MobileSearchFilter.jsx
+    1:20  warning  'useEffect' is defined but never used             no-unused-vars
+    6:3   warning  'ChevronDown' is defined but never used           no-unused-vars
+    9:3   warning  'MapPin' is defined but never used                no-unused-vars
+  151:9   warning  'focusSearch' is assigned a value but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PWAInstaller.jsx
+   31:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   45:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   90:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+   93:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  113:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PerformanceMetrics.jsx
+    3:3   warning  'TrendingUp' is defined but never used                                   no-unused-vars
+    6:3   warning  'Users' is defined but never used                                        no-unused-vars
+    7:3   warning  'Calendar' is defined but never used                                     no-unused-vars
+    9:3   warning  'AlertCircle' is defined but never used                                  no-unused-vars
+   19:3   warning  'BarChart' is defined but never used                                     no-unused-vars
+   20:3   warning  'Bar' is defined but never used                                          no-unused-vars
+   29:3   warning  'Legend' is defined but never used                                       no-unused-vars
+  418:61  warning  'index' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PricingSection.jsx
+  15:3  warning  'Clock' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/QuoteCalculatorSection.jsx
+    6:3  warning  'Paintbrush' is defined but never used                                                                                                      no-unused-vars
+  149:6  warning  React Hook useEffect has missing dependencies: 'handleMouseMove' and 'handleTouchMove'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/SwipeableProjectCard.jsx
+  11:3  warning  'X' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/TimelineCarousel.jsx
+  7:3  warning  'MapPin' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/EmailHealthWidget.jsx
+   4:37  warning  'Mail' is defined but never used                                                no-unused-vars
+  17:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/OnboardingModal.jsx
+   4:10  warning  'X' is defined but never used                                                 no-unused-vars
+   4:53  warning  'Check' is defined but never used                                             no-unused-vars
+  14:43  warning  'onComplete' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/calendar/AvailabilityChips.jsx
+  13:3  warning  'startDateISO' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  14:3  warning  'endDateISO' is defined but never used. Allowed unused args must match /^_/u    no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/contracts/ContractsTable.jsx
+  2:10  warning  'getStatusColor' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/contracts/CreateContractModal.jsx
+  39:6  warning  React Hook useEffect has a missing dependency: 'loadAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/dashboard/DashboardOverview.jsx
+  1:20  warning  'useEffect' is defined but never used  no-unused-vars
+  1:31  warning  'Suspense' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/estimates/EstimateCard.jsx
+  14:3  warning  'Building' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/CompletionWorkflowsModal.jsx
+   1:8   warning  'React' is defined but never used                                                                                 no-unused-vars
+   9:3   warning  'Trash2' is defined but never used                                                                                no-unused-vars
+  10:3   warning  'Edit3' is defined but never used                                                                                 no-unused-vars
+  11:3   warning  'Save' is defined but never used                                                                                  no-unused-vars
+  12:3   warning  'X' is defined but never used                                                                                     no-unused-vars
+  20:10  warning  'editingStep' is assigned a value but never used                                                                  no-unused-vars
+  20:23  warning  'setEditingStep' is assigned a value but never used                                                               no-unused-vars
+  31:6   warning  React Hook useEffect has a missing dependency: 'loadWorkflows'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/ProjectCard.jsx
+  6:3  warning  'Clock' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/projects/ProjectProgressModal.jsx
+   1:8  warning  'React' is defined but never used                                                                                       no-unused-vars
+   9:3  warning  'Filter' is defined but never used                                                                                      no-unused-vars
+  55:6  warning  React Hook useEffect has a missing dependency: 'loadProgressReports'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/scheduling/TeamScheduleView.jsx
+  1:10  warning  'MapPin' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/admin/team/TeamMemberCard.jsx
+  13:3  warning  'MapPin' is defined but never used  no-unused-vars
+  14:3  warning  'Clock' is defined but never used   no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/contexts/AdminAuthContext.jsx
+  3:8  warning  'React' is defined but never used  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useContracts.js
+  10:6  warning  React Hook useEffect has a missing dependency: 'loadContracts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useEstimateCalculator.js
+   60:9   warning  'settingsQuery' is assigned a value but never used                            no-unused-vars
+  197:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useEstimates.js
+  43:6  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/useFollowUps.js
+  46:6  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePaymentFilters.js
+  12:6  warning  React Hook useEffect has a missing dependency: 'filterPayments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePaymentStats.js
+  13:6  warning  React Hook useEffect has a missing dependency: 'calculateStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/hooks/usePerformanceCache.js
+  191:49  warning  'cacheTime' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/lib/google.js
+  13:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  30:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/migrations/001-initial-schema.js
+  1271:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1310:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1713:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  1885:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/sentry.client.js
+  19:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/sentry.server.js
+  17:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  47:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/utils/pagePreloader.js
+  78:3  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/utils/useTheme.jsx
+   72:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  125:32  warning  'isDark' is defined but never used. Allowed unused args must match /^_/u       no-unused-vars
+
+✖ 320 problems (0 errors, 320 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+
+===== typecheck-after =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> typecheck
+> react-router typegen && tsc --noEmit
+
+
+===== test-after =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/scratch/ca4f8c67d9e0/Arcan-Painting
+
+ ✓ test/estimatesUtils.test.js (24 tests) 29ms
+ ✓ test/team-invites-security.test.js (6 tests) 18ms
+ ✓ test/account-flows.test.jsx (5 tests) 218ms
+ ✓ test/contractsUtils.test.js (16 tests) 2ms
+stderr | test/contact-persistence.test.js > POST /api/contact > does not confirm a lead when the CRM write fails
+Database error while saving lead: Error: database unavailable
+    at /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/test/contact-persistence.test.js:30:34
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ test/contact-persistence.test.js (4 tests) 12ms
+ ✓ test/appointment-persistence.test.js (3 tests) 7ms
+stderr | test/chat-internal-token.test.js > public chat handoff > bounds untrusted conversation history before sending it to Gemini
+Customer support triage skipped: INTERNAL_API_TOKEN is not configured
+
+ ✓ test/chat-internal-token.test.js (3 tests) 6ms
+stderr | src/app/admin/contracts/page.test.jsx > ContractsPage > shows error state when fetch fails
+Error loading contracts: Error: Failed to fetch
+    at /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/admin/contracts/page.test.jsx:113:37
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/ca4f8c67d9e0/Arcan-Painting/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+ ✓ src/app/admin/contracts/page.test.jsx (6 tests) 164ms
+ ✓ test/credits-checkout-auth.test.js (4 tests) 3ms
+ ✓ test/customer-support-auth.test.js (3 tests) 5ms
+ ✓ test/public-claim-safety.test.js (1 test) 3ms
+stderr | test/meta-lead-webhook.test.js > POST /api/lead-webhook/meta > rejects an invalid signature before a lead is persisted
+[meta-leads] invalid signature
+
+ ✓ test/meta-lead-webhook.test.js (2 tests) 8ms
+ ✓ test/credits-ledger.test.js (3 tests) 2ms
+ ✓ test/estimateCalculations.test.js (4 tests) 2ms
+ ✓ test/useTheme.test.jsx (3 tests) 4ms
+ ✓ test/magic-code-attempts.test.js (2 tests) 2ms
+ ✓ test/portfolio-lightbox-accessibility.test.jsx (2 tests) 590ms
+   ✓ PortfolioSection lightbox accessibility > defers gallery thumbnails and prioritizes the opened project photo  362ms
+stderr | test/quote-persistence.test.js > POST /api/quote > does not report success when the quote cannot be persisted
+Failed to save quote as lead: database unavailable
+
+ ✓ test/quote-persistence.test.js (2 tests) 2ms
+ ✓ test/scheduler-accessibility.test.jsx (2 tests) 305ms
+ ✓ test/agent-tools-auth.test.js (3 tests) 2ms
+ ✓ test/analytics.test.js (2 tests) 10ms
+ ✓ test/calendar-auth.test.js (2 tests) 2ms
+ ✓ test/insert-lead-notification.test.js (2 tests) 1ms
+ ✓ test/password-reset-session-revocation.test.js (1 test) 1ms
+ ✓ test/availability-public-response.test.js (2 tests) 2ms
+ ✓ test/public-seo.test.js (3 tests) 1ms
+ ✓ test/change-password-csrf.test.js (1 test) 1ms
+ ✓ test/project-progress-auth.test.js (2 tests) 1ms
+ ✓ test/notifications-auth.test.js (2 tests) 4ms
+ ✓ test/vision-tagger-input.test.js (2 tests) 2ms
+ ✓ test/team-availability-auth.test.js (2 tests) 1ms
+ ✓ test/error-response.test.js (2 tests) 4ms
+ ✓ test/header-mobile-layout.test.jsx (1 test) 53ms
+ ✓ test/internal-request.test.js (2 tests) 4ms
+ ✓ test/caddy-security-headers.test.js (1 test) 2ms
+ ✓ test/rate-limit-proxy-trust.test.js (2 tests) 1ms
+ ✓ test/stripe-webhook-config.test.js (1 test) 0ms
+ ✓ test/api-access-policy.test.js (2 tests) 0ms
+ ✓ test/admin-route-guard.test.js (2 tests) 2ms
+ ✓ test/csrf-boundary.test.js (2 tests) 1ms
+ ✓ test/lead-input-validation.test.js (2 tests) 0ms
+stderr | test/health-route.test.js > GET /api/health > does not mark the CRM healthy when Postgres is unavailable
+[health] database check failed: connection refused
+
+ ✓ test/health-route.test.js (2 tests) 1ms
+ ✓ test/leads-search-query.test.js (1 test) 1ms
+ ✓ test/not-found-route.test.jsx (2 tests) 4ms
+ ✓ test/lead-form-popup-accessibility.test.jsx (1 test) 22ms
+ ✓ test/appointments-auth.test.js (1 test) 1ms
+ ✓ test/sitemap-service-areas.test.js (1 test) 2ms
+ ✓ test/city-service-route.test.js (2 tests) 0ms
+ ✓ test/login-cookies.test.js (1 test) 1ms
+ ✓ test/auth-expiry.test.js (2 tests) 0ms
+ ✓ test/hero-lcp-stability.test.js (1 test) 0ms
+
+ Test Files  51 passed (51)
+      Tests  150 passed (150)
+   Start at  23:29:44
+   Duration  4.35s (transform 726ms, setup 141ms, collect 1.61s, tests 1.51s, environment 565ms, prepare 125ms)
+
+
+===== build-after =====
+src/app/admin/email-templates/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/estimates/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/email-logs/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/settings/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/onboarding/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/agents/run/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/invoices/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/system/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/today/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/tasks/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/account/signin/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/install-guide/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/app/admin/team/page.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/projects/CreateProjectModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/projects/ProjectDetailModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/leads/LeadEditModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/AdaptiveContentArea.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/QuoteCalculatorSection.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/SchedulerSection.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/estimates/EstimateBuilder.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/MobileModal.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/admin/EmailHealthWidget.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/contexts/ModalContext.jsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+"createHash" is imported from external module "crypto" but never used in "src/app/api/utils/auth.js".
+"default" is imported from external module "react" but never used in "src/components/admin/projects/CompletionWorkflowsModal.jsx" and "src/components/admin/projects/ProjectProgressModal.jsx".
+"Wifi", "Server" and "Terminal" are imported from external module "lucide-react" but never used in "src/app/admin/install-guide/page.jsx" and "src/app/admin/system/page.jsx".
+✓ 273 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/LeadFormPopup.jsx is dynamically imported by /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/HeroSection.jsx but also statically imported by /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/app/[service]/[city]/page.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/FAQSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/Header.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/PortfolioSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ProcessSection.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ServiceInquiryPage.jsx, /workspace/scratch/ca4f8c67d9e0/Arcan-Painting/src/components/ServicesSection.jsx, dynamic import will not move module into another chunk.
+
+build/server/.vite/manifest.json                        1.58 kB
+build/server/assets/server-build-CEpBwhK0.css          94.51 kB
+build/server/assets/sentry.client-3_d2Ac7N.js           0.39 kB
+build/server/index.js                                   0.54 kB
+build/server/assets/route-guard.server-CiZIi-rt.js      0.85 kB
+build/server/assets/sentry.server-CMiZjmBH.js           3.24 kB
+build/server/assets/gallery-tags-BcEZIrbf.js           37.06 kB
+build/server/assets/index-BEXPeDNR.js                 503.07 kB
+build/server/assets/server-build.js                 1,271.72 kB
+
+✓ 1 asset cleaned from React Router server build.
+build/server/assets/server-build-CEpBwhK0.css
+
+✓ built in 3.06s
+
+===== e2e-local-after =====
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+[WebServer] (node:44) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] GEMINI_API_KEY not set — AI chat will not work
+[WebServer] [startup] DATABASE_URL not set; persistence routes are unavailable
+
+Running 12 tests using 1 worker
+
+(node:52) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/public-smoke.spec.ts:4:3 › public conversion and account routes › visitors can open and dismiss the estimate dialog (771ms)
+  ✓   2 [desktop-chromium] › e2e/public-smoke.spec.ts:19:3 › public conversion and account routes › privacy and invalid service URLs have the expected public response (363ms)
+[WebServer] [traceId:a4239eb1-035c-401c-bb13-1d482fd43cbf] [health] database check failed: DATABASE_URL not set
+  ✓   3 [desktop-chromium] › e2e/public-smoke.spec.ts:33:3 › public conversion and account routes › health refuses to mark an unconfigured CRM ready (91ms)
+  ✓   4 [desktop-chromium] › e2e/public-smoke.spec.ts:40:3 › public conversion and account routes › account links render and are excluded from indexing (427ms)
+(node:172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [mobile-chromium] › e2e/public-smoke.spec.ts:4:3 › public conversion and account routes › visitors can open and dismiss the estimate dialog (724ms)
+  ✓   6 [mobile-chromium] › e2e/public-smoke.spec.ts:19:3 › public conversion and account routes › privacy and invalid service URLs have the expected public response (339ms)
+[WebServer] [traceId:f2ccb8d8-fe90-4acb-a5ce-abe68b0fa85c] [health] database check failed: DATABASE_URL not set
+  ✓   7 [mobile-chromium] › e2e/public-smoke.spec.ts:33:3 › public conversion and account routes › health refuses to mark an unconfigured CRM ready (98ms)
+  ✓   8 [mobile-chromium] › e2e/public-smoke.spec.ts:40:3 › public conversion and account routes › account links render and are excluded from indexing (393ms)
+(node:287) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [tablet-chromium] › e2e/public-smoke.spec.ts:4:3 › public conversion and account routes › visitors can open and dismiss the estimate dialog (682ms)
+  ✓  10 [tablet-chromium] › e2e/public-smoke.spec.ts:19:3 › public conversion and account routes › privacy and invalid service URLs have the expected public response (298ms)
+[WebServer] [traceId:658b78e2-ca65-4e71-be40-d8b45f114823] [health] database check failed: DATABASE_URL not set
+  ✓  11 [tablet-chromium] › e2e/public-smoke.spec.ts:33:3 › public conversion and account routes › health refuses to mark an unconfigured CRM ready (79ms)
+  ✓  12 [tablet-chromium] › e2e/public-smoke.spec.ts:40:3 › public conversion and account routes › account links render and are excluded from indexing (391ms)
+
+  12 passed (9.8s)

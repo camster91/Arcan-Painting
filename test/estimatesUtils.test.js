@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from "vitest";
+import { describe, test, expect, vi, afterEach } from "vitest";
 import { 
   getStatusInfo, 
   formatCurrency, 
@@ -12,6 +12,10 @@ import {
 import { Edit, Send, CheckCircle, XCircle, Clock } from "lucide-react";
 
 describe("estimatesUtils", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
   describe("getStatusInfo", () => {
     test("returns correct info for draft status", () => {
       const result = getStatusInfo("draft");
@@ -87,10 +91,6 @@ describe("estimatesUtils", () => {
 
   describe("formatDateLong", () => {
     test("formats date string with long format", () => {
-      // Mock a specific date to avoid timezone issues
-      const date = new Date("2024-01-15T12:00:00Z");
-      const originalDate = global.Date;
-      vi.spyOn(global, "Date").mockImplementation(() => date);
       
       const result = formatDateLong("2024-01-15T12:00:00Z");
       expect(result).toContain("Monday");
@@ -98,7 +98,6 @@ describe("estimatesUtils", () => {
       expect(result).toContain("15");
       expect(result).toContain("2024");
       
-      global.Date = originalDate;
     });
 
     test("returns N/A for invalid date", () => {
@@ -109,36 +108,36 @@ describe("estimatesUtils", () => {
   describe("generateEstimateNumber", () => {
     test("generates estimate number with correct format", () => {
       const mockDate = new Date("2024-01-15T12:00:00Z");
-      vi.spyOn(global, "Date").mockImplementation(() => mockDate);
+      vi.useFakeTimers();
+      vi.setSystemTime(mockDate);
       
       const result = generateEstimateNumber();
       expect(result).toMatch(/^EST-20240115-\d{3}$/);
       
-      vi.restoreAllMocks();
     });
 
     test("includes random 3-digit suffix", () => {
       const mockDate = new Date("2024-01-15T12:00:00Z");
-      vi.spyOn(global, "Date").mockImplementation(() => mockDate);
+      vi.useFakeTimers();
+      vi.setSystemTime(mockDate);
       vi.spyOn(Math, "random").mockReturnValue(0.123); // Will produce 123
       
       const result = generateEstimateNumber();
       expect(result).toBe("EST-20240115-123");
       
-      vi.restoreAllMocks();
     });
   });
 
   describe("getDefaultValidUntil", () => {
     test("returns date 30 days from now", () => {
       const mockDate = new Date("2024-01-15T12:00:00Z");
-      vi.spyOn(global, "Date").mockImplementation(() => mockDate);
+      vi.useFakeTimers();
+      vi.setSystemTime(mockDate);
       
       const result = getDefaultValidUntil();
       const expectedDate = new Date("2024-02-14T12:00:00Z").toISOString().split("T")[0];
       expect(result).toBe(expectedDate);
       
-      vi.restoreAllMocks();
     });
   });
 

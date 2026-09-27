@@ -1,6 +1,6 @@
 name: CI Build
 
-# Build-only workflow for Arcan-Painting (React Router v7 framework).
+# Pull-request validation for Arcan-Painting (React Router v7 framework).
 
 on:
   push:
@@ -51,6 +51,9 @@ jobs:
         run: npm test -- --run
         env:
           CI: true
+
+      - name: Build
+        run: npm run build
 
       - name: Install Chromium for smoke tests
         if: github.actor != 'dependabot[bot]'

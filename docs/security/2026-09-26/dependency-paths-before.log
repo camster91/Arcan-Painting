@@ -1,0 +1,39 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+web@ /workspace/scratch/ca4f8c67d9e0/baseline-audits/Arcan-Painting
+├─┬ @hono/node-server@1.19.17
+│ └── hono@4.13.3 deduped
+├─┬ @react-router/dev@7.18.2
+│ ├─┬ @babel/core@7.29.7
+│ │ └─┬ @babel/helper-compilation-targets@7.29.7
+│ │   └── browserslist@4.28.6 deduped
+│ └── valibot@1.4.1
+├─┬ @react-router/serve@7.18.2
+│ ├─┬ @react-router/express@7.18.2
+│ │ └── express@4.22.2 deduped
+│ ├─┬ express@4.22.2
+│ │ ├─┬ body-parser@1.20.6
+│ │ │ └── qs@6.15.2 deduped
+│ │ └── qs@6.15.2 deduped
+│ └── morgan@1.11.0
+├─┬ autoprefixer@10.5.4
+│ └─┬ browserslist@4.28.6
+│   ├── baseline-browser-mapping@2.10.42
+│   └─┬ update-browserslist-db@1.2.3
+│     └── browserslist@4.28.6 deduped
+├─┬ gray-matter@4.0.3
+│ └── js-yaml@3.15.1
+├── hono@4.13.3
+├─┬ jsdom@26.1.0
+│ └── ws@8.21.0
+├─┬ react-router-hono-server@2.26.0
+│ ├─┬ @hono/node-ws@1.3.0
+│ │ ├── hono@4.13.3 deduped
+│ │ └── ws@8.21.0 deduped
+│ ├─┬ @hono/vite-dev-server@0.25.1
+│ │ └── hono@4.13.3 deduped
+│ └── hono@4.13.3 deduped
+├─┬ stripe@18.5.0
+│ └── qs@6.15.2
+└─┬ vite@6.4.3 invalid: ">=7.3.1" from node_modules/react-router-hono-server
+  └── esbuild@0.25.12
+
