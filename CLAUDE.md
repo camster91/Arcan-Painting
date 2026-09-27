@@ -129,6 +129,7 @@ The `docker-compose.yml` runs app + postgres:16-alpine with the same env.
   - `src/app/admin/leads/page.jsx` → `/admin/leads`
   - Dynamic routes use `[param]` folders
   - Catch-all routes use `[...param]` folders
+  - A `layout.jsx` in a folder wraps that folder's pages (wired in `src/app/routes.ts`; it renders the page via `<Outlet />`). `src/app/admin/layout.jsx` is the admin menu.
 
 - **API Routes**: Located in `src/app/api/`. Auto-mounted by `__create/route-builder.ts` via `import.meta.glob('../src/app/api/**/route.{js,ts,jsx,tsx}', { eager: true })`. Each handler exports `GET`/`POST`/`PUT`/`DELETE`/`PATCH` taking `(request, ctx)`.
 

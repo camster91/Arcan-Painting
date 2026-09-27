@@ -247,7 +247,7 @@ export default function SettingsPage() {
                   Currency
                 </label>
                 <input
-                  defaultValue={settings.currency || "USD"}
+                  defaultValue={settings.currency || "CAD"}
                   onBlur={(e) => mutation.mutate({ currency: e.target.value })}
                   className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                 />
@@ -281,6 +281,68 @@ export default function SettingsPage() {
                   onBlur={(e) =>
                     mutation.mutate({ invoice_notes_template: e.target.value })
                   }
+                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                />
+              </div>
+            </div>
+          </Section>
+        )}
+
+        {activeTab === "rates" && (
+          <Section
+            title="Customer estimate & invoice pages"
+            description="Shown to customers on the links you send them. Card payments appear only when Stripe keys are set on the server."
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="settings-etransfer_email" className="block text-sm font-medium text-slate-700">
+                  E-transfer email
+                </label>
+                <input
+                  id="settings-etransfer_email"
+                  
+                  placeholder="payments@arcanpainting.ca"
+                  defaultValue={settings.etransfer_email ?? ""}
+                  onBlur={(e) => mutation.mutate({ etransfer_email: e.target.value })}
+                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label htmlFor="settings-deposit_pct" className="block text-sm font-medium text-slate-700">
+                  Default deposit (%)
+                </label>
+                <input
+                  id="settings-deposit_pct"
+                  type="number" min="0" max="100" step="1"
+                  placeholder="25"
+                  defaultValue={settings.deposit_pct ?? 25}
+                  onBlur={(e) => mutation.mutate({ deposit_pct: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="settings-etransfer_instructions" className="block text-sm font-medium text-slate-700">
+                  E-transfer instructions
+                </label>
+                <textarea rows={4}
+                  id="settings-etransfer_instructions"
+                  
+                  placeholder="Include the invoice number in the message. Auto-deposit is on, no password needed."
+                  defaultValue={settings.etransfer_instructions ?? ""}
+                  onBlur={(e) => mutation.mutate({ etransfer_instructions: e.target.value })}
+                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="settings-estimate_terms" className="block text-sm font-medium text-slate-700">
+                  Estimate terms
+                </label>
+                <textarea rows={4}
+                  id="settings-estimate_terms"
+                  
+                  placeholder="Price includes labour and materials. A deposit confirms your start date. Balance due on completion."
+                  defaultValue={settings.estimate_terms ?? ""}
+                  onBlur={(e) => mutation.mutate({ estimate_terms: e.target.value })}
                   className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                 />
               </div>

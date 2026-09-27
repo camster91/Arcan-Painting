@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import {
 	type RouteConfigEntry,
 	index,
+	layout,
 	route,
 } from '@react-router/dev/routes';
 
@@ -13,6 +14,7 @@ type Tree = {
 	path: string;
 	children: Tree[];
 	hasPage: boolean;
+	hasLayout: boolean;
 	isParam: boolean;
 	paramName: string;
 	isCatchAll: boolean;
@@ -24,6 +26,7 @@ function buildRouteTree(dir: string, basePath = ''): Tree {
 		path: basePath,
 		children: [],
 		hasPage: false,
+		hasLayout: false,
 		isParam: false,
 		isCatchAll: false,
 		paramName: '',
@@ -54,6 +57,9 @@ function buildRouteTree(dir: string, basePath = ''): Tree {
 			node.children.push(childNode);
 		} else if (file === 'page.jsx') {
 			node.hasPage = true;
+		} else if (file === 'layout.jsx' && basePath !== '') {
+			// Nested layouts only; the root layout is root.tsx.
+			node.hasLayout = true;
     }
 	}
 
@@ -100,6 +106,11 @@ function generateRoutes(node: Tree): RouteConfigEntry[] {
 
 	for (const child of node.children) {
 		routes.push(...generateRoutes(child));
+	}
+
+	// A layout.jsx wraps this folder's page and every page below it.
+	if (node.hasLayout) {
+		return [layout(`./${node.path}/layout.jsx`, routes)];
 	}
 
 	return routes;

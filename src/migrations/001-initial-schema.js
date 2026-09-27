@@ -4,6 +4,7 @@
  * Idempotent — safe to re-run (uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
  */
 import sql from "@/app/api/utils/sql.js";
+import { backfillCustomers } from "@/app/api/utils/customers.js";
 
 let migrationRun = false;
 
@@ -1207,6 +1208,53 @@ Arcan Painting
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false`;
     await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS google_prompted_at TIMESTAMP`;
 
+    // Settings columns used by /api/settings and the estimate builder. They
+    // used to exist only in the settings route's own CREATE TABLE, which is a
+    // no-op once this migration has created app_settings.
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS tax_rate NUMERIC(5,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS markup_pct NUMERIC(5,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'CAD'`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS hourly_rate NUMERIC(10,2)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS logo_url TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS email_from VARCHAR(255)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS invoice_notes_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS estimate_email_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS invoice_email_template TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS contract_email_template TEXT`;
+
+    // Invoices generated from a job remember the estimate they bill.
+    await sql`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS estimate_id INTEGER`;
+
+    // Customers: one record per household, linked from their leads.
+    await sql`
+      CREATE TABLE IF NOT EXISTS customers (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        address TEXT,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email)`;
+    await sql`ALTER TABLE leads ADD COLUMN IF NOT EXISTS customer_id INTEGER`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_leads_customer_id ON leads(customer_id)`;
+
+    // Customer-facing links: an unguessable token per estimate and invoice.
+    await sql`ALTER TABLE estimates ADD COLUMN IF NOT EXISTS public_token VARCHAR(64)`;
+    await sql`ALTER TABLE estimates ADD COLUMN IF NOT EXISTS accepted_at TIMESTAMP`;
+    await sql`ALTER TABLE estimates ADD COLUMN IF NOT EXISTS accepted_name VARCHAR(255)`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_estimates_public_token ON estimates(public_token)`;
+    await sql`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS public_token VARCHAR(64)`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_invoices_public_token ON invoices(public_token)`;
+    // What customers see on those pages.
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS etransfer_email VARCHAR(255)`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS etransfer_instructions TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS estimate_terms TEXT`;
+    await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS deposit_pct NUMERIC(5,2) DEFAULT 25`;
+
     // Workflow indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_category ON workflow_skills(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_workflow_skills_is_active ON workflow_skills(is_active)`;
@@ -1892,6 +1940,7 @@ export function ensureSchema() {
   if (!_migrationPromise) {
     _migrationPromise = runMigrations()
       .then(() => ensureMissingTables())
+      .then(() => backfillCustomers(sql))
       .catch((err) => {
         _migrationPromise = null; // Allow retry on next call
         throw err;

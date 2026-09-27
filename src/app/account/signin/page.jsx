@@ -26,7 +26,10 @@ export default function SignInPage() {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "Unable to sign in");
       const requestedPath = searchParams.get("callbackUrl");
-      navigate(requestedPath?.startsWith("/") ? requestedPath : "/admin", { replace: true });
+      // Painters and other crew roles can't open the admin; they get the crew view.
+      const home = ["owner", "admin"].includes(data.user?.role) ? "/admin" : "/crew";
+      const target = requestedPath?.startsWith("/") && (home === "/admin" || requestedPath.startsWith("/crew")) ? requestedPath : home;
+      navigate(target, { replace: true });
     } catch (cause) {
       setError(cause.message || "Unable to sign in");
     } finally {

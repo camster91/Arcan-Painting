@@ -7,6 +7,13 @@
  */
 import * as yup from "yup";
 
+// Must match the status dropdowns in the admin (leads page, LeadEditModal).
+// "qualified" and "proposal_sent" are legacy values kept so older rows stay editable.
+export const LEAD_STATUSES = [
+  "new", "contacted", "estimate_scheduled", "estimate_sent", "follow_up",
+  "won", "lost", "qualified", "proposal_sent",
+];
+
 // ─── Reusable field types ───────────────────────────────────────────────────
 
 const email = yup.string().email("Invalid email").max(255).required("Email is required");
@@ -112,7 +119,7 @@ export const schemas = {
     notes: yup.string().max(10000).optional().nullable(),
     status: yup
       .string()
-      .oneOf(["new", "contacted", "qualified", "proposal_sent", "won", "lost", "follow_up"], "Invalid status")
+      .oneOf(LEAD_STATUSES, "Invalid status")
       .optional(),
     preferred_contact: yup
       .string()

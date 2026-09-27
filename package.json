@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build",
+    "build": "react-router build && node scripts/build-hostinger-entry.mjs",
     "start": "node build/server/index.js",
     "lint": "eslint src --cache",
     "typecheck": "react-router typegen && tsc --noEmit",
@@ -35,6 +35,7 @@
     "lodash-es": "^4.17.21",
     "lucide-react": "0.577.0",
     "motion": "^12.43.0",
+    "mysql2": "^3.24.4",
     "pg": "^8.23.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

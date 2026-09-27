@@ -12,6 +12,7 @@ import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
+import { recalcInvoiceTotals } from "@/app/api/utils/invoice-totals";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 
 // GET /api/payments - List payments with filtering or get single payment
@@ -246,30 +247,7 @@ export async function POST(request) {
         ) RETURNING *
       `;
 
-      let updatedInvoice = null;
-      if (invoice_id) {
-        const [inv] = await txSql`
-          UPDATE invoices 
-          SET 
-            amount_paid = COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-            ), 0),
-            payment_status = CASE 
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
-              ELSE 'unpaid'
-            END,
-            amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${invoice_id} AND status IN ('cleared', 'pending')
-            ), 0),
-            updated_at = CURRENT_TIMESTAMP
-          WHERE id = ${invoice_id}
-          RETURNING *
-        `;
-        updatedInvoice = inv;
-      }
+      const updatedInvoice = invoice_id ? await recalcInvoiceTotals(txSql, invoice_id) : null;
 
       return { payment, updatedInvoice };
     });
@@ -335,19 +313,7 @@ export async function PUT(request) {
 
     // If payment amount or status changed and it's linked to an invoice, update invoice totals
     if ((amount !== undefined || status !== undefined) && payment.invoice_id) {
-      await sql`
-        UPDATE invoices 
-        SET 
-          amount_paid = COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
-          payment_status = CASE 
-            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) >= total_amount THEN 'paid'
-            WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0) > 0 THEN 'partial'
-            ELSE 'unpaid'
-          END,
-          amount_due = total_amount - COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending')), 0),
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${payment.invoice_id}
-      `;
+      await recalcInvoiceTotals(sql, payment.invoice_id);
     }
 
     await auditLog({
@@ -398,25 +364,7 @@ export async function DELETE(request) {
       await txSql`DELETE FROM payments WHERE id = ${id}`;
 
       if (payment.invoice_id) {
-        await txSql`
-          UPDATE invoices 
-          SET 
-            amount_paid = COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-            ), 0),
-            payment_status = CASE 
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) >= total_amount THEN 'paid'
-              WHEN COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}), 0) > 0 THEN 'partial'
-              ELSE 'unpaid'
-            END,
-            amount_due = total_amount - COALESCE((
-              SELECT SUM(amount) FROM payments 
-              WHERE invoice_id = ${payment.invoice_id} AND status IN ('cleared', 'pending') AND id != ${id}
-            ), 0),
-            updated_at = CURRENT_TIMESTAMP
-          WHERE id = ${payment.invoice_id}
-        `;
+        await recalcInvoiceTotals(txSql, payment.invoice_id);
       }
     });
 

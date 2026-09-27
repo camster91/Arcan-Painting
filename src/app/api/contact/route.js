@@ -24,31 +24,6 @@ function sanitizeAttribution(value) {
   return Object.keys(sanitized).length ? sanitized : null;
 }
 
-// Spawn lead qualifier agent in background (fire-and-forget, non-blocking).
-// Gated on OPENCLAW_URL being set — when the local OpenClaw instance is
-// not deployed, the fetch hits a dead upstream and the container log
-// fills with "Lead qualifier spawn failed: fetch failed" lines. The
-// qualification agent feature is preserved in code (the route at
-// /api/agents/lead-qualifier still exists) so when OpenClaw is wired
-// up later, the gating is a one-line revert.
-async function spawnLeadQualifierAsync(leadData, baseUrl) {
-  if (!process.env.OPENCLAW_URL || !process.env.INTERNAL_API_TOKEN) {
-    return; // OpenClaw is not deployed — skip the qualifier agent.
-  }
-  try {
-    await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-internal-api-token': process.env.INTERNAL_API_TOKEN,
-      },
-      body: JSON.stringify(leadData),
-    });
-  } catch (err) {
-    console.error('Lead qualifier spawn failed (non-fatal):', err.message);
-  }
-}
-
 export async function POST(request) {
   const limitado = generalLimiter(request);
   if (limitado) return limitado;
@@ -185,22 +160,6 @@ export async function POST(request) {
       leadSaved = leadId != null;
 
       if (leadSaved) {
-        // Fire-and-forget: spawn AI lead qualifier in background
-        const baseUrl = request.url.split("/api/")[0];
-        spawnLeadQualifierAsync(
-          {
-            leadId,
-            name: body.name,
-            email: body.email,
-            phone: body.phone,
-            serviceType: body.serviceType,
-            projectDescription: body.projectDescription,
-            address: body.address,
-            preferredContact,
-          },
-          baseUrl,
-        );
-
         // Fire-and-forget: Meta CAPI server-side Lead event for attribution
         sendLeadEvent({
           leadId,

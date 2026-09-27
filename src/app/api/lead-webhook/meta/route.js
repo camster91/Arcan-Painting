@@ -194,7 +194,6 @@ export async function POST(request) {
     return new Response("too many entries", { status: 400 });
   }
 
-  const baseUrl = process.env.APP_URL || request.url.split("/api/")[0];
   const results = [];
 
   for (const entry of entries) {
@@ -236,24 +235,6 @@ export async function POST(request) {
         });
         // Email workflow dispatch is not implemented as a server-side helper.
         // Do not invoke an unbound workflow from this public webhook.
-        // Fire-and-forget: AI lead qualifier (mirrors contact route pattern)
-        try {
-          await fetch(`${baseUrl}/api/agents/lead-qualifier`, {
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              leadId: saved.lead?.id,
-              name: lead.name,
-              email: lead.email,
-              phone: lead.phone,
-              serviceType: lead.serviceType,
-              projectDescription: lead.projectDescription,
-              address: lead.address,
-              source: "meta_lead_ad",
-            }),
-          });
-        } catch (agentErr) {
-          console.error("[meta-leads] lead-qualifier failed:", agentErr.message);
-        }
         try {
           await auditLog({ request, action: "meta_lead.received", resource: "lead", resourceId: saved.lead?.id, changes: { source: "meta", adId: lead.meta.adId } });
         } catch (auditError) {

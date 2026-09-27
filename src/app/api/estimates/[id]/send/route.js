@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { ensurePublicToken, publicUrl } from "@/app/api/utils/public-links";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
 
@@ -45,8 +46,9 @@ export async function POST(request, { params }) {
 
     const settings = await getAppSettings();
 
-    const baseUrl = process.env.APP_URL || "";
-    const pdfUrl = `${baseUrl}/api/estimates/${id}/pdf`;
+    // Customers get the public page (no login); the admin PDF needs a session.
+    const token = await ensurePublicToken(sql, "estimates", Number(id));
+    const pdfUrl = publicUrl("estimates", token);
 
     const vars = {
       company_name: settings.company_name || "",
@@ -80,9 +82,9 @@ export async function POST(request, { params }) {
           <li><strong>Total:</strong> $${vars.total_cost}</li>
           ${vars.valid_until ? `<li><strong>Valid until:</strong> ${vars.valid_until}</li>` : ""}
         </ul>
-        <p>You can view and print your estimate here:</p>
-        <p><a href="${vars.pdf_url}" target="_blank">View Estimate</a></p>
-        <p>Reply to this email to approve or request changes.</p>
+        <p>You can review your estimate and accept it online:</p>
+        <p><a href="${vars.pdf_url}" target="_blank">Review and accept your estimate</a></p>
+        <p>Questions or changes? Just reply to this email.</p>
         <p style="margin-top:24px; color:#64748b;">Sent by ${vars.sender}${vars.company_name ? ` · ${vars.company_name}` : ""}</p>
         ${settings.company_address || settings.company_email || settings.company_phone ? `<div style=\"margin-top:8px; color:#64748b; font-size:12px\">${[settings.company_address, settings.company_email, settings.company_phone].filter(Boolean).join(" · ")}</div>` : ""}
       </div>

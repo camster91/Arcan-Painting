@@ -1,5 +1,4 @@
 import { notifyGerardo, formatQuoteNotification } from '../utils/telegram.js';
-import { chatWithGemini } from '../utils/gemini.js';
 import { createRateLimiter } from '../utils/rate-limit.js';
 import { insertLead, validateLeadInput } from '../utils/insert-lead.js';
 
@@ -60,13 +59,6 @@ export async function POST(request) {
 
     // Notify Gerardo via Telegram
     await notifyGerardo(formatQuoteNotification(body));
-
-    // AI-draft a quote response for Gerardo to review
-    try {
-      await chatWithGemini([], `A customer named ${name} wants a quote for ${serviceType}. Scope: ${scope || 'not specified'}. Timeline: ${timeline || 'flexible'}. Budget: ${budget || 'not specified'}. Details: ${details || 'none'}. Address: ${address || 'not provided'}. Draft a brief, professional email response acknowledging the request and explaining that a team member will review the details before confirming next steps.`);
-    } catch (e) {
-      console.error('AI quote draft failed:', e.message);
-    }
 
     return Response.json({
       success: true,

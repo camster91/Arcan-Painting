@@ -11,7 +11,6 @@ vi.mock("@/app/api/utils/telegram", () => ({
   notifyGerardo,
   formatQuoteNotification: vi.fn(() => "quote notification"),
 }));
-vi.mock("@/app/api/utils/gemini", () => ({ chatWithGemini: vi.fn() }));
 vi.mock("@/app/api/utils/rate-limit", () => ({
   createRateLimiter: vi.fn(() => () => null),
 }));

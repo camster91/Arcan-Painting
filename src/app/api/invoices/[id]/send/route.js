@@ -1,4 +1,5 @@
 import sql from "@/app/api/utils/sql";
+import { ensurePublicToken, publicUrl } from "@/app/api/utils/public-links";
 import { sendEmail } from "@/app/api/utils/send-email";
 import { getCurrentUser } from "@/app/api/utils/auth";
 
@@ -46,8 +47,9 @@ export async function POST(request, { params }) {
 
     const settings = await getAppSettings();
 
-    const baseUrl = process.env.APP_URL || "";
-    const pdfUrl = `${baseUrl}/api/invoices/${id}/pdf`;
+    // Customers get the public page (no login); the admin PDF needs a session.
+    const token = await ensurePublicToken(sql, "invoices", Number(id));
+    const pdfUrl = publicUrl("invoices", token);
 
     const vars = {
       company_name: settings.company_name || "",
@@ -82,7 +84,7 @@ export async function POST(request, { params }) {
           <li><strong>Due Date:</strong> ${vars.due_date}</li>
         </ul>
         <p>You can view and print your invoice here:</p>
-        <p><a href="${vars.pdf_url}" target="_blank">View Invoice</a></p>
+        <p><a href="${vars.pdf_url}" target="_blank">View and pay your invoice</a></p>
         <p style="margin-top:24px; color:#64748b;">Sent by ${vars.sender}${vars.company_name ? ` · ${vars.company_name}` : ""}</p>
         ${settings.company_address || settings.company_email || settings.company_phone ? `<div style=\"margin-top:8px; color:#64748b; font-size:12px\">${[settings.company_address, settings.company_email, settings.company_phone].filter(Boolean).join(" · ")}</div>` : ""}
       </div>
