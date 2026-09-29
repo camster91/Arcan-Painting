@@ -2,6 +2,7 @@ const LINKS = [
   { href: "/#services", label: "Services" },
   { href: "/#portfolio", label: "Work" },
   { href: "/#process", label: "Process" },
+  { href: "/luxury-painting-gta", label: "Luxury painting" },
   { href: "/#faq", label: "FAQ" },
   { href: "/#contact", label: "Contact" },
   { href: "/privacy", label: "Privacy Notice" },

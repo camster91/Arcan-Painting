@@ -1,3 +1,5 @@
+import { LUXURY_GTA } from "../data/landingPages.js";
+
 const SITE_URL = "https://arcanpainting.ca";
 
 export const SERVICE_FAQS = {
@@ -7,6 +9,8 @@ export const SERVICE_FAQS = {
   "Wallpaper Services": [["What details are useful for a wallpaper installation inquiry?", "Include wall measurements, ceiling height, photos, the wallpaper product or link, roll information, pattern repeat, and the condition of the surface."], ["Does old wallpaper need to be assessed before removal?", "Yes. The type of covering, adhesive, layers, and wall beneath it can affect the removal and preparation scope, so those conditions should be reviewed."]],
   "Specialty Finishes": [["How should I describe a specialty finish?", "Visual references are the clearest starting point. Add notes about colour, texture, reflectivity, scale, and what you like about each example."], ["Why might a sample be part of the process?", "A physical sample can help evaluate colour, texture, and appearance under the actual lighting before the full project scope is finalized."]],
 };
+
+SERVICE_FAQS["Luxury Painting"] = LUXURY_GTA.faqs;
 
 const PUBLIC_PAGES = {
   "/": {
@@ -37,6 +41,11 @@ const PUBLIC_PAGES = {
     title: "Specialty Finishes | Arcan Painting",
     description: "Discuss a specialty-finish project, including the desired appearance, sample references, surfaces, and room conditions.",
     service: "Specialty Finishes",
+  },
+  [LUXURY_GTA.path]: {
+    title: "Luxury Painting in the GTA | Venetian Plaster & Limewash | Arcan Painting",
+    description: "Luxury painting across the Greater Toronto Area: Venetian plaster, limewash, designer wallcoverings and high-contrast finishes with careful preparation.",
+    service: "Luxury Painting",
   },
   "/contact": {
     title: "Contact Arcan Painting",

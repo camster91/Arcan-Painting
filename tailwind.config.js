@@ -9,14 +9,14 @@ module.exports = {
 			fontFamily: {
 				'dancing-script': ['Dancing Script', 'cursive'],
 			},
-			// Editorial palette for the public site. Navy and yellow are the
-			// logo colours; paper/line/muted carry most of the page.
+			// Luxury palette for the public site. Deep teal-green carries the dark
+			// sections, warm ivory the light ones, brushed brass is the accent.
 			colors: {
-				paper: { DEFAULT: '#F6F2EA', deep: '#ECE5D8' },
-				ink: { DEFAULT: '#16213A', soft: '#3A4358' },
-				brand: { DEFAULT: '#F2B01E', deep: '#B27C00' },
-				line: '#DCD2C1',
-				muted: '#6B6456',
+				paper: { DEFAULT: '#F4EFE6', deep: '#E8E0D0' },
+				ink: { DEFAULT: '#0C2B2C', soft: '#3A4E4E' },
+				brand: { DEFAULT: '#C2A36A', deep: '#7D6128' },
+				line: '#D6CBB6',
+				muted: '#655F52',
 			},
 		},
 	},

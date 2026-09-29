@@ -38,6 +38,13 @@ const SERVICES = [
     image: "PXL_20210109_221844861.webp",
     alt: "Living room with a deep blue accent wall behind a white fireplace mantel",
   },
+  {
+    title: "Luxury finishes",
+    href: "/luxury-painting-gta",
+    text: "Venetian plaster, limewash, statement wallcoverings and dark, high-contrast rooms for homes across the GTA.",
+    image: "PXL_20251009_180850831.webp",
+    alt: "Painter installing a botanical mural wallcovering from a ladder",
+  },
 ];
 
 export default function ServicesSection() {
@@ -47,7 +54,7 @@ export default function ServicesSection() {
         <div className="grid gap-6 lg:grid-cols-12">
           <p className="eyebrow lg:col-span-3">What we do</p>
           <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl lg:col-span-9">
-            Five kinds of work, one standard of preparation.
+            Six kinds of work, one standard of preparation.
           </h2>
         </div>
 
