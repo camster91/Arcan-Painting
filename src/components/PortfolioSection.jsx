@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import LeadFormPopup from "./LeadFormPopup";
 import galleryTags from "@/data/gallery-tags.json";
 
@@ -44,156 +44,35 @@ function buildGalleryItems() {
 const GALLERY_ITEMS = buildGalleryItems();
 const CATEGORIES = ["All", "Interior", "Exterior", "Commercial"];
 
-// Two-row scrolling gallery component (mirrors GoogleReviewsSection pattern)
-function GalleryCard({ item, onClick }) {
+// Photos of the crew rather than the work stay out of the portfolio grid.
+const NON_PORTFOLIO_FILES = new Set([
+  "PXL_20230716_234552246_MP.webp",
+  "PXL_20260213_211346296.webp",
+]);
+const PORTFOLIO_ITEMS = GALLERY_ITEMS.filter((item) => !NON_PORTFOLIO_FILES.has(item.file));
+// One 2×2 feature plus twelve squares fills four full rows of the desktop grid.
+const INITIAL_VISIBLE = 13;
+
+function GalleryCard({ item, onClick, featured }) {
   return (
     <button
       type="button"
       onClick={(event) => onClick(event)}
-      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
+      className={`group/card relative block overflow-hidden rounded-sm bg-paper-deep focus-visible:outline focus-visible:outline-4 focus-visible:outline-brand focus-visible:outline-offset-2 ${featured ? "col-span-2 row-span-2" : ""}`}
       aria-label={`Open project photo: ${item.title}`}
-      style={{
-        width: "clamp(140px, 28vw, 260px)",
-        height: "clamp(140px, 28vw, 260px)",
-      }}
     >
       <img
         src={`/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`}
         alt={item.altText}
         loading="lazy"
         decoding="async"
-        className="gallery-img w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover/card:scale-105"
+        className="aspect-square h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-[1.03]"
         style={{ imageOrientation: "from-image" }}
       />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent px-3 pb-2.5 pt-8 text-left text-xs font-medium text-paper opacity-0 transition-opacity group-hover/card:opacity-100 group-focus-visible/card:opacity-100">
+        {item.category}
+      </span>
     </button>
-  );
-}
-
-function ScrollingRow({ items, direction = "left", paused, onItemClick }) {
-  const rowRef = useRef(null);
-  const animRef = useRef(null);
-  const posRef = useRef(0);
-  const isDragging = useRef(false);
-  const dragStartX = useRef(0);
-  const dragStartPos = useRef(0);
-  const touchStartX = useRef(0);
-  const touchMoved = useRef(false);
-  const [localPaused, setLocalPaused] = useState(false);
-
-  const isPaused = paused || localPaused;
-  const speed = direction === "left" ? 0.35 : -0.35;
-
-  // Duplicate for seamless loop
-  const tripled = [...items, ...items, ...items];
-
-  const animate = useCallback(() => {
-    if (!rowRef.current) return;
-    if (!isPaused && !isDragging.current) {
-      posRef.current -= speed;
-    }
-    const totalWidth = rowRef.current.scrollWidth / 3;
-    if (direction === "left" && posRef.current <= -totalWidth) {
-      posRef.current += totalWidth;
-    } else if (direction === "right" && posRef.current >= 0) {
-      posRef.current -= totalWidth;
-    }
-    rowRef.current.style.transform = `translateX(${posRef.current}px)`;
-    animRef.current = requestAnimationFrame(animate);
-  }, [isPaused, speed, direction]);
-
-  useEffect(() => {
-    if (direction === "right" && rowRef.current) {
-      const totalWidth = rowRef.current.scrollWidth / 3;
-      posRef.current = -totalWidth;
-    }
-    animRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animRef.current);
-  }, [animate, direction]);
-
-  // Mouse drag for desktop
-  const handleMouseDown = (e) => {
-    if (e.target.closest("button")) return;
-    // Only start drag if it's a primary mouse button (left click)
-    if (e.button !== 0) return;
-    isDragging.current = true;
-    dragStartX.current = e.clientX;
-    dragStartPos.current = posRef.current;
-    setLocalPaused(true);
-    e.preventDefault();
-  };
-  const handleMouseMove = (e) => {
-    if (!isDragging.current || !rowRef.current) return;
-    posRef.current = dragStartPos.current + (e.clientX - dragStartX.current);
-    rowRef.current.style.transform = `translateX(${posRef.current}px)`;
-  };
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    setTimeout(() => setLocalPaused(false), 2000);
-  };
-
-  // Natural touch scroll + drag for mobile/tablet
-  const handleTouchStart = (e) => {
-    if (e.target.closest("button")) return;
-    touchStartX.current = e.touches[0].clientX;
-    dragStartPos.current = posRef.current;
-    touchMoved.current = false;
-    isDragging.current = false; // Let native scroll handle it initially
-    setLocalPaused(true);
-  };
-  const handleTouchMove = (e) => {
-    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
-    if (dx > 8 && !isDragging.current) {
-      // User is scrolling horizontally — take over
-      isDragging.current = true;
-      dragStartX.current = touchStartX.current;
-      touchMoved.current = true;
-    }
-    if (isDragging.current && rowRef.current) {
-      // Override native scroll
-      e.preventDefault();
-      posRef.current = dragStartPos.current + (e.touches[0].clientX - dragStartX.current);
-      rowRef.current.style.transform = `translateX(${posRef.current}px)`;
-    }
-  };
-  const handleTouchEnd = () => {
-    isDragging.current = false;
-    setTimeout(() => {
-      setLocalPaused(false);
-      touchMoved.current = false;
-    }, touchMoved.current ? 3000 : 500);
-  };
-
-  return (
-    <div
-      className="overflow-hidden cursor-grab active:cursor-grabbing select-none"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div
-        ref={rowRef}
-        className="flex gap-3 sm:gap-4 will-change-transform"
-        style={{ touchAction: "none" }}
-      >
-        {tripled.map((item, i) => (
-          <GalleryCard
-            key={`${item.id}-${i}`}
-            item={item}
-            onClick={(event) => {
-              // items is the original array (index 0 to items.length-1 in the middle copy)
-              // Middle copy starts at index items.length
-              const midStart = items.length;
-              const idx = i < midStart ? i : (i < midStart + items.length ? i - midStart : i - midStart * 2);
-              onItemClick(idx, event.currentTarget);
-            }}
-          />
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -203,7 +82,7 @@ export default function PortfolioSection() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const [sectionVisible, setSectionVisible] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const sectionRef = useRef(null);
   const lightboxRef = useRef(null);
@@ -212,17 +91,16 @@ export default function PortfolioSection() {
 
   const filtered = useMemo(
     () => activeFilter === "All"
-      ? GALLERY_ITEMS
-      : GALLERY_ITEMS.filter(item => item.category === activeFilter),
+      ? PORTFOLIO_ITEMS
+      : PORTFOLIO_ITEMS.filter(item => item.category === activeFilter),
     [activeFilter]
   );
 
-  const ROW_1 = useMemo(() => filtered.slice(0, Math.ceil(filtered.length / 2)), [filtered]);
-  const ROW_2 = useMemo(() => filtered.slice(Math.ceil(filtered.length / 2)), [filtered]);
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
   const categoryCounts = useMemo(() => {
     const counts = {};
-    for (const item of GALLERY_ITEMS) {
+    for (const item of PORTFOLIO_ITEMS) {
       counts[item.category] = (counts[item.category] || 0) + 1;
     }
     return counts;
@@ -323,15 +201,6 @@ export default function PortfolioSection() {
     setTouchStart(null);
   };
 
-  // For row click: map row-local index back to filtered index
-  const handleRow1Click = useCallback((rowIdx, trigger) => {
-    openLightbox(rowIdx, trigger);
-  }, [openLightbox]);
-
-  const handleRow2Click = useCallback((rowIdx, trigger) => {
-    openLightbox(ROW_1.length + rowIdx, trigger);
-  }, [openLightbox, ROW_1.length]);
-
   const currentItem = filtered[lightboxIndex];
 
   return (
@@ -339,80 +208,69 @@ export default function PortfolioSection() {
       id="portfolio"
       ref={sectionRef}
       className={[
-        "py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden",
-        "transition-all duration-700 ease-out",
-        sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+        "border-t border-line bg-paper",
+        "transition-opacity duration-700 ease-out",
+        sectionVisible ? "opacity-100" : "opacity-0",
       ].join(" ")}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-10 md:mb-14">
-          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full mb-4">
-            <Camera size={13} />
-            Our Work
+      <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <p className="eyebrow mb-5">Recent work</p>
+            <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl">
+              Photographed on site, by the crew that did the work.
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
-            Real Projects, Real Results
-          </h2>
-          <p className="text-slate-500 text-base md:text-lg max-w-xl mx-auto">
-            Browse project photos and contact the team to discuss your own space.
-          </p>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2 lg:col-span-5 lg:justify-end" role="group" aria-label="Filter projects">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => { setActiveFilter(cat); setShowAll(false); }}
+                aria-pressed={activeFilter === cat}
+                className={[
+                  "min-h-[44px] rounded-full border px-4 text-sm font-medium transition-colors",
+                  activeFilter === cat
+                    ? "border-ink bg-ink text-paper"
+                    : "border-line text-ink-soft hover:border-ink hover:text-ink",
+                ].join(" ")}
+              >
+                {cat}{cat !== "All" ? ` · ${categoryCounts[cat] || 0}` : ""}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Filter pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveFilter(cat)}
-              aria-pressed={activeFilter === cat}
-              className={[
-                "min-h-[44px] px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200",
-                activeFilter === cat
-                  ? "bg-amber-500 text-white shadow-md shadow-amber-200"
-                  : "bg-white text-slate-600 border border-slate-200 hover:border-amber-300 hover:text-amber-700",
-              ].join(" ")}
-            >
-              {cat} {cat !== "All" ? `(${categoryCounts[cat] || 0})` : ""}
-            </button>
+        <div className="mt-12 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
+          {visible.map((item, i) => (
+            <GalleryCard
+              key={item.id}
+              item={item}
+              featured={i === 0}
+              onClick={(event) => openLightbox(i, event.currentTarget)}
+            />
           ))}
         </div>
-      </div>
 
-      {/* Two-row auto-scrolling gallery — full viewport width */}
-      <div className="px-2 sm:px-4 md:px-8 lg:px-12 space-y-3 sm:space-y-4">
-        {ROW_1.length > 0 && (
-          <ScrollingRow
-            items={ROW_1}
-            direction="left"
-            paused={hovered}
-            onItemClick={handleRow1Click}
-          />
-        )}
-        {ROW_2.length > 0 && (
-          <ScrollingRow
-            items={ROW_2}
-            direction="right"
-            paused={hovered}
-            onItemClick={handleRow2Click}
-          />
-        )}
-      </div>
-
-      {/* CTA below the gallery */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-        {/* CTA */}
-        <div className="mt-12 text-center">
-          <p className="text-slate-500 text-base mb-4">
-            Like what you see? Tell us about your project.
-          </p>
+        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          {filtered.length > INITIAL_VISIBLE && (
+            <button
+              type="button"
+              onClick={() => setShowAll(v => !v)}
+              className="link-underline text-ink"
+              aria-expanded={showAll}
+            >
+              {showAll ? "Show fewer photos" : `Show all ${filtered.length} photos`}
+            </button>
+          )}
           <button
+            type="button"
             onClick={() => setIsLeadFormOpen(true)}
-            className="btn-primary inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-base rounded-full shadow-lg shadow-amber-200 transition-all duration-200"
+            className="link-underline text-brand-deep"
           >
-            Discuss Your Project
+            Discuss a similar project
           </button>
         </div>
       </div>
@@ -491,15 +349,6 @@ export default function PortfolioSection() {
 
       <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} source="gallery_cta" />
 
-      <style>{`
-        .gallery-img {
-          filter: brightness(1.1) contrast(1.05);
-          transition: filter 0.3s ease;
-        }
-        .gallery-img:hover {
-          filter: brightness(1.15) contrast(1.08);
-        }
-      `}</style>
     </section>
   );
 }

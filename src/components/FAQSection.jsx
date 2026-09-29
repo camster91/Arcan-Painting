@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  HelpCircle,
-  MessageCircle,
-} from "lucide-react";
-import LeadFormPopup from "./LeadFormPopup"; // ADD
+import { Plus } from "lucide-react";
+import LeadFormPopup from "./LeadFormPopup";
 
 export default function FAQSection() {
   const [openFAQ, setOpenFAQ] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [isLeadFormOpen, setIsLeadFormOpen] = useState(false); // ADD
+  const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -75,132 +70,56 @@ export default function FAQSection() {
   };
 
   return (
-    <section
-      id="faq"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
-    >
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-
-        {/* Geometric pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M40 0L0 40L40 80L80 40Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              backgroundSize: "80px 80px",
-            }}
-          ></div>
-        </div>
-      </div>
-
-      <div className="relative z-10 max-w-4xl mx-auto px-6">
-        {/* Enhanced Section Header */}
-        <div
-          className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
-              <HelpCircle size={18} className="text-white" />
-            </div>
-            <span className="text-white/90 text-base lg:text-lg font-medium">
-              Everything You Need to Know
-            </span>
-          </div>
-
-          {/* Main Headline */}
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-            Frequently Asked Questions
+    <section id="faq" className="border-t border-line bg-paper-deep">
+      <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-28">
+        <div className="lg:col-span-4">
+          <p className="eyebrow mb-5">Questions</p>
+          <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl">
+            Before you book.
           </h2>
-
-          {/* Subtitle */}
-          <p className="text-xl lg:text-2xl text-slate-300 leading-relaxed">
-            Get answers to common questions about our painting services
+          <p className="mt-6 max-w-sm leading-relaxed text-ink-soft">
+            Something we haven't covered?{" "}
+            <button
+              type="button"
+              className="font-medium text-ink underline decoration-brand decoration-2 underline-offset-4"
+              onClick={() => setIsLeadFormOpen(true)}
+            >
+              Ask us directly
+            </button>
+            .
           </p>
         </div>
 
-        {/* Enhanced FAQ Cards */}
-        <div className="space-y-6">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className={`group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-              style={{
-                animationDelay: `${index * 0.1}s`,
-              }}
-            >
-              <div className="relative backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl overflow-hidden hover:bg-white/15 transition-all duration-300 hover:border-amber-400/30">
+        <div className={`border-t border-ink/20 lg:col-span-8 transition-opacity duration-700 ${isVisible ? "opacity-100" : "opacity-0"}`}>
+          {faqs.map((faq, index) => {
+            const isOpen = openFAQ === index;
+            return (
+              <div key={faq.question} className="border-b border-ink/20">
                 <button
-                  className="w-full px-8 py-6 text-left flex items-center justify-between group-hover:bg-white/5 transition-colors duration-200"
-                  onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  aria-expanded={openFAQ === index}
+                  type="button"
+                  className="flex w-full items-center justify-between gap-6 py-6 text-left"
+                  onClick={() => setOpenFAQ(isOpen ? null : index)}
+                  aria-expanded={isOpen}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="font-semibold text-white text-lg lg:text-xl pr-8 leading-relaxed">
-                    {faq.question}
-                  </span>
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                    {openFAQ === index ? (
-                      <ChevronUp className="w-5 h-5 text-white" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-white" />
-                    )}
-                  </div>
+                  <span className="font-display text-xl text-ink sm:text-2xl">{faq.question}</span>
+                  <Plus
+                    size={22}
+                    aria-hidden="true"
+                    className={`flex-shrink-0 text-ink transition-transform duration-200 ${isOpen ? "rotate-45" : ""}`}
+                  />
                 </button>
-
-                {openFAQ === index && (
-                  <div id={`faq-answer-${index}`} className="px-8 pb-6">
-                    <div className="pt-4 border-t border-white/10">
-                      <p className="text-slate-300 leading-relaxed text-base lg:text-lg">
-                        {faq.answer}
-                      </p>
-                    </div>
+                {isOpen && (
+                  <div id={`faq-answer-${index}`} className="pb-7 pr-10">
+                    <p className="max-w-2xl leading-relaxed text-ink-soft">{faq.answer}</p>
                   </div>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Enhanced CTA */}
-        <div
-          className={`text-center mt-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-          style={{ animationDelay: "0.8s" }}
-        >
-          <div className="relative backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 lg:p-12">
-            {/* Background decoration */}
-            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-xl"></div>
-
-            <div className="relative z-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full mb-6 shadow-xl">
-                <MessageCircle size={24} className="text-white" />
-              </div>
-
-              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">
-                Still have questions? We're here to help!
-              </h3>
-
-              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Tell us about your project and get personalized answers
-              </p>
-
-              <button
-                className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold px-10 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-lg"
-                onClick={() => setIsLeadFormOpen(true)}
-              >
-                Ask a Question
-              </button>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* ADD: LeadFormPopup */}
       <LeadFormPopup
         isOpen={isLeadFormOpen}
         onClose={() => setIsLeadFormOpen(false)}
@@ -208,14 +127,6 @@ export default function FAQSection() {
 
       {/* FAQPage JSON-LD for SEO */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </section>
   );
 }

@@ -82,7 +82,17 @@ import { buildStructuredData, getPublicSeo } from '../utils/publicSeo.js';
 import { initializeAnalytics, trackPageView } from '../utils/analytics.js';
 import { ThemeProvider } from '../utils/useTheme.jsx';
 
-export const links = () => [];
+// Public-site typefaces: Fraunces for headings, Inter for text. Tailwind maps
+// them to font-display / font-sans; without this link both fell back to
+// whatever system font each section happened to name.
+export const links = () => [
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Inter:wght@400;500;600&display=swap',
+  },
+];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
