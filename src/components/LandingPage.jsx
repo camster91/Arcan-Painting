@@ -4,7 +4,11 @@ import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
 
-const heroSrc = (file, width) => `/hero/${file.replace(/\.webp$/, "")}-${width}.webp`;
+// Only some photos have 800/1400px copies in public/hero; the rest have a 900px copy.
+const RESPONSIVE = ["PXL_20251018_142500065", "PXL_20251009_180850831", "IMG-20260212-WA0016"];
+const base = (file) => file.replace(/\.webp$/, "");
+const heroSrc = (file, width) => `/hero/${base(file)}-${width}.webp`;
+const hasResponsive = (file) => RESPONSIVE.includes(base(file));
 
 // Data-driven landing page (see src/data/landingPages.js).
 export default function LandingPage({ page }) {
@@ -34,8 +38,8 @@ export default function LandingPage({ page }) {
             </div>
             <figure className="lg:col-span-6">
               <img
-                src={heroSrc(page.heroImage, 1400)}
-                srcSet={`${heroSrc(page.heroImage, 800)} 800w, ${heroSrc(page.heroImage, 1400)} 1400w`}
+                src={heroSrc(page.heroImage, hasResponsive(page.heroImage) ? 1400 : 900)}
+                srcSet={hasResponsive(page.heroImage) ? `${heroSrc(page.heroImage, 800)} 800w, ${heroSrc(page.heroImage, 1400)} 1400w` : undefined}
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 alt={page.heroAlt}
                 width="1400"
@@ -49,6 +53,12 @@ export default function LandingPage({ page }) {
             </figure>
           </div>
         </section>
+
+        {page.context && (
+          <section className="mx-auto max-w-[1440px] px-4 pt-20 sm:px-6 md:px-10 lg:pt-28">
+            <p className="max-w-3xl text-xl leading-relaxed text-ink-soft">{page.context}</p>
+          </section>
+        )}
 
         <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
           <h2 className="max-w-3xl font-display text-4xl leading-[1.08] tracking-[-0.015em] sm:text-5xl">{page.finishesTitle}</h2>
@@ -76,7 +86,9 @@ export default function LandingPage({ page }) {
         <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
           <h2 className="font-display text-3xl sm:text-4xl">{page.areasTitle}</h2>
           <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-lg text-ink-soft">
-            {page.areas.map((area) => <li key={area}>{area}</li>)}
+            {page.areas.map((area) => (
+              <li key={area}>{page.areaLinks?.[area] ? <a className="link-underline" href={page.areaLinks[area]}>{area}</a> : area}</li>
+            ))}
           </ul>
           <p className="mt-6 text-muted">{page.areasNote}</p>
         </section>

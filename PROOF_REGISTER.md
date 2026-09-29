@@ -21,4 +21,6 @@ current evidence and the desired wording:
 | Reviews and ratings | Source URLs and reuse permission | Do not publish ratings or testimonials |
 | Project case studies | Approved photos, scope, location granularity, and outcome | Do not invent or infer |
 | Pricing and response SLA | Operationally supported terms | Do not promise prices or response time |
-
+| Venetian plaster and limewash offered | Owner confirmation that Arcan applies these finishes | `/luxury-painting-gta` and market pages describe them; confirm before merge |
+| Luxury market pages (Toronto to Barrie) | Approved municipalities/neighbourhoods per market | Market pages stay noindexed and out of the sitemap until `approved: true` in `src/data/markets.js` |
+| Generated textures | Owner acceptance | Background textures in `public/luxury/` are AI-generated. Never present generated images as project photos |

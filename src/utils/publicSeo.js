@@ -1,4 +1,5 @@
 import { LUXURY_GTA } from "../data/landingPages.js";
+import { MARKETS, buildMarketPage, marketPath } from "../data/markets.js";
 
 const SITE_URL = "https://arcanpainting.ca";
 
@@ -61,12 +62,45 @@ const PUBLIC_PAGES = {
   },
 };
 
+// Market pages stay noindexed until the client approves the service area
+// (see src/data/markets.js).
+for (const [slug, market] of Object.entries(MARKETS)) {
+  const page = buildMarketPage(slug);
+  PUBLIC_PAGES[marketPath(slug)] = {
+    title: `Luxury Painting in ${market.name} | Arcan Painting`,
+    description: `Luxury painting in ${market.name}: Venetian plaster, limewash, designer wallcoverings and high-contrast finishes with careful preparation.`,
+    service: "Luxury Painting",
+    faqs: page.faqs,
+    noindex: !market.approved,
+  };
+}
+
+const SERVICE_LABELS = {
+  "interior-painting": "Interior Painting",
+  "exterior-painting": "Exterior Painting",
+  "commercial-painting": "Commercial Painting",
+  "wallpaper-services": "Wallpaper Services",
+  "specialty-finishes": "Specialty Finishes",
+};
+
 export function getPublicSeo(pathname = "/") {
   const path = pathname !== "/" ? pathname.replace(/\/$/, "") : "/";
   const page = PUBLIC_PAGES[path];
   const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path === "/thank-you";
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
-  const indexable = Boolean(page) && !isPrivate && !isGeneratedLocation;
+  const indexable = Boolean(page) && !page?.noindex && !isPrivate && !isGeneratedLocation;
+
+  if (isGeneratedLocation && !page) {
+    const [, serviceSlug, citySlug] = path.split("/");
+    const city = citySlug.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+    return {
+      title: `${SERVICE_LABELS[serviceSlug]} Project Inquiry in ${city} | Arcan Painting`,
+      description: `Tell Arcan Painting about your ${SERVICE_LABELS[serviceSlug].toLowerCase()} project and a team member can review the details with you.`,
+      path,
+      canonical: `${SITE_URL}${path}`,
+      indexable: false,
+    };
+  }
 
   if (page) return { ...page, path, canonical: `${SITE_URL}${path === "/" ? "/" : path}`, indexable };
 
@@ -138,7 +172,7 @@ export function buildStructuredData(seo) {
     graph.push({
       "@type": "FAQPage",
       "@id": `${seo.canonical}#faq`,
-      mainEntity: SERVICE_FAQS[seo.service].map(([name, text]) => ({
+      mainEntity: (seo.faqs || SERVICE_FAQS[seo.service]).map(([name, text]) => ({
         "@type": "Question",
         name,
         acceptedAnswer: { "@type": "Answer", text },

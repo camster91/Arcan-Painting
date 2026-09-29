@@ -47,6 +47,7 @@ export const LUXURY_GTA = {
   ],
   areasTitle: "Serving the Greater Toronto Area",
   areas: ["Toronto", "Mississauga", "Brampton", "Vaughan", "Markham", "Richmond Hill", "Oakville", "Pickering"],
+  areaLinks: { Toronto: "/luxury-painting/toronto", Vaughan: "/luxury-painting/vaughan", Markham: "/luxury-painting/markham", "Richmond Hill": "/luxury-painting/richmond-hill" },
   areasNote: "Not sure whether your address is covered? Ask when you get in touch.",
   faqs: [
     [

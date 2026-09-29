@@ -223,10 +223,10 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
 
   // Reusable button styles
   const optionBtn =
-    "px-4 py-3 rounded-lg border transition-all text-sm sm:text-base font-medium";
-  const optionBtnActive = "border-amber-400 text-slate-900 shadow bg-amber-400";
+    "px-4 py-3 rounded-sm border transition-all text-sm sm:text-base font-medium";
+  const optionBtnActive = "border-brand text-ink shadow bg-brand";
   const optionBtnIdle =
-    "border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-amber-300 hover:text-amber-700 dark:hover:border-amber-400 dark:hover:text-amber-400 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600";
+    "border-line dark:border-slate-600 text-ink-soft dark:text-slate-200 hover:border-brand hover:text-brand-deep dark:hover:border-brand dark:hover:text-brand bg-white dark:bg-slate-700 hover:bg-paper-deep dark:hover:bg-slate-600";
 
   // QUIZ CONTENT by step
   let stepTitle = "";
@@ -280,7 +280,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
               next();
             }
           }}
-          className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
+          className="w-full px-4 py-3 border border-line dark:border-slate-600 rounded-sm focus:ring-2 focus:ring-brand focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
           placeholder="Full name"
           aria-required="true"
           name="name"
@@ -366,7 +366,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
               next();
             }
           }}
-          className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
+          className="w-full px-4 py-3 border border-line dark:border-slate-600 rounded-sm focus:ring-2 focus:ring-brand focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base"
           placeholder={inputProps.placeholder}
           aria-required="true"
           name={inputProps.name}
@@ -374,7 +374,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
           autoComplete={inputProps.autoComplete}
           inputMode={inputProps.inputMode}
         />
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-xs text-muted dark:text-muted mt-2">
           We only need one contact method.
         </p>
       </div>
@@ -390,10 +390,10 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
           rows={4}
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
-          className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base resize-none"
+          className="w-full px-4 py-3 border border-line dark:border-slate-600 rounded-sm focus:ring-2 focus:ring-brand focus:border-transparent dark:bg-slate-700 dark:text-white transition-all duration-150 text-base resize-none"
           placeholder="Tell us about your project, size, timing, or any special requests..."
         />
-        <div className="flex items-center gap-2 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800 rounded-lg p-3 mt-3 text-sm">
+        <div className="flex items-center gap-2 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800 rounded-sm p-3 mt-3 text-sm">
           <CheckCircle2 size={18} />
           <span>
             Your details are used to respond to this request. See our{" "}
@@ -418,17 +418,17 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
         role="dialog"
         aria-modal="true"
         aria-labelledby="lead-form-title"
-        className={`relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl transform transition-all duration-300 ease-out max-h-[90vh] overflow-hidden ${
+        className={`relative w-full max-w-2xl bg-white dark:bg-ink rounded-sm shadow-2xl transform transition-all duration-300 ease-out max-h-[90vh] overflow-hidden ${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-line dark:border-slate-700">
           <div>
-            <h2 id="lead-form-title" className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
+            <h2 id="lead-form-title" className="text-2xl lg:text-3xl font-bold text-ink dark:text-white">
               Discuss Your Project
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-muted dark:text-muted mt-1">
               One question at a time.
             </p>
           </div>
@@ -436,9 +436,9 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close project inquiry form"
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            className="p-2 rounded-full hover:bg-paper-deep dark:hover:bg-slate-700 transition-colors"
           >
-            <X size={24} className="text-slate-600 dark:text-slate-400" aria-hidden="true" />
+            <X size={24} className="text-muted dark:text-muted" aria-hidden="true" />
           </button>
         </div>
 
@@ -453,14 +453,14 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                   className="text-green-600 dark:text-green-400"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-2xl font-bold text-ink dark:text-white mb-2">
                 Thank You!
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-muted dark:text-muted mb-4">
                 We've received your request. A team member can review the
                 details before confirming next steps.
               </p>
-              <div className="text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-sm text-muted dark:text-muted">
                 This window will close automatically...
               </div>
             </div>
@@ -469,11 +469,11 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
             <div className="p-6 lg:p-8">
               {/* Enhanced Progress */}
               <div className="mb-8">
-                <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mb-3">
+                <div className="flex items-center justify-between text-sm text-muted dark:text-muted mb-3">
                   <span className="font-medium" aria-live="polite" aria-atomic="true">
                     Step {step + 1} of {stepsTotal}
                   </span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400" aria-hidden="true">
+                  <span className="font-bold text-brand-deep dark:text-brand" aria-hidden="true">
                     {progressPercent}%
                   </span>
                 </div>
@@ -483,10 +483,10 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                   aria-valuemin={1}
                   aria-valuemax={stepsTotal}
                   aria-label={`Form progress: step ${step + 1} of ${stepsTotal}`}
-                  className="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner"
+                  className="w-full h-3 bg-paper-deep dark:bg-slate-700 rounded-full overflow-hidden shadow-inner"
                 >
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
+                    className="h-full bg-brand transition-all duration-500 ease-out shadow-lg"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -494,12 +494,12 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
 
               {/* Step content */}
               <div className="mb-8">
-                <h4 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white mb-4 lg:mb-5">
+                <h4 className="text-xl lg:text-2xl font-bold text-ink dark:text-white mb-4 lg:mb-5">
                   {stepTitle}
                 </h4>
                 {stepBody}
                 {error && (
-                  <div role="alert" aria-live="assertive" className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
+                  <div role="alert" aria-live="assertive" className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-sm p-4 shadow-sm">
                     {error}
                   </div>
                 )}
@@ -512,7 +512,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                   onClick={back}
                   disabled={step === 0 || isSubmitting}
                   aria-label="Back"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-50 transition-all duration-200 font-medium"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-sm border border-line dark:border-slate-600 text-ink-soft dark:text-slate-300 hover:bg-paper-deep dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-50 transition-all duration-200 font-medium"
                 >
                   <ChevronLeft size={18} aria-hidden="true" /> Back
                 </button>
@@ -523,7 +523,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                     onClick={() => next()}
                     disabled={!canGoNext || isSubmitting}
                     aria-label="Go to next step"
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                    className="inline-flex items-center gap-2 bg-brand hover:bg-[#D3B67F] text-ink font-bold px-8 py-3 rounded-sm transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                   >
                     Next <ChevronRight size={18} aria-hidden="true" />
                   </button>
@@ -533,7 +533,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     aria-busy={isSubmitting}
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
+                    className="inline-flex items-center gap-2 bg-brand hover:bg-[#D3B67F] text-ink font-bold px-8 py-3 rounded-sm transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>

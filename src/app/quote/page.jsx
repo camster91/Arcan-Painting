@@ -12,7 +12,7 @@ export default function QuotePage() {
   // useTheme().mounted for any client-only styling, and v55's defensive
   // useTheme returns a safe default).
   return (
-    <div className="min-h-screen bg-white transition-colors duration-300">
+    <div className="min-h-screen bg-paper text-ink transition-colors duration-300">
       <Header />
       <main id="main" tabIndex={-1} className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <QuoteCalculatorSection />

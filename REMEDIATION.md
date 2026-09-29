@@ -118,6 +118,15 @@ production approval.
 - [x] Receive owner approval, merge the release, publish an exact-revision production
       container, preserve database and container rollback, and complete post-release QA.
 
+## Phase 6 — Luxury repositioning (draft PR, not deployed)
+
+- [x] Restyle the whole public site (teal, ivory, brass; square buttons; generated textures).
+- [x] Add `/luxury-painting-gta` and noindexed luxury market pages, Toronto to Barrie.
+- [x] Give generated location routes a real title (they were titled "Page Not Found").
+- [x] Record the search-presence review in `docs/SEARCH_PRESENCE_REVIEW.md`.
+- [ ] Client approval of luxury claims and service areas (see `PROOF_REGISTER.md`).
+- [ ] Google Business Profile and Instagram actions (owner access needed).
+
 ## External approvals and evidence still required
 
 - GitHub-hosted CI is not a release dependency for this branch. At the owner's direction,

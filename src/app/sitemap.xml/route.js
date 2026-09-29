@@ -1,3 +1,5 @@
+import { MARKETS, marketPath } from "../../data/markets.js";
+
 const PUBLIC_ROUTES = [
   ["/", "1.0", "weekly"],
   ["/interior-painting", "0.9", "monthly"],
@@ -6,6 +8,7 @@ const PUBLIC_ROUTES = [
   ["/wallpaper-services", "0.9", "monthly"],
   ["/specialty-finishes", "0.9", "monthly"],
   ["/luxury-painting-gta", "0.9", "monthly"],
+  ...Object.entries(MARKETS).filter(([, m]) => m.approved).map(([slug]) => [marketPath(slug), "0.8", "monthly"]),
   ["/contact", "0.7", "yearly"],
   ["/quote", "0.7", "yearly"],
   ["/privacy", "0.3", "yearly"],
