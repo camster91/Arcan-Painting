@@ -15,7 +15,7 @@ export default function LandingPage({ page }) {
     <div className="min-h-screen bg-paper text-ink">
       <Header />
       <main id="main" tabIndex={-1}>
-        <section className="bg-ink text-paper">
+        <section className="texture-plaster bg-ink text-paper">
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-10 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
             <div className="flex flex-col justify-center lg:col-span-6">
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">{page.eyebrow}</p>
@@ -62,7 +62,7 @@ export default function LandingPage({ page }) {
           </ul>
         </section>
 
-        <section className="border-y border-line bg-paper-deep">
+        <section className="texture-limewash border-y border-line bg-paper-deep">
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-24">
             <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] lg:col-span-5">{page.principlesTitle}</h2>
             <ul className="space-y-6 text-lg leading-relaxed text-ink-soft lg:col-span-7">
@@ -95,7 +95,7 @@ export default function LandingPage({ page }) {
           </div>
         </section>
 
-        <section className="bg-ink text-paper">
+        <section className="texture-brass bg-ink text-paper">
           <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
             <h2 className="font-display text-4xl sm:text-5xl">Have a room in mind?</h2>
             <p className="mt-5 text-lg text-paper/75">Share the rooms, the finish and any reference images. The team reviews the details before confirming next steps.</p>

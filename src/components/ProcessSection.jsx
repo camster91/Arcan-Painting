@@ -19,7 +19,7 @@ const STEPS = [
 
 export default function ProcessSection() {
   return (
-    <section id="process" className="bg-ink text-paper">
+    <section id="process" className="texture-plaster bg-ink text-paper">
       <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
         <div className="grid gap-6 lg:grid-cols-12">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand lg:col-span-3">
@@ -32,7 +32,7 @@ export default function ProcessSection() {
 
         <ol className="mt-14 grid gap-px overflow-hidden rounded-sm bg-white/15 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
           {STEPS.map((step, i) => (
-            <li key={step.title} className="bg-ink p-7 lg:p-8">
+            <li key={step.title} className="bg-ink/90 p-7 lg:p-8">
               <span className="font-display text-5xl text-brand">{i + 1}</span>
               <h3 className="mt-8 font-display text-2xl">{step.title}</h3>
               <p className="mt-3 leading-relaxed text-paper/70">{step.text}</p>

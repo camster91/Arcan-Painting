@@ -17,6 +17,18 @@
 }
 
 @layer components {
+  /* Generated background textures (public/luxury). The gradient keeps text
+     legible; the texture shows through as depth. */
+  .texture-plaster {
+    background: linear-gradient(rgba(12, 43, 44, 0.72), rgba(12, 43, 44, 0.72)), url("/luxury/plaster-teal.webp") center / cover;
+  }
+  .texture-brass {
+    background: linear-gradient(rgba(12, 43, 44, 0.55), rgba(12, 43, 44, 0.55)), url("/luxury/brass-grain.webp") center / cover;
+  }
+  .texture-limewash {
+    background: linear-gradient(rgba(244, 239, 230, 0.5), rgba(244, 239, 230, 0.5)), url("/luxury/limewash-ivory.webp") center / cover;
+  }
+
   /* Small uppercase label above a section heading. */
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep;

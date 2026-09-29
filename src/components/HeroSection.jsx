@@ -37,7 +37,7 @@ export default function HeroSection() {
   const slide = HERO_SLIDES[currentSlide];
 
   return (
-    <section id="home" className="bg-ink text-paper">
+    <section id="home" className="texture-plaster bg-ink text-paper">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-8 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-14">
         {/* Copy */}
         <div className="flex flex-col justify-center lg:col-span-5">
