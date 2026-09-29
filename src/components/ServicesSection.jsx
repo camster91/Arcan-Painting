@@ -1,5 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
+// Photos are 900px copies in public/hero/ (originals in public/gallery are
+// full camera resolution). Regenerate the copy if an image changes.
 const SERVICES = [
   {
     title: "Interior painting",
@@ -67,7 +69,7 @@ export default function ServicesSection() {
                 </div>
                 <div className="overflow-hidden rounded-sm sm:col-span-4 lg:col-span-4">
                   <img
-                    src={`/gallery/images/${service.image}`}
+                    src={`/hero/${service.image.replace(/\.webp$/, "")}-900.webp`}
                     alt={service.alt}
                     loading="lazy"
                     decoding="async"

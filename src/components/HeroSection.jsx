@@ -4,7 +4,7 @@ import { ArrowRight, Phone } from "lucide-react";
 // LeadFormPopup is only shown on CTA click — lazy load to keep hero bundle lean
 const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
-// Arcan's own project photos (public/gallery). The first one is the LCP image,
+// Arcan's own project photos (originals in public/gallery). The first one is the LCP image,
 // so it loads eagerly; the others only load once a visitor picks them.
 const HERO_SLIDES = [
   {
@@ -23,6 +23,11 @@ const HERO_SLIDES = [
     caption: "Staircase refinish — black treads, white risers",
   },
 ];
+
+// Resized copies of the gallery originals (public/hero/<name>-800|1400.webp).
+// The originals are full camera resolution (up to 7 MB), far too heavy for the
+// first photo on the page. Regenerate these if a slide changes.
+const heroSrc = (file, width) => `/hero/${file.replace(/\.webp$/, "")}-${width}.webp`;
 
 const SERVICE_LINE = ["Interior", "Exterior", "Commercial", "Wallpaper", "Specialty finishes"];
 
@@ -69,10 +74,12 @@ export default function HeroSection() {
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-paper-deep sm:aspect-[5/4] lg:aspect-[6/7] xl:aspect-[7/7]">
             <img
               key={slide.file}
-              src={`/gallery/images/${slide.file}`}
+              src={heroSrc(slide.file, 1400)}
+              srcSet={`${heroSrc(slide.file, 800)} 800w, ${heroSrc(slide.file, 1400)} 1400w`}
+              sizes="(min-width: 1024px) 55vw, 100vw"
               alt={slide.alt}
-              width="1200"
-              height="1400"
+              width="1400"
+              height="1860"
               loading="eager"
               fetchpriority={currentSlide === 0 ? "high" : "auto"}
               decoding="async"
