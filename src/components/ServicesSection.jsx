@@ -49,7 +49,7 @@ const SERVICES = [
 
 export default function ServicesSection() {
   return (
-    <section id="services" className="border-t border-line bg-paper">
+    <section id="services" className="tx-sage border-t border-line">
       <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
         <div className="grid gap-6 lg:grid-cols-12">
           <p className="eyebrow lg:col-span-3">What we do</p>

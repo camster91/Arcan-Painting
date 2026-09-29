@@ -301,7 +301,7 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="border-t border-line bg-paper">
+    <section id="contact" className="tx-greige border-t border-line">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-16 lg:py-28">
         {/* Intro + direct contact */}
         <div className="lg:col-span-5">

@@ -208,7 +208,7 @@ export default function PortfolioSection() {
       id="portfolio"
       ref={sectionRef}
       className={[
-        "border-t border-line bg-paper",
+        "border-t border-line tx-marble",
         "transition-opacity duration-700 ease-out",
         sectionVisible ? "opacity-100" : "opacity-0",
       ].join(" ")}

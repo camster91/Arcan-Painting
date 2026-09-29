@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ServicesSection from "../components/ServicesSection";
+import FinishSwatches from "../components/FinishSwatches";
 
 // ─── Below-fold sections: lazy loaded for faster initial bundle ───────────────
 import ProcessSection from "../components/ProcessSection";
@@ -23,6 +24,8 @@ export default function HomePage() {
 
         {/* Services Section - near top of page, loaded synchronously */}
         <ServicesSection />
+
+        <FinishSwatches />
 
         {/* Below-fold sections: lazy loaded */}
 

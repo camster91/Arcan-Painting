@@ -3,6 +3,10 @@ import { ArrowRight, Phone } from "lucide-react";
 import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
+import FinishSwatches from "./FinishSwatches";
+
+const HERO_THEMES = { teal: "texture-plaster", navy: "tx-navy", burgundy: "tx-burgundy", charcoal: "tx-charcoal", terracotta: "tx-terracotta" };
+const CHIPS = ["navy", "sage", "blush", "burgundy", "charcoal", "marble"];
 
 // Only some photos have 800/1400px copies in public/hero; the rest have a 900px copy.
 const RESPONSIVE = ["PXL_20251018_142500065", "PXL_20251009_180850831", "IMG-20260212-WA0016"];
@@ -19,7 +23,7 @@ export default function LandingPage({ page }) {
     <div className="min-h-screen bg-paper text-ink">
       <Header />
       <main id="main" tabIndex={-1}>
-        <section className="texture-plaster bg-ink text-paper">
+        <section className={`${HERO_THEMES[page.theme] || "texture-plaster"} bg-ink text-paper`}>
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-10 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
             <div className="flex flex-col justify-center lg:col-span-6">
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">{page.eyebrow}</p>
@@ -37,6 +41,7 @@ export default function LandingPage({ page }) {
               </div>
             </div>
             <figure className="lg:col-span-6">
+              <div className="frame-brass mx-auto max-w-[560px] pr-3.5">
               <img
                 src={heroSrc(page.heroImage, hasResponsive(page.heroImage) ? 1400 : 900)}
                 srcSet={hasResponsive(page.heroImage) ? `${heroSrc(page.heroImage, 800)} 800w, ${heroSrc(page.heroImage, 1400)} 1400w` : undefined}
@@ -47,9 +52,10 @@ export default function LandingPage({ page }) {
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"
-                className="aspect-[4/5] w-full object-cover sm:aspect-[5/4] lg:aspect-[6/7]"
+                className="arch aspect-[4/5] w-full object-cover"
                 style={{ imageOrientation: "from-image" }}
               />
+              </div>
             </figure>
           </div>
         </section>
@@ -63,8 +69,9 @@ export default function LandingPage({ page }) {
         <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
           <h2 className="max-w-3xl font-display text-4xl leading-[1.08] tracking-[-0.015em] sm:text-5xl">{page.finishesTitle}</h2>
           <ul className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-            {page.finishes.map((item) => (
+            {page.finishes.map((item, i) => (
               <li key={item.title} className="bg-paper p-7 lg:p-9">
+                <span aria-hidden="true" className="mb-5 block h-14 w-14 rounded-full bg-cover bg-center shadow-md" style={{ backgroundImage: `url(/luxury/${CHIPS[i % CHIPS.length]}.webp)` }} />
                 <h3 className="font-display text-2xl">{item.title}</h3>
                 <p className="mt-3 leading-relaxed text-ink-soft">{item.text}</p>
               </li>
@@ -72,7 +79,9 @@ export default function LandingPage({ page }) {
           </ul>
         </section>
 
-        <section className="texture-limewash border-y border-line bg-paper-deep">
+        <FinishSwatches />
+
+        <section className="tx-blush border-y border-line">
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-24">
             <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] lg:col-span-5">{page.principlesTitle}</h2>
             <ul className="space-y-6 text-lg leading-relaxed text-ink-soft lg:col-span-7">
@@ -83,7 +92,7 @@ export default function LandingPage({ page }) {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
+        <section className="tx-sage border-b border-line"><div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
           <h2 className="font-display text-3xl sm:text-4xl">{page.areasTitle}</h2>
           <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-lg text-ink-soft">
             {page.areas.map((area) => (
@@ -91,7 +100,7 @@ export default function LandingPage({ page }) {
             ))}
           </ul>
           <p className="mt-6 text-muted">{page.areasNote}</p>
-        </section>
+        </div></section>
 
         <section className="border-t border-line">
           <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
@@ -107,7 +116,7 @@ export default function LandingPage({ page }) {
           </div>
         </section>
 
-        <section className="texture-brass bg-ink text-paper">
+        <section className="tx-gold bg-ink text-paper">
           <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
             <h2 className="font-display text-4xl sm:text-5xl">Have a room in mind?</h2>
             <p className="mt-5 text-lg text-paper/75">Share the rooms, the finish and any reference images. The team reviews the details before confirming next steps.</p>

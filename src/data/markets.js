@@ -11,6 +11,7 @@ import { LUXURY_GTA } from "./landingPages.js";
 export const MARKETS = {
   toronto: {
     name: "Toronto",
+    theme: "navy",
     approved: false,
     image: "PXL_20250217_224338011_MP.webp",
     alt: "Freshly painted living room with white walls and dark hardwood floors",
@@ -23,6 +24,7 @@ export const MARKETS = {
   },
   vaughan: {
     name: "Vaughan",
+    theme: "burgundy",
     approved: false,
     image: "PXL_20251018_142500065.webp",
     alt: "Dining room finished with a patterned wallcovering and a dark painted ceiling",
@@ -35,6 +37,7 @@ export const MARKETS = {
   },
   "richmond-hill": {
     name: "Richmond Hill",
+    theme: "teal",
     approved: false,
     image: "IMG-20260212-WA0016.webp",
     alt: "Staircase refinished with black treads, white risers and white balusters",
@@ -47,6 +50,7 @@ export const MARKETS = {
   },
   markham: {
     name: "Markham",
+    theme: "charcoal",
     approved: false,
     image: "PXL_20260213_210915996.webp",
     alt: "Bedroom wall finished with a soft floral wallpaper",
@@ -59,6 +63,7 @@ export const MARKETS = {
   },
   "king-city": {
     name: "King City",
+    theme: "terracotta",
     approved: false,
     image: "PXL_20251009_180850831.webp",
     alt: "Painter installing a botanical mural wallcovering from a ladder",
@@ -71,6 +76,7 @@ export const MARKETS = {
   },
   aurora: {
     name: "Aurora",
+    theme: "navy",
     approved: false,
     image: "20251012_165336.webp",
     alt: "Brick house with a freshly painted front door and garage door",
@@ -83,6 +89,7 @@ export const MARKETS = {
   },
   newmarket: {
     name: "Newmarket",
+    theme: "burgundy",
     approved: false,
     image: "PXL_20250217_224338011_MP.webp",
     alt: "Freshly painted living room with white walls and dark hardwood floors",
@@ -95,6 +102,7 @@ export const MARKETS = {
   },
   bradford: {
     name: "Bradford West Gwillimbury",
+    theme: "charcoal",
     approved: false,
     image: "IMG-20260212-WA0016.webp",
     alt: "Staircase refinished with black treads, white risers and white balusters",
@@ -107,6 +115,7 @@ export const MARKETS = {
   },
   barrie: {
     name: "Barrie",
+    theme: "teal",
     approved: false,
     image: "PXL_20260213_210915996.webp",
     alt: "Bedroom wall finished with a soft floral wallpaper",
@@ -137,6 +146,7 @@ export function buildMarketPage(slug) {
     headline: "Luxury painting in",
     headlineEm: `${m.name}.`,
     intro: m.intro,
+    theme: m.theme,
     heroImage: m.image,
     heroAlt: m.alt,
     context: m.context,

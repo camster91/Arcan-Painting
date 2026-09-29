@@ -70,8 +70,9 @@ export default function HeroSection() {
         </div>
 
         {/* Photo */}
-        <figure className="lg:col-span-7">
-          <div className="relative aspect-[4/5] overflow-hidden  bg-white/5 sm:aspect-[5/4] lg:aspect-[6/7] xl:aspect-[7/7]">
+        <figure className="lg:col-span-7 lg:pl-10">
+          <div className="frame-brass mx-auto max-w-[620px] pr-3.5">
+          <div className="arch relative aspect-[4/5] overflow-hidden bg-white/5 lg:aspect-[5/6]">
             <img
               key={slide.file}
               src={heroSrc(slide.file, 1400)}
@@ -86,6 +87,7 @@ export default function HeroSection() {
               className="absolute inset-0 h-full w-full object-cover"
               style={{ imageOrientation: "from-image" }}
             />
+          </div>
           </div>
           <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-4">
             <span className="text-sm text-paper/60">{slide.caption}</span>

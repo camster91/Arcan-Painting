@@ -25,6 +25,23 @@
   .texture-brass {
     background: linear-gradient(rgba(12, 43, 44, 0.55), rgba(12, 43, 44, 0.55)), url("/luxury/brass-grain.webp") center / cover;
   }
+
+  /* More textures (public/luxury). Dark ones take light text, light ones dark text. */
+  .tx-charcoal { background: linear-gradient(rgba(10, 12, 12, 0.35), rgba(10, 12, 12, 0.35)), url("/luxury/charcoal.webp") center / cover; }
+  .tx-navy { background: linear-gradient(rgba(6, 16, 40, 0.4), rgba(6, 16, 40, 0.4)), url("/luxury/navy.webp") center / cover; }
+  .tx-burgundy { background: linear-gradient(rgba(28, 4, 8, 0.45), rgba(28, 4, 8, 0.45)), url("/luxury/burgundy.webp") center / cover; }
+  .tx-terracotta { background: linear-gradient(rgba(70, 22, 8, 0.4), rgba(70, 22, 8, 0.4)), url("/luxury/terracotta.webp") center / cover; }
+  .tx-gold { background: linear-gradient(rgba(12, 43, 44, 0.6), rgba(12, 43, 44, 0.6)), url("/luxury/gold.webp") center / cover; }
+  .tx-sage { background: linear-gradient(rgba(244, 239, 230, 0.55), rgba(244, 239, 230, 0.55)), url("/luxury/sage.webp") center / cover; }
+  .tx-blush { background: linear-gradient(rgba(244, 239, 230, 0.5), rgba(244, 239, 230, 0.5)), url("/luxury/blush.webp") center / cover; }
+  .tx-greige { background: linear-gradient(rgba(244, 239, 230, 0.45), rgba(244, 239, 230, 0.45)), url("/luxury/greige.webp") center / cover; }
+  .tx-marble { background: linear-gradient(rgba(244, 239, 230, 0.35), rgba(244, 239, 230, 0.35)), url("/luxury/marble.webp") center / cover; }
+
+  /* Arch-shaped photo with an offset brass frame. */
+  .arch { border-radius: 9999px 9999px 0 0; }
+  .frame-brass { position: relative; }
+  .frame-brass::after { content: ""; position: absolute; inset: 14px -14px -14px 14px; border: 1px solid #C2A36A; border-radius: 9999px 9999px 0 0; pointer-events: none; z-index: -1; }
+
   .texture-limewash {
     background: linear-gradient(rgba(244, 239, 230, 0.5), rgba(244, 239, 230, 0.5)), url("/luxury/limewash-ivory.webp") center / cover;
   }

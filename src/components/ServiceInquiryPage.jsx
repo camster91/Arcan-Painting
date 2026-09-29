@@ -42,6 +42,14 @@ const SERVICE_PHOTOS = {
   "Specialty Finishes": ["PXL_20210109_221844861", "Living room with a deep blue accent wall behind a white fireplace mantel"],
 };
 
+const SERVICE_THEMES = {
+  "Interior Painting": "texture-plaster",
+  "Exterior Painting": "tx-charcoal",
+  "Commercial Painting": "tx-burgundy",
+  "Wallpaper Services": "tx-navy",
+  "Specialty Finishes": "tx-terracotta",
+};
+
 export default function ServiceInquiryPage({ serviceName }) {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const content = { ...SERVICE_CONTENT[serviceName], faqs: SERVICE_FAQS[serviceName] };
@@ -50,7 +58,7 @@ export default function ServiceInquiryPage({ serviceName }) {
   return <div className="min-h-screen bg-paper text-ink">
     <Header />
     <main id="main" tabIndex={-1}>
-      <section className="texture-plaster bg-ink text-paper">
+      <section className={`${SERVICE_THEMES[serviceName]} bg-ink text-paper`}>
         <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-10 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
           <div className="flex flex-col justify-center lg:col-span-6">
             <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">Arcan Painting service</p>
@@ -59,7 +67,7 @@ export default function ServiceInquiryPage({ serviceName }) {
             <div className="mt-9"><button type="button" className="btn-brand" onClick={openForm}>Discuss your project <ArrowRight size={16} aria-hidden="true" /></button></div>
           </div>
           <figure className="lg:col-span-6">
-            <img src={`/hero/${photo}-900.webp`} alt={photoAlt} width="900" height="600" loading="eager" fetchpriority="high" decoding="async" className="aspect-[4/3] w-full object-cover" style={{ imageOrientation: "from-image" }} />
+            <div className="frame-brass mx-auto max-w-[520px] pr-3.5"><img src={`/hero/${photo}-900.webp`} alt={photoAlt} width="900" height="600" loading="eager" fetchpriority="high" decoding="async" className="arch aspect-[4/5] w-full object-cover" style={{ imageOrientation: "from-image" }} /></div>
           </figure>
         </div>
       </section>
@@ -74,11 +82,11 @@ export default function ServiceInquiryPage({ serviceName }) {
           <ul className="mt-6 space-y-4 text-ink-soft">{content.considerations.map((item) => <li key={item} className="border-l-2 border-brand pl-4">{item}</li>)}</ul>
         </aside>
       </section>
-      <section className="border-y border-line bg-paper-deep"><div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
+      <section className="tx-blush border-y border-line"><div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
         <h2 className="font-display text-4xl">Questions about {serviceName.toLowerCase()}</h2>
         <div className="mt-10 divide-y divide-line border-y border-line">{content.faqs.map(([question, answer]) => <article key={question} className="py-7"><h3 className="font-display text-2xl">{question}</h3><p className="mt-3 text-lg leading-relaxed text-ink-soft">{answer}</p></article>)}</div>
       </div></section>
-      <section className="texture-brass bg-ink text-paper"><div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
+      <section className="tx-gold bg-ink text-paper"><div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
         <h2 className="font-display text-4xl sm:text-5xl">Start a project conversation</h2>
         <p className="mt-5 text-lg text-paper/75">Share the scope you know today. The team can review it before confirming next steps.</p>
         <button type="button" className="btn-brand mt-9" onClick={openForm}>Contact the team</button>
