@@ -102,7 +102,7 @@ export const FINISH_PAGES = {
     headline: "Venetian plaster with depth and",
     headlineEm: "a burnished glow.",
     intro: "Thin, hand-troweled layers that build a smooth, luminous surface with depth — for feature walls, fireplaces, entries and whole rooms across the GTA.",
-    heroTexture: "plaster-teal",
+    heroTexture: "charcoal",
     cardText: "Burnished, layered plaster with depth.",
     context: "Venetian plaster is applied in several thin coats and burnished, so the surface catches light differently from every angle. It rewards careful preparation and a steady hand.",
     finishesTitle: "Where Venetian plaster works well.",
