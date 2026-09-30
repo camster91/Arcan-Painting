@@ -20,7 +20,7 @@ export default function ThankYouPage() {
   }, []);
 
   return (
-    <div className="min-h-screen h-dvh overflow-y-auto bg-white">
+    <div className="min-h-screen h-dvh overflow-y-auto bg-paper text-ink">
       <Header />
 
       <main id="main" tabIndex={-1} className="max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -29,21 +29,21 @@ export default function ThankYouPage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="text-green-600" size={32} />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          <h1 className="font-display text-4xl md:text-5xl font-normal text-ink mb-4">
             Thank you{details.name ? `, ${details.name}` : ""}!
           </h1>
-          <p className="text-xl text-slate-600 mb-2">
+          <p className="text-xl text-muted mb-2">
             Your request has been received.
           </p>
           {details.serviceType && (
-            <p className="text-slate-500">
+            <p className="text-muted">
               Service: {toTitle(details.serviceType)}
             </p>
           )}
         </div>
 
         {/* Next Step - Book Appointment */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-8">
+        <div className="bg-white border border-line rounded-sm shadow-sm p-4 sm:p-8">
           {/* Scheduler */}
           <SchedulerSection />
         </div>

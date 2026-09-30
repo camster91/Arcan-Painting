@@ -145,11 +145,11 @@ export default function ContactSection() {
       { key: "exterior", label: "Exterior" },
       { key: "commercial", label: "Commercial" },
       { key: "specialty", label: "Specialty Finishes" },
-      { key: "consultation", label: "Color Consultation" },
+      { key: "consultation", label: "Colour consultation" },
       { key: "other", label: "Other" },
     ];
     stepBody = (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
+      <div className="grid grid-cols-2 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {
           const isActive = serviceType === opt.key;
           const cls = isActive
@@ -395,7 +395,7 @@ export default function ContactSection() {
                   onClick={() => next()}
                   disabled={!canGoNext || submitMutation.isLoading}
                   aria-label="Go to next step"
-                  className="btn-solid disabled:cursor-not-allowed disabled:opacity-40"
+                  className="btn-solid disabled:cursor-not-allowed disabled:bg-line disabled:text-ink-soft"
                 >
                   Next <ChevronRight size={18} aria-hidden="true" />
                 </button>

@@ -9,6 +9,9 @@ const SERVICES_NAV = [
   { label: "Commercial Painting", href: "/commercial-painting", desc: "Business Solutions" },
   { label: "Wallpaper Services", href: "/wallpaper-services", desc: "High-End Installation" },
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
+  { label: "Venetian Plaster", href: "/finishes/venetian-plaster", desc: "Burnished, hand-troweled" },
+  { label: "Limewash", href: "/finishes/limewash", desc: "Soft, mineral colour" },
+  { label: "Luxury Painting (GTA)", href: "/luxury-painting-gta", desc: "Plaster, limewash, wallcoverings" },
 ];
 
 export default function Header() {
@@ -69,12 +72,13 @@ export default function Header() {
   };
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ease-out ${isScrolled ? "border-line bg-paper/95 backdrop-blur-sm" : "border-transparent bg-paper"}`}
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-brand focus:text-ink focus:px-4 focus:py-2"
       >
         Skip to content
       </a>
@@ -107,7 +111,7 @@ export default function Header() {
                 Services <ChevronDown size={16} className={`transition-transform ${activeDropdown === "services" ? "rotate-180" : ""}`} />
               </button>
               {activeDropdown === "services" && (
-                <div className="absolute top-full left-0 mt-3 bg-paper rounded-lg shadow-xl border border-line py-2 min-w-[240px] z-50">
+                <div className="absolute top-full left-0 mt-3 bg-paper shadow-xl border border-line py-2 min-w-[240px] z-50">
                   {SERVICES_NAV.map((svc) => (
                     <a
                       key={svc.href}
@@ -149,7 +153,7 @@ export default function Header() {
             </a>
 
             <button
-              className="font-medium text-sm sm:text-[15px] px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-ink text-paper transition-colors hover:bg-ink-soft active:scale-[0.98]"
+              className="font-medium text-sm sm:text-[15px] px-3 sm:px-5 py-2 sm:py-2.5 bg-ink text-paper uppercase tracking-[0.1em] text-xs sm:text-xs transition-colors hover:bg-ink-soft active:scale-[0.98]"
               onClick={() => setIsLeadFormOpen(true)}
             >
               <span className="inline-flex items-center gap-1.5">
@@ -158,6 +162,14 @@ export default function Header() {
                 <ChevronRight size={16} className="hidden sm:inline" aria-hidden="true" />
               </span>
             </button>
+
+            <a
+              href="tel:+14167272148"
+              className="md:hidden p-2 text-ink"
+              aria-label="Call Arcan Painting at (416) 727-2148"
+            >
+              <Phone size={22} aria-hidden="true" />
+            </a>
 
             <button
               className="md:hidden p-2 rounded-lg transition-colors"
@@ -180,7 +192,7 @@ export default function Header() {
           <div
             id="mobile-menu-panel"
             className="absolute inset-y-0 right-0 w-[88%] max-w-[360px] shadow-2xl flex flex-col z-10"
-            style={{ backgroundColor: "#F6F2EA", borderLeft: "1px solid #DCD2C1" }}
+            style={{ backgroundColor: "#F4EFE6", borderLeft: "1px solid #D6CBB6" }}
             role="dialog"
             aria-modal="true"
             aria-label="Mobile Menu"
@@ -217,7 +229,7 @@ export default function Header() {
                         <a
                           key={svc.href}
                           href={svc.href}
-                          className="block px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-amber-50"
+                          className="block px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-paper-deep"
                           style={{ color: themeColors.textSecondary }}
                           onClick={() => setIsMenuOpen(false)}
                         >
@@ -250,7 +262,7 @@ export default function Header() {
                 <a
                   href="tel:+14167272148"
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-lg font-semibold text-base"
-                  style={{ backgroundColor: "#16213A", color: "#F6F2EA" }}
+                  style={{ backgroundColor: "#0C2B2C", color: "#F4EFE6" }}
                 >
                   <Phone size={18} aria-hidden="true" />
                   (416) 727-2148
@@ -261,7 +273,7 @@ export default function Header() {
             <div className="p-4 border-t" style={{ borderColor: themeColors.border }}>
               <button
                 onClick={() => { setIsMenuOpen(false); setIsLeadFormOpen(true); }}
-                className="w-full py-4 rounded-full font-medium text-base bg-brand text-ink"
+                className="w-full py-4 font-medium text-sm uppercase tracking-[0.14em] bg-brand text-ink"
               >
                 Discuss Your Project
               </button>
@@ -272,5 +284,17 @@ export default function Header() {
 
       <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} />
     </header>
+
+    {/* Phone-only action bar. Kept outside the header: its backdrop blur would
+        otherwise become the containing block for this fixed element. */}
+    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-white/10 bg-ink text-paper md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <a href="tel:+14167272148" className="flex min-h-[56px] items-center justify-center gap-2 text-sm font-medium uppercase tracking-[0.12em]">
+        <Phone size={16} aria-hidden="true" /> Call
+      </a>
+      <button type="button" onClick={() => setIsLeadFormOpen(true)} className="flex min-h-[56px] items-center justify-center gap-2 bg-brand text-sm font-medium uppercase tracking-[0.12em] text-ink">
+        Discuss project
+      </button>
+    </div>
+    </>
   );
 }

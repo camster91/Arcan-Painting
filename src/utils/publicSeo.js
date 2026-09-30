@@ -1,3 +1,6 @@
+import { LUXURY_GTA, FINISH_PAGES, finishPath } from "../data/landingPages.js";
+import { MARKETS, buildMarketPage, marketPath } from "../data/markets.js";
+
 const SITE_URL = "https://arcanpainting.ca";
 
 export const SERVICE_FAQS = {
@@ -7,6 +10,8 @@ export const SERVICE_FAQS = {
   "Wallpaper Services": [["What details are useful for a wallpaper installation inquiry?", "Include wall measurements, ceiling height, photos, the wallpaper product or link, roll information, pattern repeat, and the condition of the surface."], ["Does old wallpaper need to be assessed before removal?", "Yes. The type of covering, adhesive, layers, and wall beneath it can affect the removal and preparation scope, so those conditions should be reviewed."]],
   "Specialty Finishes": [["How should I describe a specialty finish?", "Visual references are the clearest starting point. Add notes about colour, texture, reflectivity, scale, and what you like about each example."], ["Why might a sample be part of the process?", "A physical sample can help evaluate colour, texture, and appearance under the actual lighting before the full project scope is finalized."]],
 };
+
+SERVICE_FAQS["Luxury Painting"] = LUXURY_GTA.faqs;
 
 const PUBLIC_PAGES = {
   "/": {
@@ -38,6 +43,11 @@ const PUBLIC_PAGES = {
     description: "Discuss a specialty-finish project, including the desired appearance, sample references, surfaces, and room conditions.",
     service: "Specialty Finishes",
   },
+  [LUXURY_GTA.path]: {
+    title: "Luxury Painting in the GTA | Venetian Plaster & Limewash | Arcan Painting",
+    description: "Luxury painting across the Greater Toronto Area: Venetian plaster, limewash, designer wallcoverings and high-contrast finishes with careful preparation.",
+    service: "Luxury Painting",
+  },
   "/contact": {
     title: "Contact Arcan Painting",
     description: "Share your project details and questions with Arcan Painting for review.",
@@ -52,12 +62,54 @@ const PUBLIC_PAGES = {
   },
 };
 
+// Market pages stay noindexed until the client approves the service area
+// (see src/data/markets.js).
+for (const [slug, market] of Object.entries(MARKETS)) {
+  const page = buildMarketPage(slug);
+  PUBLIC_PAGES[marketPath(slug)] = {
+    title: `Luxury Painting in ${market.name} | Arcan Painting`,
+    description: `Luxury painting in ${market.name}: Venetian plaster, limewash, designer wallcoverings and high-contrast finishes with careful preparation.`,
+    service: "Luxury Painting",
+    faqs: page.faqs,
+    noindex: !market.approved,
+  };
+}
+
+for (const [slug, f] of Object.entries(FINISH_PAGES)) {
+  PUBLIC_PAGES[finishPath(slug)] = {
+    title: `${f.service} in Toronto & the GTA | Arcan Painting`,
+    description: f.intro,
+    service: f.service,
+    faqs: f.faqs,
+  };
+}
+
+const SERVICE_LABELS = {
+  "interior-painting": "Interior Painting",
+  "exterior-painting": "Exterior Painting",
+  "commercial-painting": "Commercial Painting",
+  "wallpaper-services": "Wallpaper Services",
+  "specialty-finishes": "Specialty Finishes",
+};
+
 export function getPublicSeo(pathname = "/") {
   const path = pathname !== "/" ? pathname.replace(/\/$/, "") : "/";
   const page = PUBLIC_PAGES[path];
   const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path === "/thank-you";
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
-  const indexable = Boolean(page) && !isPrivate && !isGeneratedLocation;
+  const indexable = Boolean(page) && !page?.noindex && !isPrivate && !isGeneratedLocation;
+
+  if (isGeneratedLocation && !page) {
+    const [, serviceSlug, citySlug] = path.split("/");
+    const city = citySlug.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+    return {
+      title: `${SERVICE_LABELS[serviceSlug]} Project Inquiry in ${city} | Arcan Painting`,
+      description: `Tell Arcan Painting about your ${SERVICE_LABELS[serviceSlug].toLowerCase()} project and a team member can review the details with you.`,
+      path,
+      canonical: `${SITE_URL}${path}`,
+      indexable: false,
+    };
+  }
 
   if (page) return { ...page, path, canonical: `${SITE_URL}${path === "/" ? "/" : path}`, indexable };
 
@@ -129,7 +181,7 @@ export function buildStructuredData(seo) {
     graph.push({
       "@type": "FAQPage",
       "@id": `${seo.canonical}#faq`,
-      mainEntity: SERVICE_FAQS[seo.service].map(([name, text]) => ({
+      mainEntity: (seo.faqs || SERVICE_FAQS[seo.service]).map(([name, text]) => ({
         "@type": "Question",
         name,
         acceptedAnswer: { "@type": "Answer", text },

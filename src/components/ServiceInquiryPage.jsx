@@ -2,6 +2,10 @@ import { useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
+import { ArrowRight, Phone } from "lucide-react";
+import ContactSection from "./ContactSection";
+import FinishLinks from "./FinishLinks";
+import { PHOTOS, photoSrc, photoSrcSet } from "@/data/photos";
 import { SERVICE_FAQS } from "@/utils/publicSeo";
 
 const SERVICE_CONTENT = {
@@ -32,24 +36,57 @@ const SERVICE_CONTENT = {
   },
 };
 
+// Real project photos for each service hero.
+const SERVICE_PHOTOS = {
+  "Interior Painting": PHOTOS.blueAccent,
+  "Exterior Painting": PHOTOS.blackWindow,
+  "Commercial Painting": PHOTOS.wineBar,
+  "Wallpaper Services": PHOTOS.muralInstall,
+  "Specialty Finishes": PHOTOS.rugRoom,
+};
+
 export default function ServiceInquiryPage({ serviceName }) {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const content = { ...SERVICE_CONTENT[serviceName], faqs: SERVICE_FAQS[serviceName] };
-  return <div className="min-h-screen bg-white">
+  const photo = SERVICE_PHOTOS[serviceName];
+  return <div className="min-h-screen bg-paper text-ink">
     <Header />
     <main id="main" tabIndex={-1}>
-      <section className="bg-slate-900 py-20 lg:py-24 text-white"><div className="max-w-5xl mx-auto px-6">
-        <p className="text-amber-400 font-semibold tracking-wide uppercase text-sm mb-4">Arcan Painting service</p>
-        <h1 className="text-4xl lg:text-6xl font-extrabold leading-tight mb-6">{serviceName}</h1>
-        <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-3xl">{content.intro}</p>
-        <button onClick={() => setIsLeadFormOpen(true)} className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-8 py-4 rounded-xl text-lg transition-all">Discuss Your Project</button>
+      <section className="texture-plaster bg-ink text-paper">
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-4 pb-20 pt-12 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-28 lg:pt-20">
+          <div className="flex flex-col justify-center lg:col-span-6">
+            <p className="eyebrow-light mb-6">Arcan Painting service</p>
+            <h1 className="display-h1">{serviceName}</h1>
+            <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/80">{content.intro}</p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <button type="button" className="btn-brand" onClick={() => setIsLeadFormOpen(true)}>Discuss your project <ArrowRight size={16} aria-hidden="true" /></button>
+              <a href="tel:+14167272148" className="link-underline text-paper"><Phone size={15} aria-hidden="true" /> (416) 727-2148</a>
+            </div>
+          </div>
+          <figure className="lg:col-span-6">
+            <div className="frame-brass mx-auto max-w-[520px] pr-3.5">
+              <img src={photoSrc(photo, 1400)} srcSet={photoSrcSet(photo)} sizes="(min-width: 1024px) 40vw, 100vw" alt={photo.alt} width="1400" height="1750" loading="eager" fetchpriority="high" decoding="async" className="arch aspect-[4/5] w-full object-cover" />
+            </div>
+          </figure>
+        </div>
+      </section>
+      <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-[1.15fr_.85fr] lg:py-24">
+        <div>
+          <h2 className="display-h2">Plan the scope before the next step</h2>
+          <p className="mt-6 text-lg leading-relaxed text-ink-soft">{content.overview}</p>
+          <p className="mt-5 text-lg leading-relaxed text-ink-soft">The inquiry form is a starting point, not a project quote or booking confirmation. A team member can review what you send and discuss what information or site review may be needed next.</p>
+        </div>
+        <aside className="border border-line bg-paper-deep p-8" aria-labelledby="project-details-heading">
+          <h2 id="project-details-heading" className="font-display text-3xl">Details worth sharing</h2>
+          <ul className="mt-6 space-y-4 text-ink-soft">{content.considerations.map((item) => <li key={item} className="border-l-2 border-brand pl-4">{item}</li>)}</ul>
+        </aside>
+      </section>
+      <section className="border-y border-line bg-paper-deep"><div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
+        <h2 className="display-h2">Questions about {serviceName.toLowerCase()}</h2>
+        <div className="mt-10 divide-y divide-line border-y border-line">{content.faqs.map(([question, answer]) => <article key={question} className="py-7"><h3 className="font-display text-2xl">{question}</h3><p className="mt-3 text-lg leading-relaxed text-ink-soft">{answer}</p></article>)}</div>
       </div></section>
-      <section className="py-16 lg:py-20 bg-white"><div className="max-w-5xl mx-auto px-6 grid gap-12 lg:grid-cols-[1.15fr_.85fr]">
-        <div><h2 className="text-3xl font-bold text-slate-900 mb-5">Plan the scope before the next step</h2><p className="text-slate-700 text-lg leading-relaxed">{content.overview}</p><p className="text-slate-700 text-lg leading-relaxed mt-5">The inquiry form is a starting point, not a project quote or booking confirmation. A team member can review what you send and discuss what information or site review may be needed next.</p></div>
-        <aside className="bg-slate-50 border border-slate-200 rounded-2xl p-7" aria-labelledby="project-details-heading"><h2 id="project-details-heading" className="text-2xl font-bold text-slate-900 mb-5">Details worth sharing</h2><ul className="space-y-4 text-slate-700">{content.considerations.map((item) => <li key={item} className="flex gap-3"><span aria-hidden="true" className="text-amber-600 font-bold">✓</span><span>{item}</span></li>)}</ul></aside>
-      </div></section>
-      <section className="py-16 bg-slate-50 border-y border-slate-200"><div className="max-w-4xl mx-auto px-6"><h2 className="text-3xl font-bold text-slate-900 mb-8">Questions about {serviceName.toLowerCase()}</h2><div className="space-y-8">{content.faqs.map(([question, answer]) => <article key={question}><h3 className="text-xl font-bold text-slate-900 mb-2">{question}</h3><p className="text-slate-700 text-lg leading-relaxed">{answer}</p></article>)}</div></div></section>
-      <section className="py-16 lg:py-20 bg-amber-400"><div className="max-w-3xl mx-auto px-6 text-center"><h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Start a project conversation</h2><p className="text-slate-800 text-xl mb-8">Share the scope you know today. The team can review it before confirming next steps.</p><button onClick={() => setIsLeadFormOpen(true)} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-10 py-4 rounded-xl text-xl transition-all">Contact the Team</button></div></section>
+      <FinishLinks title="Looking for a finish with more depth?" />
+      <ContactSection />
     </main>
     <Footer />
     {isLeadFormOpen && <LeadFormPopup onClose={() => setIsLeadFormOpen(false)} />}

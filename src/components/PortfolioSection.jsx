@@ -51,7 +51,7 @@ const NON_PORTFOLIO_FILES = new Set([
 ]);
 const PORTFOLIO_ITEMS = GALLERY_ITEMS.filter((item) => !NON_PORTFOLIO_FILES.has(item.file));
 // One 2×2 feature plus twelve squares fills four full rows of the desktop grid.
-const INITIAL_VISIBLE = 13;
+const INITIAL_VISIBLE = 9;
 
 function GalleryCard({ item, onClick, featured }) {
   return (

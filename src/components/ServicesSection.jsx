@@ -1,42 +1,42 @@
 import { ArrowUpRight } from "lucide-react";
+import { PHOTOS, photoSrc } from "../data/photos";
 
-// Photos are 900px copies in public/hero/ (originals in public/gallery are
-// full camera resolution). Regenerate the copy if an image changes.
 const SERVICES = [
   {
     title: "Interior painting",
     href: "/interior-painting",
-    text: "Walls, ceilings, trim, doors and staircases — rooms emptied, covered and patched before the first coat goes on.",
-    image: "PXL_20250217_224338011_MP.webp",
-    alt: "Freshly painted living room with white walls and dark hardwood floors",
+    text: "Walls, ceilings, trim, doors and staircases, with rooms covered and patched before the first coat.",
+    photo: PHOTOS.blueAccent,
   },
   {
     title: "Exterior painting",
     href: "/exterior-painting",
-    text: "Front doors, garage doors, trim, window frames and siding, planned around the weather and the surfaces involved.",
-    image: "20251012_165336.webp",
-    alt: "Brick house with a freshly painted front door and garage door",
+    text: "Front doors, trim, window frames and siding, planned around the weather and the surfaces involved.",
+    photo: PHOTOS.blackWindow,
   },
   {
     title: "Commercial painting",
     href: "/commercial-painting",
-    text: "Restaurants, bars, offices and retail spaces, with scheduling that works around the people using them.",
-    image: "IMG-20260217-WA0021.webp",
-    alt: "Commercial bar with a dark painted ceiling and patterned wallcovering",
+    text: "Restaurants, bars, offices and retail, scheduled around the people using the space.",
+    photo: PHOTOS.wineBar,
   },
   {
     title: "Wallpaper installation",
     href: "/wallpaper-services",
-    text: "Feature walls, murals and full-room wallcoverings, from surface preparation through to the final seam.",
-    image: "PXL_20260213_210915996.webp",
-    alt: "Bedroom wall finished with a soft floral wallpaper",
+    text: "Feature walls, murals and full-room wallcoverings, from preparation to the final seam.",
+    photo: PHOTOS.muralInstall,
   },
   {
     title: "Specialty finishes",
     href: "/specialty-finishes",
-    text: "Accent colours, high-contrast staircases and decorative finishes for spaces that need more than a single colour.",
-    image: "PXL_20210109_221844861.webp",
-    alt: "Living room with a deep blue accent wall behind a white fireplace mantel",
+    text: "Painted ceilings, high-contrast details and decorative finishes for rooms that need more than one colour.",
+    photo: PHOTOS.rugRoom,
+  },
+  {
+    title: "Luxury finishes",
+    href: "/luxury-painting-gta",
+    text: "Venetian plaster, limewash and statement wallcoverings for homes across the GTA.",
+    photo: PHOTOS.muralRoom,
   },
 ];
 
@@ -46,46 +46,34 @@ export default function ServicesSection() {
       <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
         <div className="grid gap-6 lg:grid-cols-12">
           <p className="eyebrow lg:col-span-3">What we do</p>
-          <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl lg:col-span-9">
-            Five kinds of work, one standard of preparation.
-          </h2>
+          <h2 className="display-h2 text-ink lg:col-span-9">Six kinds of work, one standard of preparation.</h2>
         </div>
 
-        <ol className="mt-14 border-t border-line lg:mt-20">
+        <ul className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
           {SERVICES.map((service, i) => (
-            <li key={service.href} className="border-b border-line">
-              <a
-                href={service.href}
-                className="group grid items-center gap-5 py-7 sm:grid-cols-12 sm:gap-8 lg:py-9"
-              >
-                <span className="font-display text-lg text-muted sm:col-span-1">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="sm:col-span-6 lg:col-span-6">
-                  <h3 className="font-display text-3xl text-ink transition-colors group-hover:text-brand-deep lg:text-4xl">
-                    {service.title}
-                  </h3>
-                  <p className="mt-3 max-w-md leading-relaxed text-ink-soft">{service.text}</p>
-                </div>
-                <div className="overflow-hidden rounded-sm sm:col-span-4 lg:col-span-4">
+            <li key={service.href}>
+              <a href={service.href} className="group block">
+                <div className="overflow-hidden">
                   <img
-                    src={`/hero/${service.image.replace(/\.webp$/, "")}-900.webp`}
-                    alt={service.alt}
+                    src={photoSrc(service.photo, 900)}
+                    alt={service.photo.alt}
                     loading="lazy"
                     decoding="async"
-                    className="aspect-[3/2] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    style={{ imageOrientation: "from-image" }}
+                    className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 </div>
-                <ArrowUpRight
-                  size={26}
-                  aria-hidden="true"
-                  className="hidden text-ink transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:col-span-1 sm:block sm:justify-self-end"
-                />
+                <div className="mt-5 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-display text-sm text-muted">{String(i + 1).padStart(2, "0")}</p>
+                    <h3 className="mt-1 font-display text-3xl text-ink transition-colors group-hover:text-brand-deep">{service.title}</h3>
+                    <p className="mt-3 max-w-sm leading-relaxed text-ink-soft">{service.text}</p>
+                  </div>
+                  <ArrowUpRight size={24} aria-hidden="true" className="mt-6 shrink-0 text-ink transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </div>
               </a>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   );

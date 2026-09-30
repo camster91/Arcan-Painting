@@ -1,6 +1,8 @@
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ServicesSection from "../components/ServicesSection";
+import FinishLinks from "../components/FinishLinks";
+import Marquee from "../components/Marquee";
 
 // ─── Below-fold sections: lazy loaded for faster initial bundle ───────────────
 import ProcessSection from "../components/ProcessSection";
@@ -21,8 +23,12 @@ export default function HomePage() {
         {/* Hero Section - critical path, loaded synchronously */}
         <HeroSection />
 
+        <Marquee />
+
         {/* Services Section - near top of page, loaded synchronously */}
         <ServicesSection />
+
+        <FinishLinks />
 
         {/* Below-fold sections: lazy loaded */}
 

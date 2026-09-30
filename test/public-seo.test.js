@@ -25,3 +25,36 @@ describe("public SEO policy", () => {
     expect(keys).not.toEqual(expect.arrayContaining(["aggregateRating", "review", "address", "openingHours", "priceRange", "areaServed"]));
   });
 });
+
+describe("luxury market pages", () => {
+  it("stay noindexed until a market is approved, with a real title", async () => {
+    const { MARKET_SLUGS, MARKETS } = await import("@/data/markets");
+    for (const slug of MARKET_SLUGS) {
+      const seo = getPublicSeo(`/luxury-painting/${slug}`);
+      expect(seo.title).toContain(MARKETS[slug].name);
+      expect(seo.indexable).toBe(MARKETS[slug].approved);
+    }
+  });
+
+  it("gives generated city routes a real title instead of Page Not Found", () => {
+    const seo = getPublicSeo("/commercial-painting/vaughan");
+    expect(seo.title).toBe("Commercial Painting Project Inquiry in Vaughan | Arcan Painting");
+    expect(seo.indexable).toBe(false);
+  });
+});
+
+describe("finish pages", () => {
+  it("are indexable, have unique titles and appear in the sitemap", async () => {
+    const { FINISH_SLUGS, finishPath } = await import("@/data/landingPages");
+    const { GET } = await import("@/app/sitemap.xml/route");
+    const xml = await (await GET()).text();
+    const titles = new Set();
+    for (const slug of FINISH_SLUGS) {
+      const seo = getPublicSeo(finishPath(slug));
+      expect(seo.indexable).toBe(true);
+      titles.add(seo.title);
+      expect(xml).toContain(finishPath(slug));
+    }
+    expect(titles.size).toBe(FINISH_SLUGS.length);
+  });
+});

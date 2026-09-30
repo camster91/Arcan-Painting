@@ -211,10 +211,10 @@ export default function SchedulerSection() {
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold text-ink">
             Book a Free On-Site Quote
           </h2>
-          <p className="text-slate-600 mt-2">
+          <p className="text-muted mt-2">
             Pick a weekday in the next few days, weeks, or months and choose a
             time. Tell us where to meet you and we'll send calendar invites.
           </p>
@@ -222,19 +222,19 @@ export default function SchedulerSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left: Calendly-style date + times */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div className="bg-paper-deep border border-line rounded-sm p-4">
             {/* Quick picks */}
             <div className="flex items-center gap-2 mb-4 overflow-x-auto">
               {/* Removed Today to prevent same-day booking */}
               <button
                 onClick={() => quickPick("tomorrow")}
-                className="px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-700 hover:border-amber-300 hover:text-amber-700 text-sm whitespace-nowrap"
+                className="px-3 py-1.5 rounded-full border border-line bg-white text-ink-soft hover:border-brand hover:text-brand-deep text-sm whitespace-nowrap"
               >
                 Tomorrow
               </button>
               <button
                 onClick={() => quickPick("nextweek")}
-                className="px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-700 hover:border-amber-300 hover:text-amber-700 text-sm whitespace-nowrap"
+                className="px-3 py-1.5 rounded-full border border-line bg-white text-ink-soft hover:border-brand hover:text-brand-deep text-sm whitespace-nowrap"
               >
                 Next Week
               </button>
@@ -247,7 +247,7 @@ export default function SchedulerSection() {
                 <button
                   onClick={() => setDatePage(Math.max(0, datePage - 1))}
                   disabled={datePage === 0}
-                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-line bg-white text-muted hover:border-brand hover:text-brand-deep disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Previous days"
                 >
                   <ChevronLeft size={16} />
@@ -267,10 +267,10 @@ export default function SchedulerSection() {
                         onClick={() => setSelectedDate(d)}
                         aria-pressed={isActive}
                         aria-label={`${dow}, ${mon} ${dateNum}`}
-                        className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-xl border text-sm transition-all flex-shrink-0 ${
+                        className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-sm border text-sm transition-all flex-shrink-0 ${
                           isActive
-                            ? "bg-amber-500 border-amber-600 text-white shadow"
-                            : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
+                            ? "bg-brand border-brand text-white shadow"
+                            : "bg-white border-line text-ink-soft hover:border-brand hover:text-brand-deep"
                         }`}
                       >
                         <span className="text-[10px] sm:text-xs opacity-80">{dow}</span>
@@ -286,26 +286,26 @@ export default function SchedulerSection() {
                 <button
                   onClick={() => setDatePage(datePage + 1)}
                   disabled={(datePage + 1) * daysPerPage >= dateStrip.length}
-                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-line bg-white text-muted hover:border-brand hover:text-brand-deep disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="More days"
                 >
                   <ChevronRight size={16} />
                 </button>
               </div>
             </div>
-            <p className="text-xs text-slate-400 mt-1 text-center">
+            <p className="text-xs text-muted mt-1 text-center">
               {Math.min((datePage + 1) * daysPerPage, dateStrip.length)} of {dateStrip.length} available days
             </p>
 
             {/* Times for selected date */}
             <div className="mt-5">
-              <h3 className="font-semibold text-slate-900 mb-2">
+              <h3 className="font-semibold text-ink mb-2">
                 Available times
               </h3>
               {isLoading ? (
-                <p className="text-slate-600 text-sm">Loading...</p>
+                <p className="text-muted text-sm">Loading...</p>
               ) : timesForDay.length === 0 ? (
-                <p className="text-slate-600 text-sm">
+                <p className="text-muted text-sm">
                   No availability on this day.
                 </p>
               ) : (
@@ -315,10 +315,10 @@ export default function SchedulerSection() {
                       key={t.id}
                       onClick={() => setSelectedSlotId(t.id)}
                       aria-pressed={selectedSlotId === t.id}
-                      className={`px-4 py-3 rounded-lg border text-base font-medium transition-all ${
+                      className={`px-4 py-3 rounded-sm border text-base font-medium transition-all ${
                         selectedSlotId === t.id
-                          ? "bg-amber-500 border-amber-600 text-white shadow"
-                          : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
+                          ? "bg-brand border-brand text-white shadow"
+                          : "bg-white border-line text-ink-soft hover:border-brand hover:text-brand-deep"
                       }`}
                     >
                       {t.label}
@@ -335,11 +335,11 @@ export default function SchedulerSection() {
           {/* Booking form */}
           <form
             onSubmit={handleSubmit}
-            className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm"
+            className="bg-white border border-line rounded-sm p-6 shadow-sm"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label htmlFor="scheduler-name" className="text-sm text-slate-700">Full name</label>
+                <label htmlFor="scheduler-name" className="text-sm text-ink-soft">Full name</label>
                 <input
                   id="scheduler-name"
                   name="name"
@@ -350,12 +350,12 @@ export default function SchedulerSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
-                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="mt-1 w-full px-3 py-2 border border-line rounded-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   placeholder="John Doe"
                 />
               </div>
               <div>
-                <label htmlFor="scheduler-email" className="text-sm text-slate-700">
+                <label htmlFor="scheduler-email" className="text-sm text-ink-soft">
                   Email (or Phone)
                 </label>
                 <input
@@ -367,12 +367,12 @@ export default function SchedulerSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
-                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="mt-1 w-full px-3 py-2 border border-line rounded-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   placeholder="you@example.com"
                 />
               </div>
               <div>
-                <label htmlFor="scheduler-phone" className="text-sm text-slate-700">
+                <label htmlFor="scheduler-phone" className="text-sm text-ink-soft">
                   Phone (or Email)
                 </label>
                 <input
@@ -384,12 +384,12 @@ export default function SchedulerSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, phone: e.target.value }))
                   }
-                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="mt-1 w-full px-3 py-2 border border-line rounded-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   placeholder="(555) 123-4567"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="scheduler-address" className="text-sm text-slate-700">
+                <label htmlFor="scheduler-address" className="text-sm text-ink-soft">
                   Meeting address
                 </label>
                 <input
@@ -402,12 +402,12 @@ export default function SchedulerSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, address: e.target.value }))
                   }
-                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="mt-1 w-full px-3 py-2 border border-line rounded-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   placeholder="Street, City"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="scheduler-notes" className="text-sm text-slate-700">
+                <label htmlFor="scheduler-notes" className="text-sm text-ink-soft">
                   Notes (optional)
                 </label>
                 <textarea
@@ -417,30 +417,30 @@ export default function SchedulerSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, notes: e.target.value }))
                   }
-                  className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="mt-1 w-full px-3 py-2 border border-line rounded-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   rows={3}
                   placeholder="Tell us a bit about your project"
                 />
               </div>
             </div>
             {error && (
-              <div id="scheduler-form-error" role="alert" className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2">
+              <div id="scheduler-form-error" role="alert" className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-sm p-2">
                 {error}
               </div>
             )}
             {message && (
-              <div role="status" className="mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
+              <div role="status" className="mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-sm p-2">
                 {message}
               </div>
             )}
             <button
               type="submit"
               disabled={!selectedSlotId || bookMutation.isLoading}
-              className="mt-6 w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors"
+              className="mt-6 w-full bg-brand hover:bg-[#D3B67F] disabled:bg-slate-300 text-white font-semibold py-3 rounded-sm transition-colors"
             >
               {bookMutation.isLoading ? "Booking..." : "Book Estimate"}
             </button>
-            <p className="text-xs text-slate-500 mt-3">
+            <p className="text-xs text-muted mt-3">
               We'll email you a calendar invite with all details.
             </p>
           </form>
