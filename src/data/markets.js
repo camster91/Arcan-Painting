@@ -3,8 +3,8 @@ import { LUXURY_GTA } from "./landingPages.js";
 // Market pages for luxury painting, Toronto northward to Barrie.
 //
 // Guardrail (REMEDIATION.md): location pages stay noindexed and out of the
-// sitemap until the client approves each service area. Flip `approved` to true
-// for a market once that approval exists; nothing else needs to change.
+// sitemap until the client approves each service area. All markets below were
+// approved by the owner on 2026-09-30. Set `approved` to false to noindex one.
 // Neighbourhood names are geography only. Do not add claims about past work in
 // a market unless it is documented in PROOF_REGISTER.md.
 
@@ -12,7 +12,7 @@ export const MARKETS = {
   toronto: {
     name: "Toronto",
     theme: "navy",
-    approved: false,
+    approved: true,
     image: "PXL_20250217_224338011_MP.webp",
     alt: "Freshly painted living room with white walls and dark hardwood floors",
     areas: ["Rosedale", "Forest Hill", "Yorkville", "Lawrence Park", "Bridle Path", "The Kingsway", "Bayview Village", "Leaside"],
@@ -25,7 +25,7 @@ export const MARKETS = {
   vaughan: {
     name: "Vaughan",
     theme: "burgundy",
-    approved: false,
+    approved: true,
     image: "PXL_20251018_142500065.webp",
     alt: "Dining room finished with a patterned wallcovering and a dark painted ceiling",
     areas: ["Kleinburg", "Woodbridge", "Maple", "Thornhill", "Vellore Village"],
@@ -38,7 +38,7 @@ export const MARKETS = {
   "richmond-hill": {
     name: "Richmond Hill",
     theme: "teal",
-    approved: false,
+    approved: true,
     image: "IMG-20260212-WA0016.webp",
     alt: "Staircase refinished with black treads, white risers and white balusters",
     areas: ["Bayview Hill", "Oak Ridges", "Mill Pond", "Jefferson", "Richvale"],
@@ -51,7 +51,7 @@ export const MARKETS = {
   markham: {
     name: "Markham",
     theme: "charcoal",
-    approved: false,
+    approved: true,
     image: "PXL_20260213_210915996.webp",
     alt: "Bedroom wall finished with a soft floral wallpaper",
     areas: ["Unionville", "Angus Glen", "Cornell", "Berczy Village", "Markham Village"],
@@ -64,7 +64,7 @@ export const MARKETS = {
   "king-city": {
     name: "King City",
     theme: "terracotta",
-    approved: false,
+    approved: true,
     image: "PXL_20251009_180850831.webp",
     alt: "Painter installing a botanical mural wallcovering from a ladder",
     areas: ["King City", "Nobleton", "Schomberg", "Kettleby"],
@@ -77,7 +77,7 @@ export const MARKETS = {
   aurora: {
     name: "Aurora",
     theme: "navy",
-    approved: false,
+    approved: true,
     image: "20251012_165336.webp",
     alt: "Brick house with a freshly painted front door and garage door",
     areas: ["Aurora Highlands", "Bayview Northeast", "Aurora Heights", "St. Andrews Valley"],
@@ -90,7 +90,7 @@ export const MARKETS = {
   newmarket: {
     name: "Newmarket",
     theme: "burgundy",
-    approved: false,
+    approved: true,
     image: "PXL_20250217_224338011_MP.webp",
     alt: "Freshly painted living room with white walls and dark hardwood floors",
     areas: ["Stonehaven", "Glenway", "Bogart", "Armitage"],
@@ -103,7 +103,7 @@ export const MARKETS = {
   bradford: {
     name: "Bradford West Gwillimbury",
     theme: "charcoal",
-    approved: false,
+    approved: true,
     image: "IMG-20260212-WA0016.webp",
     alt: "Staircase refinished with black treads, white risers and white balusters",
     areas: ["Bradford", "Bond Head", "Newton Robinson"],
@@ -116,7 +116,7 @@ export const MARKETS = {
   barrie: {
     name: "Barrie",
     theme: "teal",
-    approved: false,
+    approved: true,
     image: "PXL_20260213_210915996.webp",
     alt: "Bedroom wall finished with a soft floral wallpaper",
     areas: ["Innisfil", "Midhurst", "Orillia", "Collingwood"],
