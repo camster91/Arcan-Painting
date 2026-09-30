@@ -9,6 +9,8 @@ const SERVICES_NAV = [
   { label: "Commercial Painting", href: "/commercial-painting", desc: "Business Solutions" },
   { label: "Wallpaper Services", href: "/wallpaper-services", desc: "High-End Installation" },
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
+  { label: "Venetian Plaster", href: "/finishes/venetian-plaster", desc: "Burnished, hand-troweled" },
+  { label: "Limewash", href: "/finishes/limewash", desc: "Soft, mineral colour" },
   { label: "Luxury Painting (GTA)", href: "/luxury-painting-gta", desc: "Plaster, limewash, wallcoverings" },
 ];
 

@@ -3,6 +3,8 @@ const LINKS = [
   { href: "/#portfolio", label: "Work" },
   { href: "/#process", label: "Process" },
   { href: "/luxury-painting-gta", label: "Luxury painting" },
+  { href: "/finishes/venetian-plaster", label: "Venetian plaster" },
+  { href: "/finishes/limewash", label: "Limewash" },
   { href: "/#faq", label: "FAQ" },
   { href: "/#contact", label: "Contact" },
   { href: "/privacy", label: "Privacy Notice" },

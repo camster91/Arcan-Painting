@@ -4,6 +4,8 @@ import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
 import FinishSwatches from "./FinishSwatches";
+import FinishLinks from "./FinishLinks";
+import { FINISH_PAGES } from "../data/landingPages";
 
 const HERO_THEMES = { teal: "texture-plaster", navy: "tx-navy", burgundy: "tx-burgundy", charcoal: "tx-charcoal", terracotta: "tx-terracotta" };
 const CHIPS = ["navy", "sage", "blush", "burgundy", "charcoal", "marble"];
@@ -80,6 +82,8 @@ export default function LandingPage({ page }) {
         </section>
 
         <FinishSwatches />
+
+        <FinishLinks exclude={Object.keys(FINISH_PAGES).find((k) => FINISH_PAGES[k] === page)} />
 
         <section className="tx-blush border-y border-line">
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-24">

@@ -1,4 +1,5 @@
 import { MARKETS, marketPath } from "../../data/markets.js";
+import { FINISH_SLUGS, finishPath } from "../../data/landingPages.js";
 
 const PUBLIC_ROUTES = [
   ["/", "1.0", "weekly"],
@@ -8,6 +9,7 @@ const PUBLIC_ROUTES = [
   ["/wallpaper-services", "0.9", "monthly"],
   ["/specialty-finishes", "0.9", "monthly"],
   ["/luxury-painting-gta", "0.9", "monthly"],
+  ...FINISH_SLUGS.map((slug) => [finishPath(slug), "0.8", "monthly"]),
   ...Object.entries(MARKETS).filter(([, m]) => m.approved).map(([slug]) => [marketPath(slug), "0.8", "monthly"]),
   ["/contact", "0.7", "yearly"],
   ["/quote", "0.7", "yearly"],

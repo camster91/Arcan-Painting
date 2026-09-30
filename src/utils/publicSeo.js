@@ -1,4 +1,4 @@
-import { LUXURY_GTA } from "../data/landingPages.js";
+import { LUXURY_GTA, FINISH_PAGES, finishPath } from "../data/landingPages.js";
 import { MARKETS, buildMarketPage, marketPath } from "../data/markets.js";
 
 const SITE_URL = "https://arcanpainting.ca";
@@ -72,6 +72,15 @@ for (const [slug, market] of Object.entries(MARKETS)) {
     service: "Luxury Painting",
     faqs: page.faqs,
     noindex: !market.approved,
+  };
+}
+
+for (const [slug, f] of Object.entries(FINISH_PAGES)) {
+  PUBLIC_PAGES[finishPath(slug)] = {
+    title: `${f.service} in Toronto & the GTA | Arcan Painting`,
+    description: f.intro,
+    service: f.service,
+    faqs: f.faqs,
   };
 }
 

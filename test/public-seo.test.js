@@ -42,3 +42,19 @@ describe("luxury market pages", () => {
     expect(seo.indexable).toBe(false);
   });
 });
+
+describe("finish pages", () => {
+  it("are indexable, have unique titles and appear in the sitemap", async () => {
+    const { FINISH_SLUGS, finishPath } = await import("@/data/landingPages");
+    const { GET } = await import("@/app/sitemap.xml/route");
+    const xml = await (await GET()).text();
+    const titles = new Set();
+    for (const slug of FINISH_SLUGS) {
+      const seo = getPublicSeo(finishPath(slug));
+      expect(seo.indexable).toBe(true);
+      titles.add(seo.title);
+      expect(xml).toContain(finishPath(slug));
+    }
+    expect(titles.size).toBe(FINISH_SLUGS.length);
+  });
+});
