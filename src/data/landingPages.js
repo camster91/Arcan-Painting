@@ -1,3 +1,5 @@
+import { PHOTOS } from "./photos.js";
+
 // Content for search landing pages. Add an entry here (plus a route file, a
 // PUBLIC_PAGES entry in utils/publicSeo.js and a sitemap line) for each new page.
 // Only state things Arcan has confirmed: no years in business, awards or prices.
@@ -10,8 +12,7 @@ export const LUXURY_GTA = {
   headlineEm: "Greater Toronto Area.",
   intro:
     "Venetian plaster, limewash, statement wallcoverings and deep, high-contrast rooms — planned around your architecture and finished with exacting preparation and sharp lines.",
-  heroImage: "PXL_20251018_142500065.webp",
-  heroAlt: "Dining room finished with a patterned wallcovering and a dark painted ceiling",
+  heroPhoto: PHOTOS.muralRoom,
   finishesTitle: "Finishes for interiors that are meant to be noticed.",
   finishes: [
     {
@@ -46,8 +47,18 @@ export const LUXURY_GTA = {
     "Floors, furniture and fixtures are protected, and the space is left clean at the end of each stage.",
   ],
   areasTitle: "Serving the Greater Toronto Area",
-  areas: ["Toronto", "Mississauga", "Brampton", "Vaughan", "Markham", "Richmond Hill", "Oakville", "Pickering"],
-  areaLinks: { Toronto: "/luxury-painting/toronto", Vaughan: "/luxury-painting/vaughan", Markham: "/luxury-painting/markham", "Richmond Hill": "/luxury-painting/richmond-hill" },
+  areas: ["Toronto", "Vaughan", "Richmond Hill", "Markham", "King City", "Aurora", "Newmarket", "Bradford", "Barrie", "Mississauga", "Oakville", "Brampton", "Pickering"],
+  areaLinks: {
+    Toronto: "/luxury-painting/toronto",
+    Vaughan: "/luxury-painting/vaughan",
+    "Richmond Hill": "/luxury-painting/richmond-hill",
+    Markham: "/luxury-painting/markham",
+    "King City": "/luxury-painting/king-city",
+    Aurora: "/luxury-painting/aurora",
+    Newmarket: "/luxury-painting/newmarket",
+    Bradford: "/luxury-painting/bradford",
+    Barrie: "/luxury-painting/barrie",
+  },
   areasNote: "Not sure whether your address is covered? Ask when you get in touch.",
   faqs: [
     [
@@ -86,14 +97,13 @@ const FINISH_BASE = {
 export const FINISH_PAGES = {
   "venetian-plaster": {
     ...FINISH_BASE,
-    theme: "navy",
     service: "Venetian Plaster",
     eyebrow: "Finishes · Venetian plaster",
     headline: "Venetian plaster with depth and",
     headlineEm: "a burnished glow.",
     intro: "Thin, hand-troweled layers that build a smooth, luminous surface with depth — for feature walls, fireplaces, entries and whole rooms across the GTA.",
-    heroImage: "PXL_20251018_142500065.webp",
-    heroAlt: "Dining room finished with a patterned wallcovering and a dark painted ceiling",
+    heroTexture: "plaster-teal",
+    cardText: "Burnished, layered plaster with depth.",
     context: "Venetian plaster is applied in several thin coats and burnished, so the surface catches light differently from every angle. It rewards careful preparation and a steady hand.",
     finishesTitle: "Where Venetian plaster works well.",
     finishes: [
@@ -118,14 +128,13 @@ export const FINISH_PAGES = {
   },
   limewash: {
     ...FINISH_BASE,
-    theme: "terracotta",
     service: "Limewash",
     eyebrow: "Finishes · Limewash",
     headline: "Limewash with soft, cloudy",
     headlineEm: "mineral colour.",
     intro: "A matte, chalky finish with gentle movement in the colour — warm, calm and unlike flat paint. For interior walls, fireplaces, brick and more.",
-    heroImage: "PXL_20251009_180850831.webp",
-    heroAlt: "Painter installing a botanical mural wallcovering from a ladder",
+    heroTexture: "limewash-ivory",
+    cardText: "Soft, chalky mineral colour.",
     context: "Limewash is a mineral wash applied in loose, layered coats. The colour varies slightly across the wall and shifts with the light, which is much of its appeal.",
     finishesTitle: "Where limewash works well.",
     finishes: [
@@ -150,14 +159,13 @@ export const FINISH_PAGES = {
   },
   wallcoverings: {
     ...FINISH_BASE,
-    theme: "burgundy",
     service: "Luxury Wallcoverings",
     eyebrow: "Finishes · Wallcoverings and murals",
     headline: "Designer wallcoverings, hung with",
     headlineEm: "exacting seams.",
     intro: "Installation of designer wallpaper, botanical murals and statement patterns — with careful surface preparation, pattern matching and clean edges.",
-    heroImage: "PXL_20251009_180850831.webp",
-    heroAlt: "Painter installing a botanical mural wallcovering from a ladder",
+    heroPhoto: PHOTOS.muralInstall,
+    cardText: "Designer papers and murals, seam-matched.",
     context: "A wallcovering is only as good as the wall beneath it and the care taken at every seam. Pattern repeat, corners and openings all need to be planned before the first drop goes up.",
     finishesTitle: "What we install and prepare.",
     finishes: [
@@ -182,14 +190,13 @@ export const FINISH_PAGES = {
   },
   "dark-rooms": {
     ...FINISH_BASE,
-    theme: "charcoal",
     service: "Dark and High-Contrast Rooms",
     eyebrow: "Finishes · Dark and high-contrast rooms",
     headline: "Deep colour and painted ceilings with",
     headlineEm: "sharp, crisp lines.",
     intro: "Rich, saturated walls, painted ceilings and bold trim contrasts — planned so the lines stay clean and the finish looks deliberate.",
-    heroImage: "PXL_20251018_142500065.webp",
-    heroAlt: "Dining room finished with a patterned wallcovering and a dark painted ceiling",
+    heroPhoto: PHOTOS.wineBar,
+    cardText: "Deep colour, painted ceilings, sharp lines.",
     context: "Dark colour is unforgiving: every flaw, brush mark and wobbly edge shows. That is why preparation, product choice and line work matter more here than anywhere.",
     finishesTitle: "How high-contrast rooms come together.",
     finishes: [
@@ -214,14 +221,13 @@ export const FINISH_PAGES = {
   },
   staircases: {
     ...FINISH_BASE,
-    theme: "teal",
     service: "Staircase Refinishing",
     eyebrow: "Finishes · Staircases and millwork",
     headline: "Staircases and millwork refinished with",
     headlineEm: "a hardwearing finish.",
     intro: "Treads, risers, balusters, handrails and panelling refinished with strong contrast and a smooth, durable surface.",
-    heroImage: "IMG-20260212-WA0016.webp",
-    heroAlt: "Staircase refinished with black treads, white risers and white balusters",
+    heroPhoto: PHOTOS.staircase,
+    cardText: "Treads, risers and rails that last.",
     context: "A staircase is the most-touched, most-walked-on surface in a home. The finish has to look sharp and stand up to daily use.",
     finishesTitle: "What a staircase refinish covers.",
     finishes: [

@@ -3,38 +3,30 @@ import { ArrowRight, Phone } from "lucide-react";
 import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
-import FinishSwatches from "./FinishSwatches";
 import FinishLinks from "./FinishLinks";
+import ContactSection from "./ContactSection";
 import { FINISH_PAGES } from "../data/landingPages";
+import { photoSrc, photoSrcSet } from "../data/photos";
 
-const HERO_THEMES = { teal: "texture-plaster", navy: "tx-navy", burgundy: "tx-burgundy", charcoal: "tx-charcoal", terracotta: "tx-terracotta" };
-const CHIPS = ["navy", "sage", "blush", "burgundy", "charcoal", "marble"];
-
-// Only some photos have 800/1400px copies in public/hero; the rest have a 900px copy.
-const RESPONSIVE = ["PXL_20251018_142500065", "PXL_20251009_180850831", "IMG-20260212-WA0016"];
-const base = (file) => file.replace(/\.webp$/, "");
-const heroSrc = (file, width) => `/hero/${base(file)}-${width}.webp`;
-const hasResponsive = (file) => RESPONSIVE.includes(base(file));
-
-// Data-driven landing page (see src/data/landingPages.js).
+// Data-driven landing page for the luxury GTA page, finish pages and market pages
+// (src/data/landingPages.js, src/data/markets.js). Every hero uses the same teal
+// plaster ground; colour comes from the photography.
 export default function LandingPage({ page }) {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
-  const openForm = () => setIsLeadFormOpen(true);
+  const finishSlug = Object.keys(FINISH_PAGES).find((k) => FINISH_PAGES[k] === page);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Header />
       <main id="main" tabIndex={-1}>
-        <section className={`${HERO_THEMES[page.theme] || "texture-plaster"} bg-ink text-paper`}>
-          <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-10 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
+        <section className="texture-plaster bg-ink text-paper">
+          <div className="mx-auto grid max-w-[1440px] gap-12 px-4 pb-20 pt-12 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="flex flex-col justify-center lg:col-span-6">
-              <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">{page.eyebrow}</p>
-              <h1 className="font-display text-[2.4rem] font-normal leading-[1.06] tracking-[-0.02em] sm:text-6xl">
-                {page.headline} <em className="font-normal italic text-brand">{page.headlineEm}</em>
-              </h1>
-              <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/75">{page.intro}</p>
-              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-                <button type="button" className="btn-brand" onClick={openForm}>
+              <p className="eyebrow-light mb-6">{page.eyebrow}</p>
+              <h1 className="display-h1">{page.headline} {page.headlineEm}</h1>
+              <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/80">{page.intro}</p>
+              <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <button type="button" className="btn-brand" onClick={() => setIsLeadFormOpen(true)}>
                   Discuss your project <ArrowRight size={16} aria-hidden="true" />
                 </button>
                 <a href="tel:+14167272148" className="link-underline text-paper">
@@ -43,37 +35,43 @@ export default function LandingPage({ page }) {
               </div>
             </div>
             <figure className="lg:col-span-6">
-              <div className="frame-brass mx-auto max-w-[560px] pr-3.5">
-              <img
-                src={heroSrc(page.heroImage, hasResponsive(page.heroImage) ? 1400 : 900)}
-                srcSet={hasResponsive(page.heroImage) ? `${heroSrc(page.heroImage, 800)} 800w, ${heroSrc(page.heroImage, 1400)} 1400w` : undefined}
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                alt={page.heroAlt}
-                width="1400"
-                height="1400"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                className="arch aspect-[4/5] w-full object-cover"
-                style={{ imageOrientation: "from-image" }}
-              />
+              <div className="frame-brass mx-auto max-w-[520px] pr-3.5">
+                {page.heroTexture ? (
+                  <div role="img" aria-label={`${page.service} texture, illustrative`} className="arch aspect-[4/5] w-full bg-cover bg-center" style={{ backgroundImage: `url(/luxury/${page.heroTexture}.webp)` }} />
+                ) : (
+                  <img
+                    src={photoSrc(page.heroPhoto, 1400)}
+                    srcSet={photoSrcSet(page.heroPhoto)}
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    alt={page.heroPhoto.alt}
+                    width="1400"
+                    height="1750"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    className="arch aspect-[4/5] w-full object-cover"
+                  />
+                )}
               </div>
+              <figcaption className="mx-auto mt-6 max-w-[520px] text-sm text-paper/70">
+                {page.heroTexture ? "Illustrative texture, not a project photo. Samples are made for your space." : `Arcan project: ${page.heroPhoto.alt.charAt(0).toLowerCase()}${page.heroPhoto.alt.slice(1)}.`}
+              </figcaption>
             </figure>
           </div>
         </section>
 
         {page.context && (
-          <section className="mx-auto max-w-[1440px] px-4 pt-20 sm:px-6 md:px-10 lg:pt-28">
-            <p className="max-w-3xl text-xl leading-relaxed text-ink-soft">{page.context}</p>
+          <section className="mx-auto max-w-[1440px] px-4 pt-20 sm:px-6 md:px-10 lg:pt-24">
+            <p className="max-w-[60ch] font-display text-2xl leading-snug text-ink sm:text-[1.75rem]">{page.context}</p>
+            {page.architecture && <p className="mt-6 max-w-[65ch] text-lg leading-relaxed text-ink-soft">{page.architecture}</p>}
           </section>
         )}
 
-        <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
-          <h2 className="max-w-3xl font-display text-4xl leading-[1.08] tracking-[-0.015em] sm:text-5xl">{page.finishesTitle}</h2>
-          <ul className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-            {page.finishes.map((item, i) => (
+        <section className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
+          <h2 className="display-h2 max-w-3xl">{page.finishesTitle}</h2>
+          <ul className="mt-12 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            {page.finishes.map((item) => (
               <li key={item.title} className="bg-paper p-7 lg:p-9">
-                <span aria-hidden="true" className="mb-5 block h-14 w-14 rounded-full bg-cover bg-center shadow-md" style={{ backgroundImage: `url(/luxury/${CHIPS[i % CHIPS.length]}.webp)` }} />
                 <h3 className="font-display text-2xl">{item.title}</h3>
                 <p className="mt-3 leading-relaxed text-ink-soft">{item.text}</p>
               </li>
@@ -81,13 +79,9 @@ export default function LandingPage({ page }) {
           </ul>
         </section>
 
-        <FinishSwatches />
-
-        <FinishLinks exclude={Object.keys(FINISH_PAGES).find((k) => FINISH_PAGES[k] === page)} />
-
-        <section className="tx-blush border-y border-line">
+        <section className="border-y border-line bg-paper-deep">
           <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-24">
-            <h2 className="font-display text-4xl leading-[1.08] tracking-[-0.015em] lg:col-span-5">{page.principlesTitle}</h2>
+            <h2 className="display-h2 lg:col-span-5">{page.principlesTitle}</h2>
             <ul className="space-y-6 text-lg leading-relaxed text-ink-soft lg:col-span-7">
               {page.principles.map((line) => (
                 <li key={line} className="border-l-2 border-brand pl-5">{line}</li>
@@ -96,19 +90,25 @@ export default function LandingPage({ page }) {
           </div>
         </section>
 
-        <section className="tx-sage border-b border-line"><div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
-          <h2 className="font-display text-3xl sm:text-4xl">{page.areasTitle}</h2>
-          <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-lg text-ink-soft">
-            {page.areas.map((area) => (
-              <li key={area}>{page.areaLinks?.[area] ? <a className="link-underline" href={page.areaLinks[area]}>{area}</a> : area}</li>
-            ))}
-          </ul>
-          <p className="mt-6 text-muted">{page.areasNote}</p>
-        </div></section>
+        <FinishLinks exclude={finishSlug} title="Explore the finishes." />
 
-        <section className="border-t border-line">
+        <section className="border-t border-line bg-paper">
+          <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-24">
+            <h2 className="font-display text-3xl sm:text-4xl">{page.areasTitle}</h2>
+            <ul className="mt-8 flex flex-wrap gap-3">
+              {page.areas.map((area) => {
+                const href = page.areaLinks?.[area];
+                const cls = "inline-flex items-center gap-1.5 border border-line px-4 py-2 text-[15px] text-ink-soft";
+                return <li key={area}>{href ? <a className={`${cls} hover:border-ink hover:text-ink`} href={href}>{area} <ArrowRight size={14} aria-hidden="true" /></a> : <span className={cls}>{area}</span>}</li>;
+              })}
+            </ul>
+            <p className="mt-6 text-muted">{page.areasNote}</p>
+          </div>
+        </section>
+
+        <section className="border-t border-line bg-paper-deep">
           <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
-            <h2 className="font-display text-4xl sm:text-5xl">Questions, answered.</h2>
+            <h2 className="display-h2">Questions, answered.</h2>
             <div className="mt-10 divide-y divide-line border-y border-line">
               {page.faqs.map(([q, a]) => (
                 <article key={q} className="py-7">
@@ -120,13 +120,7 @@ export default function LandingPage({ page }) {
           </div>
         </section>
 
-        <section className="tx-gold bg-ink text-paper">
-          <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-            <h2 className="font-display text-4xl sm:text-5xl">Have a room in mind?</h2>
-            <p className="mt-5 text-lg text-paper/75">Share the rooms, the finish and any reference images. The team reviews the details before confirming next steps.</p>
-            <button type="button" className="btn-brand mt-9" onClick={openForm}>Discuss your project</button>
-          </div>
-        </section>
+        <ContactSection />
       </main>
       <Footer />
       {isLeadFormOpen && <LeadFormPopup onClose={() => setIsLeadFormOpen(false)} />}

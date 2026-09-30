@@ -1,7 +1,6 @@
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ServicesSection from "../components/ServicesSection";
-import FinishSwatches from "../components/FinishSwatches";
 import FinishLinks from "../components/FinishLinks";
 import Marquee from "../components/Marquee";
 
@@ -28,8 +27,6 @@ export default function HomePage() {
 
         {/* Services Section - near top of page, loaded synchronously */}
         <ServicesSection />
-
-        <FinishSwatches />
 
         <FinishLinks />
 

@@ -201,13 +201,13 @@ export default function QuoteCalculatorSection() {
   return (
     <section
       id="quote"
-      className="relative py-20 lg:py-32 overflow-hidden texture-plaster bg-ink"
+      className="relative py-20 lg:py-28 texture-plaster bg-ink"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-brand/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        
+        
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -221,7 +221,7 @@ export default function QuoteCalculatorSection() {
         </div>
       </div>
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[800px]">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Section Header */}
         <div
           className={`text-center mb-16 lg:mb-24 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
@@ -237,8 +237,8 @@ export default function QuoteCalculatorSection() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-8">
-            Build a Rough Project Planning Range
+          <h1 className="display-h1 text-paper mb-8">
+            A rough planning range
           </h1>
 
           {/* Subtitle */}
@@ -253,27 +253,11 @@ export default function QuoteCalculatorSection() {
         </div>
 
         {/* Draggable Calculator Card */}
-        <div className="relative w-full h-full">
+        <div className="relative w-full">
           <div
             ref={cardRef}
-            className={`absolute bg-white/95 backdrop-blur-md rounded-sm border border-white/20 shadow-2xl p-8 md:p-10 max-w-4xl w-full transition-all duration-300 cursor-move ${isDragging ? "scale-105 shadow-3xl z-50" : "z-10"}`}
-            style={{
-              transform: `translate(${cardPosition.x}px, ${cardPosition.y}px)`,
-              animation:
-                isVisible && !isDragging
-                  ? "fadeInUp 0.8s ease-out both"
-                  : "none",
-            }}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
+            className="relative mx-auto max-w-4xl w-full bg-paper border border-line shadow-2xl p-8 md:p-10"
           >
-            {/* Drag Indicator */}
-            <div className="flex items-center justify-center mb-6">
-              <div className="flex items-center gap-2 text-muted text-lg">
-                <Move size={20} />
-                <span>Drag me around!</span>
-              </div>
-            </div>
 
             {/* Controls */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -436,7 +420,7 @@ export default function QuoteCalculatorSection() {
         </div>
 
         {/* Note */}
-        <p className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-paper/60 text-center">
+        <p className="relative z-10 mx-auto mt-10 max-w-3xl px-4 text-sm text-paper/70 text-center">
           This is a rough estimate for planning purposes only and not a final
           bid.
         </p>

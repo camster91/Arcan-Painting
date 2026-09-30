@@ -2,8 +2,8 @@ module.exports = {
 	content: ['./src/**/*.{js,ts,jsx,tsx}'],
 	theme: {
 		fontFamily: {
-			sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-			display: ['Fraunces', 'Georgia', 'Cambria', 'serif'],
+			sans: ['Inter Variable', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+			display: ['Fraunces Variable', 'Fraunces', 'Georgia', 'Cambria', 'serif'],
 		},
 		extend: {
 			fontFamily: {

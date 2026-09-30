@@ -41,9 +41,9 @@ export default function HeroSection() {
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-8 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-14">
         {/* Copy */}
         <div className="flex flex-col justify-center lg:col-span-5">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">Painting, plaster &amp; wallcoverings · Greater Toronto Area</p>
+          <p className="eyebrow-light mb-6">Painting, plaster &amp; wallcoverings · Greater Toronto Area</p>
 
-          <h1 className="font-display text-[2.6rem] font-normal leading-[1.04] tracking-[-0.02em] text-paper sm:text-6xl lg:text-[4.4rem]">
+          <h1 className="display-h1 text-paper">
             Walls, considered as part of the{" "}
             <em className="font-normal italic text-brand">architecture.</em>
           </h1>

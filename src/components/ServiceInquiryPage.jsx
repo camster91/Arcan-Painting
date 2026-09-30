@@ -2,7 +2,10 @@ import { useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import LeadFormPopup from "./LeadFormPopup";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
+import ContactSection from "./ContactSection";
+import FinishLinks from "./FinishLinks";
+import { PHOTOS, photoSrc, photoSrcSet } from "@/data/photos";
 import { SERVICE_FAQS } from "@/utils/publicSeo";
 
 const SERVICE_CONTENT = {
@@ -33,65 +36,57 @@ const SERVICE_CONTENT = {
   },
 };
 
-// Real project photos (public/hero, resized copies of the gallery originals).
+// Real project photos for each service hero.
 const SERVICE_PHOTOS = {
-  "Interior Painting": ["PXL_20250217_224338011_MP", "Freshly painted living room with white walls and dark hardwood floors"],
-  "Exterior Painting": ["20251012_165336", "Brick house with a freshly painted front door and garage door"],
-  "Commercial Painting": ["IMG-20260217-WA0021", "Commercial bar with a dark painted ceiling and patterned wallcovering"],
-  "Wallpaper Services": ["PXL_20260213_210915996", "Bedroom wall finished with a soft floral wallpaper"],
-  "Specialty Finishes": ["PXL_20210109_221844861", "Living room with a deep blue accent wall behind a white fireplace mantel"],
-};
-
-const SERVICE_THEMES = {
-  "Interior Painting": "texture-plaster",
-  "Exterior Painting": "tx-charcoal",
-  "Commercial Painting": "tx-burgundy",
-  "Wallpaper Services": "tx-navy",
-  "Specialty Finishes": "tx-terracotta",
+  "Interior Painting": PHOTOS.blueAccent,
+  "Exterior Painting": PHOTOS.blackWindow,
+  "Commercial Painting": PHOTOS.wineBar,
+  "Wallpaper Services": PHOTOS.muralInstall,
+  "Specialty Finishes": PHOTOS.rugRoom,
 };
 
 export default function ServiceInquiryPage({ serviceName }) {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const content = { ...SERVICE_CONTENT[serviceName], faqs: SERVICE_FAQS[serviceName] };
-  const [photo, photoAlt] = SERVICE_PHOTOS[serviceName];
-  const openForm = () => setIsLeadFormOpen(true);
+  const photo = SERVICE_PHOTOS[serviceName];
   return <div className="min-h-screen bg-paper text-ink">
     <Header />
     <main id="main" tabIndex={-1}>
-      <section className={`${SERVICE_THEMES[serviceName]} bg-ink text-paper`}>
-        <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-10 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
+      <section className="texture-plaster bg-ink text-paper">
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-4 pb-20 pt-12 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-28 lg:pt-20">
           <div className="flex flex-col justify-center lg:col-span-6">
-            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.18em] text-brand">Arcan Painting service</p>
-            <h1 className="font-display text-5xl font-normal leading-[1.06] tracking-[-0.02em] sm:text-6xl">{serviceName}</h1>
-            <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/75">{content.intro}</p>
-            <div className="mt-9"><button type="button" className="btn-brand" onClick={openForm}>Discuss your project <ArrowRight size={16} aria-hidden="true" /></button></div>
+            <p className="eyebrow-light mb-6">Arcan Painting service</p>
+            <h1 className="display-h1">{serviceName}</h1>
+            <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/80">{content.intro}</p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <button type="button" className="btn-brand" onClick={() => setIsLeadFormOpen(true)}>Discuss your project <ArrowRight size={16} aria-hidden="true" /></button>
+              <a href="tel:+14167272148" className="link-underline text-paper"><Phone size={15} aria-hidden="true" /> (416) 727-2148</a>
+            </div>
           </div>
           <figure className="lg:col-span-6">
-            <div className="frame-brass mx-auto max-w-[520px] pr-3.5"><img src={`/hero/${photo}-900.webp`} alt={photoAlt} width="900" height="600" loading="eager" fetchpriority="high" decoding="async" className="arch aspect-[4/5] w-full object-cover" style={{ imageOrientation: "from-image" }} /></div>
+            <div className="frame-brass mx-auto max-w-[520px] pr-3.5">
+              <img src={photoSrc(photo, 1400)} srcSet={photoSrcSet(photo)} sizes="(min-width: 1024px) 40vw, 100vw" alt={photo.alt} width="1400" height="1750" loading="eager" fetchpriority="high" decoding="async" className="arch aspect-[4/5] w-full object-cover" />
+            </div>
           </figure>
         </div>
       </section>
-      <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-[1.15fr_.85fr] lg:py-28">
+      <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-[1.15fr_.85fr] lg:py-24">
         <div>
-          <h2 className="font-display text-4xl leading-[1.1] sm:text-5xl">Plan the scope before the next step</h2>
+          <h2 className="display-h2">Plan the scope before the next step</h2>
           <p className="mt-6 text-lg leading-relaxed text-ink-soft">{content.overview}</p>
           <p className="mt-5 text-lg leading-relaxed text-ink-soft">The inquiry form is a starting point, not a project quote or booking confirmation. A team member can review what you send and discuss what information or site review may be needed next.</p>
         </div>
-        <aside className="texture-limewash border border-line p-8" aria-labelledby="project-details-heading">
+        <aside className="border border-line bg-paper-deep p-8" aria-labelledby="project-details-heading">
           <h2 id="project-details-heading" className="font-display text-3xl">Details worth sharing</h2>
           <ul className="mt-6 space-y-4 text-ink-soft">{content.considerations.map((item) => <li key={item} className="border-l-2 border-brand pl-4">{item}</li>)}</ul>
         </aside>
       </section>
-      <section className="tx-blush border-y border-line"><div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
-        <h2 className="font-display text-4xl">Questions about {serviceName.toLowerCase()}</h2>
+      <section className="border-y border-line bg-paper-deep"><div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:py-24">
+        <h2 className="display-h2">Questions about {serviceName.toLowerCase()}</h2>
         <div className="mt-10 divide-y divide-line border-y border-line">{content.faqs.map(([question, answer]) => <article key={question} className="py-7"><h3 className="font-display text-2xl">{question}</h3><p className="mt-3 text-lg leading-relaxed text-ink-soft">{answer}</p></article>)}</div>
       </div></section>
-      <section className="tx-gold bg-ink text-paper"><div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-        <h2 className="font-display text-4xl sm:text-5xl">Start a project conversation</h2>
-        <p className="mt-5 text-lg text-paper/75">Share the scope you know today. The team can review it before confirming next steps.</p>
-        <button type="button" className="btn-brand mt-9" onClick={openForm}>Contact the team</button>
-        <p className="mt-6 text-sm text-paper/70">Looking for a finish with more depth? See <a className="underline" href="/luxury-painting-gta">luxury painting across the GTA</a>.</p>
-      </div></section>
+      <FinishLinks title="Looking for a finish with more depth?" />
+      <ContactSection />
     </main>
     <Footer />
     {isLeadFormOpen && <LeadFormPopup onClose={() => setIsLeadFormOpen(false)} />}

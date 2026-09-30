@@ -72,12 +72,13 @@ export default function Header() {
   };
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ease-out ${isScrolled ? "border-line bg-paper/95 backdrop-blur-sm" : "border-transparent bg-paper"}`}
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-brand focus:text-ink focus:px-4 focus:py-2"
       >
         Skip to content
       </a>
@@ -161,6 +162,14 @@ export default function Header() {
                 <ChevronRight size={16} className="hidden sm:inline" aria-hidden="true" />
               </span>
             </button>
+
+            <a
+              href="tel:+14167272148"
+              className="md:hidden p-2 text-ink"
+              aria-label="Call Arcan Painting at (416) 727-2148"
+            >
+              <Phone size={22} aria-hidden="true" />
+            </a>
 
             <button
               className="md:hidden p-2 rounded-lg transition-colors"
@@ -275,5 +284,17 @@ export default function Header() {
 
       <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} />
     </header>
+
+    {/* Phone-only action bar. Kept outside the header: its backdrop blur would
+        otherwise become the containing block for this fixed element. */}
+    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-white/10 bg-ink text-paper md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <a href="tel:+14167272148" className="flex min-h-[56px] items-center justify-center gap-2 text-sm font-medium uppercase tracking-[0.12em]">
+        <Phone size={16} aria-hidden="true" /> Call
+      </a>
+      <button type="button" onClick={() => setIsLeadFormOpen(true)} className="flex min-h-[56px] items-center justify-center gap-2 bg-brand text-sm font-medium uppercase tracking-[0.12em] text-ink">
+        Discuss project
+      </button>
+    </div>
+    </>
   );
 }

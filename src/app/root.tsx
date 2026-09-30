@@ -18,6 +18,9 @@ import {
   Component,
 } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '@fontsource-variable/fraunces/opsz.css';
+import '@fontsource-variable/fraunces/opsz-italic.css';
+import '@fontsource-variable/inter';
 import './global.css';
 
 // Sentry client init — lazy to avoid bundle circular dep issues
@@ -82,17 +85,9 @@ import { buildStructuredData, getPublicSeo } from '../utils/publicSeo.js';
 import { initializeAnalytics, trackPageView } from '../utils/analytics.js';
 import { ThemeProvider } from '../utils/useTheme.jsx';
 
-// Public-site typefaces: Fraunces for headings, Inter for text. Tailwind maps
-// them to font-display / font-sans; without this link both fell back to
-// whatever system font each section happened to name.
-export const links = () => [
-  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-  { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-  {
-    rel: 'stylesheet',
-    href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Inter:wght@400;500;600&display=swap',
-  },
-];
+// Public-site typefaces (Fraunces, Inter) are self-hosted via @fontsource;
+// see the imports above global.css.
+export const links = () => [];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);

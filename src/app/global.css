@@ -8,7 +8,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-amber-500 ring-offset-2;
+    @apply outline-none ring-2 ring-brand-deep ring-offset-2;
   }
 
   body {
@@ -22,33 +22,33 @@
   .texture-plaster {
     background: linear-gradient(rgba(12, 43, 44, 0.5), rgba(12, 43, 44, 0.5)), url("/luxury/plaster-teal.webp") center / cover;
   }
-  .texture-brass {
-    background: linear-gradient(rgba(12, 43, 44, 0.55), rgba(12, 43, 44, 0.55)), url("/luxury/brass-grain.webp") center / cover;
-  }
 
-  /* More textures (public/luxury). Dark ones take light text, light ones dark text. */
-  .tx-charcoal { background: linear-gradient(rgba(10, 12, 12, 0.2), rgba(10, 12, 12, 0.2)), url("/luxury/charcoal.webp") center / cover; }
-  .tx-navy { background: linear-gradient(rgba(6, 16, 40, 0.2), rgba(6, 16, 40, 0.2)), url("/luxury/navy.webp") center / cover; }
-  .tx-burgundy { background: linear-gradient(rgba(28, 4, 8, 0.25), rgba(28, 4, 8, 0.25)), url("/luxury/burgundy.webp") center / cover; }
-  .tx-terracotta { background: linear-gradient(rgba(70, 22, 8, 0.3), rgba(70, 22, 8, 0.3)), url("/luxury/terracotta.webp") center / cover; }
-  .tx-gold { background: linear-gradient(rgba(12, 43, 44, 0.62), rgba(12, 43, 44, 0.62)), url("/luxury/gold.webp") center / cover; }
-  .tx-sage { background: linear-gradient(rgba(244, 239, 230, 0.35), rgba(244, 239, 230, 0.35)), url("/luxury/sage.webp") center / cover; }
-  .tx-blush { background: linear-gradient(rgba(244, 239, 230, 0.3), rgba(244, 239, 230, 0.3)), url("/luxury/blush.webp") center / cover; }
-  .tx-greige { background: linear-gradient(rgba(244, 239, 230, 0.3), rgba(244, 239, 230, 0.3)), url("/luxury/greige.webp") center / cover; }
-  .tx-marble { background: linear-gradient(rgba(244, 239, 230, 0.2), rgba(244, 239, 230, 0.2)), url("/luxury/marble.webp") center / cover; }
 
   /* Arch-shaped photo with an offset brass frame. */
   .arch { border-radius: 9999px 9999px 0 0; }
   .frame-brass { position: relative; }
   .frame-brass::after { content: ""; position: absolute; inset: 14px -14px -14px 14px; border: 1px solid #C2A36A; border-radius: 9999px 9999px 0 0; pointer-events: none; z-index: -1; }
 
-  .texture-limewash {
-    background: linear-gradient(rgba(244, 239, 230, 0.3), rgba(244, 239, 230, 0.3)), url("/luxury/limewash-ivory.webp") center / cover;
-  }
 
   /* Small uppercase label above a section heading. */
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep;
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-deep;
+  }
+  .eyebrow-light {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand;
+  }
+
+  /* Type scale: H1 clearly larger than H2. */
+  .display-h1 {
+    @apply font-display font-normal leading-[1.03] tracking-[-0.02em];
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
+    font-variation-settings: "opsz" 144;
+    font-weight: 380;
+  }
+  .display-h2 {
+    @apply font-display font-normal leading-[1.08] tracking-[-0.015em];
+    font-size: clamp(2rem, 3.6vw, 3.25rem);
+    font-variation-settings: "opsz" 96;
   }
 
   .btn-solid {

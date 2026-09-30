@@ -1,32 +1,47 @@
-import { ArrowUpRight } from "lucide-react";
 import { FINISH_PAGES, finishPath } from "../data/landingPages";
+import { PHOTOS, photoSrc } from "../data/photos";
 
-const CARD_TEXTURE = { "venetian-plaster": "navy", limewash: "terracotta", wallcoverings: "burgundy", "dark-rooms": "charcoal", staircases: "plaster-teal" };
+// One row of finishes. Plaster and limewash have no project photos yet, so they
+// show a generated texture and say so; the others use real Arcan photos.
+const CARD_VISUAL = {
+  "venetian-plaster": { texture: "plaster-teal" },
+  limewash: { texture: "limewash-ivory" },
+  wallcoverings: { photo: PHOTOS.muralInstall },
+  "dark-rooms": { photo: PHOTOS.wineBar },
+  staircases: { photo: PHOTOS.staircaseLong },
+};
 
-// Cards linking to the finish pages, each on its own texture.
-export default function FinishLinks({ exclude }) {
+export default function FinishLinks({ exclude, title = "Finishes with depth, not just a coat of paint." }) {
   const entries = Object.entries(FINISH_PAGES).filter(([slug]) => slug !== exclude);
   return (
-    <section aria-labelledby="finish-links-heading" className="bg-paper">
+    <section aria-labelledby="finish-links-heading" className="border-t border-line bg-paper">
       <div className="mx-auto max-w-[1440px] px-4 py-20 sm:px-6 md:px-10 lg:py-28">
         <p className="eyebrow">Finishes</p>
         <h2 id="finish-links-heading" className="mt-4 max-w-3xl font-display text-4xl leading-[1.08] tracking-[-0.015em] text-ink sm:text-5xl">
-          Explore the finishes.
+          {title}
         </h2>
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {entries.map(([slug, page]) => (
-            <li key={slug}>
-              <a
-                href={finishPath(slug)}
-                className="group relative flex min-h-[220px] flex-col justify-end overflow-hidden p-7 text-paper transition-transform duration-300 hover:-translate-y-1"
-                style={{ backgroundImage: `linear-gradient(rgba(6,12,14,.15), rgba(6,12,14,.7)), url(/luxury/${CARD_TEXTURE[slug]}.webp)`, backgroundSize: "cover", backgroundPosition: "center" }}
-              >
-                <ArrowUpRight className="absolute right-5 top-5 opacity-70 transition group-hover:opacity-100" size={22} aria-hidden="true" />
-                <span className="font-display text-3xl">{page.service}</span>
-                <span className="mt-2 text-sm text-paper/80">{page.intro.split(" — ")[0]}</span>
-              </a>
-            </li>
-          ))}
+        <ul className={`mt-14 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 ${entries.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
+          {entries.map(([slug, page]) => {
+            const visual = CARD_VISUAL[slug];
+            return (
+              <li key={slug}>
+                <a href={finishPath(slug)} className="group block">
+                  <div className="relative overflow-hidden arch">
+                    {visual.photo ? (
+                      <img src={photoSrc(visual.photo, 800)} alt={visual.photo.alt} loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+                    ) : (
+                      <>
+                        <div role="img" aria-label={`${page.service} texture, illustrative`} className="aspect-[3/4] w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.04]" style={{ backgroundImage: `url(/luxury/${visual.texture}.webp)` }} />
+                        <span className="absolute bottom-3 left-3 bg-paper/90 px-2 py-1 text-[11px] uppercase tracking-[0.14em] text-ink-soft">Illustrative</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="mt-4 font-display text-2xl text-ink group-hover:text-brand-deep">{page.service}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{page.cardText}</p>
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

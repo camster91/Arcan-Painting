@@ -70,7 +70,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="tx-blush border-t border-line">
+    <section id="faq" className="border-t border-line bg-paper-deep">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-6 md:px-10 lg:grid-cols-12 lg:py-28">
         <div className="lg:col-span-4">
           <p className="eyebrow mb-5">Questions</p>

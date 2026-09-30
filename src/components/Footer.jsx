@@ -20,12 +20,12 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="tx-charcoal bg-ink text-paper">
+    <footer className="bg-ink pb-24 text-paper md:pb-0">
       <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-20 sm:px-6 md:px-10">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <p className="font-display text-4xl leading-tight sm:text-5xl">
-              Have a room, a floor or a building in mind?
+              Painting, plaster and wallcoverings across the Greater Toronto Area.
             </p>
             <div className="mt-8 flex flex-col gap-3 text-lg">
               <a href="tel:+14167272148" className="w-fit border-b border-paper/30 pb-0.5 transition-colors hover:border-brand hover:text-brand">
