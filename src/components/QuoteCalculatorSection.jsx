@@ -227,14 +227,9 @@ export default function QuoteCalculatorSection() {
           className={`text-center mb-16 lg:mb-24 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-brand rounded-full p-1.5">
-              <Calculator size={18} className="text-white" />
-            </div>
-            <span className="text-white/90 text-lg font-medium">
-              Quick Estimate Calculator
-            </span>
-          </div>
+          <p className="eyebrow-light mb-6 inline-flex items-center gap-2">
+            <Calculator size={14} aria-hidden="true" /> Quick estimate calculator
+          </p>
 
           {/* Main Headline */}
           <h1 className="display-h1 text-paper mb-8">
@@ -394,26 +389,26 @@ export default function QuoteCalculatorSection() {
             )}
 
             {/* Result */}
-            <div className="mt-8 bg-ink/80 border border-white/15 rounded-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="mt-8 bg-ink p-7 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <div className="text-paper/60 text-lg">
-                  Your Estimated Range
+                <div className="eyebrow-light">
+                  Your estimated range
                 </div>
-                <div className="text-5xl lg:text-6xl font-bold text-white mt-2">
+                <div className="font-display text-5xl lg:text-6xl text-paper mt-3">
                   ${fmt(estimate.low)} – ${fmt(estimate.high)}
                 </div>
-                <div className="text-sm text-paper/60 mt-2">
+                <div className="text-sm text-paper/75 mt-3">
                   Based on your inputs. Includes prep, materials, and cleanup.
                 </div>
               </div>
               <button
-                className="w-full md:w-auto px-8 py-4 rounded-sm font-bold text-xl bg-brand hover:bg-[#D3B67F] text-ink shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                className="btn-brand w-full md:w-auto"
                 onClick={() => {
                   const el = document.getElementById("contact");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                Lock in a free exact quote
+                Request a project review
               </button>
             </div>
           </div>

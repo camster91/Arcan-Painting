@@ -11,6 +11,7 @@ export const PHOTOS = {
   staircaseLong: { file: "IMG-20260212-WA0023", alt: "Long staircase refinished with black treads and white risers" },
   blackWindow: { file: "20180516_145706", alt: "Exterior window frame painted black against red brick" },
   blueAccent: { file: "PXL_20210109_221844861", alt: "Living room with a deep blue accent wall behind a white fireplace mantel" },
+  redBeams: { file: "20160901_105150", alt: "Commercial ceiling beams being painted, with a red accent" },
   floralBedroom: { file: "PXL_20260213_210915996", alt: "Bedroom wall finished with a soft floral wallpaper" },
 };
 
