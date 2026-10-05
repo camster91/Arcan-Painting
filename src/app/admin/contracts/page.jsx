@@ -244,7 +244,7 @@ export default function ContractsPage() {
                 <input
                   type="text"
                   aria-label="Search contracts"
-                  placeholder="Search contracts by number, title, or client..."
+                  placeholder="Search contracts by number, title, or customer..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import { MoreHorizontal, X } from "lucide-react";
+import { containDialogFocus } from "@/utils/dialogFocus";
 import { getAdminNavigation, getActiveAdminGroup, matchesAdminPath } from "@/components/admin/navigation";
 
 export default function BottomTabNav({ unreadCount = 0 }) {
@@ -24,7 +25,7 @@ export default function BottomTabNav({ unreadCount = 0 }) {
 
   return (
     <nav aria-label="Business navigation" className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50 lg:hidden">
-      <dialog ref={dialog} id="admin-more-menu" aria-labelledby="admin-more-title"
+      <dialog ref={dialog} tabIndex={-1} onKeyDown={containDialogFocus} id="admin-more-menu" aria-labelledby="admin-more-title"
         onClose={() => trigger.current?.focus()}
         className="m-0 mt-auto w-full max-w-none max-h-[85dvh] overflow-y-auto rounded-t-xl p-4 backdrop:bg-black/50">
         <div className="flex items-center justify-between mb-4">

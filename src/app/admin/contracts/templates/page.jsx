@@ -198,10 +198,10 @@ function TemplateForm({ initial, onCancel, onSaved }) {
           </button>
           <button
             onClick={() => saveMutation.mutate(form)}
-            disabled={saveMutation.isLoading}
+            disabled={saveMutation.isPending}
             className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg"
           >
-            {saveMutation.isLoading ? "Saving..." : "Save Template"}
+            {saveMutation.isPending ? "Saving..." : "Save Template"}
           </button>
         </div>
       </div>

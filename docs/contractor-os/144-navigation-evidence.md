@@ -14,13 +14,24 @@ Date: 2026-10-05.
 - Home no-op Quick Actions becomes View leads; placeholder Export Data is removed.
 - Team no-op details action becomes an explicit keyboard-accessible edit action; quick controls remain visible without hover.
 
+## Further UX audit
+
+- Shared mobile dialogs use native modal semantics, stable registration, explicit focus containment, nested Escape isolation, and focus restoration. Opening/rerendering a form no longer pushes browser history entries or unlocks the body while another modal remains open.
+- Mutation controls use the installed React Query pending state on booking-slot, crew, capture, and template actions. Booking-slot inputs have labels; load failures offer retry, failed deletion displays an alert, and deletion asks for confirmation.
+- User-facing Job/Customer terminology is consistent across the audited admin screens; database concepts and URLs retain their existing names.
+- Job cards offer explicit keyboard-accessible details/actions. Nonfunctional deletion is removed; completed jobs are not marked urgent just because their end date has passed.
+- Synthetic Home tasks display status instead of unsaved checkboxes. The duplicate floating action menu is removed.
+- Settings explains per-field saving; the old Save All action that could resubmit a stale fetched snapshot is removed.
+- Pending, failure, retained-input, delete-confirmation, nested modal and stable-registration regression tests added.
+
 ## Verification
 
-- Full suite: 52 files passed, one skipped; 172 tests passed, three skipped.
+- Full suite: 54 files passed, one skipped; 177 tests passed, three skipped.
 - Navigation regression tests: three passed, including route changes, supporting destinations and focus return.
 - Typecheck and production build passed.
 - Lint passed with warnings; existing repository warnings remain.
-- Browser install failed: downloaded Chromium archives were empty/invalid. Real browser focus trap, Escape, 390px/tablet/desktop, zoom and screen-reader checks remain unverified. jsdom is not evidence for native browser focus containment.
+- Chromium 153: 18 browser tests passed across desktop and Pixel 5 projects. Ten rendered component tests exercise nested dialogs, keyboard focus containment, Escape, focus return, navigation, and 320/390/768/1440px overflow; eight public smoke checks exercise conversion/account routes and the unconfigured-database health gate. Tests use production CSS. Admin component fixtures are isolated and do not establish authenticated workflow or API authorization correctness. Browser zoom and screen-reader checks remain unverified.
+- Local browser override uses a temporary Chromium executable and disables video because FFmpeg is unavailable; it is not committed and does not change application security or CI configuration.
 
 ## Reconciliation and remaining work
 
@@ -30,7 +41,7 @@ Open PRs observed: #123, #125, #129, #132, #135, #136, #137. Public redesign #13
 
 Main has no Reports page or reporting endpoints beyond the dashboard. No dead Reports link is added. A functioning, permission-safe Reports destination remains part of #144/#145/#146 and should reuse reconciled Contractor OS reporting foundations.
 
-This pass is not completion of #144. Remaining acceptance includes an admin-wide workflow/terminology/failure-state audit, reusable screen conventions, role-appropriate navigation, duplicate control reduction, authenticated representative owner/office/crew journeys and rendered accessibility/responsive evidence. #144 stays open. Later phases are not declared complete.
+This pass is not completion of #144. Remaining acceptance includes completing the workflow/failure-state audit, reusable screen conventions, role-appropriate navigation, duplicate control reduction, authenticated representative owner/office/crew journeys and rendered accessibility/responsive evidence. #144 stays open. Later phases are not declared complete.
 
 Roadmap issue claims about running production/staging revisions have not been verified against live infrastructure in this pass. #99 production approval remains required. main pushes trigger a production deployment workflow; do not merge this PR as routine housekeeping.
 

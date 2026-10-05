@@ -100,14 +100,14 @@ export function ContractDetailModal({ contract, isOpen, onClose, onUpdated }) {
 
             <div>
               <label className="text-sm font-medium text-slate-700">
-                Project Title
+                Job Title
               </label>
               <p className="text-slate-900">{contract.title}</p>
             </div>
 
             <div>
               <label className="text-sm font-medium text-slate-700">
-                Client
+                Customer
               </label>
               <p className="text-slate-900">{contract.client_name}</p>
               <p className="text-slate-600">{contract.client_email}</p>

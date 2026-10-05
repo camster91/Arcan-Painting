@@ -333,7 +333,7 @@ export default function InvoicesPage() {
                 <input
                   type="text"
                   aria-label="Search invoices"
-                  placeholder="Search invoices by number, title, or client..."
+                  placeholder="Search invoices by number, title, or customer..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
@@ -434,7 +434,7 @@ export default function InvoicesPage() {
                       Invoice
                     </th>
                     <th className="text-left py-4 px-6 text-sm font-semibold text-slate-700">
-                      Client
+                      Customer
                     </th>
                     <th className="text-left py-4 px-6 text-sm font-semibold text-slate-700">
                       Dates
@@ -463,7 +463,7 @@ export default function InvoicesPage() {
                       </td>
                       <td className="py-4 px-6">
                         <div className="font-medium text-slate-900">
-                          {inv.client_name || "Direct Client"}
+                          {inv.client_name || "Direct Customer"}
                         </div>
                         <div className="text-sm text-slate-600">
                           {inv.client_email}

@@ -316,10 +316,10 @@ export default function TeamManagementPage() {
             <div className="md:col-span-3 flex justify-end">
               <button
                 type="submit"
-                disabled={inviteMutation.isLoading}
+                disabled={inviteMutation.isPending}
                 className="px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-60 transition-colors"
               >
-                {inviteMutation.isLoading ? "Sending..." : "Send Invite"}
+                {inviteMutation.isPending ? "Sending..." : "Send Invite"}
               </button>
             </div>
           </form>

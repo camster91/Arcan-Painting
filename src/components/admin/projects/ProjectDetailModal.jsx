@@ -54,7 +54,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update project");
+        throw new Error("Failed to update job");
       }
 
       setIsEditing(false);
@@ -145,7 +145,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
               onClick={() => setIsEditing(true)}
               className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              Edit Project
+              Edit Job
             </button>
             {project.estimate_id && (
               <a
@@ -157,7 +157,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
             )}
             {project.lead_email && (
               <a
-                href={`mailto:${project.lead_email}?subject=Project Update - ${project.project_name}&body=Hi ${project.lead_name},%0D%0A%0D%0AHere's an update on your ${project.project_name} project.`}
+                href={`mailto:${project.lead_email}?subject=Job Update - ${project.project_name}&body=Hi ${project.lead_name},%0D%0A%0D%0AHere's an update on your ${project.project_name} project.`}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 Email Customer
@@ -179,7 +179,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
     <MobileModal
       isOpen={true}
       onClose={onClose}
-      title="Project Details"
+      title="Job Details"
       footer={footer}
       className="lg:max-w-5xl"
     >
@@ -188,7 +188,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="text-sm font-medium text-slate-700">
-                Project Name
+                Job Name
               </label>
               <p className="text-lg font-bold text-slate-900">
                 {project.project_name}
@@ -307,7 +307,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
         )}
 
         <div>
-          <h3 className="font-semibold text-slate-900 mb-3">Project Details</h3>
+          <h3 className="font-semibold text-slate-900 mb-3">Job Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -435,7 +435,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
         </div>
 
         <div>
-          <h3 className="font-semibold text-slate-900 mb-3">Project Notes</h3>
+          <h3 className="font-semibold text-slate-900 mb-3">Job Notes</h3>
           {isEditing ? (
             <textarea
               rows={4}
@@ -444,7 +444,7 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
                 setEditData({ ...editData, notes: e.target.value })
               }
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-              placeholder="Project notes, special instructions, etc."
+              placeholder="Job notes, special instructions, etc."
             />
           ) : (
             <div className="bg-slate-50 p-3 rounded-lg">

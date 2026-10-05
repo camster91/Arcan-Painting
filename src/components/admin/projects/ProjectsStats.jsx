@@ -18,7 +18,7 @@ export default function ProjectsStats({ stats }) {
           </div>
           <div>
             <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
-            <p className="text-sm text-slate-600">Total Projects</p>
+            <p className="text-sm text-slate-600">Total Jobs</p>
           </div>
         </div>
       </div>

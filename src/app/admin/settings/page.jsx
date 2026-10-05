@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Upload,
-  Save,
   Image as ImageIcon,
   Percent,
   Settings,
@@ -470,15 +469,9 @@ export default function SettingsPage() {
           </Section>
         )}
 
-        {/* Save All (optional) */}
-        <div className="flex items-center justify-end">
-          <button
-            onClick={() => mutation.mutate(settings)}
-            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
-          >
-            <Save size={16} /> Save Changes
-          </button>
-        </div>
+        <p role="status" className="mt-4 text-sm text-slate-600">
+          {mutation.isPending ? "Saving changes…" : "Changes save when you leave a field."}
+        </p>
       </div>
 
       {/* Success Notification */}

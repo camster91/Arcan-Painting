@@ -132,7 +132,7 @@ export function FollowUpDetailModal({ followUp, onClose, onUpdate }) {
                           Estimate Follow-up
                         </option>
                         <option value="project_check_in">
-                          Project Check-in
+                          Job Check-in
                         </option>
                       </select>
                     ) : (

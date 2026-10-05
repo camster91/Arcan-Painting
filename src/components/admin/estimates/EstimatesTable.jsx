@@ -54,7 +54,7 @@ export function EstimatesTable({
               Lead
             </th>
             <th className="text-left py-3 px-4 font-medium text-slate-900">
-              Project
+              Job
             </th>
             <th className="text-left py-3 px-4 font-medium text-slate-900">
               Value
@@ -188,7 +188,7 @@ export function EstimatesTable({
                         title={
                           !estimate.lead_email
                             ? "No email address"
-                            : "Send to Client"
+                            : "Send to Customer"
                         }
                       >
                         <Send

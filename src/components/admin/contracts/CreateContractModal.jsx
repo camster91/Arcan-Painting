@@ -130,7 +130,7 @@ export default function CreateContractModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Client *
+              Customer *
             </label>
             <select
               value={formData.lead_id}
@@ -171,7 +171,7 @@ export default function CreateContractModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Link to Project
+              Link to Job
             </label>
             <select
               value={formData.project_id}
@@ -188,11 +188,11 @@ export default function CreateContractModal({
           </div>
         </div>
 
-        {/* Project Details */}
+        {/* Job Details */}
         <div className="space-y-4 sm:space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project Title *
+              Job Title *
             </label>
             <input
               type="text"
@@ -210,7 +210,7 @@ export default function CreateContractModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project Description
+              Job Description
             </label>
             <textarea
               rows={3}
@@ -310,7 +310,7 @@ export default function CreateContractModal({
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="w-5 h-5 text-blue-600" />
             <h3 className="text-base sm:text-lg font-semibold text-slate-900">
-              Project Timeline
+              Job Timeline
             </h3>
           </div>
 

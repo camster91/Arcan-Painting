@@ -53,7 +53,7 @@ export default function ProjectsPage() {
   };
 
   const statusOptions = [
-    { label: "All Projects", value: "all", count: statusCounts.all },
+    { label: "All Jobs", value: "all", count: statusCounts.all },
     { label: "Scheduled", value: "scheduled", count: statusCounts.scheduled },
     {
       label: "In Progress",
@@ -70,7 +70,7 @@ export default function ProjectsPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading projects...</p>
+          <p className="text-slate-600">Loading jobs...</p>
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ export default function ProjectsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+              <h1 className="text-2xl font-bold text-slate-900">Jobs</h1>
               <p className="text-sm text-slate-600 mt-1">
                 {stats.total} total • {stats.active} active projects
               </p>
@@ -121,7 +121,7 @@ export default function ProjectsPage() {
                 className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
               >
                 <Plus size={16} />
-                New Project
+                New Job
               </button>
             </div>
           </div>
@@ -158,8 +158,8 @@ export default function ProjectsPage() {
                 />
                 <input
                   type="text"
-                  aria-label="Search projects"
-                  placeholder="Search projects by name, client, or location..."
+                  aria-label="Search jobs"
+                  placeholder="Search jobs by name, customer, or location..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
@@ -209,7 +209,7 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* Projects Content */}
+      {/* Jobs Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {filteredProjects.length === 0 ? (
           <NoProjectsFound

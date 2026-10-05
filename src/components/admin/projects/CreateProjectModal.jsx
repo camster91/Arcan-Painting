@@ -31,7 +31,7 @@ export default function CreateProjectModal({ estimates, onClose, onSuccess }) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create project");
+        throw new Error("Failed to create job");
       }
 
       onSuccess();
@@ -65,7 +65,7 @@ export default function CreateProjectModal({ estimates, onClose, onSuccess }) {
             Creating...
           </>
         ) : (
-          "Create Project"
+          "Create Job"
         )}
       </button>
     </div>
@@ -75,7 +75,7 @@ export default function CreateProjectModal({ estimates, onClose, onSuccess }) {
     <MobileModal
       isOpen={true}
       onClose={onClose}
-      title="Create New Project"
+      title="Create New Job"
       footer={footer}
       className="lg:max-w-2xl"
     >
@@ -118,7 +118,7 @@ export default function CreateProjectModal({ estimates, onClose, onSuccess }) {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project Name
+              Job Name
             </label>
             <input
               type="text"
@@ -197,7 +197,7 @@ export default function CreateProjectModal({ estimates, onClose, onSuccess }) {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project Notes
+              Job Notes
             </label>
             <textarea
               rows={3}

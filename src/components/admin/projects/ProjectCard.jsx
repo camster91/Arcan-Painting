@@ -9,8 +9,6 @@ import {
   Play,
   Pause,
   CheckCircle,
-  Trash2,
-  ArrowRight,
   User,
   Users,
   Target,
@@ -28,7 +26,6 @@ import {
 export default function ProjectCard({
   project,
   onSelectProject,
-  onAction,
   onStatusUpdate,
   onViewProgress,
   onViewWorkflows,
@@ -46,9 +43,7 @@ export default function ProjectCard({
 
   // Get priority indicator based on status and timeline
   const getPriorityIndicator = (project) => {
-    if (project.status === "cancelled") return "low";
-    if (project.end_date && new Date(project.end_date) <= new Date())
-      return "urgent";
+    if (["cancelled", "completed"].includes(project.status)) return "low";
     if (project.status === "in_progress") return "high";
     if (project.status === "paused") return "urgent";
     return "normal";
@@ -58,12 +53,11 @@ export default function ProjectCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200 p-5 transition-all duration-200 cursor-pointer group relative overflow-hidden ${
+      className={`bg-white rounded-xl border border-slate-200 p-5 transition-all duration-200 group relative overflow-hidden ${
         isHovered
           ? "shadow-xl scale-105 border-amber-300"
           : "shadow-md hover:shadow-lg"
       }`}
-      onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -114,9 +108,9 @@ export default function ProjectCard({
             e.stopPropagation();
             setShowActions(!showActions);
           }}
-          className={`p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all duration-200 ${
-            isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-          }`}
+          aria-label={`Actions for ${project.project_name}`}
+          aria-expanded={showActions}
+          className="p-3 rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-amber-600"
         >
           <MoreVertical size={18} />
         </button>
@@ -200,9 +194,7 @@ export default function ProjectCard({
 
       {/* Quick Status Actions on Hover */}
       <div
-        className={`flex items-center gap-2 mb-4 transition-all duration-200 relative z-10 ${
-          isHovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
-        }`}
+        className="flex items-center gap-2 mb-4 relative z-10"
       >
         {project.status === "scheduled" && (
           <button
@@ -256,20 +248,10 @@ export default function ProjectCard({
 
       {/* Click indicator */}
       <div className="flex items-center justify-end pt-4 border-t border-slate-100 relative z-10">
-        {/* Click to view indicator */}
-        <div
-          className={`flex items-center gap-2 text-amber-600 font-medium transition-all duration-200 ${
-            isHovered ? "opacity-100 translate-x-0" : "opacity-60 translate-x-2"
-          }`}
-        >
-          <span className="text-sm">View Details</span>
-          <ArrowRight
-            size={16}
-            className={`transition-transform duration-200 ${
-              isHovered ? "translate-x-1" : ""
-            }`}
-          />
-        </div>
+        <button type="button" onClick={handleCardClick}
+          className="min-h-11 px-3 text-sm font-medium text-amber-800 rounded-lg hover:bg-amber-50 focus-visible:ring-2 focus-visible:ring-amber-600">
+          View job
+        </button>
       </div>
 
       {/* Dropdown Actions Menu */}
@@ -304,13 +286,13 @@ export default function ProjectCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onAction?.("edit", project);
+              onSelectProject(project);
               setShowActions(false);
             }}
             className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
           >
             <Edit size={14} />
-            Edit Project
+            View / edit job
           </button>
           {project.status === "scheduled" && (
             <button
@@ -322,7 +304,7 @@ export default function ProjectCard({
               className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
             >
               <Play size={14} />
-              Start Project
+              Start Job
             </button>
           )}
           {project.status === "in_progress" && (
@@ -336,7 +318,7 @@ export default function ProjectCard({
                 className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
               >
                 <Pause size={14} />
-                Pause Project
+                Pause Job
               </button>
               <button
                 onClick={(e) => {
@@ -361,21 +343,9 @@ export default function ProjectCard({
               className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
             >
               <Play size={14} />
-              Resume Project
+              Resume Job
             </button>
           )}
-          <div className="border-t border-slate-100 my-1" />
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAction?.("delete", project);
-              setShowActions(false);
-            }}
-            className="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50 flex items-center gap-3"
-          >
-            <Trash2 size={14} />
-            Delete
-          </button>
         </div>
       )}
 
