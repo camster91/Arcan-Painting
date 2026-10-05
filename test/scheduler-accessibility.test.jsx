@@ -1,10 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import SchedulerSection from "@/components/SchedulerSection";
 
+const mutation = vi.hoisted(() => ({ isPending: false, mutate: vi.fn() }));
+
 vi.mock("@tanstack/react-query", () => ({
-  useMutation: () => ({ isLoading: false, mutate: vi.fn() }),
+  useMutation: () => mutation,
   useQuery: () => ({
     data: {
       slots: [
@@ -23,6 +25,17 @@ vi.mock("@tanstack/react-query", () => ({
 }));
 
 describe("SchedulerSection accessibility", () => {
+  beforeEach(() => { cleanup(); mutation.isPending = false; mutation.mutate.mockClear(); });
+
+  it("disables a selected booking and announces pending submission", () => {
+    mutation.isPending = true;
+    render(<SchedulerSection />);
+    fireEvent.click(screen.getByRole("button", { name: /10:00 - 11:00.*2 left/i }));
+    const submit = screen.getByRole("button", { name: "Booking..." });
+    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(mutation.mutate).not.toHaveBeenCalled();
+  });
   it("uses the same empty scheduler shell during server rendering", () => {
     const markup = renderToString(<SchedulerSection />);
 
