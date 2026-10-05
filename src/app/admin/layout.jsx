@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import {
   Menu,
   X,
-  LayoutGrid,
-  Inbox,
-  Users,
-  FileText,
-  Briefcase,
-  Wallet,
-  Settings,
 } from "lucide-react";
+import { getAdminNavigation, getActiveAdminGroup, matchesAdminPath } from "@/components/admin/navigation";
 import BottomTabNav from "@/components/BottomTabNav";
 import MobileBreadcrumb from "@/components/MobileBreadcrumb";
 import { AdminAuthProvider, useAdminAuth } from "@/contexts/AdminAuthContext";
@@ -20,19 +14,18 @@ import { ModalProvider, useModal } from "@/contexts/ModalContext";
 import { initSmartPreloader } from "@/utils/pagePreloader";
 
 function AdminLayoutContent({ children }) {
-  const { user, loading, authChecked, authError, logout, refreshAuth } =
+  const { loading, authChecked, authError, logout } =
     useAdminAuth();
   const { isModalOpen } = useModal();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentPath, setCurrentPath] = useState("");
+  const { pathname: currentPath } = useLocation();
   const [isOffline, setIsOffline] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setCurrentPath(window.location.pathname);
       // connectivity listeners
       const onOffline = () => setIsOffline(true);
       const onOnline = () => setIsOffline(false);
@@ -87,113 +80,8 @@ function AdminLayoutContent({ children }) {
     }
   }, [logout]);
 
-  // One menu item per step of the business: lead → customer → estimate →
-  // job → invoice. Secondary screens are tabs inside the step they belong to.
-  const groups = useMemo(
-    () => [
-      {
-        key: "home",
-        label: "Home",
-        icon: LayoutGrid,
-        entryHref: "/admin",
-        tabs: [],
-        matchers: ["/admin$"],
-        description: "What needs attention",
-        showNotificationBadge: false,
-      },
-      {
-        key: "leads",
-        label: "Leads",
-        icon: Inbox,
-        entryHref: "/admin/leads",
-        tabs: [
-          { label: "Leads", href: "/admin/leads", description: "New enquiries" },
-          { label: "Follow-ups", href: "/admin/follow-ups", description: "Scheduled calls" },
-          { label: "Notifications", href: "/admin/messages", description: "New activity", badge: unreadCount > 0 ? unreadCount : null },
-        ],
-        matchers: ["/admin/leads", "/admin/follow-ups", "/admin/messages"],
-        description: "Enquiries and follow-ups",
-        showNotificationBadge: unreadCount > 0,
-      },
-      {
-        key: "customers",
-        label: "Customers",
-        icon: Users,
-        entryHref: "/admin/clients",
-        tabs: [],
-        matchers: ["/admin/clients"],
-        description: "Everyone you have sold to",
-        showNotificationBadge: false,
-      },
-      {
-        key: "estimates",
-        label: "Estimates",
-        icon: FileText,
-        entryHref: "/admin/estimates",
-        tabs: [
-          { label: "Estimates", href: "/admin/estimates", description: "Quotes" },
-          { label: "Contracts", href: "/admin/contracts", description: "Existing agreements" },
-        ],
-        matchers: ["/admin/estimates", "/admin/contracts"],
-        description: "Quotes for customers",
-        showNotificationBadge: false,
-      },
-      {
-        key: "jobs",
-        label: "Jobs",
-        icon: Briefcase,
-        entryHref: "/admin/projects",
-        tabs: [
-          { label: "Jobs", href: "/admin/projects", description: "Sold work" },
-          { label: "Calendar", href: "/admin/calendar", description: "Visits and job dates" },
-          { label: "Today", href: "/admin/today", description: "Jobs in progress" },
-          { label: "Capture", href: "/admin/capture", description: "Progress photos" },
-        ],
-        matchers: ["/admin/projects", "/admin/calendar", "/admin/today", "/admin/capture"],
-        description: "Scheduled and active work",
-        showNotificationBadge: false,
-      },
-      {
-        key: "invoices",
-        label: "Invoices",
-        icon: Wallet,
-        entryHref: "/admin/invoices",
-        tabs: [
-          { label: "Invoices", href: "/admin/invoices", description: "Bills" },
-          { label: "Payments", href: "/admin/payments", description: "Money received" },
-        ],
-        matchers: ["/admin/invoices", "/admin/payments"],
-        description: "Billing and payments",
-        showNotificationBadge: false,
-      },
-      {
-        key: "settings",
-        label: "Settings",
-        icon: Settings,
-        entryHref: "/admin/settings",
-        tabs: [
-          { label: "Company", href: "/admin/settings", description: "Business details" },
-          { label: "Booking slots", href: "/admin/availability", description: "Estimate visit times" },
-          { label: "Team", href: "/admin/team", description: "Staff accounts" },
-          { label: "Password", href: "/account/change-password", description: "Your sign-in" },
-        ],
-        matchers: ["/admin/settings", "/admin/availability", "/admin/team", "/account/change-password"],
-        description: "Business setup",
-        showNotificationBadge: false,
-      },
-    ],
-    [unreadCount],
-  );
-
-  const activeGroup = useMemo(() => {
-    const path = currentPath || "";
-    // Exact dashboard match
-    if (path === "/admin") return groups[0];
-    return (
-      groups.find((g) => g.matchers.some((m) => new RegExp(m).test(path))) ||
-      groups[0]
-    );
-  }, [currentPath, groups]);
+  const groups = useMemo(() => getAdminNavigation(unreadCount), [unreadCount]);
+  const activeGroup = getActiveAdminGroup(currentPath, groups);
 
   // During auth check: render children immediately so page-level redirects can fire
   // The auth check in AdminAuthContext will redirect to login if needed
@@ -278,6 +166,9 @@ function AdminLayoutContent({ children }) {
             {/* Mobile menu button */}
             <div className="lg:hidden">
               <button
+                aria-label={mobileMenuOpen ? "Close account menu" : "Open account menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="admin-account-menu"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               >
@@ -288,7 +179,7 @@ function AdminLayoutContent({ children }) {
 
           {/* Mobile Settings Menu */}
           {mobileMenuOpen && (
-            <div className="lg:hidden border-t border-slate-200 py-4">
+            <div id="admin-account-menu" className="lg:hidden border-t border-slate-200 py-4">
               <div className="space-y-1">
                 <a
                   href="/account/change-password"
@@ -345,13 +236,14 @@ function AdminLayoutContent({ children }) {
           {/* Sidebar */}
           <aside className="hidden lg:block sticky top-24 self-start">
             <nav className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-              {groups.map((g, index) => {
+              {groups.map((g) => {
                 const Icon = g.icon;
                 const active = g.key === activeGroup.key;
                 return (
                   <div key={g.key} className="relative">
                     <a
                       href={g.entryHref}
+                      aria-current={active ? "page" : undefined}
                       className={`group flex items-start gap-4 px-5 py-4 text-sm border-b last:border-b-0 transition-all duration-200 hover:bg-slate-50 ${
                         active
                           ? "bg-amber-50 text-amber-900 border-amber-100 shadow-sm"
@@ -405,13 +297,12 @@ function AdminLayoutContent({ children }) {
                         <div className="px-5 py-3">
                           <div className="space-y-1">
                             {g.tabs.map((tab) => {
-                              const isTabActive = (
-                                currentPath || ""
-                              ).startsWith(tab.href);
+                              const isTabActive = matchesAdminPath(currentPath, tab.href);
                               return (
                                 <a
                                   key={tab.href}
                                   href={tab.href}
+                                  aria-current={isTabActive ? "page" : undefined}
                                   className={`flex items-center justify-between py-2 px-3 rounded-lg text-sm transition-colors ${
                                     isTabActive
                                       ? "bg-amber-100 text-amber-900 font-medium"
@@ -439,17 +330,18 @@ function AdminLayoutContent({ children }) {
           </aside>
 
           {/* Main content area */}
-          <main className="min-h-[70vh]">
+          <main id="admin-content" tabIndex={-1} className="min-h-[70vh] min-w-0">
             {/* Tabs for active group (if any) */}
             {activeGroup?.tabs?.length ? (
               <div className="mb-6 overflow-x-auto">
                 <div className="inline-flex bg-white border border-slate-200 rounded-lg p-1 gap-1">
                   {activeGroup.tabs.map((t) => {
-                    const isActive = (currentPath || "").startsWith(t.href);
+                    const isActive = matchesAdminPath(currentPath, t.href);
                     return (
                       <a
                         key={t.href}
                         href={t.href}
+                        aria-current={isActive ? "page" : undefined}
                         className={`px-5 py-2.5 text-sm rounded-md whitespace-nowrap transition-colors ${
                           isActive
                             ? "bg-amber-500 text-white"

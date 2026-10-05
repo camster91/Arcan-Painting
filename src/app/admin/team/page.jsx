@@ -503,10 +503,7 @@ export default function TeamManagementPage() {
                     member={member}
                     onEdit={handleEdit}
                     onDeactivate={handleDeactivate}
-                    onViewDetails={(member) => {
-                      // Could implement a detailed view modal in the future
-                      console.log("View details for:", member.name);
-                    }}
+                    onViewDetails={handleEdit}
                   />
                 ))}
               </div>
