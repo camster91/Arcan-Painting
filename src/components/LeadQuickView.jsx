@@ -10,9 +10,7 @@ import {
   Clock,
   User,
   Edit,
-  MessageSquare,
   FileText,
-  Plus,
 } from "lucide-react";
 
 export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
@@ -46,7 +44,6 @@ export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
 
   const tabs = [
     { id: "details", label: "Details", icon: User },
-    { id: "notes", label: "Notes", icon: FileText },
     { id: "timeline", label: "Timeline", icon: Clock },
   ];
 
@@ -222,6 +219,8 @@ export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
                 </div>
               </div>
 
+              {lead.notes && <section className="rounded-lg bg-slate-50 p-3"><h3 className="text-sm font-medium text-slate-800">Legacy notes</h3><p className="text-sm text-slate-600 whitespace-pre-wrap break-words">{lead.notes}</p><p className="text-xs text-slate-500 mt-2">Author and note timestamp were not recorded.</p></section>}
+
               {/* Timeline */}
               <div>
                 <h3 className="text-sm font-medium text-slate-700 mb-3">
@@ -262,44 +261,6 @@ export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
             </div>
           )}
 
-          {/* Notes Tab */}
-          {activeTab === "notes" && (
-            <div className="p-6">
-              <div className="space-y-4">
-                {lead.notes ? (
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-700 whitespace-pre-wrap">
-                      {lead.notes}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <FileText
-                      size={32}
-                      className="text-slate-300 mx-auto mb-2"
-                    />
-                    <p className="text-slate-500">No notes yet</p>
-                    <button
-                      onClick={() => onAction("add_note", lead)}
-                      className="mt-2 text-sm text-amber-600 hover:text-amber-700 font-medium"
-                    >
-                      Add a note
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => onAction("edit_notes", lead)}
-                  className="w-full p-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-amber-300 hover:text-amber-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <Plus size={16} />
-                  Add Note
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Timeline Tab */}
           {activeTab === "timeline" && (
             <div className="p-6">
               <CustomerTimeline key={lead.id} leadId={lead.id} />

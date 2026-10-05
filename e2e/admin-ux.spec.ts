@@ -122,3 +122,31 @@ test("customer activity failure offers retry without displaying an empty history
   await page.getByRole("button", { name: "Refresh customer activity" }).click();
   await expect(page.getByText("No recorded activity for this selection.")).toBeVisible();
 });
+
+test("internal notes retain content after an ambiguous save and retry with the same key", async ({ page }) => {
+  const notes = new Map<string, Record<string, unknown>>();
+  const requests: Array<{ text: string; requestId: string }> = [];
+  await page.route("**/api/leads/7/timeline", (route) => route.fulfill({ json: { events: [...notes.values()] } }));
+  await page.route("**/api/leads/7/notes", (route) => {
+    const payload = route.request().postDataJSON();
+    requests.push(payload);
+    notes.set(payload.requestId, { id: `activity:${payload.requestId}:recorded`, event_type: "staff_note", title: "Staff note", detail: payload.text, actor: { user_id: 1, name: "Fixture staff" }, visibility: "internal", occurred_at: "2026-10-05T19:00:00Z" });
+    return requests.length === 1 ? route.fulfill({ status: 500, json: { error: "Could not confirm the note was saved. Retry the same note." } }) : route.fulfill({ json: { success: true, replayed: true } });
+  });
+  await fixture(page);
+  await page.context().addCookies([{ name: "arcan_csrf", value: "fixture-token", url: "http://127.0.0.1:4178" }]);
+  await page.getByRole("button", { name: "Customer history" }).click();
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  await page.getByLabel("Add an internal note").fill("Call completed; customer requested a Tuesday visit.");
+  await page.getByRole("button", { name: "Save note", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("Retry the same note");
+  await expect(page.getByLabel("Add an internal note")).toHaveValue("Call completed; customer requested a Tuesday visit.");
+  await page.getByRole("button", { name: "Save note", exact: true }).click();
+  await expect(page.getByText("Note saved.", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Add an internal note")).toHaveValue("");
+  await page.getByLabel("Activity type").selectOption("notes");
+  await expect(page.getByText("Recorded by Fixture staff · Internal only")).toBeVisible();
+  await expect(page.getByText("Staff note", { exact: true })).toHaveCount(1);
+  expect(requests[0].requestId).toBe(requests[1].requestId);
+  expect(notes.size).toBe(1);
+});

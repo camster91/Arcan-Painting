@@ -1,4 +1,5 @@
 import sql from "../utils/sql.js";
+import { appendLeadStatusChange } from "../utils/customer-activity.js";
 import { generalLimiter } from "../utils/rate-limit.js";
 import { auditLog } from "../utils/audit.js";
 import { requireAdmin, getCurrentUser } from "../utils/auth.js";
@@ -274,8 +275,8 @@ export async function PUT(request) {
   if (csrfError) return csrfError;
 
   try {
-    const authorized = await requireAdmin(request);
-    if (!authorized) {
+    const user = await getCurrentUser(request);
+    if (!user || !["owner", "admin"].includes(user.role)) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -303,11 +304,6 @@ export async function PUT(request) {
 
     if (!id) {
       return Response.json({ error: "Lead ID is required" }, { status: 400 });
-    }
-
-    const exists = await sql`SELECT id FROM leads WHERE id = ${id} AND deleted_at IS NULL`;
-    if (!exists || exists.length === 0) {
-      return Response.json({ error: "Lead not found" }, { status: 404 });
     }
 
     const setClauses = [];
@@ -381,10 +377,15 @@ export async function PUT(request) {
     values.push(id);
 
     const query = `UPDATE leads SET ${setClauses.join(", ")} WHERE id = $${i} AND deleted_at IS NULL RETURNING *`;
-    const result = await sql(query, values);
-    if (status === "won" && result[0]) {
-      result[0].customer_id = await ensureCustomerForLead(sql, result[0].id);
-    }
+    const result = await sql.transaction(async (tx) => {
+      const existing = await tx`SELECT id, status FROM leads WHERE id = ${id} AND deleted_at IS NULL FOR UPDATE`;
+      if (!existing.length) return null;
+      const rows = await tx(query, values);
+      if (status === "won" && rows[0]) rows[0].customer_id = await ensureCustomerForLead(tx, rows[0].id);
+      await appendLeadStatusChange(tx, { leadId: id, previousStatus: existing[0].status, status, user });
+      return rows;
+    });
+    if (!result) return Response.json({ error: "Lead not found" }, { status: 404 });
 
     return Response.json({ success: true, lead: result[0] });
   } catch (error) {

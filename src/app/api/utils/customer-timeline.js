@@ -29,18 +29,23 @@ export const timelineQueries = sources.flatMap(([type, table, title, detail, amo
   })),
 );
 
+timelineQueries.push({
+  type: "activity", title: "Staff activity", milestone: "recorded",
+  query: `SELECT id, event_type, summary AS detail, actor_id, actor_name, NULL AS amount, NULL AS delivery_status, created_at AS occurred_at FROM customer_activity_events WHERE lead_id = $1 AND visibility = 'internal' ORDER BY created_at DESC, id DESC LIMIT ${TIMELINE_LIMIT + 1}`,
+});
+
 export async function loadCustomerTimeline(db, leadId) {
   const batches = await Promise.all(timelineQueries.map(async (source) => {
     const rows = await db(source.query, [leadId]);
     return rows.map((row) => ({
       id: `${source.type}:${row.id}:${source.milestone}`,
-      event_type: source.type,
+      event_type: row.event_type || source.type,
       entity_id: String(row.id),
       milestone: source.milestone,
-      title: source.milestone === "created" || source.milestone === "attempted" ? source.title : `${source.title} ${source.milestone.replaceAll("_", " ")}`,
+      title: source.type === "activity" ? (row.event_type === "staff_note" ? "Staff note" : "Lead status changed") : source.milestone === "created" || source.milestone === "attempted" ? source.title : `${source.title} ${source.milestone.replaceAll("_", " ")}`,
       detail: row.detail || null,
       amount: row.amount == null ? null : String(row.amount),
-      actor: row.actor_id == null || source.milestone !== "created" && source.milestone !== "attempted" ? null : { user_id: row.actor_id },
+      actor: row.actor_id == null || source.type !== "activity" && source.milestone !== "created" && source.milestone !== "attempted" ? null : { user_id: row.actor_id, ...(row.actor_name ? { name: row.actor_name } : {}) },
       visibility: "internal",
       delivery_status: row.delivery_status || null,
       occurred_at: row.occurred_at,

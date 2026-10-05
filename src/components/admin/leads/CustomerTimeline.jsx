@@ -2,11 +2,12 @@
 
 import { useId, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import CustomerNoteForm from "./CustomerNoteForm";
 import { RefreshCw } from "lucide-react";
 
 const money = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" });
 const date = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", dateStyle: "medium", timeStyle: "short" });
-const groups = { sales: ["lead", "appointment", "follow_up", "estimate", "contract"], jobs: ["project"], billing: ["invoice", "payment"], communications: ["email"] };
+const groups = { notes: ["staff_note"], sales: ["lead", "appointment", "follow_up", "estimate", "contract", "lead_status"], jobs: ["project"], billing: ["invoice", "payment"], communications: ["email"] };
 
 export default function CustomerTimeline({ leadId }) {
   const headingId = useId();
@@ -38,17 +39,18 @@ export default function CustomerTimeline({ leadId }) {
           <RefreshCw size={18} aria-hidden="true" />
         </button>
       </div>
-      <p className="text-xs text-slate-500">Recorded milestones only. This is not a complete change log; older unlinked emails and manual notes are not included.</p>
+      <p className="text-xs text-slate-500">Recorded milestones only. This is not a complete change log; older unlinked emails and legacy notes are not included.</p>
       <div>
         <label htmlFor={filterId} className="block text-sm font-medium text-slate-700 mb-1">Activity type</label>
         <select id={filterId} value={filter} onChange={(event) => setFilter(event.target.value)} className="w-full min-h-11 rounded-lg border border-slate-300 px-3 text-sm">
-          <option value="all">All activity</option><option value="sales">Sales</option><option value="jobs">Jobs</option><option value="billing">Billing</option><option value="communications">Communications</option>
+          <option value="all">All activity</option><option value="notes">Notes</option><option value="sales">Sales</option><option value="jobs">Jobs</option><option value="billing">Billing</option><option value="communications">Communications</option>
         </select>
       </div>
       {isPending && <p role="status" className="text-sm text-slate-600">Loading customer activity…</p>}
       {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error.message}</div>}
       {!isPending && !error && events.length === 0 && <p className="text-sm text-slate-600">No recorded activity for this selection.</p>}
       {data?.truncated && <p role="status" className="text-sm text-amber-800">Showing the latest 200 recorded events. Filters apply to these events.</p>}
+      <CustomerNoteForm key={leadId} leadId={leadId} />
       <ol className="space-y-3">
         {events.map((event) => {
           const timestamp = new Date(event.occurred_at);
@@ -56,8 +58,8 @@ export default function CustomerTimeline({ leadId }) {
           return <li key={event.id} className="rounded-lg border border-slate-200 bg-white p-3 space-y-2">
             <p className="font-medium text-slate-900 break-words">{event.title}</p>
             {validDate && <time dateTime={timestamp.toISOString()} className="block text-xs text-slate-500">{date.format(timestamp)}</time>}
-            {event.detail && <p className="text-sm text-slate-600 break-words">{event.detail}</p>}
-            <p className="text-xs text-slate-500">{event.actor ? `Recorded by staff #${event.actor.user_id}` : "Actor not recorded"} · Internal only</p>
+            {event.detail && <p className="text-sm text-slate-600 break-words whitespace-pre-wrap">{event.detail}</p>}
+            <p className="text-xs text-slate-500">{event.actor ? `Recorded by ${event.actor.name || `staff #${event.actor.user_id}`}` : "Actor not recorded"} · Internal only</p>
             {event.delivery_status && <p className={`text-sm font-medium ${event.delivery_status === "failed" ? "text-red-800" : "text-slate-700"}`}>Delivery status: {event.delivery_status}</p>}
             {event.amount != null && Number.isFinite(Number(event.amount)) && <p className="text-sm font-medium text-slate-800">Current record amount: {money.format(Number(event.amount))}</p>}
           </li>;
