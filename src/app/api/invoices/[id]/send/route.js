@@ -93,6 +93,10 @@ export async function POST(request, { params }) {
     const html = templateHtml || defaultHtml;
 
     await sendEmail({
+      relatedType: "invoice",
+      relatedId: id,
+      userId: user.id,
+      templateName: "invoice_send",
       to: inv.client_email,
       from: settings.email_from || "invoices@arcanpainting.ca",
       subject,
