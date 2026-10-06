@@ -4,6 +4,7 @@
  * Idempotent — safe to re-run (uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
  */
 import sql from "@/app/api/utils/sql.js";
+import { ensureCustomerActivitySchema } from "./002-customer-activity.js";
 import { backfillCustomers } from "@/app/api/utils/customers.js";
 
 let migrationRun = false;
@@ -1941,6 +1942,7 @@ export function ensureSchema() {
     _migrationPromise = runMigrations()
       .then(() => ensureMissingTables())
       .then(() => backfillCustomers(sql))
+      .then(() => ensureCustomerActivitySchema(sql))
       .catch((err) => {
         _migrationPromise = null; // Allow retry on next call
         throw err;
