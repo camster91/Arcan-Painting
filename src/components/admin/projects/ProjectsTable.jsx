@@ -20,7 +20,7 @@ export default function ProjectsTable({
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="text-left py-3 px-4 font-medium text-slate-900">
-                Project
+                Job
               </th>
               <th className="text-left py-3 px-4 font-medium text-slate-900">
                 Customer

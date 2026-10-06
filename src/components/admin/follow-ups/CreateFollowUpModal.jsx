@@ -128,7 +128,7 @@ export function CreateFollowUpModal({ leads, onClose, onSuccess }) {
               <option value="email">Email</option>
               <option value="site_visit">Site Visit</option>
               <option value="estimate_follow_up">Estimate Follow-up</option>
-              <option value="project_check_in">Project Check-in</option>
+              <option value="project_check_in">Job Check-in</option>
             </select>
           </div>
           <div>

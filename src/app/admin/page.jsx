@@ -77,20 +77,16 @@ export default function AdminDashboard() {
 
   return (
     <AdaptiveContentArea
-      title="Dashboard"
-      subtitle="Welcome back! Here's what's happening with your business."
-      breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Dashboard" }]}
+      title="Home"
+      subtitle="Your business overview and next steps."
+      breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Home" }]}
       actions={{
         primary: {
-          label: "Quick Actions",
+          label: "View leads",
           variant: "primary",
-          onClick: () => console.log("Quick actions clicked"),
+          onClick: () => navigate("/admin/leads"),
         },
         secondary: [
-          {
-            label: "Export Data",
-            onClick: () => console.log("Export clicked"),
-          },
           {
             label: "Settings",
             onClick: () => (window.location.href = "/admin/settings"),

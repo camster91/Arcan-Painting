@@ -332,7 +332,7 @@ export function CreateEstimateModal({ leads, onClose, onSuccess }) {
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Project Address
+                    Job Address
                   </label>
                   <input
                     type="text"
@@ -350,7 +350,7 @@ export function CreateEstimateModal({ leads, onClose, onSuccess }) {
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Project Description
+                    Job Description
                   </label>
                   <textarea
                     rows={3}
@@ -391,11 +391,11 @@ export function CreateEstimateModal({ leads, onClose, onSuccess }) {
           </div>
         </div>
 
-        {/* Project Details */}
+        {/* Job Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project Title
+              Job Title
             </label>
             <input
               type="text"
@@ -435,7 +435,7 @@ export function CreateEstimateModal({ leads, onClose, onSuccess }) {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Project Description
+            Job Description
           </label>
           <textarea
             rows={3}

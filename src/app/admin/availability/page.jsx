@@ -34,7 +34,7 @@ export default function AdminAvailabilityPage() {
     setBulkForm((f) => ({ ...f, startDate: iso }));
   }, []);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error: loadError, refetch } = useQuery({
     queryKey: ["admin-availability"],
     queryFn: async () => {
       const res = await fetch("/api/availability?all=1");
@@ -88,6 +88,7 @@ export default function AdminAvailabilityPage() {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin-availability"] }),
+    onError: (e) => setError(e.message || "Could not delete booking slot"),
   });
 
   // NEW: Bulk generate mutation
@@ -162,12 +163,13 @@ export default function AdminAvailabilityPage() {
       }}
     >
       <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">Availability</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">Booking slots</h1>
         <p className="text-slate-600">
           Create and manage time slots customers can book for on-site quotes.
         </p>
       </div>
 
+      {error && <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Create slot */}
         <form
@@ -177,8 +179,9 @@ export default function AdminAvailabilityPage() {
           <h2 className="font-semibold text-slate-900 mb-4">New Time Slot</h2>
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-slate-700">Date</label>
+              <label htmlFor="slot-date" className="text-sm text-slate-700">Date</label>
               <input
+                  id="slot-date"
                 type="date"
                 value={form.slotDate}
                 onChange={(e) =>
@@ -189,8 +192,9 @@ export default function AdminAvailabilityPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-700">Start</label>
+                <label htmlFor="slot-start" className="text-sm text-slate-700">Start</label>
                 <input
+                  id="slot-start"
                   type="time"
                   value={form.startTime}
                   onChange={(e) =>
@@ -200,8 +204,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">End</label>
+                <label htmlFor="slot-end" className="text-sm text-slate-700">End</label>
                 <input
+                  id="slot-end"
                   type="time"
                   value={form.endTime}
                   onChange={(e) =>
@@ -213,8 +218,9 @@ export default function AdminAvailabilityPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-700">Capacity</label>
+                <label htmlFor="slot-capacity" className="text-sm text-slate-700">Capacity</label>
                 <input
+                  id="slot-capacity"
                   type="number"
                   min={1}
                   value={form.capacity}
@@ -225,8 +231,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">Notes</label>
+                <label htmlFor="slot-notes" className="text-sm text-slate-700">Notes</label>
                 <input
+                  id="slot-notes"
                   type="text"
                   value={form.notes}
                   onChange={(e) =>
@@ -237,17 +244,12 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
             </div>
-            {error && (
-              <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2">
-                {error}
-              </div>
-            )}
             <button
               type="submit"
-              disabled={createMutation.isLoading}
+              disabled={createMutation.isPending}
               className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg"
             >
-              {createMutation.isLoading ? "Creating..." : "Create Slot"}
+              {createMutation.isPending ? "Creating..." : "Create Slot"}
             </button>
           </div>
         </form>
@@ -263,8 +265,9 @@ export default function AdminAvailabilityPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-700">Start Date</label>
+                <label htmlFor="bulk-start-date" className="text-sm text-slate-700">Start Date</label>
                 <input
+                  id="bulk-start-date"
                   type="date"
                   value={bulkForm.startDate}
                   onChange={(e) =>
@@ -274,8 +277,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">Days</label>
+                <label htmlFor="bulk-days" className="text-sm text-slate-700">Days</label>
                 <input
+                  id="bulk-days"
                   type="number"
                   min={1}
                   value={bulkForm.days}
@@ -288,8 +292,9 @@ export default function AdminAvailabilityPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-700">Start Time</label>
+                <label htmlFor="bulk-start-time" className="text-sm text-slate-700">Start Time</label>
                 <input
+                  id="bulk-start-time"
                   type="time"
                   value={bulkForm.startTime}
                   onChange={(e) =>
@@ -299,8 +304,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">End Time</label>
+                <label htmlFor="bulk-end-time" className="text-sm text-slate-700">End Time</label>
                 <input
+                  id="bulk-end-time"
                   type="time"
                   value={bulkForm.endTime}
                   onChange={(e) =>
@@ -312,8 +318,9 @@ export default function AdminAvailabilityPage() {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm text-slate-700">Slots / Day</label>
+                <label htmlFor="bulk-slots-day" className="text-sm text-slate-700">Slots / Day</label>
                 <input
+                  id="bulk-slots-day"
                   type="number"
                   min={1}
                   value={bulkForm.slotsPerDay}
@@ -324,8 +331,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">Capacity</label>
+                <label htmlFor="bulk-capacity" className="text-sm text-slate-700">Capacity</label>
                 <input
+                  id="bulk-capacity"
                   type="number"
                   min={1}
                   value={bulkForm.capacity}
@@ -336,8 +344,9 @@ export default function AdminAvailabilityPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-700">Notes</label>
+                <label htmlFor="bulk-notes" className="text-sm text-slate-700">Notes</label>
                 <input
+                  id="bulk-notes"
                   type="text"
                   value={bulkForm.notes}
                   onChange={(e) =>
@@ -348,21 +357,16 @@ export default function AdminAvailabilityPage() {
               </div>
             </div>
             {bulkMessage && (
-              <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
+              <div role="status" className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
                 {bulkMessage}
-              </div>
-            )}
-            {error && (
-              <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2">
-                {error}
               </div>
             )}
             <button
               type="submit"
-              disabled={bulkMutation.isLoading}
+              disabled={bulkMutation.isPending}
               className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg"
             >
-              {bulkMutation.isLoading
+              {bulkMutation.isPending
                 ? "Generating..."
                 : "Generate Weekday Slots"}
             </button>
@@ -376,7 +380,12 @@ export default function AdminAvailabilityPage() {
         {/* Slots list */}
         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-semibold text-slate-900 mb-4">Upcoming Slots</h2>
-          {isLoading ? (
+          {loadError ? (
+            <div role="alert" className="text-sm text-red-800">
+              <p>Booking slots could not be loaded. Existing bookings have not changed.</p>
+              <button type="button" onClick={() => refetch()} className="min-h-11 underline">Try again</button>
+            </div>
+          ) : isLoading ? (
             <p className="text-slate-600 text-sm">Loading...</p>
           ) : slots.length === 0 ? (
             <p className="text-slate-600 text-sm">No slots yet.</p>
@@ -421,8 +430,13 @@ export default function AdminAvailabilityPage() {
                       <td className="py-2 px-3">{s.notes || ""}</td>
                       <td className="py-2 px-3 text-right">
                         <button
-                          onClick={() => deleteMutation.mutate(s.id)}
-                          className="text-sm text-red-600 hover:text-red-700"
+                          disabled={deleteMutation.isPending}
+                          onClick={() => {
+                            if (!window.confirm(`Delete the booking slot on ${s.slot_date} at ${s.start_time?.slice(0, 5)}? Existing bookings may prevent deletion.`)) return;
+                            setError(null);
+                            deleteMutation.mutate(s.id);
+                          }}
+                          className="min-h-11 text-sm text-red-700 hover:text-red-800 disabled:opacity-50"
                         >
                           Delete
                         </button>

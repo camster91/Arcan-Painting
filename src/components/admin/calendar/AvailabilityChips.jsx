@@ -210,7 +210,7 @@ export function AvailabilityChips({
             <button
               onClick={saveNew}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"
-              disabled={createAvailability.isLoading}
+              disabled={createAvailability.isPending}
             >
               <Save size={14} /> Save
             </button>
@@ -218,7 +218,7 @@ export function AvailabilityChips({
             <button
               onClick={saveEdit}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"
-              disabled={updateAvailability.isLoading}
+              disabled={updateAvailability.isPending}
             >
               <Save size={14} /> Save
             </button>
@@ -233,7 +233,7 @@ export function AvailabilityChips({
             <button
               onClick={() => onDelete(editingId)}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-rose-200 text-rose-700 text-sm hover:bg-rose-50"
-              disabled={deleteAvailability.isLoading}
+              disabled={deleteAvailability.isPending}
             >
               <Trash2 size={14} /> Delete
             </button>

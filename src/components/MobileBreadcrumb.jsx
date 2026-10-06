@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useLocation } from "react-router";
 import { ArrowLeft, Home, ChevronRight } from "lucide-react";
 
 export default function MobileBreadcrumb({
@@ -8,13 +8,7 @@ export default function MobileBreadcrumb({
   customBackUrl = null,
   breadcrumbs = [],
 }) {
-  const [currentPath, setCurrentPath] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentPath(window.location.pathname);
-    }
-  }, []);
+  const { pathname: currentPath } = useLocation();
 
   // Auto-generate breadcrumbs if not provided
   const getAutoBreadcrumbs = () => {
@@ -22,7 +16,7 @@ export default function MobileBreadcrumb({
 
     const pathSegments = currentPath.split("/").filter(Boolean);
     const autoBreadcrumbs = [
-      { label: "Dashboard", href: "/admin", icon: Home },
+      { label: "Home", href: "/admin", icon: Home },
     ];
 
     if (pathSegments.length > 1) {
@@ -73,6 +67,7 @@ export default function MobileBreadcrumb({
             {showBackButton && (
               <button
                 onClick={handleBack}
+                aria-label="Go back"
                 className="mr-3 p-2 -ml-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 <ArrowLeft size={20} />
@@ -80,11 +75,11 @@ export default function MobileBreadcrumb({
             )}
 
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-slate-900">
                 {title ||
                   finalBreadcrumbs[finalBreadcrumbs.length - 1]?.label ||
                   "Page"}
-              </h1>
+              </p>
               {subtitle && <p className="text-sm text-slate-600">{subtitle}</p>}
             </div>
           </div>

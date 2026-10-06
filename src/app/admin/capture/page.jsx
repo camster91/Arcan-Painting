@@ -109,7 +109,7 @@ export default function CapturePage() {
   const handleSubmit = async () => {
     setError("");
     if (!selectedProjectId) {
-      setError("Select a project first");
+      setError("Select a job first");
       return;
     }
     if (files.length === 0) {
@@ -144,7 +144,7 @@ export default function CapturePage() {
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Capture</h1>
               <p className="text-sm text-slate-600 mt-1">
-                Upload site photos and attach to a project
+                Upload site photos and attach to a job
               </p>
             </div>
           </div>
@@ -155,14 +155,14 @@ export default function CapturePage() {
         <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project
+              Job
             </label>
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             >
-              <option value="">Select active project…</option>
+              <option value="">Select active job…</option>
               {isLoading ? (
                 <option>Loading…</option>
               ) : (
@@ -259,12 +259,12 @@ export default function CapturePage() {
             <button
               onClick={handleSubmit}
               disabled={
-                uploading || submitMutation.isLoading || !selectedProjectId
+                uploading || submitMutation.isPending || !selectedProjectId
               }
               className="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white rounded-lg font-medium flex items-center gap-2"
             >
               <Upload size={16} />
-              {uploading || submitMutation.isLoading ? "Uploading…" : "Upload"}
+              {uploading || submitMutation.isPending ? "Uploading…" : "Upload"}
             </button>
           </div>
         </div>

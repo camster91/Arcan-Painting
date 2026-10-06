@@ -122,7 +122,7 @@ export function ProjectsList({
                     href="/admin/projects"
                     className="text-amber-600 hover:text-amber-700 text-xs sm:text-sm font-medium"
                   >
-                    Open Projects
+                    Open Jobs
                   </a>
                   <button
                     onClick={() => onReschedule(p)}

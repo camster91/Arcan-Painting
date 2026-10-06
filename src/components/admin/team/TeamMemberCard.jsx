@@ -9,9 +9,6 @@ import {
   MoreVertical,
   Edit,
   UserX,
-  ArrowRight,
-  MapPin,
-  Clock,
 } from "lucide-react";
 
 export default function TeamMemberCard({
@@ -23,7 +20,7 @@ export default function TeamMemberCard({
   const [showActions, setShowActions] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Handle card click - could open detailed view in the future
+  // Keep the explicit action keyboard-accessible.
   const handleCardClick = () => {
     if (onViewDetails) {
       onViewDetails(member);
@@ -70,12 +67,11 @@ export default function TeamMemberCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200 p-5 transition-all duration-200 cursor-pointer group relative overflow-hidden ${
+      className={`bg-white rounded-xl border border-slate-200 p-5 transition-all duration-200 group relative overflow-hidden ${
         isHovered
           ? "shadow-xl scale-105 border-amber-300"
           : "shadow-md hover:shadow-lg"
       }`}
-      onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -129,9 +125,9 @@ export default function TeamMemberCard({
             e.stopPropagation();
             setShowActions(!showActions);
           }}
-          className={`p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all duration-200 ${
-            isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-          }`}
+          aria-label={`Actions for ${member.name}`}
+          aria-expanded={showActions}
+          className="p-3 text-slate-600 rounded-lg hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-amber-600"
         >
           <MoreVertical size={18} />
         </button>
@@ -206,9 +202,7 @@ export default function TeamMemberCard({
 
       {/* Quick Actions on Hover */}
       <div
-        className={`flex items-center gap-2 mb-4 transition-all duration-200 relative z-10 ${
-          isHovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
-        }`}
+        className="flex items-center gap-2 mb-4 relative z-10"
       >
         <button
           onClick={(e) => {
@@ -247,19 +241,10 @@ export default function TeamMemberCard({
       {/* Click indicator */}
       <div className="flex items-center justify-end pt-4 border-t border-slate-100 relative z-10">
         {/* Click to view indicator */}
-        <div
-          className={`flex items-center gap-2 text-amber-600 font-medium transition-all duration-200 ${
-            isHovered ? "opacity-100 translate-x-0" : "opacity-60 translate-x-2"
-          }`}
-        >
-          <span className="text-sm">View Details</span>
-          <ArrowRight
-            size={16}
-            className={`transition-transform duration-200 ${
-              isHovered ? "translate-x-1" : ""
-            }`}
-          />
-        </div>
+        <button type="button" onClick={handleCardClick}
+          className="min-h-11 px-3 text-sm font-medium text-amber-800 rounded-lg hover:bg-amber-50 focus-visible:ring-2 focus-visible:ring-amber-600">
+          Edit team member
+        </button>
       </div>
 
       {/* Dropdown Actions Menu */}

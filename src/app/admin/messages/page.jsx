@@ -104,7 +104,7 @@ export default function AdminMessagesPage() {
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">Messages</h1>
                 <p className="text-sm text-slate-600 mt-1">
-                  Client emails and notifications
+                  Customer emails and notifications
                 </p>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function AdminMessagesPage() {
               aria-label="Search messages"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search subject, client, message..."
+              placeholder="Search subject, customer, message..."
               className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             />
             <div className="flex gap-2">
@@ -234,7 +234,7 @@ export default function AdminMessagesPage() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="truncate">
                           <div className="text-sm text-slate-500 truncate">
-                            {n.to_email || n.recipient || "Client"}
+                            {n.to_email || n.recipient || "Customer"}
                           </div>
                           <div
                             className={`font-medium truncate ${n.read ? "text-slate-700" : "text-slate-900"}`}

@@ -11,8 +11,6 @@ import {
   CheckCircle2,
   ArrowUpRight,
   ArrowDownRight,
-  Plus,
-  X,
 } from "lucide-react";
 import LeadEditModal from "@/components/admin/leads/LeadEditModal";
 import { CreateEstimateModal } from "@/components/admin/estimates/CreateEstimateModal";
@@ -28,7 +26,6 @@ export default function DashboardOverview() {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [showEstimateModal, setShowEstimateModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [showFabMenu, setShowFabMenu] = useState(false);
 
   // Cached data fetching with performance optimization
   const {
@@ -84,7 +81,6 @@ export default function DashboardOverview() {
     setShowLeadModal(false);
     setShowEstimateModal(false);
     setShowProjectModal(false);
-    setShowFabMenu(false);
   };
 
   const stats = dashboardData?.stats || {};
@@ -143,7 +139,7 @@ export default function DashboardOverview() {
       href: "/admin/estimates",
     },
     {
-      title: "Active Projects",
+      title: "Active Jobs",
       value: stats?.activeProjects || 0,
       change: stats?.projectsChange || 0,
       icon: Briefcase,
@@ -310,7 +306,7 @@ export default function DashboardOverview() {
               <p className="font-medium text-slate-900 text-sm">
                 Create Estimate
               </p>
-              <p className="text-xs text-slate-500 mt-1">Price a new project</p>
+              <p className="text-xs text-slate-500 mt-1">Price a new job</p>
             </button>
 
             <button
@@ -319,7 +315,7 @@ export default function DashboardOverview() {
             >
               <Briefcase className="w-6 h-6 text-green-600 mb-2 group-hover:scale-110 transition-transform" />
               <p className="font-medium text-slate-900 text-sm">
-                Start Project
+                Start Job
               </p>
               <p className="text-xs text-slate-500 mt-1">Begin new work</p>
             </button>
@@ -352,11 +348,7 @@ export default function DashboardOverview() {
                 key={index}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
               >
-                <input
-                  type="checkbox"
-                  className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
-                  defaultChecked={task.completed}
-                />
+                <span className="text-sm text-slate-600">{task.completed ? "Done" : "Open"}</span>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-slate-900">
                     {task.title}
@@ -385,65 +377,6 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        {/* FAB Menu - appears above button when open */}
-        {showFabMenu && (
-          <div className="mb-4 space-y-3">
-            <button
-              onClick={() => {
-                setShowLeadModal(true);
-                setShowFabMenu(false);
-              }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-full shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-200 group"
-            >
-              <Users className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-medium text-slate-900 whitespace-nowrap">
-                Add Lead
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                setShowEstimateModal(true);
-                setShowFabMenu(false);
-              }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-full shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-200 group"
-            >
-              <FileText className="w-5 h-5 text-amber-600" />
-              <span className="text-sm font-medium text-slate-900 whitespace-nowrap">
-                Create Estimate
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                setShowProjectModal(true);
-                setShowFabMenu(false);
-              }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-full shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-200 group"
-            >
-              <Briefcase className="w-5 h-5 text-green-600" />
-              <span className="text-sm font-medium text-slate-900 whitespace-nowrap">
-                Start Project
-              </span>
-            </button>
-          </div>
-        )}
-
-        {/* Main FAB Button */}
-        <button
-          onClick={() => setShowFabMenu(!showFabMenu)}
-          className={`w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center ${
-            showFabMenu ? "rotate-45" : "rotate-0"
-          }`}
-        >
-          {showFabMenu ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Plus className="w-6 h-6" />
-          )}
-        </button>
-      </div>
-
       {/* Modals */}
       {showLeadModal && (
         <LeadEditModal
@@ -469,13 +402,6 @@ export default function DashboardOverview() {
         />
       )}
 
-      {/* Backdrop for FAB menu */}
-      {showFabMenu && (
-        <div
-          className="fixed inset-0 bg-black/20 z-30"
-          onClick={() => setShowFabMenu(false)}
-        />
-      )}
     </div>
   );
 }

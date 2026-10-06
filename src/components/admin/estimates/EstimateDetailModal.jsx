@@ -125,7 +125,7 @@ export function EstimateDetailModal({
         throw new Error(data.error || "Failed to approve");
       }
       onUpdated?.();
-      onNotification?.("Project created successfully from estimate!");
+      onNotification?.("Job created successfully from estimate!");
       onClose();
     } catch (e) {
       console.error(e);
@@ -213,15 +213,15 @@ export function EstimateDetailModal({
               </div>
             </div>
 
-            {/* Project Details */}
+            {/* Job Details */}
             <div>
               <h3 className="font-semibold text-slate-900 mb-3">
-                Project Information
+                Job Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700">
-                    Project Title
+                    Job Title
                   </label>
                   {isEditing ? (
                     <input
@@ -463,8 +463,8 @@ export function EstimateDetailModal({
                       className="bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                       {approving
-                        ? "Creating Project..."
-                        : "Approve → Create Project"}
+                        ? "Creating Job..."
+                        : "Approve → Create Job"}
                     </button>
                   )}
                 </>

@@ -240,7 +240,7 @@ export default function TodayOperationsPage() {
                   aria-label="Search today's projects"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search projects, customers, address..."
+                  placeholder="Search jobs, customers, address..."
                   className="pl-9 pr-3 py-2 w-[260px] border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>

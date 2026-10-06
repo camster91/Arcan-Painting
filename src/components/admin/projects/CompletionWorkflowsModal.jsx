@@ -164,7 +164,7 @@ function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
     <MobileModal
       isOpen={true}
       onClose={onClose}
-      title="Project Completion Checklist"
+      title="Job Completion Checklist"
       footer={footer}
       className="lg:max-w-4xl"
     >

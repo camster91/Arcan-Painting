@@ -58,7 +58,7 @@ export function ContractsTable({ contracts, onViewContract, onActionDone }) {
                 Contract
               </th>
               <th className="text-left py-4 px-6 text-sm font-semibold text-slate-700">
-                Client
+                Customer
               </th>
               <th className="text-left py-4 px-6 text-sm font-semibold text-slate-700">
                 Amount

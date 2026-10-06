@@ -85,7 +85,7 @@ export function CalendarHeader({
               : "text-slate-600 hover:text-slate-900 hover:bg-white"
           }`}
         >
-          Projects
+          Jobs
         </button>
       </div>
     </div>

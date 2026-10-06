@@ -209,10 +209,10 @@ export default function LeadEditModal({
           </div>
         </div>
 
-        {/* Project Information Section */}
+        {/* Job Information Section */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2">
-            Project Details
+            Job Details
           </h3>
 
           <div className="space-y-4">
@@ -233,7 +233,7 @@ export default function LeadEditModal({
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Project Address
+                Job Address
               </label>
               <input
                 name="address"
@@ -248,7 +248,7 @@ export default function LeadEditModal({
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Project Description
+                Job Description
               </label>
               <textarea
                 name="project_description"

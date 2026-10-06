@@ -89,7 +89,7 @@ describe("ContractsPage", () => {
       expect(screen.getByText("CNT-002")).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText("Search contracts by number, title, or client...");
+    const searchInput = screen.getByPlaceholderText("Search contracts by number, title, or customer...");
     fireEvent.change(searchInput, { target: { value: "CNT-001" } });
 
     expect(screen.getByText("CNT-001")).toBeInTheDocument();

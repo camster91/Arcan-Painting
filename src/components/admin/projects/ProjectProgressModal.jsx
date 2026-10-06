@@ -254,7 +254,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
     <MobileModal
       isOpen={true}
       onClose={onClose}
-      title="Project Progress Reports"
+      title="Job Progress Reports"
       footer={footer}
       className="lg:max-w-6xl"
     >
