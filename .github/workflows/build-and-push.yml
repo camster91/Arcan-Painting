@@ -1,13 +1,17 @@
 name: Build and Push Image
 
-# Publish deployable images only after changes land on the default branch or a
-# version tag is created. Pull requests are verified by ci.yml and must not
-# publish write-capable GHCR artifacts.
+# Publish deployable images only after runtime-affecting changes land on the
+# default branch or a version tag is created. Pull requests are verified by
+# ci.yml and must not publish write-capable GHCR artifacts.
 
 on:
   push:
     branches: [main, master]
     tags: ['v*']
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - '**/*.md'
   workflow_call:
     inputs:
       image_name:
