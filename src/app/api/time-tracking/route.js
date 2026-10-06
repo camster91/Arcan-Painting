@@ -1,5 +1,17 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
+import { requireCsrf, shouldRequireCsrf } from "@/app/api/utils/csrf";
+
+const staffRoles = new Set(["owner", "admin", "painter", "crew"]);
+const positiveId = (value) => /^[1-9]\d*$/.test(String(value)) && Number.isSafeInteger(Number(value));
+function visibleEntry(entry, user) {
+  if (!entry || user.role === "owner") return entry;
+  const visible = { ...entry };
+  delete visible.hourly_rate;
+  delete visible.total_cost;
+  return visible;
+}
+
 
 export async function GET(request) {
   try {
@@ -8,6 +20,7 @@ export async function GET(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!staffRoles.has(user.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
     const { searchParams } = new URL(request.url);
     const team_member_id = searchParams.get("team_member_id");
     const project_id = searchParams.get("project_id");
@@ -21,10 +34,12 @@ export async function GET(request) {
     let paramCount = 0;
 
     // If painter (non-owner) and no explicit team_member_id, restrict to their own entries by email
-    if (user.role !== "owner" && !team_member_id) {
+    if (user.role !== "owner") {
       whereConditions.push(`tm.email = $${++paramCount}`);
       params.push(user.username);
     }
+
+    if ((team_member_id && !positiveId(team_member_id)) || (project_id && !positiveId(project_id))) return Response.json({ error: "Invalid team member or job id" }, { status: 400 });
 
     if (team_member_id) {
       whereConditions.push(`tt.team_member_id = $${++paramCount}`);
@@ -74,7 +89,7 @@ export async function GET(request) {
 
     const timeEntries = await sql(query, params);
 
-    return Response.json({ timeEntries });
+    return Response.json({ timeEntries: timeEntries.map((entry) => visibleEntry(entry, user)) }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Error fetching time tracking:", error);
     return Response.json(
@@ -91,6 +106,8 @@ export async function POST(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!staffRoles.has(user.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (shouldRequireCsrf(request)) { const error = requireCsrf(request); if (error) return error; }
     const body = await request.json();
     let {
       team_member_id,
@@ -116,6 +133,13 @@ export async function POST(request) {
         );
       }
       team_member_id = tm[0].id;
+    }
+
+    if (!positiveId(team_member_id)) return Response.json({ error: "Invalid team member id" }, { status: 400 });
+    if (user.role !== "owner") {
+      if (hourly_rate !== undefined || body.total_cost !== undefined || body.total_hours !== undefined) return Response.json({ error: "Internal cost fields require owner access" }, { status: 403 });
+      const ownMember = await sql`SELECT id FROM team_members WHERE id = ${Number(team_member_id)} AND email = ${user.username}`;
+      if (!ownMember.length) return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     if (!team_member_id || !clock_in_time) {
@@ -155,7 +179,7 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    return Response.json({ timeEntry: result[0] }, { status: 201 });
+    return Response.json({ timeEntry: visibleEntry(result[0], user) }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Error creating time entry:", error);
     return Response.json(
@@ -172,15 +196,19 @@ export async function PUT(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!staffRoles.has(user.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (shouldRequireCsrf(request)) { const error = requireCsrf(request); if (error) return error; }
     const body = await request.json();
     const { id, ...updateFields } = body;
 
-    if (!id) {
+    if (!positiveId(id)) {
       return Response.json(
         { error: "Time entry ID is required" },
         { status: 400 },
       );
     }
+
+    if (user.role !== "owner" && ["hourly_rate", "total_cost", "total_hours"].some((field) => field in updateFields)) return Response.json({ error: "Internal cost fields require owner access" }, { status: 403 });
 
     // If non-owner, ensure the entry belongs to the current painter
     if (user.role !== "owner") {
@@ -276,7 +304,7 @@ export async function PUT(request) {
       return Response.json({ error: "Time entry not found" }, { status: 404 });
     }
 
-    return Response.json({ timeEntry: result[0] });
+    return Response.json({ timeEntry: visibleEntry(result[0], user) }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Error updating time entry:", error);
     return Response.json(
@@ -293,10 +321,12 @@ export async function DELETE(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!staffRoles.has(user.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (shouldRequireCsrf(request)) { const error = requireCsrf(request); if (error) return error; }
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
-    if (!id) {
+    if (!positiveId(id)) {
       return Response.json(
         { error: "Time entry ID is required" },
         { status: 400 },

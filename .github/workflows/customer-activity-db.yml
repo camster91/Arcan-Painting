@@ -1,0 +1,69 @@
+name: Customer activity databases
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/api/utils/customer-activity.js'
+      - 'src/app/api/utils/sql.js'
+      - 'src/app/api/utils/mysql*.js'
+      - 'src/migrations/**'
+      - 'scripts/verify-customer-activity-db.mjs'
+      - '.github/workflows/customer-activity-db.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  databases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      # https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: arcan_activity_ci
+          POSTGRES_USER: fixture
+          POSTGRES_PASSWORD: disposable-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_DATABASE: arcan_activity_ci
+          MARIADB_USER: fixture
+          MARIADB_PASSWORD: disposable-ci-only
+          MARIADB_RANDOM_ROOT_PASSWORD: '1'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: PostgreSQL migration and transaction verification
+        run: node scripts/verify-customer-activity-db.mjs
+        env:
+          DATABASE_URL: postgresql://fixture:disposable-ci-only@127.0.0.1:5432/arcan_activity_ci
+          ARCAN_DISPOSABLE_DB: '1'
+      - name: MariaDB migration and transaction verification
+        if: success() || failure()
+        run: node scripts/verify-customer-activity-db.mjs
+        env:
+          DATABASE_URL: mysql://fixture:disposable-ci-only@127.0.0.1:3306/arcan_activity_ci
+          ARCAN_DISPOSABLE_DB: '1'

@@ -32,3 +32,8 @@ For code rollback, revert this slice and dependent changes while retaining the n
 - TanStack Query mutation invalidation: https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations
 
 Implementation also follows the repository's transaction adapter, CSRF policy and current owner/admin boundary; documentation does not establish live database or release readiness.
+# Real database release verification (2026-10-06, Toronto)
+
+`Customer activity databases` now runs the production SQL adapters and activity helper against disposable PostgreSQL 16 and MariaDB 11.4 services. The standalone fixture requires both a loopback host and the exact `arcan_activity_ci` database name plus an explicit opt-in; it cannot silently target a client database. It covers additive migration replay, twelve concurrent saves using one key, content conflict, actor/lead key isolation, author/visibility/time persistence, missing/deleted leads, foreign-key enforcement, rollback after both writes, a database insertion error after an update, successful commit, unchanged status and preservation of history on migration replay.
+
+These fixtures use a minimal lead table with the production key and soft-delete fields. They do not claim to verify the complete foundational migration, customer backfill, authenticated route journeys, or production deployment. CI execution results must be recorded separately before merging. Local server installation is unavailable in this workspace; only syntax, YAML structure and refusal without disposable-database configuration can be checked locally.
