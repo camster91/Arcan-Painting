@@ -95,6 +95,10 @@ export async function POST(request, { params }) {
     const html = templateHtml || defaultHtml;
 
     await sendEmail({
+      relatedType: "contract",
+      relatedId: id,
+      userId: user.id,
+      templateName: "contract_send",
       to: c.client_email,
       from: settings.email_from || "contracts@arcanpainting.ca",
       subject,

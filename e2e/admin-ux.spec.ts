@@ -35,6 +35,8 @@ test.beforeAll(async () => {
 test.afterAll(async () => { if (temporary) await fs.rm(temporary, { recursive: true, force: true }); });
 
 async function fixture(page: Page) {
+  await page.route("**/admin-ux-fixture", (route) => route.fulfill({ contentType: "text/html", body: "<!doctype html><html><body></body></html>" }));
+  await page.goto("/admin-ux-fixture");
   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div></body></html>');
   await page.addStyleTag({ content: css });
   await page.addScriptTag({ content: script });
@@ -92,3 +94,31 @@ for (const width of [320, 390, 768, 1440]) {
     }
   });
 }
+
+for (const width of [320, 768, 1440]) {
+  test(`customer activity stays readable at ${width}px and filters persisted events`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.route("**/api/leads/7/timeline", (route) => route.fulfill({ json: { events: [{ id: "email:1:attempted", event_type: "email", title: "Email delivery attempt", detail: "invoice_send", occurred_at: "2026-10-05T14:00:00Z", actor: null, visibility: "internal", delivery_status: "failed" }] } }));
+    await fixture(page);
+    await page.getByRole("button", { name: "Customer history" }).click();
+    await page.getByRole("button", { name: "Timeline", exact: true }).click();
+    await expect(page.getByText("Delivery status: failed")).toBeVisible();
+    await expect(page.getByText("Actor not recorded · Internal only")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.getByLabel("Activity type").selectOption("jobs");
+    await expect(page.getByText("Email delivery attempt", { exact: true })).toBeHidden();
+    await expect(page.getByText("No recorded activity for this selection.")).toBeVisible();
+  });
+}
+
+test("customer activity failure offers retry without displaying an empty history", async ({ page }) => {
+  let attempts = 0;
+  await page.route("**/api/leads/7/timeline", (route) => ++attempts === 1 ? route.fulfill({ status: 500, json: { error: "Unavailable" } }) : route.fulfill({ json: { events: [] } }));
+  await fixture(page);
+  await page.getByRole("button", { name: "Customer history" }).click();
+    await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.getByText("No recorded activity for this selection.")).toBeHidden();
+  await page.getByRole("button", { name: "Refresh customer activity" }).click();
+  await expect(page.getByText("No recorded activity for this selection.")).toBeVisible();
+});
