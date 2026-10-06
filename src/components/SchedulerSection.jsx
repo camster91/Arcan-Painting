@@ -435,10 +435,10 @@ export default function SchedulerSection() {
             )}
             <button
               type="submit"
-              disabled={!selectedSlotId || bookMutation.isLoading}
+              disabled={!selectedSlotId || bookMutation.isPending}
               className="mt-6 w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors"
             >
-              {bookMutation.isLoading ? "Booking..." : "Book Estimate"}
+              {bookMutation.isPending ? "Booking..." : "Book Estimate"}
             </button>
             <p className="text-xs text-slate-500 mt-3">
               We'll email you a calendar invite with all details.
