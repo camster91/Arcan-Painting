@@ -1,10 +1,13 @@
-name: Payment concurrency databases
+name: Financial correctness databases
 
 on:
   pull_request:
     branches: [main]
     paths:
       - 'src/app/api/payments/**'
+      - 'src/app/api/invoices/route.js'
+      - 'src/app/api/time-tracking/route.js'
+      - 'src/app/api/utils/time-entry-totals.js'
       - 'src/app/api/utils/invoice-totals.js'
       - 'src/app/api/utils/stripe-payments.js'
       - 'src/app/api/utils/sql.js'
