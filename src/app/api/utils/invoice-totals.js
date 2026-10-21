@@ -9,10 +9,11 @@
  * The sum is computed first and written as plain values so the UPDATE behaves
  * the same on PostgreSQL and MariaDB (MariaDB evaluates SET left to right).
  *
- * @param db  the `sql` helper or a transaction handle from sql.transaction
+ * @param db  A transaction handle from sql.transaction. Payment writers must
+ * lock the invoice BEFORE mutating a payment, and retain it through commit.
  */
 export async function recalcInvoiceTotals(db, invoiceId) {
-  const [inv] = await db`SELECT total_amount, status FROM invoices WHERE id = ${invoiceId}`;
+  const inv = await lockInvoiceForPayment(db, invoiceId);
   if (!inv) return null;
   const [sum] = await db`
     SELECT COALESCE(SUM(amount), 0) AS paid
@@ -29,6 +30,24 @@ export async function recalcInvoiceTotals(db, invoiceId) {
     RETURNING *
   `;
   return updated;
+}
+
+/** Invoice-first lock order avoids both stale sums and FK lock-upgrade deadlocks. */
+export async function lockInvoiceForPayment(tx, invoiceId) {
+  const [invoice] = await tx`SELECT total_amount, status FROM invoices WHERE id = ${invoiceId} FOR UPDATE`;
+  return invoice || null;
+}
+
+/** Use within the same transaction as the write and balance recalculation. */
+export async function lockPaymentForMutation(tx, paymentId) {
+  // Discover the parent without taking a child lock. All payment writers lock
+  // parent -> child, including updates/deletes of different payments on one invoice.
+  const [reference] = await tx`SELECT invoice_id FROM payments WHERE id = ${paymentId}`;
+  if (!reference) return null;
+  if (reference.invoice_id) await lockInvoiceForPayment(tx, reference.invoice_id);
+  // Re-read after waiting: another writer may have edited/deleted this payment.
+  const [payment] = await tx`SELECT * FROM payments WHERE id = ${paymentId} FOR UPDATE`;
+  return payment || null;
 }
 
 /** Pure balance calculation, in cents to avoid float drift. */

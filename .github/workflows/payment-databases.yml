@@ -1,0 +1,70 @@
+name: Payment concurrency databases
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/api/payments/**'
+      - 'src/app/api/utils/invoice-totals.js'
+      - 'src/app/api/utils/stripe-payments.js'
+      - 'src/app/api/utils/sql.js'
+      - 'src/app/api/utils/mysql*.js'
+      - 'test/payment-concurrency-db.test.js'
+      - '.github/workflows/payment-databases.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  payments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: arcan_payments_ci
+          POSTGRES_USER: fixture
+          POSTGRES_PASSWORD: disposable-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_DATABASE: arcan_payments_ci
+          MARIADB_USER: fixture
+          MARIADB_PASSWORD: disposable-ci-only
+          MARIADB_RANDOM_ROOT_PASSWORD: '1'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: PostgreSQL payment concurrency and rollback
+        run: npx vitest run test/payment-concurrency-db.test.js
+        env:
+          DATABASE_URL: postgresql://fixture:disposable-ci-only@127.0.0.1:5432/arcan_payments_ci
+          ARCAN_PAYMENT_DB_TEST: '1'
+          ARCAN_DISPOSABLE_DB: '1'
+      - name: MariaDB payment concurrency and rollback
+        if: success() || failure()
+        run: npx vitest run test/payment-concurrency-db.test.js
+        env:
+          DATABASE_URL: mysql://fixture:disposable-ci-only@127.0.0.1:3306/arcan_payments_ci
+          ARCAN_PAYMENT_DB_TEST: '1'
+          ARCAN_DISPOSABLE_DB: '1'
