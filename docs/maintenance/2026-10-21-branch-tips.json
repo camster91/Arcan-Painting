@@ -1,0 +1,198 @@
+[
+  {
+    "branch": "ccr-830aa9ca-la5hg5",
+    "sha": "b81a06151ce7912b3c59d207dcdbd29f53429ed9",
+    "archive_tag": "archive/2026-10-21/ccr-830aa9ca-la5hg5",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "chore/ci-default-push-scoping-sep3",
+    "sha": "2f8be7fecb31a73febb3a379fed2bbfaee9c8083",
+    "archive_tag": "archive/2026-10-21/chore/ci-default-push-scoping-sep3",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "chore/ci-noise-reduction-sep3",
+    "sha": "07e561f69e514a72a425c11d540b4826766bcdc6",
+    "archive_tag": "archive/2026-10-21/chore/ci-noise-reduction-sep3",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "codex/arcan-contractor-os",
+    "sha": "d32ff71f5fb98564554849a1b00e525abf97f0fb",
+    "archive_tag": "archive/2026-10-21/codex/arcan-contractor-os",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "codex/arcan-hero-lcp",
+    "sha": "2036892f9d20c565acdabc4f743a2ce24bb3a27a",
+    "archive_tag": "archive/2026-10-21/codex/arcan-hero-lcp",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/arcan-mysql-migration",
+    "sha": "6429480905bf849787a214064ca6a0758f883495",
+    "archive_tag": "archive/2026-10-21/codex/arcan-mysql-migration",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/arcan-p0-api-hardening",
+    "sha": "43634bcc1b12d5fee77b0c976793b83b7cba9881",
+    "archive_tag": "archive/2026-10-21/codex/arcan-p0-api-hardening",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/arcan-production-release-record",
+    "sha": "20e812e6ff7d477b9a0e18b88c144a10368e72fe",
+    "archive_tag": "archive/2026-10-21/codex/arcan-production-release-record",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/arcan-qa-followups",
+    "sha": "843c7c65c22da56026037790aa6b565663bf72fa",
+    "archive_tag": "archive/2026-10-21/codex/arcan-qa-followups",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/ashbi-local-ci-validation",
+    "sha": "552e0426e7a10b75af86f08dc649e0a395364bfd",
+    "archive_tag": "archive/2026-10-21/codex/ashbi-local-ci-validation",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "codex/hostinger-esm-startup",
+    "sha": "c54f7082ac12ffade2c69a399d727d661b9a32eb",
+    "archive_tag": "archive/2026-10-21/codex/hostinger-esm-startup",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/seo-geo-aeo-cro-staging",
+    "sha": "19cfed5bc24388b100a2ab84ab15cf6ac79266e4",
+    "archive_tag": "archive/2026-10-21/codex/seo-geo-aeo-cro-staging",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/135-dependency-reconciliation",
+    "sha": "179c813a2b7cae5c57cab33a231436c68b455937",
+    "archive_tag": "archive/2026-10-21/codex/135-dependency-reconciliation",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/139-public-pending-state",
+    "sha": "f34ad35a18a578109e964a00dd3f8a60ffc8aba7",
+    "archive_tag": "archive/2026-10-21/codex/139-public-pending-state",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/144-navigation-accessibility",
+    "sha": "75556a3b896a86a8d182da66d969a1e975325ce2",
+    "archive_tag": "archive/2026-10-21/codex/144-navigation-accessibility",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/146-expense-domain",
+    "sha": "6e97bed4f374e30802fd692bd65c4519c23febf0",
+    "archive_tag": "archive/2026-10-21/codex/146-expense-domain",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "codex/146-time-access",
+    "sha": "d76b00125a2cdb80e9a5f137b434227d42e2c32b",
+    "archive_tag": "archive/2026-10-21/codex/146-time-access",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/147-persisted-notes",
+    "sha": "732b59b31f215217164a6d9f32a58915c79fac35",
+    "archive_tag": "archive/2026-10-21/codex/147-persisted-notes",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "codex/147-staff-timeline",
+    "sha": "685f748ab4631d2c7f318fc0ea335d5bec9b04f0",
+    "archive_tag": "archive/2026-10-21/codex/147-staff-timeline",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "dependabot/npm_and_yarn/development-dependencies-1779f1147b",
+    "sha": "864272472d397ca5d9d0d4ae82f821257377b927",
+    "archive_tag": "archive/2026-10-21/dependabot/npm_and_yarn/development-dependencies-1779f1147b",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "dependabot/npm_and_yarn/production-dependencies-4875513297",
+    "sha": "4bfc140312eb147561f45aee184c0cbb165e0123",
+    "archive_tag": "archive/2026-10-21/dependabot/npm_and_yarn/production-dependencies-4875513297",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "design/editorial-homepage",
+    "sha": "98f2f404ec7b024a6032ef37cb9c73ea2a38dce3",
+    "archive_tag": "archive/2026-10-21/design/editorial-homepage",
+    "contained_in_main": false,
+    "delete_branch": false
+  },
+  {
+    "branch": "docs/readme",
+    "sha": "d370ae87cbaee4ca69ac8c07f092c7295923af81",
+    "archive_tag": "archive/2026-10-21/docs/readme",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "feat/admin-release-1",
+    "sha": "bb432682f3b00a7184a445951affe96ad24c2226",
+    "archive_tag": "archive/2026-10-21/feat/admin-release-1",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "feat/admin-release-2",
+    "sha": "c1caa9f8fd8c31dee8f5dd8e9f3e6aaba6f5598c",
+    "archive_tag": "archive/2026-10-21/feat/admin-release-2",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "fix/admin-release-0",
+    "sha": "141788a0c9efe5d5050b5e79113051e749dfe994",
+    "archive_tag": "archive/2026-10-21/fix/admin-release-0",
+    "contained_in_main": true,
+    "delete_branch": true
+  },
+  {
+    "branch": "main",
+    "sha": "837562368525ba358837288a9202958b02e7a3bd",
+    "archive_tag": "archive/2026-10-21/main",
+    "contained_in_main": true,
+    "delete_branch": false
+  },
+  {
+    "branch": "security/hostinger-dependency-alerts-2026-09-25",
+    "sha": "c50d5ddfb39b763ba1d430a72f6e2b7022812b5b",
+    "archive_tag": "archive/2026-10-21/security/hostinger-dependency-alerts-2026-09-25",
+    "contained_in_main": true,
+    "delete_branch": true
+  }
+]
