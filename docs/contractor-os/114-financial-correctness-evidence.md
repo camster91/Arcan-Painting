@@ -20,10 +20,10 @@ Local runtime: Node 26.5.0, America/Toronto. Real database runtimes: PostgreSQL 
 - Typecheck: pass. Workflow YAML parses; git diff whitespace checks pass.
 - Negative regression control: original payment sources failed five of the initial eleven database cases. Original invoice/time sources failed all three selected invoice-total/cost-edit regressions. Fixed sources pass the final suites.
 
-The database fixtures run actual route handlers, validation, production SQL adapters, transactions, foreign keys and Stripe recording with synthetic data in an empty loopback-only `arcan_payments_ci` database. Authentication identity, rate-limit and audit edges are mocked. They do not establish full schema migration, browser, authenticated staging, live provider or production behaviour. New CI services are defined but have not run remotely from this local branch.
+The database fixtures run actual route handlers, validation, production SQL adapters, transactions, foreign keys and Stripe recording with synthetic data in an empty loopback-only `arcan_payments_ci` database. Authentication identity, rate-limit and audit edges are mocked. They do not establish full schema migration, browser, authenticated staging, live provider or production behaviour. At local verification time the new CI services had not run remotely. The draft PR is the source for subsequent hosted check results.
 
 ## Boundaries and next action
 
-No remote push, merge, workflow dispatch, deployment, live financial write or historical-data repair. The change prevents future incorrect calculations when released; it does not rewrite existing financial records automatically. The cleanup PR and other branches are separate.
+At the end of local verification, no remote push, merge, workflow dispatch, deployment, live financial write or historical-data repair had occurred. Cameron subsequently authorized branch publication, a draft PR and issue evidence updates only; merging and deployment remain prohibited. The change prevents future incorrect calculations when released; it does not rewrite existing financial records automatically. The cleanup PR and other branches are separate.
 
-This fixes the three reproduced defects; it does not close broader #114 lifecycle/staging acceptance, #161 overlapping-timer prevention or #162 immutable correction audit/rate-provenance work. Review this committed branch before any separately authorized push/release action.
+This fixes the three reproduced defects; it does not close broader #114 lifecycle/staging acceptance, #161 overlapping-timer prevention or #162 immutable correction audit/rate-provenance work. Review this committed branch in its draft PR; any merge or release still requires separate authorization.
