@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
+import { getAttribution } from "@/utils/analytics";
 
 export default function ContactSection() {
   useTheme();
@@ -93,6 +94,7 @@ export default function ContactSection() {
         serviceType,
         projectDescription,
         preferredContact,
+        attribution: getAttribution(),
       };
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -103,17 +105,11 @@ export default function ContactSection() {
       if (!response.ok) {
         throw new Error(result?.error || "Failed to submit");
       }
-      return { result, payload };
+      return result;
     },
-    onSuccess: ({ payload }) => {
-      const params = new URLSearchParams({
-        name: payload.name || "",
-        email: payload.email || "",
-        phone: payload.phone || "",
-        serviceType: payload.serviceType || "",
-      });
+    onSuccess: () => {
       if (typeof window !== "undefined") {
-        window.location.href = `/thank-you?${params.toString()}`;
+        window.location.href = "/thank-you";
       }
     },
     onError: (e) => {

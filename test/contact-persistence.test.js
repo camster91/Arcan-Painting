@@ -101,4 +101,20 @@ describe("POST /api/contact", () => {
       attribution: { utmSource: "search", landingPage: "/?utm_source=search" },
     }));
   });
+
+  it("preserves every shared attribution field while retaining server bounds and allowlisting", async () => {
+    insertLead.mockResolvedValue(44);
+    const attribution = {
+      landingPage: "/interior-painting?utm_source=search", referrer: "https://search.example.test/",
+      utmSource: "search", utmMedium: "paid", utmCampaign: "painting", utmContent: "hero", utmTerm: "x".repeat(600),
+    };
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Privacy Fixture", phone: "4165550101", preferredContact: "phone", serviceType: "interior", attribution: { ...attribution, unexpected: "discard" } }),
+    }));
+    expect(response.status).toBe(200);
+    expect(insertLead).toHaveBeenCalledWith(expect.objectContaining({
+      attribution: { ...attribution, utmTerm: "x".repeat(500) },
+    }));
+  });
 });

@@ -44,4 +44,18 @@ describe("insertLead", () => {
 
     expect(tx).toHaveBeenCalledOnce();
   });
+
+  it("writes all attribution fields into the lead's durable notification metadata", async () => {
+    transaction.mockClear();
+    const attribution = {
+      landingPage: "/?utm_source=search", referrer: "https://search.example.test/",
+      utmSource: "search", utmMedium: "paid", utmCampaign: "painting", utmContent: "hero", utmTerm: "interior painting",
+    };
+    const tx = vi.fn().mockResolvedValueOnce([{ id: 45 }]).mockResolvedValueOnce([]);
+    transaction.mockImplementation(callback => callback(tx));
+    await insertLead({ name: "Privacy Fixture", phone: "4165550101", serviceType: "interior", leadSource: "website", attribution });
+    expect(tx.mock.calls[1][0].join("")).toContain("INSERT INTO notifications");
+    expect(tx.mock.calls[1][3]).toBe(45);
+    expect(JSON.parse(tx.mock.calls[1][4])).toEqual({ source: "website", attribution });
+  });
 });
