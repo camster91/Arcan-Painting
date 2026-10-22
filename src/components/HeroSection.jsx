@@ -169,7 +169,7 @@ export default function HeroSection() {
               {/* Primary CTA */}
               <div className="flex flex-col items-center sm:items-start gap-1 w-full sm:w-auto">
                 <motion.button
-                  className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl shadow-xl relative overflow-hidden"
+                  className="btn-primary w-full sm:w-auto font-semibold text-lg rounded-xl border border-transparent shadow-xl relative overflow-hidden"
                   style={{
                     background: "linear-gradient(135deg, #fbbf24 0%, #fde047 50%, #fbbf24 100%)",
                     backgroundSize: "200% 200%",
