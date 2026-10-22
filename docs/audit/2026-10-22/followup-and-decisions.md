@@ -168,8 +168,36 @@ schema is added, and no AI visibility or rich-result outcome is promised.
 Draft PRs are review artifacts. Before any release, reverify the current hPanel
 revision, exact composed candidate, backup and rollback, then obtain Cameron's
 explicit approval. For the follow-up alone, revert its commit to PR #182's
-`621562ba879644caf9ce7f62cc13108db7fda054` source. For the full frontend release,
+`d788495b5cdc263e947a8e4349ad09def64c6e6e` source after the review fixes. For the full frontend release,
 the verified production source is `fdf4ef0bc9c8f4044b5cd84515a5eb1ae1eaf23e`.
 No migrations were added. Preserve database, runtime secrets and persistent
-gallery. Recheck Hostinger auto-deployment off after any authorized release.
+gallery. Review confirmed Hostinger auto-deployment is ON, using the visible
+green badge and "Turn off auto-deployment" menu. The earlier checkbox-based
+interpretation was incorrect. Do not update the watched production branch or
+change that setting without Cameron's approval.
 Main and all Contractor OS/security/financial branches remain unchanged.
+
+## Review follow-up
+
+The review restores focus to each newly displayed popup question, removes the
+calculator's obsolete drag handlers so touch scrolling remains available, and
+rejects malformed save acknowledgement IDs before recording completed leads.
+Functional tests cover these changes. Test counts above describe the original
+PR snapshot; the updated PR review and release approval report identify the
+final tested revision and current results.
+
+Read-only Hostinger verification confirmed Node 24.x, root ./, npm run build,
+output build and entry build/server/hostinger.cjs. Runtime database is
+u257752935_arcan_prod at localhost; its 2026-10-21 09:52 backup is selectable in
+hPanel. Database export integrity and restoration have not been exercised.
+The Files backup browser stalled at Loading files, so its coverage is unverified.
+
+The persistent gallery is outside deployment artifacts, at
+/home/u257752935/arcan-data/cutover-20260925-164458/gallery. The existing sibling
+gallery-pre-141-20261022.zip is 112096432 bytes; its SHA-256 is
+eb37d01bcf9d77a511a6d7644921ad06667fbd5ed803b1205f11d0058b66984e.
+ZIP CRC checks pass; all 140 member names, sizes and CRCs match the current
+gallery. No upload root is configured or used by the current code. Only one
+deployed artifact version is retained, so rollback must use the pinned baseline
+source rebuild rather than assume a previous artifact is available. No restore,
+backup creation, settings change or deployment was performed.
