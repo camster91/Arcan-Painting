@@ -11,7 +11,7 @@ const SERVICES_NAV = [
   { label: "Specialty Finishes", href: "/specialty-finishes", desc: "Custom Artistry" },
 ];
 
-export default function Header() {
+export default function Header({ initialService = "" }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
@@ -283,7 +283,7 @@ export default function Header() {
         </div>
       )}
 
-      <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} />
+      <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} initialService={initialService} source="header" />
     </header>
   );
 }

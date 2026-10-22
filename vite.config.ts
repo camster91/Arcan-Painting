@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     setupFiles: ['./test/setup.js'],
   },
-  envPrefix: 'NEXT_PUBLIC_',
+  envPrefix: ['NEXT_PUBLIC_', 'VITE_GA_MEASUREMENT_ID'],
   optimizeDeps: {
     include: ['lucide-react'],
     exclude: [

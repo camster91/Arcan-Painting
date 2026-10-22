@@ -87,10 +87,14 @@ export default function Footer() {
               {[
                 { href: "/#services", label: "Services" },
                 { href: "/#portfolio", label: "Our Work" },
-                { href: "/#about", label: "About Us" },
+                { href: "/#process", label: "Our Process" },
                 { href: "/contact", label: "Discuss a Project" },
                 { href: "/privacy", label: "Privacy Notice" },
-                { href: "/admin", label: "Admin" },
+                { href: "/interior-painting", label: "Interior Painting" },
+                { href: "/exterior-painting", label: "Exterior Painting" },
+                { href: "/commercial-painting", label: "Commercial Painting" },
+                { href: "/wallpaper-services", label: "Wallpaper Services" },
+                { href: "/specialty-finishes", label: "Specialty Finishes" },
               ].map((link, index) => (
                 <li key={index}>
                   <a

@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
-import { getAttribution } from "@/utils/analytics";
+import { getAttribution, trackEvent } from "@/utils/analytics";
+import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
+import { isSavedEnquiry } from "@/utils/savedEnquiry";
 
 export default function ContactSection() {
   useTheme();
@@ -102,18 +104,19 @@ export default function ContactSection() {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) {
+      if (!response.ok || !isSavedEnquiry(result)) {
         throw new Error(result?.error || "Failed to submit");
       }
       return result;
     },
     onSuccess: () => {
+      trackEvent("lead_submit_success", { source: "embedded_contact", service_type: serviceType, preferred_contact: preferredContact });
       if (typeof window !== "undefined") {
         window.location.href = "/thank-you";
       }
     },
     onError: (e) => {
-      console.error(e);
+      trackEvent("lead_submit_error", { source: "embedded_contact", service_type: serviceType });
       setError(e?.message || "Something went wrong. Please try again.");
     },
   });
@@ -140,14 +143,7 @@ export default function ContactSection() {
 
   if (step === 0) {
     stepTitle = "What do you need painted?";
-    const options = [
-      { key: "interior", label: "Interior" },
-      { key: "exterior", label: "Exterior" },
-      { key: "commercial", label: "Commercial" },
-      { key: "specialty", label: "Specialty Finishes" },
-      { key: "consultation", label: "Color Consultation" },
-      { key: "other", label: "Other" },
-    ];
+    const options = ENQUIRY_SERVICES;
     stepBody = (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {

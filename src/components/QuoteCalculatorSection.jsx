@@ -1,16 +1,16 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
+import LeadFormPopup from "./LeadFormPopup";
 import {
   Calculator,
-  Paintbrush,
   Home,
   Building2,
   AlertCircle,
-  Move,
 } from "lucide-react";
 
 export default function QuoteCalculatorSection() {
+  const [enquiry, setEnquiry] = useState(null);
   const [type, setType] = useState("interior");
   const [squareFeet, setSquareFeet] = useState(600);
   const [rooms, setRooms] = useState(3);
@@ -20,11 +20,6 @@ export default function QuoteCalculatorSection() {
   const [coats, setCoats] = useState(2);
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
-  const cardRef = useRef(null);
-  const dragStartRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,111 +37,6 @@ export default function QuoteCalculatorSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Dragging functionality
-  const handleMouseDown = (e) => {
-    if (e.target.closest("input, button, select")) return; // Don't drag when interacting with form elements
-
-    setIsDragging(true);
-    const rect = cardRef.current.getBoundingClientRect();
-    dragStartRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
-  const handleTouchStart = (e) => {
-    if (e.target.closest("input, button, select")) return;
-
-    setIsDragging(true);
-    const touch = e.touches[0];
-    const rect = cardRef.current.getBoundingClientRect();
-    dragStartRef.current = {
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top,
-    };
-    setDragOffset({
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top,
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-
-    const container = cardRef.current.parentElement;
-    const containerRect = container.getBoundingClientRect();
-    const cardRect = cardRef.current.getBoundingClientRect();
-
-    const newX = Math.max(
-      0,
-      Math.min(
-        containerRect.width - cardRect.width,
-        e.clientX - containerRect.left - dragOffset.x,
-      ),
-    );
-    const newY = Math.max(
-      0,
-      Math.min(
-        containerRect.height - cardRect.height,
-        e.clientY - containerRect.top - dragOffset.y,
-      ),
-    );
-
-    setCardPosition({ x: newX, y: newY });
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-
-    const touch = e.touches[0];
-    const container = cardRef.current.parentElement;
-    const containerRect = container.getBoundingClientRect();
-    const cardRect = cardRef.current.getBoundingClientRect();
-
-    const newX = Math.max(
-      0,
-      Math.min(
-        containerRect.width - cardRect.width,
-        touch.clientX - containerRect.left - dragOffset.x,
-      ),
-    );
-    const newY = Math.max(
-      0,
-      Math.min(
-        containerRect.height - cardRect.height,
-        touch.clientY - containerRect.top - dragOffset.y,
-      ),
-    );
-
-    setCardPosition({ x: newX, y: newY });
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleDragEnd);
-      document.addEventListener("touchmove", handleTouchMove, {
-        passive: false,
-      });
-      document.addEventListener("touchend", handleDragEnd);
-
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleDragEnd);
-        document.removeEventListener("touchmove", handleTouchMove);
-        document.removeEventListener("touchend", handleDragEnd);
-      };
-    }
-  }, [isDragging, dragOffset]);
 
   const fmt = (n) => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
@@ -198,7 +88,7 @@ export default function QuoteCalculatorSection() {
     }
   };
 
-  return (
+  return <>
     <section
       id="quote"
       className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
@@ -221,7 +111,7 @@ export default function QuoteCalculatorSection() {
         </div>
       </div>
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[800px]">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Section Header */}
         <div
           className={`text-center mb-16 lg:mb-24 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
@@ -252,29 +142,17 @@ export default function QuoteCalculatorSection() {
           </p>
         </div>
 
-        {/* Draggable Calculator Card */}
+        {/* Calculator card */}
         <div className="relative w-full h-full">
           <div
-            ref={cardRef}
-            className={`absolute bg-white/95 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl p-8 md:p-10 max-w-4xl w-full transition-all duration-300 cursor-move ${isDragging ? "scale-105 shadow-3xl z-50" : "z-10"}`}
+            className="relative mx-auto bg-white/95 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl p-4 sm:p-8 md:p-10 max-w-4xl w-full"
             style={{
-              transform: `translate(${cardPosition.x}px, ${cardPosition.y}px)`,
               animation:
-                isVisible && !isDragging
+                isVisible
                   ? "fadeInUp 0.8s ease-out both"
                   : "none",
             }}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
           >
-            {/* Drag Indicator */}
-            <div className="flex items-center justify-center mb-6">
-              <div className="flex items-center gap-2 text-slate-400 text-lg">
-                <Move size={20} />
-                <span>Drag me around!</span>
-              </div>
-            </div>
-
             {/* Controls */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -415,7 +293,7 @@ export default function QuoteCalculatorSection() {
                 <div className="text-slate-400 text-lg">
                   Your Estimated Range
                 </div>
-                <div className="text-5xl lg:text-6xl font-bold text-white mt-2">
+                <div className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mt-2">
                   ${fmt(estimate.low)} – ${fmt(estimate.high)}
                 </div>
                 <div className="text-sm text-slate-400 mt-2">
@@ -424,10 +302,10 @@ export default function QuoteCalculatorSection() {
               </div>
               <button
                 className="w-full md:w-auto px-8 py-4 rounded-xl font-bold text-xl bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-                onClick={() => {
-                  const el = document.getElementById("contact");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => setEnquiry({
+                  service: type,
+                  description: `Calculator planning inputs (not a confirmed quote): ${squareFeet} sq ft; ${rooms} rooms; ${quality} paint; ${coats} coats; ceilings: ${ceilings ? "yes" : "no"}; trim/doors: ${trim ? "yes" : "no"}.`,
+                })}
               >
                 Lock in a free exact quote
               </button>
@@ -436,7 +314,7 @@ export default function QuoteCalculatorSection() {
         </div>
 
         {/* Note */}
-        <p className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-slate-400 text-center">
+        <p className="mt-8 text-sm text-slate-400 text-center">
           This is a rough estimate for planning purposes only and not a final
           bid.
         </p>
@@ -450,5 +328,6 @@ export default function QuoteCalculatorSection() {
         }
       `}</style>
     </section>
-  );
+    {enquiry && <LeadFormPopup isOpen onClose={() => setEnquiry(null)} source="quote_calculator" initialService={enquiry.service} initialDescription={enquiry.description} />}
+  </>;
 }

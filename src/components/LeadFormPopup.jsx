@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Phone,
@@ -9,9 +10,12 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { getAttribution, trackEvent } from "@/utils/analytics";
+import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
+import { isSavedEnquiry } from "@/utils/savedEnquiry";
 
-export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) {
+export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", initialService = "", initialDescription = "" }) {
   const dialogRef = useRef(null);
+  const stepContentRef = useRef(null);
   const closeButtonRef = useRef(null);
   const previouslyFocusedElement = useRef(null);
   // Quiz-style state
@@ -72,17 +76,17 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     if (isOpen) {
       trackEvent("lead_form_open", { source });
       setStep(0);
-      setServiceType("");
+      setServiceType(ENQUIRY_SERVICES.some((service) => service.key === initialService) ? initialService : "");
       setFullName("");
       setPreferredContact("");
       setEmail("");
       setPhone("");
-      setProjectDescription("");
+      setProjectDescription(initialDescription);
       setError(null);
       setIsSubmitting(false);
       setIsSuccess(false);
     }
-  }, [isOpen]);
+  }, [isOpen, initialService, initialDescription, source]);
 
   // A modal must keep keyboard focus inside itself and return focus to its
   // trigger when it closes. This makes the multi-step estimate form usable
@@ -128,6 +132,14 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     };
   }, [isOpen, onClose]);
 
+  // Replacing a question removes its focused control. Keep the next keyboard
+  // action in the dialog rather than leaving focus on the document body.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (step === 0) closeButtonRef.current?.focus();
+    else stepContentRef.current?.querySelector('input, textarea, button:not([disabled])')?.focus();
+  }, [isOpen, step]);
+
   // Prevent body scroll when popup is open
   useEffect(() => {
     if (isOpen) {
@@ -148,13 +160,11 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     (force = false) => {
       setError(null);
       if (!force && !canGoNext) return;
-      setStep((s) => {
-        const nextStep = Math.min(s + 1, stepsTotal - 1);
-        trackEvent("lead_form_step", { source, step: nextStep + 1 });
-        return nextStep;
-      });
+      const nextStep = Math.min(step + 1, stepsTotal - 1);
+      setStep(nextStep);
+      trackEvent("lead_form_step", { source, step: nextStep + 1 });
     },
-    [canGoNext, stepsTotal, source],
+    [canGoNext, step, stepsTotal, source],
   );
 
   const back = useCallback(() => {
@@ -188,7 +198,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
         });
 
         const result = await response.json();
-        if (!response.ok) {
+        if (!response.ok || !isSavedEnquiry(result)) {
           trackEvent("lead_submit_error", { source, service_type: serviceType });
           throw new Error(result?.error || "Failed to submit");
         }
@@ -203,7 +213,6 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
         // Fallback success state (non-browser environments)
         setIsSuccess(true);
       } catch (e) {
-        console.error(e);
         setError(e?.message || "Something went wrong. Please try again.");
       } finally {
         setIsSubmitting(false);
@@ -212,7 +221,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     [fullName, email, phone, serviceType, projectDescription, preferredContact, source],
   );
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   // Reusable button styles
   const optionBtn =
@@ -227,14 +236,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
 
   if (step === 0) {
     stepTitle = "What do you need painted?";
-    const options = [
-      { key: "interior", label: "Interior" },
-      { key: "exterior", label: "Exterior" },
-      { key: "commercial", label: "Commercial" },
-      { key: "specialty", label: "Specialty Finishes" },
-      { key: "consultation", label: "Color Consultation" },
-      { key: "other", label: "Other" },
-    ];
+    const options = ENQUIRY_SERVICES;
     stepBody = (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {
@@ -397,8 +399,8 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     );
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       {/* Dark semi-transparent overlay */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300"
@@ -486,7 +488,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
               </div>
 
               {/* Step content */}
-              <div className="mb-8">
+              <div ref={stepContentRef} className="mb-8">
                 <h4 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white mb-4 lg:mb-5">
                   {stepTitle}
                 </h4>
@@ -545,6 +547,6 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
           )}
         </div>
       </div>
-    </div>
+    </div>, document.body
   );
 }

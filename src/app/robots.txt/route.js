@@ -6,28 +6,18 @@ export async function GET() {
     });
   }
 
-  const robotsTxt = `User-agent: *
-Allow: /
+  const publicRules = `Allow: /
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /api/*
 Disallow: /account/
 Disallow: /account/*
-Disallow: /thank-you
+Disallow: /thank-you`;
+  const robotsTxt = ["*", "Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User"]
+    .map((agent) => `User-agent: ${agent}\n${publicRules}`)
+    .join("\n\n") + `
 
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-# OpenAI search discovery is allowed independently of model-training crawl.
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
+# Training remains blocked independently of search discovery.
 User-agent: GPTBot
 Disallow: /
 
