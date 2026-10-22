@@ -1,5 +1,62 @@
 # Hostinger Node.js deployment
 
+## Production policy — 2026-10-22
+
+Cameron selected **Hostinger shared hosting only**, with manual, reviewed releases.
+GitHub Actions deployment and container image publication are disabled on main.
+Hostinger Git auto-deployment is off. Keep CI validation enabled; do not dispatch
+old Coolify workflows or push a watched production branch as a release shortcut.
+
+Authenticated hPanel inspection identified:
+
+- Website: `arcanpainting.ca`; hosting account `u257752935`.
+- Current deployment: `01a0d9c4-0814-7168-9ced-4b09240dd1a3`.
+- Current deployed commit: `6429480905bf849787a214064ca6a0758f883495`.
+- Stored Git branch: `codex/arcan-mysql-migration`.
+- Other framework, Node 24.x, root `./`, `npm run build`, npm,
+  output `build`, entry `build/server/hostinger.cjs`, devDependencies included.
+- Runtime uses the hosting-local MariaDB connection and an external persistent
+  gallery directory. Preserve runtime secrets and persistent data as configured.
+
+PR #173 head `c7829ac254e77fb2bf62278d25e59665fa179699` is 38 commits ahead
+of this deployed revision. Deploying that head would include unrelated changes,
+including financial code and migrations. For #141, backport the three application
+file changes onto the deployed revision and validate that isolated candidate.
+Do not deploy main or the full PR branch for this privacy-only release.
+
+### Manual release and rollback gates
+
+1. Record the deployed revision, stored build settings and persistent-data paths.
+   Verify current file and **actual runtime database** backups; the first database
+   selected in the backup screen may belong to another site on the hosting plan.
+   Confirm the persistent gallery/uploads are preserved separately when excluded
+   from the website backup. Do not expose credentials in release evidence.
+2. Build and review an isolated source candidate; run lint, typecheck, unit,
+   browser and disposable-database attribution checks. Prove no migrations,
+   finance changes or dependency changes are included relative to production.
+3. Preserve an immutable copy of the prior source revision for rollback. A
+   historical deployment record alone does not prove its source can be rebuilt;
+   redeploy uses the latest head of the selected branch, which may be deleted.
+4. In hPanel, Website Dashboard -> Redeploy opens settings; it does not release
+   until Save and redeploy is selected. Review the exact candidate source,
+   retain existing Node/build/entry/runtime settings, keep auto-deploy off,
+   and use only the verified shared-hosting application. Never change DNS.
+5. After release, record the new deployment UUID and SHA. Verify /api/health,
+   homepage and both contact forms. Use clearly synthetic leads; verify clean
+   /thank-you URLs and all seven attribution values in durable notification
+   metadata linked to each saved lead. Do not infer storage from a 200 alone.
+6. If verification fails, restore the saved prior application source/settings
+   through the same verified destination. Preserve database writes and gallery
+   data; do not restore a whole database just to roll back these code-only fixes.
+
+Shared-hosting file/database backups were listed for 2026-10-21 09:52 (hPanel
+shown time); successful restoration and gallery backup coverage remain untested.
+VPS retirement is authorized but **not completed**: Hostinger shows a
+`backup_create` action started 2026-10-22 06:41 and disables management controls
+while it runs. SSH from the execution environment is unreachable. Identify and
+archive only Arcan's exact containers/volumes/configuration before removal;
+do not stop or delete the shared VPS or unrelated applications.
+
 This is React Router on Hono, with an ES module server that uses top-level await.
 Hostinger's LiteSpeed launcher loads the configured entry with `require()`. Pointing
 it at `build/server/index.js` fails with `ERR_REQUIRE_ASYNC_MODULE` even after a
@@ -18,7 +75,7 @@ Use these Hostinger build settings:
 
 Set `NPM_CONFIG_INCLUDE=dev` if installing with `NODE_ENV=production`. Use
 `.env.example` for runtime variable names. `DATABASE_URL` must reference the
-intended PostgreSQL database. Set `APP_URL` and `PUBLIC_APP_URL` to the canonical
+intended database (currently hosting-local MariaDB in production). Set `APP_URL` and `PUBLIC_APP_URL` to the canonical
 HTTPS origin. Do not copy placeholder credentials from the example.
 
 Check the runtime logs after the build completes, then verify homepage, quote,
@@ -28,7 +85,7 @@ points elsewhere. Do not change DNS or domain binding without owner approval.
 
 The existing `npm start` command and Docker/Caddy setup remain unchanged.
 
-## MariaDB migration and persistent gallery
+## Historical migration and persistent gallery reference
 
 The MySQL service on this Hostinger plan runs **MariaDB 11.8**. Set `DATABASE_URL`
 to a `mysql://` connection to that service; keep the full value in hPanel secrets.
@@ -47,7 +104,7 @@ photos, company logo), also outside `public_html` and deployment releases. Files
 served at `/uploads/...` with random names. Without it, uploads go to `./uploads`
 inside the release and are lost on the next deploy.
 
-### Repeatable copy and verification
+### Historical migration rehearsal — do not run for ordinary releases
 
 1. Keep the existing VPS serving traffic during preparation. Preserve a custom
    `pg_dump` backup and a gallery archive in a private directory (mode 700/600).
