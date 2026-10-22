@@ -76,6 +76,9 @@
   "overrides": {
     "next-themes": "^0.3.0",
     "@hono/node-server": "^1.19.15",
-    "body-parser": "^1.20.6"
+    "body-parser": "^1.20.6",
+    "vite": {
+      "esbuild": "^0.28.1"
+    }
   }
 }
