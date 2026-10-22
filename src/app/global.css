@@ -45,3 +45,9 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Keep the hero actions equal despite the primary action's helper text. */
+#home .btn-primary {
+  box-sizing: border-box;
+  height: 60px;
+}
