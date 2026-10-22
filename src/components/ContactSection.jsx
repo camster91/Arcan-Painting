@@ -14,6 +14,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
 import { getAttribution } from "@/utils/analytics";
+import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
 
 export default function ContactSection() {
   useTheme();
@@ -140,14 +141,7 @@ export default function ContactSection() {
 
   if (step === 0) {
     stepTitle = "What do you need painted?";
-    const options = [
-      { key: "interior", label: "Interior" },
-      { key: "exterior", label: "Exterior" },
-      { key: "commercial", label: "Commercial" },
-      { key: "specialty", label: "Specialty Finishes" },
-      { key: "consultation", label: "Color Consultation" },
-      { key: "other", label: "Other" },
-    ];
+    const options = ENQUIRY_SERVICES;
     stepBody = (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {

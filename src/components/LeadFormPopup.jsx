@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Phone,
@@ -9,8 +10,9 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { getAttribution, trackEvent } from "@/utils/analytics";
+import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
 
-export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) {
+export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", initialService = "", initialDescription = "" }) {
   const dialogRef = useRef(null);
   const closeButtonRef = useRef(null);
   const previouslyFocusedElement = useRef(null);
@@ -72,17 +74,17 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     if (isOpen) {
       trackEvent("lead_form_open", { source });
       setStep(0);
-      setServiceType("");
+      setServiceType(ENQUIRY_SERVICES.some((service) => service.key === initialService) ? initialService : "");
       setFullName("");
       setPreferredContact("");
       setEmail("");
       setPhone("");
-      setProjectDescription("");
+      setProjectDescription(initialDescription);
       setError(null);
       setIsSubmitting(false);
       setIsSuccess(false);
     }
-  }, [isOpen]);
+  }, [isOpen, initialService, initialDescription, source]);
 
   // A modal must keep keyboard focus inside itself and return focus to its
   // trigger when it closes. This makes the multi-step estimate form usable
@@ -212,7 +214,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     [fullName, email, phone, serviceType, projectDescription, preferredContact, source],
   );
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   // Reusable button styles
   const optionBtn =
@@ -227,14 +229,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
 
   if (step === 0) {
     stepTitle = "What do you need painted?";
-    const options = [
-      { key: "interior", label: "Interior" },
-      { key: "exterior", label: "Exterior" },
-      { key: "commercial", label: "Commercial" },
-      { key: "specialty", label: "Specialty Finishes" },
-      { key: "consultation", label: "Color Consultation" },
-      { key: "other", label: "Other" },
-    ];
+    const options = ENQUIRY_SERVICES;
     stepBody = (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="group" aria-label="Service type selection">
         {options.map((opt) => {
@@ -397,8 +392,8 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     );
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       {/* Dark semi-transparent overlay */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300"
@@ -545,6 +540,6 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
           )}
         </div>
       </div>
-    </div>
+    </div>, document.body
   );
 }
