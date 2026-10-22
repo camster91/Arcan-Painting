@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getAttribution, trackEvent } from "@/utils/analytics";
 import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
+import { isSavedEnquiry } from "@/utils/savedEnquiry";
 
 export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", initialService = "", initialDescription = "" }) {
   const dialogRef = useRef(null);
@@ -197,7 +198,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", in
         });
 
         const result = await response.json();
-        if (!response.ok) {
+        if (!response.ok || !isSavedEnquiry(result)) {
           trackEvent("lead_submit_error", { source, service_type: serviceType });
           throw new Error(result?.error || "Failed to submit");
         }
@@ -212,7 +213,6 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", in
         // Fallback success state (non-browser environments)
         setIsSuccess(true);
       } catch (e) {
-        console.error(e);
         setError(e?.message || "Something went wrong. Please try again.");
       } finally {
         setIsSubmitting(false);
