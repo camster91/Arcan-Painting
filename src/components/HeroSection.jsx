@@ -165,7 +165,7 @@ export default function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4 justify-center lg:justify-start">
               {/* Primary CTA */}
               <div className="flex flex-col items-center sm:items-start gap-1 w-full sm:w-auto">
                 <motion.button
