@@ -6,7 +6,10 @@ Read-only authenticated hPanel inspection on 22 October 2026 confirmed the
 Completed / Current deployment on `fix/hero-button-css`, revision
 `fdf4ef0bc9c8f4044b5cd84515a5eb1ae1eaf23e`, shown deployment time 09:33:32.
 Source: https://hpanel.hostinger.com/websites/arcanpainting.ca/node/deployments.
-The dashboard reported auto-deployment off. No hosting setting was changed.
+Review correction: auto-deployment is ON. The visible green dashboard badge and
+its "Turn off auto-deployment" menu confirm it. The accessibility checkbox value
+was misleading. No hosting setting was changed. Do not push to the configured
+production branch without release approval.
 `HOSTINGER.md` on main still records an earlier release and is historical evidence.
 
 This branch starts at that deployed revision, retaining its privacy, MariaDB,
@@ -75,8 +78,8 @@ confirm backup/rollback availability, and approve the exact candidate. For a
 code-only rollback, use the preserved baseline `fix/hero-button-css` at
 `fdf4ef0bc9c8f4044b5cd84515a5eb1ae1eaf23e` through the reviewed Hostinger procedure.
 Keep runtime secrets, database and persistent gallery intact. Do not restore the
-database for these frontend changes. Verify auto-deployment remains off after
-any separately authorized manual release.
+database for these frontend changes. Auto-deployment is currently on; any change
+to that setting requires Cameron's explicit approval before a manual release.
 
 Outstanding #178 acceptance: approved isolated persistence/delivery destination,
 shorter-form hypothesis and agreed next-step wording. #176 owns saved-enquiry

@@ -53,4 +53,17 @@ describe("PortfolioSection lightbox accessibility", () => {
     expect(lightboxImage).toHaveAttribute("loading", "eager");
     expect(lightboxImage).toHaveAttribute("decoding", "async");
   });
+
+  it("starts with twelve unique photos and expands without cloned keyboard stops or animation", () => {
+    render(<PortfolioSection />);
+    const photoButtons = () => screen.getAllByRole("button", { name: /open project photo/i });
+    expect(photoButtons()).toHaveLength(12);
+    fireEvent.click(screen.getByRole("button", { name: "Show all projects" }));
+    const sources = photoButtons().map(button => button.querySelector("img").getAttribute("src"));
+    expect(sources.length).toBe(41);
+    expect(new Set(sources).size).toBe(sources.length);
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Show fewer projects" }));
+    expect(photoButtons()).toHaveLength(12);
+  });
 });

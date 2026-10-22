@@ -47,7 +47,7 @@ export default function FAQSection() {
     {
       question: "How do you protect my furniture and floors?",
       answer:
-        "Discuss the space, contents, and any concerns when you request your project. The team can outline-solid the preparation and protection plan before work begins.",
+        "Discuss the space, contents, and any concerns when you request your project. The team can outline the preparation and protection plan before work begins.",
     },
     {
       question: "What type of paint do you use?",
