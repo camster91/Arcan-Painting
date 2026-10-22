@@ -214,8 +214,8 @@ export default function EnhancedActivityFeed() {
       <div className="py-6">
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="p-4 border-b border-slate-200">
-            <div className="h-6 bg-slate-200 rounded w-48 mb-2 animate-pulse"></div>
-            <div className="h-4 bg-slate-200 rounded w-32 animate-pulse"></div>
+            <div className="h-6 bg-slate-200 rounded-sm w-48 mb-2 animate-pulse"></div>
+            <div className="h-4 bg-slate-200 rounded-sm w-32 animate-pulse"></div>
           </div>
           <div className="p-4">
             <div className="space-y-4">
@@ -223,8 +223,8 @@ export default function EnhancedActivityFeed() {
                 <div key={index} className="flex space-x-3 animate-pulse">
                   <div className="w-10 h-10 bg-slate-200 rounded-lg"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-slate-200 rounded-sm w-3/4"></div>
+                    <div className="h-3 bg-slate-200 rounded-sm w-1/2"></div>
                   </div>
                 </div>
               ))}
@@ -322,7 +322,7 @@ export default function EnhancedActivityFeed() {
                   <div className="flex items-start space-x-3">
                     {/* Icon */}
                     <div
-                      className={`w-10 h-10 ${activity.color} rounded-lg flex items-center justify-center flex-shrink-0`}
+                      className={`w-10 h-10 ${activity.color} rounded-lg flex items-center justify-center shrink-0`}
                     >
                       <Icon size={18} className="text-white" />
                     </div>
@@ -356,7 +356,7 @@ export default function EnhancedActivityFeed() {
                         </div>
 
                         {/* Timestamp and priority */}
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <div className="text-xs text-slate-500">
                             {formatTimeAgo(activity.timestamp)}
                           </div>

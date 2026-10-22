@@ -70,7 +70,7 @@ export function CalendarHeader({
           onClick={() => onViewChange("appointments")}
           className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             view === "appointments"
-              ? "bg-amber-500 text-white shadow-sm"
+              ? "bg-amber-500 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-white"
           }`}
         >
@@ -81,7 +81,7 @@ export function CalendarHeader({
           onClick={() => onViewChange("projects")}
           className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             view === "projects"
-              ? "bg-amber-500 text-white shadow-sm"
+              ? "bg-amber-500 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-white"
           }`}
         >

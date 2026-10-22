@@ -43,25 +43,25 @@ export default function SentryTest() {
       <div className="flex flex-col gap-2">
         <button
           onClick={triggerError}
-          className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
+          className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-sm hover:bg-blue-700"
         >
           Send Test Message
         </button>
         <button
           onClick={triggerException}
-          className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700"
+          className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-sm hover:bg-red-700"
         >
           Throw Exception (tests ErrorBoundary)
         </button>
         <button
           onClick={triggerUnhandledRejection}
-          className="text-xs bg-orange-600 text-white px-3 py-1.5 rounded hover:bg-orange-700"
+          className="text-xs bg-orange-600 text-white px-3 py-1.5 rounded-sm hover:bg-orange-700"
         >
           Unhandled Rejection
         </button>
       </div>
       {status && (
-        <p className="text-xs text-gray-700 mt-2 break-words">{status}</p>
+        <p className="text-xs text-gray-700 mt-2 wrap-break-word">{status}</p>
       )}
     </div>
   );

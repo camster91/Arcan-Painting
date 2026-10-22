@@ -77,7 +77,7 @@ export class ErrorBoundary extends Component {
               {this.props.showDetails && this.state.error && (
                 <details className="mb-4 text-left">
                   <summary className="text-xs text-gray-400 cursor-pointer mb-1">Error details</summary>
-                  <pre className="text-xs text-red-600 bg-red-50 p-3 rounded overflow-auto max-h-32">
+                  <pre className="text-xs text-red-600 bg-red-50 p-3 rounded-sm overflow-auto max-h-32">
                     {this.state.error.message}
                   </pre>
                 </details>
@@ -102,7 +102,7 @@ export class ErrorBoundary extends Component {
       // Inline/compact variant (for partial page sections)
       return (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 flex items-start gap-3">
-          <span className="text-red-400 mt-0.5 flex-shrink-0">⚠</span>
+          <span className="text-red-400 mt-0.5 shrink-0">⚠</span>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-red-800">Something went wrong</p>
             <p className="text-xs text-red-600 mt-1">
@@ -114,7 +114,7 @@ export class ErrorBoundary extends Component {
           </div>
           <button
             onClick={this.handleRetry}
-            className="flex-shrink-0 text-xs bg-white border border-red-300 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium"
+            className="shrink-0 text-xs bg-white border border-red-300 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium"
           >
             Retry
           </button>

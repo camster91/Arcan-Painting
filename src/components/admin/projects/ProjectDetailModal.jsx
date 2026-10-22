@@ -480,12 +480,12 @@ export default function ProjectDetailModal({ project, onClose, onUpdate }) {
                 className="block text-sm"
               />
               {progressError && (
-                <div className="bg-red-50 border border-red-200 rounded p-2 text-sm text-red-700">
+                <div className="bg-red-50 border border-red-200 rounded-sm p-2 text-sm text-red-700">
                   {progressError}
                 </div>
               )}
               {progressSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded p-2 text-sm text-green-700">
+                <div className="bg-green-50 border border-green-200 rounded-sm p-2 text-sm text-green-700">
                   Saved progress
                 </div>
               )}

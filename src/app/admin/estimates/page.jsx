@@ -290,7 +290,7 @@ export default function EstimatesPage() {
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     activeTab === "builder"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -301,7 +301,7 @@ export default function EstimatesPage() {
                   onClick={() => setActiveTab("list")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     activeTab === "list"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >

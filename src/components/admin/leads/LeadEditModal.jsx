@@ -98,7 +98,7 @@ export default function LeadEditModal({
       <button
         onClick={handleSave}
         disabled={saving || !form.name || !form.email || !form.phone}
-        className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+        className="flex-1 px-6 py-3 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
       >
         {saving ? (
           <div className="flex items-center justify-center gap-2">

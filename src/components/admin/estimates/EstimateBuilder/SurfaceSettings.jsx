@@ -51,7 +51,7 @@ export function SurfaceSettings({ area, onUpdate }) {
                       wallsPrimer: e.target.checked,
                     })
                   }
-                  className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                  className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
                 />
                 <span className="ml-2 text-sm text-slate-700">Primer</span>
               </label>
@@ -73,7 +73,7 @@ export function SurfaceSettings({ area, onUpdate }) {
                   paintCeiling: e.target.checked,
                 })
               }
-              className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+              className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
             />
             <span className="ml-2 text-sm text-slate-700">Paint Ceiling</span>
           </label>
@@ -127,7 +127,7 @@ export function SurfaceSettings({ area, onUpdate }) {
                         ceilPrimer: e.target.checked,
                       })
                     }
-                    className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    className="form-checkbox h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
                   />
                   <span className="ml-2 text-sm text-slate-700">Primer</span>
                 </label>

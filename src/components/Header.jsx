@@ -70,7 +70,7 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ease-out ${isScrolled ? "shadow-lg backdrop-blur-sm" : ""}`}
+      className={`sticky top-0 z-50 transition-all duration-300 ease-out ${isScrolled ? "shadow-lg backdrop-blur-xs" : ""}`}
       style={{
         backgroundColor: themeColors.bg,
         borderBottom: `1px solid ${themeColors.border}`,
@@ -79,14 +79,14 @@ export default function Header() {
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-100 focus:bg-amber-500 focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg"
       >
         Skip to content
       </a>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Brand */}
-          <a href="/" className="block flex-shrink-0">
+          <a href="/" className="block shrink-0">
             <img
               src="/logo.png"
               alt="Arcan Painting logo"
@@ -188,7 +188,7 @@ export default function Header() {
 
       {/* Mobile Fullscreen Menu */}
       {isMenuOpen && isMobile && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-100 md:hidden">
           <div className="absolute inset-0 z-0" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={() => setIsMenuOpen(false)} />
           <div
             id="mobile-menu-panel"

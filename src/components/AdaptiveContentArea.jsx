@@ -53,8 +53,8 @@ export default function AdaptiveContentArea({
       {/* Adaptive Header */}
       {(title || actions || breadcrumbs || showBackButton) && (
         <div
-          className={`sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b transition-all duration-200 ${
-            isScrolled ? "border-slate-200 shadow-sm" : "border-transparent"
+          className={`sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b transition-all duration-200 ${
+            isScrolled ? "border-slate-200 shadow-xs" : "border-transparent"
           } ${isMobile ? "px-4 py-3" : "px-6 py-4"}`}
         >
           {/* Breadcrumbs - Desktop only */}
@@ -120,7 +120,7 @@ export default function AdaptiveContentArea({
 
             {/* Right side - Actions */}
             {actions && (
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {isMobile ? (
                   // Mobile: Show primary action + overflow menu
                   <>
@@ -202,7 +202,7 @@ export default function AdaptiveContentArea({
 
       {/* Debug info (remove in production) */}
       {process.env.NODE_ENV === "development" && (
-        <div className="fixed bottom-4 right-4 bg-black/75 text-white text-xs px-2 py-1 rounded z-50">
+        <div className="fixed bottom-4 right-4 bg-black/75 text-white text-xs px-2 py-1 rounded-sm z-50">
           {screenSize} • {isMobile ? "mobile" : isTablet ? "tablet" : "desktop"}
         </div>
       )}

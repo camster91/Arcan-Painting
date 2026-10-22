@@ -121,7 +121,7 @@ export default function HeroSection() {
           <div className="text-center lg:text-left">
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-2 backdrop-blur-sm border px-4 py-2 rounded-full text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 backdrop-blur-xs border px-4 py-2 rounded-full text-sm font-medium mb-6"
               style={{
                 backgroundColor: "#fbbf2433",
                 borderColor: "#fbbf2466",
@@ -146,7 +146,7 @@ export default function HeroSection() {
             >
               Transform Your Space with{" "}
               <span
-                className="bg-gradient-to-r bg-clip-text text-transparent"
+                className="bg-linear-to-r bg-clip-text text-transparent"
                 style={{
                   backgroundImage: "linear-gradient(to right, #fbbf24, #fde047)",
                 }}
@@ -308,7 +308,7 @@ export default function HeroSection() {
                     }
                   >
                     <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                      className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
                       style={{ backgroundColor: "#fbbf24" }}
                     >
                       <span className="text-sm font-bold" style={{ color: "#0f172a" }}>✓</span>

@@ -303,10 +303,10 @@ export default function SettingsPage() {
                   <img
                     src={settings.logo_url}
                     alt="Logo"
-                    className="w-[240px] h-[120px] object-contain border border-slate-200 rounded"
+                    className="w-[240px] h-[120px] object-contain border border-slate-200 rounded-sm"
                   />
                 ) : (
-                  <div className="w-[240px] h-[120px] bg-slate-50 border border-dashed border-slate-300 rounded flex items-center justify-center text-slate-400">
+                  <div className="w-[240px] h-[120px] bg-slate-50 border border-dashed border-slate-300 rounded-sm flex items-center justify-center text-slate-400">
                     No logo
                   </div>
                 )}

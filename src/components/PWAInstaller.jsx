@@ -155,7 +155,7 @@ export default function PWAInstaller() {
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-200 p-6">
         <div className="flex items-start gap-4">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             {isMobile ? (
               <Smartphone className="w-8 h-8 text-amber-500" />
             ) : (
@@ -208,7 +208,7 @@ export default function PWAInstaller() {
 
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 text-slate-400 hover:text-slate-600 p-1"
+            className="shrink-0 text-slate-400 hover:text-slate-600 p-1"
           >
             <X size={20} />
           </button>

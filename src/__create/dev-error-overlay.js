@@ -58,13 +58,13 @@
 
     panel.outerHTML = html`
       <div id="__create_error_panel"
-           class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[2147483647]
+           class="fixed bottom-4 left-1/2 -translate-x-1/2 z-2147483647
                   transition-all duration-500 ease-out translate-y-0 opacity-100">
         <div
           class="bg-[#18191B] text-[#F2F2F2] rounded-lg p-4 max-w-md
                  w-[calc(100vw-2rem)] mx-4 shadow-lg flex flex-col gap-2">
           <div class="flex items-start gap-3">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <div
                 class="w-8 h-8 bg-[#F2F2F2] rounded-full flex
                        items-center justify-center">
@@ -81,7 +81,7 @@
               <div class="flex gap-2">
                 <button id="fix"
                   class="flex flex-row items-center justify-center gap-[4px]
-                         outline-none transition-all rounded-[8px] border-[1px]
+                         outline-hidden transition-all rounded-[8px] border
                          bg-[#f9f9f9] hover:bg-[#dbdbdb] active:bg-[#c4c4c4]
                          border-[#c4c4c4] text-[#18191B] text-sm px-[8px] py-[4px] opacity-0">
                   Try to fix
@@ -89,7 +89,7 @@
 
                 <button id="logs"
                   class="flex flex-row items-center justify-center gap-[4px]
-                         outline-none transition-all rounded-[8px] border-[1px]
+                         outline-hidden transition-all rounded-[8px] border
                          bg-[#2C2D2F] hover:bg-[#414243] active:bg-[#555658]
                          border-[#414243] text-white text-sm px-[8px] py-[4px] opacity-0">
                   Show logs
@@ -97,7 +97,7 @@
 
                 <button id="copy"
                   class="flex flex-row items-center justify-center gap-[4px]
-                         outline-none transition-all rounded-[8px] border-[1px]
+                         outline-hidden transition-all rounded-[8px] border
                          bg-[#2C2D2F] hover:bg-[#414243] active:bg-[#555658]
                          border-[#414243] text-white text-sm px-[8px] py-[4px] opacity-0">
                   Copy error

@@ -19,7 +19,7 @@ export default function MobileStatusFilter({
           <button
             key={status.key}
             onClick={() => setStatusFilter(status.key)}
-            className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+            className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
               statusFilter === status.key
                 ? "bg-amber-100 text-amber-800 border-amber-300"
                 : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"

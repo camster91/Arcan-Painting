@@ -135,7 +135,7 @@ export function EstimateDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
@@ -297,7 +297,7 @@ export function EstimateDetailModal({
                         name="labor_cost"
                         value={form.labor_cost}
                         onChange={handleChange}
-                        className="w-32 px-2 py-1 border border-slate-300 rounded"
+                        className="w-32 px-2 py-1 border border-slate-300 rounded-sm"
                       />
                     ) : (
                       <span className="font-semibold text-slate-900">
@@ -314,7 +314,7 @@ export function EstimateDetailModal({
                         name="material_cost"
                         value={form.material_cost}
                         onChange={handleChange}
-                        className="w-32 px-2 py-1 border border-slate-300 rounded"
+                        className="w-32 px-2 py-1 border border-slate-300 rounded-sm"
                       />
                     ) : (
                       <span className="font-semibold text-slate-900">

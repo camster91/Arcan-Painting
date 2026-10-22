@@ -30,7 +30,7 @@ const ROW_2 = GOOGLE_REVIEWS.slice(9);
 
 function GoogleIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 48 48" className="opacity-70 flex-shrink-0">
+    <svg width="16" height="16" viewBox="0 0 48 48" className="opacity-70 shrink-0">
       <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
       <path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
       <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
@@ -42,9 +42,9 @@ function GoogleIcon() {
 function ReviewCard({ review }) {
   const initials = review.name.split(" ").map(n => n[0]).join("").toUpperCase();
   return (
-    <div className="w-[280px] sm:w-[320px] flex-shrink-0 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col select-none">
+    <div className="w-[280px] sm:w-[320px] shrink-0 bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col select-none">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+        <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
           {initials}
         </div>
         <div className="min-w-0 flex-1">
@@ -199,7 +199,7 @@ export default function GoogleReviewsSection() {
     >
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10 md:mb-14">
-        <div className="inline-flex items-center gap-2 bg-white border border-blue-100 text-blue-700 text-xs font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm">
+        <div className="inline-flex items-center gap-2 bg-white border border-blue-100 text-blue-700 text-xs font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-xs">
           <GoogleIcon />
           Google Reviews
         </div>
@@ -231,7 +231,7 @@ export default function GoogleReviewsSection() {
           href={GOOGLE_MAPS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 font-semibold text-sm px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all duration-200"
+          className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 font-semibold text-sm px-6 py-3 rounded-full shadow-xs hover:shadow-md transition-all duration-200"
         >
           <GoogleIcon />
           See all reviews on Google

@@ -50,7 +50,7 @@ function GalleryCard({ item, onClick }) {
     <button
       type="button"
       onClick={(event) => onClick(event)}
-      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
+      className="shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline-solid focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
       aria-label={`Open project photo: ${item.title}`}
       style={{
         width: "clamp(140px, 28vw, 260px)",
@@ -339,7 +339,7 @@ export default function PortfolioSection() {
       id="portfolio"
       ref={sectionRef}
       className={[
-        "py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden",
+        "py-16 md:py-24 bg-linear-to-b from-slate-50 to-white overflow-hidden",
         "transition-all duration-700 ease-out",
         sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
       ].join(" ")}
@@ -424,7 +424,7 @@ export default function PortfolioSection() {
           role="dialog"
           aria-modal="true"
           aria-label="Project photo viewer"
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-black"
           onClick={closeLightbox}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -436,7 +436,7 @@ export default function PortfolioSection() {
               event.stopPropagation();
               closeLightbox();
             }}
-            className="absolute top-4 right-4 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-xs rounded-full flex items-center justify-center transition-colors"
             aria-label="Close"
           >
             <X size={22} className="text-white" />
@@ -445,7 +445,7 @@ export default function PortfolioSection() {
           {/* Prev button */}
           <button
             onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-xs rounded-full flex items-center justify-center transition-colors"
             aria-label="Previous"
           >
             <ChevronLeft size={24} className="text-white" />
@@ -454,7 +454,7 @@ export default function PortfolioSection() {
           {/* Next button */}
           <button
             onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/50 hover:bg-white/20 backdrop-blur-xs rounded-full flex items-center justify-center transition-colors"
             aria-label="Next"
           >
             <ChevronRight size={24} className="text-white" />
@@ -476,7 +476,7 @@ export default function PortfolioSection() {
           </div>
 
           {/* Bottom bar */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 sm:px-6 sm:py-4">
+          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4 sm:px-6 sm:py-4">
             <div className="flex items-center justify-between">
               <span className="text-white/60 text-xs sm:text-sm">
                 {lightboxIndex + 1} / {filtered.length}

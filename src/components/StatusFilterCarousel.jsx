@@ -133,7 +133,7 @@ export default function StatusFilterCarousel({
               onClick={() => onStatusChange(status.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all whitespace-nowrap ${
                 isActive ? status.activeColor : status.color
-              } hover:shadow-sm`}
+              } hover:shadow-xs`}
             >
               <span>{status.label}</span>
               {displayCount > 0 && (

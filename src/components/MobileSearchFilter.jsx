@@ -280,7 +280,7 @@ export default function MobileSearchFilter({
                           e.target.checked,
                         )
                       }
-                      className="w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500"
+                      className="w-4 h-4 text-amber-600 border-slate-300 rounded-sm focus:ring-amber-500"
                     />
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${option.color || "bg-slate-100 text-slate-700"}`}
@@ -309,7 +309,7 @@ export default function MobileSearchFilter({
                           e.target.checked,
                         )
                       }
-                      className="w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500"
+                      className="w-4 h-4 text-amber-600 border-slate-300 rounded-sm focus:ring-amber-500"
                     />
                     <span className="text-sm text-slate-700">
                       {option.label}

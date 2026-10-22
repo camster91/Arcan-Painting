@@ -165,17 +165,17 @@ export default function ChatWidget() {
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
-          className="fixed bottom-6 right-6 z-[110] w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+          className="fixed bottom-6 right-6 z-110 w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
         >
           <MessageCircle className="w-6 h-6" />
         </button>
       )}
 
       {isOpen && (
-        <div className="chat-fade-in fixed bottom-6 right-6 z-[110] w-[390px] max-w-[90vw] h-[560px] max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
+        <div className="chat-fade-in fixed bottom-6 right-6 z-110 w-[390px] max-w-[90vw] h-[560px] max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="bg-linear-to-r from-amber-500 to-yellow-500 text-white px-4 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -214,11 +214,11 @@ export default function ChatWidget() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com (optional)"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-yellow-600 transition-colors"
+                  className="w-full py-3 bg-linear-to-r from-amber-500 to-yellow-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-yellow-600 transition-colors"
                 >
                   Let's Chat! →
                 </button>
@@ -295,14 +295,14 @@ export default function ChatWidget() {
           </div>
 
           {/* Input */}
-          <form onSubmit={sendMessage} className="p-3 border-t border-gray-100 flex gap-2 flex-shrink-0">
+          <form onSubmit={sendMessage} className="p-3 border-t border-gray-100 flex gap-2 shrink-0">
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your question..."
               disabled={isLoading}
-              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50"
             />
             <button
               type="submit"

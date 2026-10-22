@@ -102,7 +102,7 @@ export function AvailabilityChips({
 
   if (availError) {
     return (
-      <div className="px-6 py-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded mx-6">
+      <div className="px-6 py-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-sm mx-6">
         Failed to load team availability
       </div>
     );
@@ -114,7 +114,7 @@ export function AvailabilityChips({
   const addBtn = (
     <button
       onClick={onStartAdd}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded border ${noMembers ? "border-slate-200 text-slate-400 cursor-not-allowed" : "border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-sm border ${noMembers ? "border-slate-200 text-slate-400 cursor-not-allowed" : "border-slate-300 text-slate-700 hover:bg-slate-50"}`}
       title={noMembers ? "Add a team member first" : "Add availability"}
       disabled={teamMembersLoading || !!teamMembersError || noMembers}
     >
@@ -143,7 +143,7 @@ export function AvailabilityChips({
           <label className="text-xs text-slate-600 flex flex-col">
             <span className="mb-1">Member</span>
             <select
-              className="border rounded px-2 py-1 text-sm"
+              className="border rounded-sm px-2 py-1 text-sm"
               value={draft.team_member_id || ""}
               onChange={(e) =>
                 setDraft((d) => ({
@@ -167,7 +167,7 @@ export function AvailabilityChips({
         <label className="text-xs text-slate-600 flex flex-col">
           <span className="mb-1">Type</span>
           <select
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded-sm px-2 py-1 text-sm"
             value={draft.availability_type || "available"}
             onChange={(e) =>
               setDraft((d) => ({ ...d, availability_type: e.target.value }))
@@ -185,7 +185,7 @@ export function AvailabilityChips({
           <span className="mb-1">Start</span>
           <input
             type="time"
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded-sm px-2 py-1 text-sm"
             value={draft.start_time || ""}
             onChange={(e) =>
               setDraft((d) => ({ ...d, start_time: e.target.value }))
@@ -197,7 +197,7 @@ export function AvailabilityChips({
           <span className="mb-1">End</span>
           <input
             type="time"
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded-sm px-2 py-1 text-sm"
             value={draft.end_time || ""}
             onChange={(e) =>
               setDraft((d) => ({ ...d, end_time: e.target.value }))
@@ -209,7 +209,7 @@ export function AvailabilityChips({
           {adding ? (
             <button
               onClick={saveNew}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-emerald-600 text-white text-sm"
               disabled={createAvailability.isLoading}
             >
               <Save size={14} /> Save
@@ -217,7 +217,7 @@ export function AvailabilityChips({
           ) : (
             <button
               onClick={saveEdit}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-600 text-white text-sm"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-emerald-600 text-white text-sm"
               disabled={updateAvailability.isLoading}
             >
               <Save size={14} /> Save
@@ -225,14 +225,14 @@ export function AvailabilityChips({
           )}
           <button
             onClick={onCancel}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-slate-300 text-slate-700 text-sm"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm border border-slate-300 text-slate-700 text-sm"
           >
             <X size={14} /> Cancel
           </button>
           {!adding && editingId ? (
             <button
               onClick={() => onDelete(editingId)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-rose-200 text-rose-700 text-sm hover:bg-rose-50"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm border border-rose-200 text-rose-700 text-sm hover:bg-rose-50"
               disabled={deleteAvailability.isLoading}
             >
               <Trash2 size={14} /> Delete

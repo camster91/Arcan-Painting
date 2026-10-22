@@ -84,7 +84,7 @@ function StepBusinessInfo({ onNext, onBack }) {
             type="text"
             value={form.businessName}
             onChange={(e) => setForm({ ...form, businessName: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-hidden transition-colors"
           />
         </div>
         <div>
@@ -95,7 +95,7 @@ function StepBusinessInfo({ onNext, onBack }) {
             type="tel"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-hidden transition-colors"
           />
         </div>
         <div>
@@ -106,7 +106,7 @@ function StepBusinessInfo({ onNext, onBack }) {
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-hidden transition-colors"
           />
         </div>
         <div>
@@ -118,7 +118,7 @@ function StepBusinessInfo({ onNext, onBack }) {
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
             placeholder="123 Main St, Toronto, ON M5V 1A1"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-hidden transition-colors"
           />
         </div>
         <div className="flex gap-3 pt-4">

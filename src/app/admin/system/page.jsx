@@ -98,7 +98,7 @@ export default function SystemHealthPage() {
         {/* Main Health Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Database */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center">
@@ -109,7 +109,7 @@ export default function SystemHealthPage() {
               <h3 className="text-lg font-bold text-gray-900">PostgreSQL DB</h3>
               <p className="text-sm text-gray-500 mt-1">Neon Cloud Database</p>
               {health?.database?.message && (
-                <p className="text-xs text-red-600 mt-2 bg-red-50 p-2 rounded">{health.database.message}</p>
+                <p className="text-xs text-red-600 mt-2 bg-red-50 p-2 rounded-sm">{health.database.message}</p>
               )}
             </div>
             <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
@@ -118,7 +118,7 @@ export default function SystemHealthPage() {
           </div>
 
           {/* AI Worker */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center">
@@ -141,7 +141,7 @@ export default function SystemHealthPage() {
           </div>
 
           {/* Email Service */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center">
@@ -160,7 +160,7 @@ export default function SystemHealthPage() {
         </div>
 
         {/* Configuration Status */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-green-600" />
@@ -190,7 +190,7 @@ export default function SystemHealthPage() {
         {/* Actions */}
         <div className="bg-slate-900 rounded-2xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="flex items-center gap-5 text-center md:text-left">
-            <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center flex-shrink-0 border border-slate-700">
+            <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center shrink-0 border border-slate-700">
               <Zap className="w-8 h-8 text-amber-400" />
             </div>
             <div>

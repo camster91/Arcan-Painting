@@ -47,7 +47,7 @@ export default function FAQSection() {
     {
       question: "How do you protect my furniture and floors?",
       answer:
-        "Discuss the space, contents, and any concerns when you request your project. The team can outline the preparation and protection plan before work begins.",
+        "Discuss the space, contents, and any concerns when you request your project. The team can outline-solid the preparation and protection plan before work begins.",
     },
     {
       question: "What type of paint do you use?",
@@ -77,13 +77,13 @@ export default function FAQSection() {
   return (
     <section
       id="faq"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -104,7 +104,7 @@ export default function FAQSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <HelpCircle size={18} className="text-white" />
             </div>
             <span className="text-white/90 text-base lg:text-lg font-medium">
@@ -143,7 +143,7 @@ export default function FAQSection() {
                   <span className="font-semibold text-white text-lg lg:text-xl pr-8 leading-relaxed">
                     {faq.question}
                   </span>
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                  <div className="shrink-0 w-10 h-10 bg-linear-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                     {openFAQ === index ? (
                       <ChevronUp className="w-5 h-5 text-white" />
                     ) : (
@@ -173,11 +173,11 @@ export default function FAQSection() {
         >
           <div className="relative backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-8 lg:p-12">
             {/* Background decoration */}
-            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-xl"></div>
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-linear-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-linear-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-xl"></div>
 
             <div className="relative z-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full mb-6 shadow-xl">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-amber-400 to-yellow-500 rounded-full mb-6 shadow-xl">
                 <MessageCircle size={24} className="text-white" />
               </div>
 
@@ -190,7 +190,7 @@ export default function FAQSection() {
               </p>
 
               <button
-                className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold px-10 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-lg"
+                className="bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold px-10 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-lg"
                 onClick={() => setIsLeadFormOpen(true)}
               >
                 Ask a Question

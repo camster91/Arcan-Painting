@@ -41,13 +41,13 @@ export default function LocalAreaSection() {
   return (
     <section
       id="local-area"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -68,7 +68,7 @@ export default function LocalAreaSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <MapPin size={18} className="text-white" />
             </div>
             <span className="text-white/90 text-base lg:text-lg font-medium">
@@ -100,7 +100,7 @@ export default function LocalAreaSection() {
           {/* Mobile: collapsible region tabs */}
           <div className="md:hidden space-y-3 max-w-2xl mx-auto px-2">
             {serviceRegions.map((region, regionIndex) => (
-              <div key={regionIndex} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden">
+              <div key={regionIndex} className="bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl overflow-hidden">
                 <button
                   className="w-full flex items-center justify-between px-5 py-4 text-left"
                   onClick={() => setActiveRegion(activeRegion === regionIndex ? null : regionIndex)}
@@ -145,14 +145,14 @@ export default function LocalAreaSection() {
                   {region.cities.map((area, index) => (
                     <div
                       key={index}
-                      className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 text-center hover:bg-white/20 transition-all duration-300 hover:scale-105"
+                      className="group relative bg-white/10 backdrop-blur-xs border border-white/20 rounded-2xl p-3 text-center hover:bg-white/20 transition-all duration-300 hover:scale-105"
                       style={{
                         animation: isVisible
                           ? `fadeInUp 0.6s ease-out ${(regionIndex * 10 + index) * 0.03}s both`
                           : "none",
                       }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-yellow-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-linear-to-br from-amber-400/10 to-yellow-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <span className="relative text-white font-medium text-base">
                         {area}
                       </span>
@@ -202,7 +202,7 @@ export default function LocalAreaSection() {
         <div
           className={`mt-16 transition-all duration-1000 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <div className="relative bg-gradient-to-br from-amber-400 to-yellow-500 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto shadow-2xl overflow-hidden">
+          <div className="relative bg-linear-to-br from-amber-400 to-yellow-500 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto shadow-2xl overflow-hidden">
             {/* Background effects */}
             <div className="absolute -bottom-10 -right-10 w-56 h-56 bg-white/30 rounded-full blur-3xl opacity-60"></div>
             <div className="absolute -top-8 -left-8 w-40 h-40 bg-white/20 rounded-full blur-2xl opacity-60"></div>

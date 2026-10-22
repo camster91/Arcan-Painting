@@ -182,7 +182,7 @@ export default function CityServicePage() {
               <h2 className="text-3xl font-bold text-slate-900 text-center mb-4">Discuss Your {service.name} Project</h2>
               <p className="text-slate-600 text-center text-lg mb-12 max-w-2xl mx-auto">Share the details of your project and the team can discuss the appropriate next steps.</p>
               <div className="grid md:grid-cols-3 gap-6">
-                {projectSteps.map((step, index) => <div key={step} className="flex items-start gap-4 bg-white rounded-xl p-5 border border-slate-100"><span className="bg-amber-400 text-slate-900 font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm">{index + 1}</span><p className="text-slate-700 leading-relaxed">{step}</p></div>)}
+                {projectSteps.map((step, index) => <div key={step} className="flex items-start gap-4 bg-white rounded-xl p-5 border border-slate-100"><span className="bg-amber-400 text-slate-900 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm">{index + 1}</span><p className="text-slate-700 leading-relaxed">{step}</p></div>)}
               </div>
             </div>
           </section>
@@ -201,7 +201,7 @@ export default function CityServicePage() {
             </div>
           </section>
 
-          <section className="py-20 bg-gradient-to-br from-amber-400 to-yellow-500">
+          <section className="py-20 bg-linear-to-br from-amber-400 to-yellow-500">
             <div className="max-w-3xl mx-auto px-6 text-center">
               <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">Start a Project Conversation</h2>
               <p className="text-slate-800 text-xl mb-10">Tell us about your project and the team can review the details with you.</p>

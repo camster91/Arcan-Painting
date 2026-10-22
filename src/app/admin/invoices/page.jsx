@@ -343,7 +343,7 @@ export default function InvoicesPage() {
                   type="checkbox"
                   checked={overdueOnly}
                   onChange={(e) => setOverdueOnly(e.target.checked)}
-                  className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                  className="rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500"
                 />
                 <span className="text-sm text-slate-700">Overdue only</span>
               </label>

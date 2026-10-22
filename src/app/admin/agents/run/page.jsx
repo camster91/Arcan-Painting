@@ -56,12 +56,12 @@ function OpenClawWarning() {
         <div>
           <h3 className="font-semibold text-amber-900 mb-1">OpenClaw Not Configured</h3>
           <p className="text-sm text-amber-800">
-            The <code className="bg-amber-100 px-1 rounded">OPENCLAW_URL</code> environment variable is not set.
+            The <code className="bg-amber-100 px-1 rounded-sm">OPENCLAW_URL</code> environment variable is not set.
             Agent runs will fail because there is no AI agent service to connect to.
           </p>
           <p className="text-sm text-amber-800 mt-2">
-            Set <code className="bg-amber-100 px-1 rounded">OPENCLAW_URL</code> in your environment (e.g.,{" "}
-            <code className="bg-amber-100 px-1 rounded">http://localhost:18789</code> for local development) and
+            Set <code className="bg-amber-100 px-1 rounded-sm">OPENCLAW_URL</code> in your environment (e.g.,{" "}
+            <code className="bg-amber-100 px-1 rounded-sm">http://localhost:18789</code> for local development) and
             restart the server to enable agent execution.
           </p>
         </div>
@@ -281,7 +281,7 @@ export default function AgentRunPage() {
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm">
             <p className="text-slate-700">
               <span className="font-semibold">Endpoint:</span>{" "}
-              <code className="bg-white px-1 rounded">{selectedAgentData.endpoint}</code>
+              <code className="bg-white px-1 rounded-sm">{selectedAgentData.endpoint}</code>
             </p>
             {selectedAgentData.fields.length > 0 && (
               <p className="text-slate-700 mt-2">

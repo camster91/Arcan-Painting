@@ -209,7 +209,7 @@ export default function SwipeableProjectCard({
           </div>
           <div className="flex items-center gap-2 ml-3">
             <span
-              className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(project.status)}`}
+              className={`px-2 py-1 rounded-sm text-xs font-medium border ${getStatusColor(project.status)}`}
             >
               {project.status.replace("_", " ").toUpperCase()}
             </span>
@@ -244,7 +244,7 @@ export default function SwipeableProjectCard({
         {/* Project Details Grid */}
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2">
-            <Calendar size={14} className="text-slate-400 flex-shrink-0" />
+            <Calendar size={14} className="text-slate-400 shrink-0" />
             <div>
               <div className="text-slate-600">
                 {formatDate(project.start_date)} -{" "}
@@ -268,7 +268,7 @@ export default function SwipeableProjectCard({
 
           {project.assigned_painter_name && (
             <div className="flex items-center gap-2">
-              <User size={14} className="text-slate-400 flex-shrink-0" />
+              <User size={14} className="text-slate-400 shrink-0" />
               <span className="text-slate-600 truncate">
                 {project.assigned_painter_name}
               </span>
@@ -277,7 +277,7 @@ export default function SwipeableProjectCard({
 
           {project.final_cost && (
             <div className="flex items-center gap-2">
-              <DollarSign size={14} className="text-slate-400 flex-shrink-0" />
+              <DollarSign size={14} className="text-slate-400 shrink-0" />
               <span className="text-slate-900 font-semibold">
                 ${parseFloat(project.final_cost).toLocaleString()}
               </span>
@@ -286,7 +286,7 @@ export default function SwipeableProjectCard({
 
           {project.estimated_duration_days && (
             <div className="flex items-center gap-2">
-              <Clock size={14} className="text-slate-400 flex-shrink-0" />
+              <Clock size={14} className="text-slate-400 shrink-0" />
               <span className="text-slate-600">
                 {project.estimated_duration_days} days
               </span>

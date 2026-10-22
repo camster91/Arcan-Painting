@@ -36,7 +36,7 @@ export default function GuaranteeSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 to-slate-800">
+    <section className="py-20 bg-linear-to-br from-slate-900 to-slate-800">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
@@ -59,7 +59,7 @@ export default function GuaranteeSection() {
               return (
                 <div
                   key={index}
-                  className="flex-shrink-0 w-[80vw] snap-center bg-white rounded-2xl p-6 text-center shadow-xl flex flex-col justify-between"
+                  className="shrink-0 w-[80vw] snap-center bg-white rounded-2xl p-6 text-center shadow-xl flex flex-col justify-between"
                   style={{ minHeight: "220px" }}
                 >
                   <div>
@@ -123,7 +123,7 @@ export default function GuaranteeSection() {
             beautiful space to gain. Let's discuss your project risk-free.
           </p>
           <button
-            className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            className="bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             onClick={() => setIsLeadFormOpen(true)}
           >
             Get Your Risk-Free Quote

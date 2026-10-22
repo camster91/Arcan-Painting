@@ -107,7 +107,7 @@ export default function EnhancedMetricsCarousel() {
           {[...Array(2)].map((_, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-full lg:w-80 h-48 bg-slate-200 rounded-xl animate-pulse"
+              className="shrink-0 w-full lg:w-80 h-48 bg-slate-200 rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -276,7 +276,7 @@ export default function EnhancedMetricsCarousel() {
               onClick={() => setTimeRange(period.value)}
               className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                 timeRange === period.value
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -299,7 +299,7 @@ export default function EnhancedMetricsCarousel() {
               const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
               return (
-                <div key={index} className="flex-shrink-0 w-full px-2">
+                <div key={index} className="shrink-0 w-full px-2">
                   <div
                     className={`${card.lightColor} rounded-xl p-6 border border-slate-200 h-64`}
                   >

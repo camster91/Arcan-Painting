@@ -62,7 +62,7 @@ export function SurfaceSettingsForm({
                 type="checkbox"
                 checked={wallsPrimer}
                 onChange={(e) => setWallsPrimer(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                className="form-checkbox h-5 w-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
               />
               <span className="ml-2 text-sm text-slate-700">Yes</span>
             </label>
@@ -110,7 +110,7 @@ export function SurfaceSettingsForm({
                 type="checkbox"
                 checked={ceilPrimer}
                 onChange={(e) => setCeilPrimer(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                className="form-checkbox h-5 w-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
               />
               <span className="ml-2 text-sm text-slate-700">Yes</span>
             </label>

@@ -139,7 +139,7 @@ export default function FloatingActionButton() {
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/20 backdrop-blur-xs"
           onClick={() => setIsOpen(false)}
           style={{ zIndex: -1 }}
         />

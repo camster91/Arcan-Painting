@@ -201,13 +201,13 @@ export default function QuoteCalculatorSection() {
   return (
     <section
       id="quote"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -228,7 +228,7 @@ export default function QuoteCalculatorSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <Calculator size={18} className="text-white" />
             </div>
             <span className="text-white/90 text-lg font-medium">
@@ -373,7 +373,7 @@ export default function QuoteCalculatorSection() {
                       type="checkbox"
                       checked={ceilings}
                       onChange={(e) => setCeilings(e.target.checked)}
-                      className="w-5 h-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                      className="w-5 h-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
                     />
                     Include ceilings
                   </label>
@@ -382,7 +382,7 @@ export default function QuoteCalculatorSection() {
                       type="checkbox"
                       checked={trim}
                       onChange={(e) => setTrim(e.target.checked)}
-                      className="w-5 h-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                      className="w-5 h-5 text-amber-600 focus:ring-amber-500 border-gray-300 rounded-sm"
                     />
                     Include trim/doors
                   </label>
@@ -410,7 +410,7 @@ export default function QuoteCalculatorSection() {
             )}
 
             {/* Result */}
-            <div className="mt-8 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="mt-8 bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <div className="text-slate-400 text-lg">
                   Your Estimated Range
@@ -423,7 +423,7 @@ export default function QuoteCalculatorSection() {
                 </div>
               </div>
               <button
-                className="w-full md:w-auto px-8 py-4 rounded-xl font-bold text-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                className="w-full md:w-auto px-8 py-4 rounded-xl font-bold text-xl bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                 onClick={() => {
                   const el = document.getElementById("contact");
                   if (el) el.scrollIntoView({ behavior: "smooth" });

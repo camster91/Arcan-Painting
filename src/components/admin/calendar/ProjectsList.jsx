@@ -83,7 +83,7 @@ export function ProjectsList({
               <li key={p.id} className="p-3 sm:p-4 flex flex-col gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-2 py-0.5 rounded text-xs sm:text-sm">
+                    <span className="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-2 py-0.5 rounded-sm text-xs sm:text-sm">
                       <Wrench size={12} className="sm:size-[14px]" />
                       {p.status.replace("_", " ")}
                     </span>
@@ -126,7 +126,7 @@ export function ProjectsList({
                   </a>
                   <button
                     onClick={() => onReschedule(p)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 text-xs sm:text-sm"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 text-xs sm:text-sm"
                   >
                     <ArrowLeftRight size={12} className="sm:size-[14px]" />{" "}
                     Reschedule

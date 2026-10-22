@@ -226,7 +226,7 @@ export default function AdminMessagesPage() {
                             [n.id]: e.target.checked,
                           }))
                         }
-                        className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                        className="w-4 h-4 rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500"
                         aria-label="Select message"
                       />
                     </div>

@@ -63,7 +63,7 @@ export function CreateFollowUpModal({ leads, onClose, onSuccess }) {
         type="submit"
         onClick={handleSubmit}
         disabled={loading || !formData.lead_id || !formData.follow_up_date}
-        className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+        className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
       >
         {loading ? (
           <>

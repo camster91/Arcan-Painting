@@ -16,17 +16,17 @@ function ServiceCard({ service, isFlipped, onQuote }) {
   if (service.isCTA) {
     return (
       <div className="relative h-full w-full rounded-3xl overflow-hidden">
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500" />
+        <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-amber-400 via-amber-500 to-yellow-500" />
         <div className="absolute inset-0 rounded-3xl bg-white/5" />
         <div className="absolute inset-0 rounded-3xl ring-1 ring-white/30" />
         <div className="absolute -bottom-10 -right-10 w-56 h-56 rounded-full blur-3xl opacity-40 bg-white/30" />
         <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full blur-2xl opacity-40 bg-white/20" />
         <div className="relative z-10 h-full flex flex-col justify-between p-8">
           <div>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-xl mb-4 bg-white/20 backdrop-blur-sm">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl shadow-xl mb-4 bg-white/20 backdrop-blur-xs">
               <service.icon size={30} className="text-white" />
             </div>
-            <h3 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight drop-shadow-sm">
+            <h3 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight drop-shadow-xs">
               {service.title}
             </h3>
           </div>
@@ -71,12 +71,12 @@ function ServiceCard({ service, isFlipped, onQuote }) {
               width="600"
               height="400"
             />
-            <div className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
+            <div className={`absolute inset-0 bg-linear-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
             <div className="absolute inset-0 bg-slate-900/40" />
           </div>
           <div className="relative z-10 h-full flex flex-col">
             <div className="p-6 lg:p-8">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-white to-white/90 backdrop-blur-sm rounded-2xl mb-5 shadow-xl">
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-linear-to-br from-white to-white/90 backdrop-blur-xs rounded-2xl mb-5 shadow-xl">
                 <service.icon size={26} className="text-amber-600" />
               </div>
               <div className="mb-3">
@@ -115,7 +115,7 @@ function ServiceCard({ service, isFlipped, onQuote }) {
               width="600"
               height="400"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/70 to-slate-900/60" />
+            <div className="absolute inset-0 bg-linear-to-t from-slate-900/90 via-slate-900/70 to-slate-900/60" />
           </div>
           <div className="relative z-10 h-full flex flex-col p-6 lg:p-8">
             <div className="mb-5">
@@ -130,7 +130,7 @@ function ServiceCard({ service, isFlipped, onQuote }) {
               <ul className="space-y-3">
                 {service.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start gap-3 text-sm lg:text-base">
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400 mt-2 shrink-0" />
                     <span className="text-white/90 leading-relaxed">{feature}</span>
                   </li>
                 ))}
@@ -138,7 +138,7 @@ function ServiceCard({ service, isFlipped, onQuote }) {
             </div>
             <button
               onClick={onQuote}
-              className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:-to-yellow-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
+              className="w-full bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:-to-yellow-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-base lg:text-lg"
             >
               Discuss Your Project
             </button>
@@ -165,12 +165,12 @@ function ServiceCarouselCard({ service, onQuote }) {
         loading="lazy"
         decoding="async"
       />
-      <div className={`absolute inset-0 bg-gradient-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
+      <div className={`absolute inset-0 bg-linear-to-t ${service.gradient} via-slate-900/60 to-slate-900/90`} />
       <div className="absolute inset-0 bg-slate-900/40" />
 
       {!showDetails ? (
         <div className="relative z-10 h-full flex flex-col justify-end p-5">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-sm rounded-xl mb-3 shadow-lg">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-xs rounded-xl mb-3 shadow-lg">
             <service.icon size={22} className="text-amber-600" />
           </div>
           <h3 className="text-xl font-bold text-white mb-1">{service.title}</h3>
@@ -187,7 +187,7 @@ function ServiceCarouselCard({ service, onQuote }) {
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}
-              className="flex-1 bg-white/20 hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors backdrop-blur-sm border border-white/20"
+              className="flex-1 bg-white/20 hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors backdrop-blur-xs border border-white/20"
             >
               Details
             </button>
@@ -202,7 +202,7 @@ function ServiceCarouselCard({ service, onQuote }) {
             ✕ Close
           </button>
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shrink-0">
               <service.icon size={20} className="text-white" />
             </div>
             <div>
@@ -214,7 +214,7 @@ function ServiceCarouselCard({ service, onQuote }) {
             <ul className="space-y-2">
               {service.features.map((feature, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
                   <span className="text-white/80">{feature}</span>
                 </li>
               ))}
@@ -357,13 +357,13 @@ export default function ServicesSection() {
   return (
     <section
       id="services"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -384,7 +384,7 @@ export default function ServicesSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <Brush size={18} className="text-white" />
             </div>
             <span className="text-white/90 text-base lg:text-lg font-medium">
@@ -423,7 +423,7 @@ export default function ServicesSection() {
             {services.map((service, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 w-[85vw] snap-center"
+                className="shrink-0 w-[85vw] snap-center"
                 style={{ scrollSnapAlign: "center" }}
               >
                 <ServiceCarouselCard

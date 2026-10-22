@@ -112,7 +112,7 @@ export default function LeadsTable({
                   </td>
                   <td className="py-3 px-4">
                     {apptText ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-sm">
                         <Calendar size={12} /> {apptText}
                       </span>
                     ) : (

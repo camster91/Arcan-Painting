@@ -288,7 +288,7 @@ export default function EmailWorkflowsAdminPage() {
                                 is_active: !w.is_active,
                               })
                             }
-                            className="inline-flex items-center gap-2 px-2 py-1 border border-slate-300 rounded"
+                            className="inline-flex items-center gap-2 px-2 py-1 border border-slate-300 rounded-sm"
                           >
                             {w.is_active ? (
                               <ToggleRight

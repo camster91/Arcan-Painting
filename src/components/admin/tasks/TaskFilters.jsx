@@ -104,7 +104,7 @@ export default function TaskFilters({
             type="checkbox"
             checked={onlyOverdue}
             onChange={(e) => onOnlyOverdueChange(e.target.checked)}
-            className="rounded border-slate-300"
+            className="rounded-sm border-slate-300"
           />
           Overdue only
         </label>

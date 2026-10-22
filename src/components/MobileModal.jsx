@@ -58,10 +58,10 @@ export default function MobileModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-60">
       {/* Desktop backdrop */}
       <div
-        className="hidden lg:block absolute inset-0 bg-black bg-opacity-50"
+        className="hidden lg:block absolute inset-0 bg-black/50"
         onClick={onClose}
       />
 
@@ -76,7 +76,7 @@ export default function MobileModal({
       `}
       >
         {/* Header - More prominent on mobile */}
-        <div className="flex-shrink-0 bg-white border-b border-slate-200">
+        <div className="shrink-0 bg-white border-b border-slate-200">
           <div className="px-4 py-4 lg:px-6 lg:py-5">
             <div className="flex items-center justify-between">
               {/* Mobile back button style */}
@@ -118,7 +118,7 @@ export default function MobileModal({
 
         {/* Footer - Sticky at bottom with safe area */}
         {footer && (
-          <div className="flex-shrink-0 bg-white border-t border-slate-200 p-4 lg:p-6 pb-safe">
+          <div className="shrink-0 bg-white border-t border-slate-200 p-4 lg:p-6 pb-safe">
             <div className="max-w-none">{footer}</div>
           </div>
         )}

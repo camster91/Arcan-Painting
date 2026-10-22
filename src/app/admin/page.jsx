@@ -15,9 +15,9 @@ function DashboardSkeleton() {
       <ResponsiveGrid cols={{ sm: 1, md: 2, lg: 4 }}>
         {[...Array(4)].map((_, i) => (
           <ResponsiveCard key={i} className="animate-pulse">
-            <div className="h-4 bg-slate-200 rounded w-1/2 mb-4"></div>
-            <div className="h-8 bg-slate-200 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-slate-200 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-200 rounded-sm w-1/2 mb-4"></div>
+            <div className="h-8 bg-slate-200 rounded-sm w-3/4 mb-2"></div>
+            <div className="h-3 bg-slate-200 rounded-sm w-1/3"></div>
           </ResponsiveCard>
         ))}
       </ResponsiveGrid>
@@ -25,14 +25,14 @@ function DashboardSkeleton() {
       {/* Recent activity skeleton */}
       <ResponsiveGrid cols={{ sm: 1, lg: 2 }} gap={8}>
         <ResponsiveCard>
-          <div className="h-6 bg-slate-200 rounded w-1/3 mb-6 animate-pulse"></div>
+          <div className="h-6 bg-slate-200 rounded-sm w-1/3 mb-6 animate-pulse"></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-start gap-3 animate-pulse">
                 <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
                 <div className="flex-1">
-                  <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-slate-200 rounded-sm w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-200 rounded-sm w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -40,16 +40,16 @@ function DashboardSkeleton() {
         </ResponsiveCard>
 
         <ResponsiveCard>
-          <div className="h-6 bg-slate-200 rounded w-1/3 mb-6 animate-pulse"></div>
+          <div className="h-6 bg-slate-200 rounded-sm w-1/3 mb-6 animate-pulse"></div>
           <ResponsiveGrid cols={{ sm: 2 }} gap={4}>
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
                 className="p-4 rounded-lg border border-slate-200 animate-pulse"
               >
-                <div className="w-6 h-6 bg-slate-200 rounded mb-2"></div>
-                <div className="h-4 bg-slate-200 rounded w-2/3 mb-1"></div>
-                <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                <div className="w-6 h-6 bg-slate-200 rounded-sm mb-2"></div>
+                <div className="h-4 bg-slate-200 rounded-sm w-2/3 mb-1"></div>
+                <div className="h-3 bg-slate-200 rounded-sm w-1/2"></div>
               </div>
             ))}
           </ResponsiveGrid>

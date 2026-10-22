@@ -247,7 +247,7 @@ export default function SchedulerSection() {
                 <button
                   onClick={() => setDatePage(Math.max(0, datePage - 1))}
                   disabled={datePage === 0}
-                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Previous days"
                 >
                   <ChevronLeft size={16} />
@@ -267,9 +267,9 @@ export default function SchedulerSection() {
                         onClick={() => setSelectedDate(d)}
                         aria-pressed={isActive}
                         aria-label={`${dow}, ${mon} ${dateNum}`}
-                        className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-xl border text-sm transition-all flex-shrink-0 ${
+                        className={`flex flex-col items-center justify-center w-[68px] sm:w-[80px] py-2 rounded-xl border text-sm transition-all shrink-0 ${
                           isActive
-                            ? "bg-amber-500 border-amber-600 text-white shadow"
+                            ? "bg-amber-500 border-amber-600 text-white shadow-sm"
                             : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
                         }`}
                       >
@@ -286,7 +286,7 @@ export default function SchedulerSection() {
                 <button
                   onClick={() => setDatePage(datePage + 1)}
                   disabled={(datePage + 1) * daysPerPage >= dateStrip.length}
-                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-600 hover:border-amber-300 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="More days"
                 >
                   <ChevronRight size={16} />
@@ -317,7 +317,7 @@ export default function SchedulerSection() {
                       aria-pressed={selectedSlotId === t.id}
                       className={`px-4 py-3 rounded-lg border text-base font-medium transition-all ${
                         selectedSlotId === t.id
-                          ? "bg-amber-500 border-amber-600 text-white shadow"
+                          ? "bg-amber-500 border-amber-600 text-white shadow-sm"
                           : "bg-white border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700"
                       }`}
                     >
@@ -335,7 +335,7 @@ export default function SchedulerSection() {
           {/* Booking form */}
           <form
             onSubmit={handleSubmit}
-            className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm"
+            className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">

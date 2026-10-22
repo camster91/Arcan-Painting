@@ -10,7 +10,7 @@ export default defineConfig({
   },
   envPrefix: 'NEXT_PUBLIC_',
   optimizeDeps: {
-    include: ['fast-glob', 'lucide-react'],
+    include: ['lucide-react'],
     exclude: [
       'hono/context-storage',
       'fsevents',

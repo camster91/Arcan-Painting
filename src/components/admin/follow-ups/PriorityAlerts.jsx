@@ -53,7 +53,7 @@ export function PriorityAlerts({
                 return (
                   <div
                     key={followUp.id}
-                    className="bg-white p-3 rounded border border-red-200"
+                    className="bg-white p-3 rounded-sm border border-red-200"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">

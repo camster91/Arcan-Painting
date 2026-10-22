@@ -202,7 +202,7 @@ export default function BottomTabNav() {
       {moreOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300"
             onClick={closeMoreMenu}
             style={{ animation: "fadeIn 0.3s ease-out" }}
           />

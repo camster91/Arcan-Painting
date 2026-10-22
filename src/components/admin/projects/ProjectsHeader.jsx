@@ -50,7 +50,7 @@ export default function ProjectsHeader({
                 onClick={() => onViewModeChange("cards")}
                 className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
                   viewMode === "cards"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-600 hover:text-slate-900 hover:bg-white"
                 }`}
               >
@@ -60,7 +60,7 @@ export default function ProjectsHeader({
                 onClick={() => onViewModeChange("table")}
                 className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
                   viewMode === "table"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-600 hover:text-slate-900 hover:bg-white"
                 }`}
               >

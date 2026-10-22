@@ -151,7 +151,7 @@ export function CreateEstimateModal({ leads, onClose, onSuccess }) {
           !formData.labor_cost ||
           !formData.material_cost
         }
-        className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+        className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
       >
         {loading ? (
           <>

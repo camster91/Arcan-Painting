@@ -169,7 +169,7 @@ function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
       className="lg:max-w-4xl"
     >
       {/* Progress Overview */}
-      <div className="mb-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+      <div className="mb-4 p-4 bg-linear-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-amber-900">Overall Progress</h3>
@@ -399,7 +399,7 @@ function CompletionWorkflowsModal({ project, onClose, onUpdate }) {
                           is_required: e.target.checked,
                         })
                       }
-                      className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                      className="rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500"
                     />
                     <span className="text-sm text-slate-700">
                       Required step

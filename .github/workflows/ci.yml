@@ -4,7 +4,7 @@ name: CI Build
 
 on:
   push:
-    branches: [main, codex/141-hostinger-isolated-release-2026-10-22]
+    branches: [main, codex/141-hostinger-isolated-release-2026-10-22, security/hostinger-dependencies-2026-10-22]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'

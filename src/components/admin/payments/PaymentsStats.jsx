@@ -4,7 +4,7 @@ import { formatCurrency } from "@/utils/paymentUtils";
 export function PaymentsStats({ stats }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-600">Total Payments</p>
@@ -18,7 +18,7 @@ export function PaymentsStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-600">Pending</p>
@@ -32,7 +32,7 @@ export function PaymentsStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-600">Cleared</p>
@@ -46,7 +46,7 @@ export function PaymentsStats({ stats }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-600">Total Count</p>

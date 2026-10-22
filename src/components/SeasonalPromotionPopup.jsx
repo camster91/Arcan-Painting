@@ -143,7 +143,7 @@ export default function SeasonalPromotionPopup() {
           <div className="p-6">
             {/* Visual accent */}
             <div
-              className={`w-12 h-12 bg-gradient-to-br ${promotion.gradient} rounded-xl flex items-center justify-center mb-4`}
+              className={`w-12 h-12 bg-linear-to-br ${promotion.gradient} rounded-xl flex items-center justify-center mb-4`}
             >
               <span className="text-2xl" aria-hidden="true">
                 {promotion.icon}
@@ -168,7 +168,7 @@ export default function SeasonalPromotionPopup() {
 
             {/* CTA */}
             <button
-              className={`w-full bg-gradient-to-r ${promotion.gradient} text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2`}
+              className={`w-full bg-linear-to-r ${promotion.gradient} text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2`}
               onClick={() => {
                 const contactSection = document.getElementById("contact");
                 if (contactSection) {

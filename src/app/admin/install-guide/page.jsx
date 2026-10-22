@@ -193,7 +193,7 @@ export default function InstallGuidePage() {
           <div className="space-y-6">
             {installSteps[currentPlatform].map((step) => (
               <div key={step.step} className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                <div className="shrink-0 w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
                   <span className="text-amber-700 font-bold">{step.step}</span>
                 </div>
                 <div className="flex-1">
@@ -202,7 +202,7 @@ export default function InstallGuidePage() {
                   </h3>
                   <p className="text-slate-600 text-sm">{step.description}</p>
                 </div>
-                <div className="flex-shrink-0 text-slate-400">{step.icon}</div>
+                <div className="shrink-0 text-slate-400">{step.icon}</div>
               </div>
             ))}
           </div>

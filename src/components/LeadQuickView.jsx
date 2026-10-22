@@ -50,7 +50,7 @@ export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end lg:items-center justify-center p-0 lg:p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-end lg:items-center justify-center p-0 lg:p-4">
       {/* Mobile slide-up modal */}
       <div className="bg-white w-full max-h-[90vh] lg:max-w-2xl lg:rounded-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 lg:animate-in lg:fade-in lg:zoom-in-95">
         {/* Header */}
@@ -297,7 +297,7 @@ export default function LeadQuickView({ lead, isOpen, onClose, onAction }) {
               <div className="space-y-4">
                 {/* Timeline items would come from a real activity log */}
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                     <User size={14} className="text-green-600" />
                   </div>
                   <div className="flex-1">

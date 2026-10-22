@@ -98,8 +98,8 @@ export default function ProcessSection() {
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 right-10 w-96 h-96 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-80 h-80 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -120,7 +120,7 @@ export default function ProcessSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-md border border-slate-200/50 rounded-full px-6 py-3 mb-8 shadow-lg">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <Settings size={16} className="text-white" />
             </div>
             <span className="text-slate-700 text-sm font-medium">
@@ -174,7 +174,7 @@ export default function ProcessSection() {
                 >
                   {/* Connection Line - Enhanced */}
                   {index < steps.length - 1 && (
-                    <div className="absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-amber-300 to-amber-400 transform translate-x-4 z-0 opacity-60">
+                    <div className="absolute top-16 left-full w-full h-0.5 bg-linear-to-r from-amber-300 to-amber-400 transform translate-x-4 z-0 opacity-60">
                       <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1">
                         <ArrowRight size={16} className="text-amber-500" />
                       </div>
@@ -182,21 +182,21 @@ export default function ProcessSection() {
                   )}
 
                   <div
-                    className={`bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 relative z-10 h-full border border-white/50`}
+                    className={`bg-white/90 backdrop-blur-xs rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 relative z-10 h-full border border-white/50`}
                   >
                     {/* Step Header */}
                     <div className="flex items-center justify-between mb-6">
                       {/* Step Number - Enhanced */}
                       <div className="relative">
-                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg">
+                        <div className="w-14 h-14 bg-linear-to-br from-amber-500 to-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg">
                           {index + 1}
                         </div>
-                        <div className="absolute -inset-1 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
+                        <div className="absolute -inset-1 bg-linear-to-br from-amber-400 to-yellow-400 rounded-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                       </div>
 
                       {/* Icon - Enhanced */}
                       <div
-                        className={`w-14 h-14 bg-gradient-to-br ${step.gradient} backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/50 shadow-lg`}
+                        className={`w-14 h-14 bg-linear-to-br ${step.gradient} backdrop-blur-xs rounded-2xl flex items-center justify-center border border-white/50 shadow-lg`}
                       >
                         <IconComponent className="w-7 h-7 text-slate-700" />
                       </div>
@@ -248,7 +248,7 @@ export default function ProcessSection() {
                 return (
                   <div
                     key={index}
-                    className="flex-shrink-0 w-[85vw] max-w-[320px] snap-center"
+                    className="shrink-0 w-[85vw] max-w-[320px] snap-center"
                     style={{
                       animation: isVisible
                         ? `fadeInUp 0.8s ease-out ${index * 0.1}s both`
@@ -256,21 +256,21 @@ export default function ProcessSection() {
                     }}
                   >
                     <div
-                      className={`bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 h-full border border-white/50`}
+                      className={`bg-white/90 backdrop-blur-xs rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 h-full border border-white/50`}
                     >
                       {/* Step Header */}
                       <div className="flex items-center justify-between mb-6">
                         {/* Step Number - Enhanced */}
                         <div className="relative">
-                          <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-base shadow-lg">
+                          <div className="w-12 h-12 bg-linear-to-br from-amber-500 to-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-base shadow-lg">
                             {index + 1}
                           </div>
-                          <div className="absolute -inset-1 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-2xl opacity-20 transition-opacity duration-300"></div>
+                          <div className="absolute -inset-1 bg-linear-to-br from-amber-400 to-yellow-400 rounded-2xl opacity-20 transition-opacity duration-300"></div>
                         </div>
 
                         {/* Icon - Enhanced */}
                         <div
-                          className={`w-12 h-12 bg-gradient-to-br ${step.gradient} backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/50 shadow-lg`}
+                          className={`w-12 h-12 bg-linear-to-br ${step.gradient} backdrop-blur-xs rounded-2xl flex items-center justify-center border border-white/50 shadow-lg`}
                         >
                           <IconComponent className="w-6 h-6 text-slate-700" />
                         </div>
@@ -330,7 +330,7 @@ export default function ProcessSection() {
         <div
           className={`text-center transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden shadow-2xl">
+          <div className="bg-linear-to-br from-slate-800 to-slate-900 rounded-3xl p-8 lg:p-12 relative overflow-hidden shadow-2xl">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div
@@ -352,7 +352,7 @@ export default function ProcessSection() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
-                  className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 min-w-[200px]"
+                  className="bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 min-w-[200px]"
                   onClick={() => setIsLeadFormOpen(true)}
                 >
                   Schedule Free Consultation

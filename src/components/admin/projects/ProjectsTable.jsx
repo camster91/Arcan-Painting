@@ -130,21 +130,21 @@ export default function ProjectsTable({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onViewProgress?.(project)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 rounded transition-colors"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 rounded-sm transition-colors"
                         title="Progress Reports"
                       >
                         <BarChart3 size={14} />
                       </button>
                       <button
                         onClick={() => onViewWorkflows?.(project)}
-                        className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 p-1 rounded transition-colors"
+                        className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 p-1 rounded-sm transition-colors"
                         title="Completion Checklist"
                       >
                         <CheckCircle2 size={14} />
                       </button>
                       <button
                         onClick={() => onSelectProject(project)}
-                        className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 p-1 rounded transition-colors"
+                        className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 p-1 rounded-sm transition-colors"
                         title="View Details"
                       >
                         <Eye size={14} />

@@ -217,7 +217,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
   // Reusable button styles
   const optionBtn =
     "px-4 py-3 rounded-lg border transition-all text-sm sm:text-base font-medium";
-  const optionBtnActive = "border-amber-400 text-slate-900 shadow bg-amber-400";
+  const optionBtnActive = "border-amber-400 text-slate-900 shadow-sm bg-amber-400";
   const optionBtnIdle =
     "border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-amber-300 hover:text-amber-700 dark:hover:border-amber-400 dark:hover:text-amber-400 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600";
 
@@ -401,7 +401,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Dark semi-transparent overlay */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        className="absolute inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300"
         onClick={onClose}
       />
 
@@ -479,7 +479,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                   className="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner"
                 >
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
+                    className="h-full bg-linear-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -492,7 +492,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                 </h4>
                 {stepBody}
                 {error && (
-                  <div role="alert" aria-live="assertive" className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
+                  <div role="alert" aria-live="assertive" className="mt-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-xs">
                     {error}
                   </div>
                 )}
@@ -516,7 +516,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                     onClick={() => next()}
                     disabled={!canGoNext || isSubmitting}
                     aria-label="Go to next step"
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                    className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                   >
                     Next <ChevronRight size={18} aria-hidden="true" />
                   </button>
@@ -526,7 +526,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     aria-busy={isSubmitting}
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
+                    className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>

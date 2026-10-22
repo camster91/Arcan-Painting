@@ -63,7 +63,7 @@ function ChatMessage({ msg }) {
   // Assistant / system message
   return (
     <div className="flex gap-3 mb-4">
-      <div className="flex-shrink-0 mt-1">
+      <div className="shrink-0 mt-1">
         <div
           className={`w-7 h-7 rounded-full flex items-center justify-center ${
             isError ? "bg-red-900" : "bg-slate-700"
@@ -108,7 +108,7 @@ function ChatMessage({ msg }) {
 function TypingIndicator() {
   return (
     <div className="flex gap-3 mb-4">
-      <div className="flex-shrink-0 mt-1">
+      <div className="shrink-0 mt-1">
         <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center">
           <Bot size={14} className="text-amber-400" />
         </div>
@@ -183,7 +183,7 @@ export default function AIChatPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-700">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center shadow">
+          <div className="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center shadow-sm">
             <Bot size={18} className="text-white" />
           </div>
           <div>
@@ -243,7 +243,7 @@ export default function AIChatPage() {
             placeholder="Ask anything about Arcan Painting…"
             rows={1}
             disabled={loading}
-            className="flex-1 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 transition-all"
+            className="flex-1 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-3 text-sm resize-none focus:outline-hidden focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 transition-all"
             style={{ maxHeight: "120px", overflowY: "auto" }}
             onInput={(e) => {
               e.target.style.height = "auto";
@@ -253,7 +253,7 @@ export default function AIChatPage() {
           <button
             onClick={handleSend}
             disabled={!input.trim() || loading}
-            className="flex-shrink-0 w-11 h-11 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow"
+            className="shrink-0 w-11 h-11 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow-sm"
           >
             {loading ? (
               <Loader2 size={18} className="animate-spin" />

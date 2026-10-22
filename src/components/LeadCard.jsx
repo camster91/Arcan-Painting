@@ -113,7 +113,7 @@ export default function LeadCard({ lead, onQuickView, onAction }) {
 
       {/* Hover overlay with quick actions */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 transition-opacity duration-200 ${
+        className={`absolute inset-0 bg-linear-to-br from-amber-500/5 to-yellow-500/5 transition-opacity duration-200 ${
           isHovered ? "opacity-100" : "opacity-0"
         }`}
       />

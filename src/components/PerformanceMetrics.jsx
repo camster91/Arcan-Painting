@@ -169,7 +169,7 @@ export default function PerformanceMetrics() {
     return (
       <div className="px-4 py-6">
         <div className="space-y-6">
-          <div className="h-8 bg-slate-200 rounded w-64 animate-pulse"></div>
+          <div className="h-8 bg-slate-200 rounded-sm w-64 animate-pulse"></div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             {[...Array(4)].map((_, index) => (
               <div
@@ -207,7 +207,7 @@ export default function PerformanceMetrics() {
               onClick={() => setSelectedPeriod(period.value)}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 selectedPeriod === period.value
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -365,7 +365,7 @@ export default function PerformanceMetrics() {
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-3">
                     <div
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                      className="bg-linear-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
                       style={{ width: `${stage.percentage}%` }}
                     ></div>
                   </div>

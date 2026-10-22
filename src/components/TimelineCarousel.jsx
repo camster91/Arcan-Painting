@@ -144,7 +144,7 @@ export default function TimelineCarousel({ projects = [] }) {
                   </p>
                 </div>
                 <span
-                  className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(project.status)}`}
+                  className={`px-2 py-1 rounded-sm text-xs font-medium border ${getStatusColor(project.status)}`}
                 >
                   {project.status.replace("_", " ").toUpperCase()}
                 </span>
@@ -169,7 +169,7 @@ export default function TimelineCarousel({ projects = [] }) {
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar
                     size={14}
-                    className="text-slate-400 flex-shrink-0"
+                    className="text-slate-400 shrink-0"
                   />
                   <span className="text-slate-600">
                     {formatDate(project.start_date)} -{" "}
@@ -179,7 +179,7 @@ export default function TimelineCarousel({ projects = [] }) {
 
                 {project.assigned_painter_name && (
                   <div className="flex items-center gap-2 text-sm">
-                    <User size={14} className="text-slate-400 flex-shrink-0" />
+                    <User size={14} className="text-slate-400 shrink-0" />
                     <span className="text-slate-600">
                       {project.assigned_painter_name}
                     </span>
@@ -188,7 +188,7 @@ export default function TimelineCarousel({ projects = [] }) {
 
                 {daysRemaining && (
                   <div className="flex items-center gap-2 text-sm">
-                    <Clock size={14} className="text-slate-400 flex-shrink-0" />
+                    <Clock size={14} className="text-slate-400 shrink-0" />
                     <span
                       className={`font-medium ${
                         isOverdue

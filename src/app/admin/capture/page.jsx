@@ -211,13 +211,13 @@ export default function CapturePage() {
                       className="w-full h-28 object-cover"
                     />
                     {p.takenAt && (
-                      <div className="absolute bottom-1 left-1 right-1 bg-black/60 text-white text-[10px] px-1 py-0.5 rounded opacity-0 group-hover:opacity-100">
+                      <div className="absolute bottom-1 left-1 right-1 bg-black/60 text-white text-[10px] px-1 py-0.5 rounded-sm opacity-0 group-hover:opacity-100">
                         Taken ~ {p.takenAt}
                       </div>
                     )}
                     <button
                       onClick={() => removePreview(i)}
-                      className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100"
+                      className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded-sm opacity-0 group-hover:opacity-100"
                     >
                       Remove
                     </button>

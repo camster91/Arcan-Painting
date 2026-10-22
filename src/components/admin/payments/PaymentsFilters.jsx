@@ -11,7 +11,7 @@ export function PaymentsFilters({
   setDateFilter,
 }) {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-8">
+    <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200 mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Search */}
         <div className="lg:col-span-2">

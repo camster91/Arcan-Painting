@@ -151,13 +151,13 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-50 via-slate-100 to-slate-200"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-green-400/10 to-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-green-400/10 to-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -178,7 +178,7 @@ export default function PricingSection() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/70 backdrop-blur-md border border-slate-200 rounded-full px-6 py-3 mb-8 shadow-lg">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <DollarSign size={16} className="text-white" />
             </div>
             <span className="text-slate-700 text-sm font-medium">
@@ -207,7 +207,7 @@ export default function PricingSection() {
               onClick={() => setActiveTab(activeTab === "calculator" ? null : "calculator")}
               className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 activeTab === "calculator"
-                  ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
+                  ? "bg-linear-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -223,7 +223,7 @@ export default function PricingSection() {
               onClick={() => setActiveTab(activeTab === "pricing" ? null : "pricing")}
               className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 activeTab === "pricing"
-                  ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
+                  ? "bg-linear-to-r from-amber-500 to-yellow-500 text-white shadow-lg"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -360,7 +360,7 @@ export default function PricingSection() {
                           type="checkbox"
                           checked={ceilings}
                           onChange={(e) => setCeilings(e.target.checked)}
-                          className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 w-5 h-5"
+                          className="rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500 w-5 h-5"
                         />
                         Include ceilings
                       </label>
@@ -369,7 +369,7 @@ export default function PricingSection() {
                           type="checkbox"
                           checked={trim}
                           onChange={(e) => setTrim(e.target.checked)}
-                          className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 w-5 h-5"
+                          className="rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500 w-5 h-5"
                         />
                         Include trim/doors
                       </label>
@@ -397,7 +397,7 @@ export default function PricingSection() {
                 )}
 
                 {/* Result */}
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-8 lg:p-10">
+                <div className="bg-linear-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-8 lg:p-10">
                   <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                     <div className="text-center lg:text-left">
                       <div className="text-slate-600 text-lg font-medium mb-3">
@@ -411,7 +411,7 @@ export default function PricingSection() {
                       </div>
                     </div>
                     <button
-                      className="w-full lg:w-auto px-10 py-5 rounded-xl font-bold text-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                      className="w-full lg:w-auto px-10 py-5 rounded-xl font-bold text-xl bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                       onClick={() => setIsLeadFormOpen(true)}
                     >
                       Get Exact Quote
@@ -448,7 +448,7 @@ export default function PricingSection() {
                       }}
                     >
                       {tier.popular && (
-                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-center py-3 text-sm font-bold">
+                        <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-amber-500 to-yellow-500 text-white text-center py-3 text-sm font-bold">
                           <Star size={16} className="inline mr-2" />
                           Most Popular
                         </div>
@@ -458,7 +458,7 @@ export default function PricingSection() {
                         className={`p-8 lg:p-10 ${tier.popular ? "pt-16" : ""}`}
                       >
                         {/* Icon */}
-                        <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-linear-to-br from-amber-100 to-yellow-100 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                           <IconComponent className="w-10 h-10 text-amber-600" />
                         </div>
 
@@ -489,7 +489,7 @@ export default function PricingSection() {
                             >
                               <CheckCircle2
                                 size={18}
-                                className="text-amber-500 flex-shrink-0"
+                                className="text-amber-500 shrink-0"
                               />
                               <span className="text-slate-700 font-medium">
                                 {feature}
@@ -502,7 +502,7 @@ export default function PricingSection() {
                         <button
                           className={`w-full py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 ${
                             tier.popular
-                              ? "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                              ? "bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
                               : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                           }`}
                           onClick={() => setIsLeadFormOpen(true)}
@@ -521,7 +521,7 @@ export default function PricingSection() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                   <div>
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="bg-gradient-to-br from-amber-100 to-yellow-100 rounded-xl p-3">
+                      <div className="bg-linear-to-br from-amber-100 to-yellow-100 rounded-xl p-3">
                         <AlertCircle className="w-6 h-6 text-amber-600" />
                       </div>
                       <h3 className="text-xl lg:text-2xl font-bold text-slate-900">
@@ -530,23 +530,23 @@ export default function PricingSection() {
                     </div>
                     <ul className="space-y-3 text-slate-700">
                       <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
                         <span>Square footage and ceiling height</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
                         <span>Surface preparation needed</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
                         <span>Paint quality and finish selected</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
                         <span>Number of colors and complexity</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 shrink-0"></div>
                         <span>Timeline and scheduling flexibility</span>
                       </li>
                     </ul>
@@ -554,7 +554,7 @@ export default function PricingSection() {
 
                   <div>
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-3">
+                      <div className="bg-linear-to-br from-green-100 to-emerald-100 rounded-xl p-3">
                         <Shield className="w-6 h-6 text-green-600" />
                       </div>
                       <h3 className="text-xl lg:text-2xl font-bold text-slate-900">
@@ -565,35 +565,35 @@ export default function PricingSection() {
                       <li className="flex items-start gap-3">
                         <CheckCircle2
                           size={18}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
+                          className="text-green-500 mt-0.5 shrink-0"
                         />
                         <span>Free detailed estimate</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2
                           size={18}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
+                          className="text-green-500 mt-0.5 shrink-0"
                         />
                         <span>Color consultation</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2
                           size={18}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
+                          className="text-green-500 mt-0.5 shrink-0"
                         />
                         <span>Surface preparation</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2
                           size={18}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
+                          className="text-green-500 mt-0.5 shrink-0"
                         />
                         <span>Complete cleanup</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2
                           size={18}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
+                          className="text-green-500 mt-0.5 shrink-0"
                         />
                         <span>Satisfaction guarantee</span>
                       </li>

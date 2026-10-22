@@ -97,7 +97,7 @@ export default function QuoteRequestForm() {
           aria-live="assertive"
           className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-start gap-2"
         >
-          <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -126,7 +126,7 @@ export default function QuoteRequestForm() {
           />
           {errors.name && (
             <p id="quote-name-error" role="alert" className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               {errors.name}
             </p>
           )}
@@ -156,7 +156,7 @@ export default function QuoteRequestForm() {
           />
           {errors.email && (
             <p id="quote-email-error" role="alert" className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               {errors.email}
             </p>
           )}
@@ -206,7 +206,7 @@ export default function QuoteRequestForm() {
           </select>
           {errors.serviceType && (
             <p id="quote-service-error" role="alert" className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               {errors.serviceType}
             </p>
           )}

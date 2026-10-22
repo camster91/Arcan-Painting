@@ -95,7 +95,7 @@ export default function MobileBreadcrumb({
               const Icon = crumb.icon;
 
               return (
-                <div key={index} className="flex items-center flex-shrink-0">
+                <div key={index} className="flex items-center shrink-0">
                   {index > 0 && <ChevronRight size={12} className="mx-1" />}
                   <a
                     href={isLast ? "#" : crumb.href}

@@ -90,13 +90,13 @@ export function FollowUpsTable({ followUps, onSelectFollowUp }) {
                 </td>
                 <td className="py-3 px-4">
                   {overdue && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-sm text-xs font-medium">
                       <AlertTriangle size={10} />
                       Urgent
                     </span>
                   )}
                   {today && !overdue && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs font-medium">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-sm text-xs font-medium">
                       <Clock size={10} />
                       Today
                     </span>

@@ -23,13 +23,13 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
     >
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         {/* Geometric pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -51,7 +51,7 @@ export default function AboutSection() {
           >
             {/* Badge */}
             <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-              <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+              <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
                 <Heart size={18} className="text-white" />
               </div>
               <span className="text-white/90 text-base lg:text-lg font-medium">
@@ -106,7 +106,7 @@ export default function AboutSection() {
             {/* Enhanced Signature */}
             <div className="relative backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 lg:p-8">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-xl">
+                <div className="w-16 h-16 bg-linear-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-xl">
                   <Users size={24} className="text-white" />
                 </div>
                 <div>
@@ -152,7 +152,7 @@ export default function AboutSection() {
                 </picture>
 
                 {/* Image overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-slate-900/40 via-transparent to-transparent"></div>
 
                 {/* Border effect */}
                 <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20"></div>
@@ -161,11 +161,11 @@ export default function AboutSection() {
               {/* Enhanced testimonial card */}
               <div className="relative mt-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 lg:p-8 shadow-xl">
                 {/* Background decoration */}
-                <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-lg"></div>
+                <div className="absolute -top-2 -right-2 w-12 h-12 bg-linear-to-br from-amber-400/20 to-yellow-500/20 rounded-full blur-lg"></div>
 
                 <div className="relative z-10">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center shadow-xl border border-white/20">
+                    <div className="w-16 h-16 bg-linear-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center shadow-xl border border-white/20">
                       <span className="text-white font-bold text-xl">JC</span>
                     </div>
                     <div>

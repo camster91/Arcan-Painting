@@ -54,7 +54,7 @@ export default function CreateContractModal({
         type="submit"
         onClick={handleSubmit}
         disabled={loading}
-        className="px-6 py-4 lg:py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white rounded-xl lg:rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
+        className="px-6 py-4 lg:py-3 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white rounded-xl lg:rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
       >
         {loading ? (
           <>
@@ -80,7 +80,7 @@ export default function CreateContractModal({
     >
       <form onSubmit={handleSubmit} className="p-0 space-y-6 sm:space-y-8">
         {/* Template Selection */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-6">
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <File className="w-5 h-5 text-blue-600" />
             <h3 className="text-base sm:text-lg font-semibold text-slate-900">

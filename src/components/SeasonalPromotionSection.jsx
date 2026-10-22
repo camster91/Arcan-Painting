@@ -92,7 +92,7 @@ export default function SeasonalPromotionSection() {
           {/* Mobile: Single compact card layout */}
           <div className="lg:hidden">
             <div
-              className={`bg-gradient-to-r ${promotion.gradient} p-7 text-white relative overflow-hidden`}
+              className={`bg-linear-to-r ${promotion.gradient} p-7 text-white relative overflow-hidden`}
             >
               {/* Background pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -106,7 +106,7 @@ export default function SeasonalPromotionSection() {
 
               <div className="relative z-10">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 mb-4">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xs rounded-full px-3 py-1.5 mb-4">
                   <Gift size={12} className="text-white" />
                   <span className="text-xs font-medium uppercase tracking-wider">
                     {promotion.season} Offer
@@ -148,7 +148,7 @@ export default function SeasonalPromotionSection() {
             <div className="flex items-stretch">
               {/* Left: Visual */}
               <div
-                className={`bg-gradient-to-br ${promotion.gradient} text-white flex-shrink-0 w-64 xl:w-72 relative overflow-hidden flex items-center justify-center`}
+                className={`bg-linear-to-br ${promotion.gradient} text-white shrink-0 w-64 xl:w-72 relative overflow-hidden flex items-center justify-center`}
               >
                 {/* Background icon */}
                 <div className="absolute inset-0 opacity-10" aria-hidden>
@@ -197,7 +197,7 @@ export default function SeasonalPromotionSection() {
                   {/* CTA */}
                   <div className="self-center">
                     <button
-                      className={`min-w-[180px] bg-gradient-to-r ${promotion.gradient} text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2`}
+                      className={`min-w-[180px] bg-linear-to-r ${promotion.gradient} text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2`}
                       onClick={() => {
                         const contactSection =
                           document.getElementById("contact");

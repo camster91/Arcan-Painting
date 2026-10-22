@@ -145,7 +145,7 @@ export function EstimatesTable({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onViewEstimate(estimate)}
-                      className="text-amber-600 hover:text-amber-700 p-1 rounded"
+                      className="text-amber-600 hover:text-amber-700 p-1 rounded-sm"
                       title="View Details"
                     >
                       <Eye size={16} />
@@ -157,7 +157,7 @@ export function EstimatesTable({
                           ? onGenerateProposal(estimate)
                           : onAction('generate_proposal', estimate)
                         }
-                        className="text-purple-600 hover:text-purple-700 p-1 rounded"
+                        className="text-purple-600 hover:text-purple-700 p-1 rounded-sm"
                         title="Generate Proposal (AI)"
                       >
                         <Bot size={16} />
@@ -167,7 +167,7 @@ export function EstimatesTable({
                     {onEditEstimate && (
                       <button
                         onClick={() => onEditEstimate(estimate)}
-                        className="text-blue-600 hover:text-blue-700 p-1 rounded"
+                        className="text-blue-600 hover:text-blue-700 p-1 rounded-sm"
                         title="Edit"
                       >
                         <Edit size={16} />
@@ -204,7 +204,7 @@ export function EstimatesTable({
                       <button
                         onClick={() => handleDuplicate(estimate)}
                         disabled={duplicatingId === estimate.id}
-                        className="text-purple-600 hover:text-purple-700 p-1 rounded"
+                        className="text-purple-600 hover:text-purple-700 p-1 rounded-sm"
                         title="Duplicate"
                       >
                         <Copy
@@ -219,7 +219,7 @@ export function EstimatesTable({
                     {onDeleteEstimate && (
                       <button
                         onClick={() => onDeleteEstimate(estimate)}
-                        className="text-red-600 hover:text-red-700 p-1 rounded"
+                        className="text-red-600 hover:text-red-700 p-1 rounded-sm"
                         title="Delete"
                       >
                         <Trash2 size={16} />

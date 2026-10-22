@@ -289,7 +289,7 @@ function TemplateRow({ t, onSave, onDelete }) {
             onChange={(e) =>
               setRow({ ...row, subject_template: e.target.value })
             }
-            className="w-full px-2 py-1 border border-slate-300 rounded"
+            className="w-full px-2 py-1 border border-slate-300 rounded-sm"
           />
         ) : (
           <div className="text-slate-700 truncate max-w-[280px]">
@@ -302,7 +302,7 @@ function TemplateRow({ t, onSave, onDelete }) {
           <input
             value={row.category}
             onChange={(e) => setRow({ ...row, category: e.target.value })}
-            className="w-full px-2 py-1 border border-slate-300 rounded"
+            className="w-full px-2 py-1 border border-slate-300 rounded-sm"
           />
         ) : (
           <div className="text-slate-700">{t.category || "general"}</div>
@@ -319,13 +319,13 @@ function TemplateRow({ t, onSave, onDelete }) {
                 onSave(row);
                 setEdit(false);
               }}
-              className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-sm inline-flex items-center gap-1"
+              className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-sm text-sm inline-flex items-center gap-1"
             >
               <Save size={14} /> Save
             </button>
             <button
               onClick={() => setEdit(false)}
-              className="px-2 py-1 border border-slate-300 rounded text-sm"
+              className="px-2 py-1 border border-slate-300 rounded-sm text-sm"
             >
               Cancel
             </button>
@@ -334,7 +334,7 @@ function TemplateRow({ t, onSave, onDelete }) {
           <div className="inline-flex gap-2">
             <button
               onClick={() => setEdit(true)}
-              className="px-2 py-1 border border-slate-300 rounded text-sm"
+              className="px-2 py-1 border border-slate-300 rounded-sm text-sm"
             >
               Edit
             </button>

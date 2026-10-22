@@ -78,7 +78,7 @@ export function AppointmentsList({
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded text-xs sm:text-sm">
+                    <span className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded-sm text-xs sm:text-sm">
                       <Clock size={12} className="sm:size-[14px]" />
                       <span className="hidden sm:inline">
                         {formatTime(String(a.start_time).slice(0, 5))} –{" "}
@@ -122,7 +122,7 @@ export function AppointmentsList({
                 </div>
                 <a
                   href={`/admin/leads?lead_id=${a.lead_id || ""}`}
-                  className="text-amber-600 hover:text-amber-700 text-xs sm:text-sm font-medium self-start sm:self-auto flex-shrink-0"
+                  className="text-amber-600 hover:text-amber-700 text-xs sm:text-sm font-medium self-start sm:self-auto shrink-0"
                 >
                   View Lead
                 </a>

@@ -130,7 +130,7 @@ export default function ContactSection() {
   // Reusable button styles - simplified for light mode only
   const optionBtn =
     "px-4 py-3 rounded-lg border transition-all text-sm sm:text-base font-medium";
-  const optionBtnActive = "border-amber-600 text-white shadow bg-amber-500";
+  const optionBtnActive = "border-amber-600 text-white shadow-sm bg-amber-500";
   const optionBtnIdle =
     "border-slate-300 text-slate-700 hover:border-amber-300 hover:text-amber-700 bg-white hover:bg-slate-50";
 
@@ -303,7 +303,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700"
+      className="relative py-20 lg:py-32 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700"
       style={{
         fontFamily:
           'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -312,9 +312,9 @@ export default function ContactSection() {
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-green-400/5 to-teal-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-10 left-10 w-96 h-96 bg-linear-to-r from-amber-400/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-linear-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-linear-to-r from-green-400/5 to-teal-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
 
         {/* Geometric pattern overlay */}
         <div className="absolute inset-0 opacity-5">
@@ -333,7 +333,7 @@ export default function ContactSection() {
         <div className="text-center mb-16 lg:mb-20">
           {/* Badge */}
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 mb-8">
-            <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
+            <div className="bg-linear-to-br from-amber-400 to-yellow-500 rounded-full p-1.5">
               <Sparkles size={18} className="text-white" />
             </div>
             <span className="text-white/90 text-base lg:text-lg font-medium">
@@ -359,7 +359,7 @@ export default function ContactSection() {
           <div className="space-y-6">
             <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
               {/* Subtle glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-yellow-500/5 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-amber-500/5 to-yellow-500/5 rounded-3xl"></div>
 
               <div className="relative z-10">
                 <h3 className="text-slate-900 text-2xl lg:text-3xl font-bold mb-6 lg:mb-8">
@@ -385,7 +385,7 @@ export default function ContactSection() {
                     className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner"
                   >
                     <div
-                      className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
+                      className="h-full bg-linear-to-r from-amber-500 to-yellow-500 transition-all duration-500 ease-out shadow-lg"
                       style={{ width: `${progressPercent}%` }}
                     />
                   </div>
@@ -398,7 +398,7 @@ export default function ContactSection() {
                   </h4>
                   {stepBody}
                   {error && (
-                    <div className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+                    <div className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 shadow-xs">
                       {error}
                     </div>
                   )}
@@ -422,7 +422,7 @@ export default function ContactSection() {
                       onClick={() => next()}
                       disabled={!canGoNext || submitMutation.isPending}
                       aria-label="Go to next step"
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                      className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                     >
                       Next <ChevronRight size={18} aria-hidden="true" />
                     </button>
@@ -432,7 +432,7 @@ export default function ContactSection() {
                       onClick={handleSubmit}
                       disabled={submitMutation.isPending}
                       aria-busy={submitMutation.isPending}
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
+                      className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                     >
                       {submitMutation.isPending ? (
                         <>
@@ -451,7 +451,7 @@ export default function ContactSection() {
             </div>
 
             {/* Enhanced Emergency Contact */}
-            <div className="relative bg-gradient-to-br from-amber-500 to-yellow-500 border border-amber-400/30 rounded-3xl p-8 lg:p-10 shadow-2xl overflow-hidden">
+            <div className="relative bg-linear-to-br from-amber-500 to-yellow-500 border border-amber-400/30 rounded-3xl p-8 lg:p-10 shadow-2xl overflow-hidden">
               {/* Background effects */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-2xl"></div>
               <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
@@ -483,7 +483,7 @@ export default function ContactSection() {
           <div className="space-y-6 lg:space-y-8">
             {/* Enhanced Business Hours & Contact */}
             <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-purple-500/5 rounded-3xl"></div>
 
               <div className="relative z-10">
                 <h3 className="text-slate-900 text-xl lg:text-2xl font-bold mb-6 lg:mb-8">
@@ -495,7 +495,7 @@ export default function ContactSection() {
                     href="mailto:info@arcanpainting.ca"
                     className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all duration-200 group"
                   >
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
+                    <div className="w-12 h-12 bg-linear-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
                       <Mail size={20} className="text-white" />
                     </div>
                     <div>
@@ -512,7 +512,7 @@ export default function ContactSection() {
                     href="tel:+14167272148"
                     className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all duration-200 group"
                   >
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
+                    <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200">
                       <Phone size={20} className="text-white" />
                     </div>
                     <div>
@@ -526,7 +526,7 @@ export default function ContactSection() {
                   </a>
 
                   <div className="flex items-center gap-4 p-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-linear-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
                       <MapPin size={20} className="text-white" />
                     </div>
                     <div>
@@ -541,7 +541,7 @@ export default function ContactSection() {
                   </div>
 
                   <div className="flex items-center gap-4 p-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
                       <Clock size={20} className="text-white" />
                     </div>
                     <div>
@@ -560,11 +560,11 @@ export default function ContactSection() {
 
             {/* Enhanced Quality Guarantee */}
             <div className="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-green-500/5 to-emerald-500/5 rounded-3xl"></div>
 
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl p-2">
+                  <div className="bg-linear-to-br from-green-500 to-emerald-500 rounded-xl p-2">
                     <CheckCircle2 size={24} className="text-white" />
                   </div>
                   <h3 className="text-slate-900 text-xl lg:text-2xl font-bold">
@@ -573,25 +573,25 @@ export default function ContactSection() {
                 </div>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
+                    <div className="w-2 h-2 bg-linear-to-r from-amber-500 to-yellow-500 rounded-full shadow-xs"></div>
                     <span className="text-slate-700 font-medium">
                       The scope and condition of the space
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
+                    <div className="w-2 h-2 bg-linear-to-r from-amber-500 to-yellow-500 rounded-full shadow-xs"></div>
                     <span className="text-slate-700 font-medium">
                       Your goals, preferences, and questions
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
+                    <div className="w-2 h-2 bg-linear-to-r from-amber-500 to-yellow-500 rounded-full shadow-xs"></div>
                     <span className="text-slate-700 font-medium">
                       Relevant timing or material considerations
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full shadow-sm"></div>
+                    <div className="w-2 h-2 bg-linear-to-r from-amber-500 to-yellow-500 rounded-full shadow-xs"></div>
                     <span className="text-slate-700 font-medium">
                       The best way for the team to contact you
                     </span>

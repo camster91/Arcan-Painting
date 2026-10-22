@@ -47,10 +47,10 @@ export default function OnboardingModal({ onComplete, onSkip }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 px-6 py-8 text-center text-white">
+        <div className="bg-linear-to-br from-amber-500 to-amber-600 px-6 py-8 text-center text-white">
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <img
               src="/logo.png"
@@ -73,7 +73,7 @@ export default function OnboardingModal({ onComplete, onSkip }) {
           <div className="space-y-3 mb-6">
             {FEATURES.map(({ icon: Icon, label, desc }) => (
               <div key={label} className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
+                <div className="shrink-0 w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
                   <Icon size={18} className="text-amber-600" />
                 </div>
                 <div>

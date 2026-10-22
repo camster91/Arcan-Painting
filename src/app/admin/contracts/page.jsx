@@ -121,7 +121,7 @@ export default function ContractsPage() {
                   onClick={() => setViewMode("cards")}
                   className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
                     viewMode === "cards"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -132,7 +132,7 @@ export default function ContractsPage() {
                   onClick={() => setViewMode("table")}
                   className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
                     viewMode === "table"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >

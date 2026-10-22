@@ -68,7 +68,7 @@ export function PaymentDetailModal({
             type="submit"
             onClick={(e) => handleSubmit(e)}
             disabled={loading}
-            className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-semibold disabled:opacity-50 transition-all duration-200"
+            className="px-6 py-2 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-semibold disabled:opacity-50 transition-all duration-200"
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

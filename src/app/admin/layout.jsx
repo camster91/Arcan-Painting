@@ -509,7 +509,7 @@ function AdminLayoutContent({ children }) {
         <div className="lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] lg:gap-10 xl:gap-12">
           {/* Sidebar */}
           <aside className="hidden lg:block sticky top-24 self-start">
-            <nav className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <nav className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               {groups.map((g, index) => {
                 const Icon = g.icon;
                 const active = g.key === activeGroup.key;
@@ -519,11 +519,11 @@ function AdminLayoutContent({ children }) {
                       href={g.entryHref}
                       className={`group flex items-start gap-4 px-5 py-4 text-sm border-b last:border-b-0 transition-all duration-200 hover:bg-slate-50 ${
                         active
-                          ? "bg-amber-50 text-amber-900 border-amber-100 shadow-sm"
+                          ? "bg-amber-50 text-amber-900 border-amber-100 shadow-xs"
                           : "text-slate-700 border-slate-200"
                       }`}
                     >
-                      <div className="flex-shrink-0 mt-0.5">
+                      <div className="shrink-0 mt-0.5">
                         <Icon
                           size={18}
                           className={`transition-colors ${
@@ -602,17 +602,17 @@ function AdminLayoutContent({ children }) {
             </nav>
 
             {/* Quick stats or tips section */}
-            <div className="mt-6 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-4">
+            <div className="mt-6 bg-linear-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-4">
               <h3 className="text-sm font-semibold text-slate-900 mb-2">
                 Quick Tip
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Use keyboard shortcuts:{" "}
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[10px]">
+                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded-sm text-[10px]">
                   Ctrl+K
                 </kbd>{" "}
                 for quick search,{" "}
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded text-[10px]">
+                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded-sm text-[10px]">
                   Ctrl+1
                 </kbd>{" "}
                 for dashboard.

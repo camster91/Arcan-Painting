@@ -141,8 +141,8 @@ export default function ActivityFeed() {
             <div key={index} className="flex space-x-3">
               <div className="w-10 h-10 bg-slate-200 rounded-lg animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
-                <div className="h-3 bg-slate-200 rounded animate-pulse w-1/2" />
+                <div className="h-4 bg-slate-200 rounded-sm animate-pulse w-3/4" />
+                <div className="h-3 bg-slate-200 rounded-sm animate-pulse w-1/2" />
               </div>
             </div>
           ))}
@@ -196,7 +196,7 @@ export default function ActivityFeed() {
                   <h3 className="text-sm font-medium text-slate-900 group-hover:text-amber-700">
                     {activity.title}
                   </h3>
-                  <span className="text-xs text-slate-500 ml-2 flex-shrink-0">
+                  <span className="text-xs text-slate-500 ml-2 shrink-0">
                     {formatTimestamp(activity.timestamp)}
                   </span>
                 </div>

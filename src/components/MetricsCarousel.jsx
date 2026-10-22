@@ -136,7 +136,7 @@ export default function MetricsCarousel() {
           {[...Array(2)].map((_, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-72 h-32 bg-slate-200 rounded-xl animate-pulse"
+              className="shrink-0 w-72 h-32 bg-slate-200 rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -159,7 +159,7 @@ export default function MetricsCarousel() {
               const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
               return (
-                <div key={index} className="flex-shrink-0 w-full px-2">
+                <div key={index} className="shrink-0 w-full px-2">
                   <div
                     className={`${card.lightColor} rounded-xl p-6 border border-slate-200`}
                   >

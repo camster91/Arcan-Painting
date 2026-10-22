@@ -508,7 +508,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
                         is_milestone: e.target.checked,
                       })
                     }
-                    className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                    className="rounded-sm border-slate-300 text-amber-500 focus:ring-amber-500"
                   />
                   <span className="text-sm text-slate-700">
                     Mark as milestone
@@ -679,7 +679,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
                                       openLightbox(photosArr, index)
                                     }
                                   />
-                                  <div className="absolute bottom-1 left-1 right-1 bg-black/50 text-white text-[10px] px-1 py-0.5 rounded opacity-0 group-hover:opacity-100">
+                                  <div className="absolute bottom-1 left-1 right-1 bg-black/50 text-white text-[10px] px-1 py-0.5 rounded-sm opacity-0 group-hover:opacity-100">
                                     {formatDateTime(
                                       report.created_at || report.report_date,
                                     )}
@@ -708,7 +708,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
 
         {/* Lightbox */}
         {lightboxOpen && (
-          <div className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/90 z-60 flex items-center justify-center p-4">
             <button
               onClick={closeLightbox}
               className="absolute top-4 right-4 text-white/80 hover:text-white"
@@ -726,7 +726,7 @@ function ProjectProgressModal({ project, onClose, onUpdate }) {
             <img
               src={lightboxSrc}
               alt="Full-size progress photo preview"
-              className="max-h-[85vh] max-w-[90vw] object-contain rounded"
+              className="max-h-[85vh] max-w-[90vw] object-contain rounded-sm"
             />
             <button
               onClick={nextLight}

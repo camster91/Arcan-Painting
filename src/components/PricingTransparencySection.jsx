@@ -108,7 +108,7 @@ export default function PricingTransparencySection() {
                         key={featureIndex}
                         className="flex items-center space-x-3"
                       >
-                        <div className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full shrink-0"></div>
                         <span className="text-slate-600">{feature}</span>
                       </li>
                     ))}
@@ -117,7 +117,7 @@ export default function PricingTransparencySection() {
                   <button
                     className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
                       tier.popular
-                        ? "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl"
+                        ? "bg-linear-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl"
                         : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                     }`}
                     onClick={() => {
