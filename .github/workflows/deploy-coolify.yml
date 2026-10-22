@@ -1,21 +1,15 @@
-name: Deploy to Coolify
+name: Coolify deployment disabled
 
+# Retired by Cameron's 2026-10-22 shared-hosting-only direction.
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  deploy:
+  deployment-disabled:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Coolify Deploy
-        run: |
-          response=$(curl -s -w "\n%{http_code}" \
-            "${{ secrets.COOLIFY_WEBHOOK }}" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
-          http_code=$(echo "$response" | tail -1)
-          body=$(echo "$response" | head -n -1)
-          echo "$body"
-          if [ "$http_code" != "200" ]; then
-            echo "Deploy failed with status $http_code"
-            exit 1
-          fi
+      - name: Explain disabled deployment
+        run: echo "Deployment is disabled in GitHub Actions. Arcan production is managed on Hostinger shared hosting."

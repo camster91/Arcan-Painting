@@ -4,7 +4,7 @@ name: CI Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/141-hostinger-isolated-release-2026-10-22]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.20.0'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies

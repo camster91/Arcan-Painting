@@ -195,15 +195,8 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
 
         trackEvent("lead_submit_success", { source, service_type: serviceType, preferred_contact: preferredContact });
 
-        // Redirect to thank-you page with params (match ContactSection behavior)
-        const params = new URLSearchParams({
-          name: fullName || "",
-          email: preferredContact === "email" ? email : "",
-          phone: preferredContact === "phone" ? phone : "",
-          serviceType: serviceType || "",
-        });
         if (typeof window !== "undefined") {
-          window.location.href = `/thank-you?${params.toString()}`;
+          window.location.href = "/thank-you";
           return; // stop further UI state updates after navigation
         }
 

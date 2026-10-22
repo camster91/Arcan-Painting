@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
+import { getAttribution } from "@/utils/analytics";
 
 export default function ContactSection() {
   useTheme();
@@ -93,6 +94,7 @@ export default function ContactSection() {
         serviceType,
         projectDescription,
         preferredContact,
+        attribution: getAttribution(),
       };
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -103,17 +105,11 @@ export default function ContactSection() {
       if (!response.ok) {
         throw new Error(result?.error || "Failed to submit");
       }
-      return { result, payload };
+      return result;
     },
-    onSuccess: ({ payload }) => {
-      const params = new URLSearchParams({
-        name: payload.name || "",
-        email: payload.email || "",
-        phone: payload.phone || "",
-        serviceType: payload.serviceType || "",
-      });
+    onSuccess: () => {
       if (typeof window !== "undefined") {
-        window.location.href = `/thank-you?${params.toString()}`;
+        window.location.href = "/thank-you";
       }
     },
     onError: (e) => {
@@ -413,7 +409,7 @@ export default function ContactSection() {
                   <button
                     type="button"
                     onClick={back}
-                    disabled={step === 0 || submitMutation.isLoading}
+                    disabled={step === 0 || submitMutation.isPending}
                     aria-label="Back"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition-all duration-200 font-medium"
                   >
@@ -424,7 +420,7 @@ export default function ContactSection() {
                     <button
                       type="button"
                       onClick={() => next()}
-                      disabled={!canGoNext || submitMutation.isLoading}
+                      disabled={!canGoNext || submitMutation.isPending}
                       aria-label="Go to next step"
                       className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                     >
@@ -434,11 +430,11 @@ export default function ContactSection() {
                     <button
                       type="button"
                       onClick={handleSubmit}
-                      disabled={submitMutation.isLoading}
-                      aria-busy={submitMutation.isLoading}
+                      disabled={submitMutation.isPending}
+                      aria-busy={submitMutation.isPending}
                       className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50"
                     >
-                      {submitMutation.isLoading ? (
+                      {submitMutation.isPending ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                           <span>Submitting…</span>
