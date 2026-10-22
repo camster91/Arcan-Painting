@@ -98,14 +98,18 @@ test("mobile visitors can scroll through the calculator card to its enquiry butt
   const card = page.getByText("Project type", { exact: true });
   await card.scrollIntoViewIfNeeded();
   const bounds = await card.boundingBox();
-  const startY = Math.min(page.viewportSize()!.height - 100, Math.max(300, bounds!.y + 100));
-  const x = Math.max(1, bounds!.x - 8);
+  const startY = bounds!.y + 10;
+  const x = bounds!.x + 5;
   const startScroll = await page.evaluate(() => scrollY);
   const session = await page.context().newCDPSession(page);
   await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: startY }] });
   for (let offset = 20; offset <= 220; offset += 20) {
     await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: startY - offset }] });
   }
+  // End with a stationary finger hold instead of an artificial high-velocity
+  // fling: Chromium otherwise consumes the next tap to stop kinetic scrolling.
+  await page.waitForTimeout(200);
+  await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: startY - 220 }] });
   await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(startScroll + 50);
   // A fast touch swipe can leave Chromium's kinetic scroll in progress. Wait
