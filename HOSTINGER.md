@@ -10,16 +10,16 @@ old Coolify workflows or push a watched production branch as a release shortcut.
 Authenticated hPanel inspection identified:
 
 - Website: `arcanpainting.ca`; hosting account `u257752935`.
-- Current deployment: `01a0d9c4-0814-7168-9ced-4b09240dd1a3`.
-- Current deployed commit: `6429480905bf849787a214064ca6a0758f883495`.
-- Stored Git branch: `codex/arcan-mysql-migration`.
+- Current deployment: `01a16356-0e19-7100-9fd7-c26d980a9c5e`.
+- Current deployed commit: `848893fc3fb0b4ef81e00a9bf41110b021c1beec`.
+- Stored Git branch: `codex/141-hostinger-isolated-release-2026-10-22`.
 - Other framework, Node 24.x, root `./`, `npm run build`, npm,
   output `build`, entry `build/server/hostinger.cjs`, devDependencies included.
 - Runtime uses the hosting-local MariaDB connection and an external persistent
   gallery directory. Preserve runtime secrets and persistent data as configured.
 
 PR #173 head `c7829ac254e77fb2bf62278d25e59665fa179699` is 38 commits ahead
-of this deployed revision. Deploying that head would include unrelated changes,
+of the previous production revision `6429480905bf849787a214064ca6a0758f883495`. Deploying that head would include unrelated changes,
 including financial code and migrations. For #141, backport the three application
 file changes onto the deployed revision and validate that isolated candidate.
 Do not deploy main or the full PR branch for this privacy-only release.
@@ -41,6 +41,9 @@ Do not deploy main or the full PR branch for this privacy-only release.
    until Save and redeploy is selected. Review the exact candidate source,
    retain existing Node/build/entry/runtime settings, keep auto-deploy off,
    and use only the verified shared-hosting application. Never change DNS.
+   **Save and redeploy re-enabled auto-deployment during the 2026-10-22 release.**
+   After every manual release, turn it off again and verify the off tooltip.
+   Keep pull request previews off as well.
 5. After release, record the new deployment UUID and SHA. Verify /api/health,
    homepage and both contact forms. Use clearly synthetic leads; verify clean
    /thank-you URLs and all seven attribution values in durable notification
@@ -49,8 +52,43 @@ Do not deploy main or the full PR branch for this privacy-only release.
    through the same verified destination. Preserve database writes and gallery
    data; do not restore a whole database just to roll back these code-only fixes.
 
-Shared-hosting file/database backups were listed for 2026-10-21 09:52 (hPanel
-shown time); successful restoration and gallery backup coverage remain untested.
+### Released privacy correction — 2026-10-22
+
+The isolated backport was manually deployed to the verified shared-hosting app.
+hPanel shows **Completed / Current**, Oct 22 07:20 (shown time), 56 seconds,
+revision `848893fc3fb0b4ef81e00a9bf41110b021c1beec`, deployment
+`01a16356-0e19-7100-9fd7-c26d980a9c5e`. The full PR #173 head was not deployed.
+Runtime settings and credentials were retained. No financial changes, dependency
+changes or migrations were introduced; no manual migration or DNS change ran.
+
+Validation on that exact revision:
+- [CI build](https://github.com/camster91/Arcan-Painting/actions/runs/39768523812):
+  163 unit tests passed, 9 skipped; 22 browser checks passed; build/typecheck/lint passed.
+- [Attribution databases](https://github.com/camster91/Arcan-Painting/actions/runs/39768523809):
+  six checks passed on PostgreSQL 16 and six on MariaDB 11.4.
+- Live health returned HTTP 200. Both real form submissions reached plain
+  `https://arcanpainting.ca/thank-you` with generic confirmation and no PII.
+- Read-only production MariaDB verification found synthetic embedded lead 4 /
+  notification 2 and popup lead 5 / notification 3. Both durable notification JSON
+  records contain matching landing-page paths, source `ashbi_qa`, medium
+  `release_verification`, campaign `lead_privacy_141`, term `interior`, and
+  distinct content `embedded` / `popup`. Referrer is absent for these direct visits,
+  as expected; hosted tests cover nonempty referrer persistence.
+- Legacy query-bearing thank-you URLs return 302 to `/thank-you` with no-store
+  and no-referrer headers. Synthetic fixtures are labelled no-follow-up.
+
+Shared-hosting file and actual production database backups were selectable for
+2026-10-21 09:52 (hPanel shown time). Before release, a fresh gallery archive
+was created outside the public release:
+`/home/u257752935/arcan-data/cutover-20260925-164458/gallery-pre-141-20261022.zip`
+(106.9 MiB). The persistent gallery directory remains outside deployment releases.
+Restoration/extraction was not exercised against production.
+Rollback source is preserved at `rollback/hostinger-64294809-2026-10-22`, exact
+prior production SHA `6429480905bf849787a214064ca6a0758f883495`. To roll back code,
+manually select that branch using the existing shared-hosting settings, retain
+runtime secrets and persistent data, redeploy, then turn auto-deployment off again.
+Do not roll back the database merely for these frontend changes.
+
 VPS retirement is authorized but **not completed**: Hostinger shows a
 `backup_create` action started 2026-10-22 06:41 and disables management controls
 while it runs. SSH from the execution environment is unreachable. Identify and
