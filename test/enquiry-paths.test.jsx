@@ -27,6 +27,25 @@ describe("service enquiry entry points", () => {
   }
 });
 
+it("moves keyboard focus to the current question after each step", () => {
+  render(<ServiceInquiryPage serviceName="Interior Painting" />);
+  fireEvent.click(screen.getByRole("button", { name: "Discuss Your Project" }));
+  const choice = screen.getByRole("button", { name: "Interior", exact: true });
+  choice.focus();
+  fireEvent.click(choice);
+  expect(screen.getByLabelText("Full name")).toHaveFocus();
+  fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "Keyboard Fixture" } });
+  fireEvent.click(screen.getByRole("button", { name: "Go to next step" }));
+  expect(screen.getByRole("button", { name: "Phone", exact: true })).toHaveFocus();
+  fireEvent.click(screen.getByRole("button", { name: "Email", exact: true }));
+  expect(screen.getByLabelText("Email address")).toHaveFocus();
+  fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "fixture@example.test" } });
+  fireEvent.click(screen.getByRole("button", { name: "Go to next step" }));
+  expect(screen.getByRole("textbox")).toHaveFocus();
+  fireEvent.click(screen.getByRole("button", { name: "Back", exact: true }));
+  expect(screen.getByLabelText("Email address")).toHaveFocus();
+});
+
 it("calculator enquiry retains editable planning inputs across close/reopen without changing the URL", () => {
   vi.stubGlobal("IntersectionObserver", class { observe() {} disconnect() {} });
   render(<QuoteCalculatorSection />);

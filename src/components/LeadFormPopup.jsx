@@ -14,6 +14,7 @@ import { ENQUIRY_SERVICES } from "@/utils/enquiryServices";
 
 export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", initialService = "", initialDescription = "" }) {
   const dialogRef = useRef(null);
+  const stepContentRef = useRef(null);
   const closeButtonRef = useRef(null);
   const previouslyFocusedElement = useRef(null);
   // Quiz-style state
@@ -130,6 +131,14 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", in
     };
   }, [isOpen, onClose]);
 
+  // Replacing a question removes its focused control. Keep the next keyboard
+  // action in the dialog rather than leaving focus on the document body.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (step === 0) closeButtonRef.current?.focus();
+    else stepContentRef.current?.querySelector('input, textarea, button:not([disabled])')?.focus();
+  }, [isOpen, step]);
+
   // Prevent body scroll when popup is open
   useEffect(() => {
     if (isOpen) {
@@ -150,13 +159,11 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", in
     (force = false) => {
       setError(null);
       if (!force && !canGoNext) return;
-      setStep((s) => {
-        const nextStep = Math.min(s + 1, stepsTotal - 1);
-        trackEvent("lead_form_step", { source, step: nextStep + 1 });
-        return nextStep;
-      });
+      const nextStep = Math.min(step + 1, stepsTotal - 1);
+      setStep(nextStep);
+      trackEvent("lead_form_step", { source, step: nextStep + 1 });
     },
-    [canGoNext, stepsTotal, source],
+    [canGoNext, step, stepsTotal, source],
   );
 
   const back = useCallback(() => {
@@ -481,7 +488,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta", in
               </div>
 
               {/* Step content */}
-              <div className="mb-8">
+              <div ref={stepContentRef} className="mb-8">
                 <h4 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white mb-4 lg:mb-5">
                   {stepTitle}
                 </h4>

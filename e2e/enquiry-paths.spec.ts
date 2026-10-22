@@ -64,12 +64,16 @@ test("calculator sends context and attribution, preserves pending/error inputs a
   dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("button", { name: "Interior", exact: true })).toHaveAttribute("aria-pressed", "true");
   await dialog.getByRole("button", { name: "Interior", exact: true }).click();
+  await expect(dialog.getByLabel("Full name")).toBeFocused();
   await expect(dialog.getByRole("button", { name: "Go to next step" })).toBeDisabled();
   await dialog.getByLabel("Full name").fill("Enquiry Fixture");
   await dialog.getByRole("button", { name: "Go to next step" }).click();
+  await expect(dialog.getByRole("button", { name: "Phone", exact: true })).toBeFocused();
   await dialog.getByRole("button", { name: "Email", exact: true }).click();
+  await expect(dialog.getByLabel("Email address")).toBeFocused();
   await dialog.getByLabel("Email address").fill("fixture@example.test");
   await dialog.getByRole("button", { name: "Go to next step" }).click();
+  await expect(dialog.getByRole("textbox")).toBeFocused();
   await expect(dialog.getByRole("textbox")).toHaveValue(/600 sq ft; 3 rooms; standard paint; 2 coats/);
   await dialog.getByRole("button", { name: "Submit", exact: true }).click();
   try {
@@ -85,4 +89,40 @@ test("calculator sends context and attribution, preserves pending/error inputs a
   expect(requests[0]).toEqual(requests[1]);
   expect(requests[1]).toMatchObject({ serviceType: "interior", attribution: { utmSource: "fixture", utmCampaign: "calculator" } });
   expect(JSON.stringify(await page.evaluate(() => window.dataLayer || []))).not.toMatch(/Enquiry Fixture|fixture@example/);
+});
+
+test("mobile visitors can scroll through the calculator card to its enquiry button", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "Touch scrolling applies to the mobile project.");
+  await page.goto("/quote");
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("arcan_attribution"))).not.toBeNull();
+  const card = page.getByText("Project type", { exact: true });
+  await card.scrollIntoViewIfNeeded();
+  const bounds = await card.boundingBox();
+  const startY = Math.min(page.viewportSize()!.height - 100, Math.max(300, bounds!.y + 100));
+  const x = Math.max(1, bounds!.x - 8);
+  const startScroll = await page.evaluate(() => scrollY);
+  const session = await page.context().newCDPSession(page);
+  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: startY }] });
+  for (let offset = 20; offset <= 220; offset += 20) {
+    await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: startY - offset }] });
+  }
+  await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(startScroll + 50);
+  // A fast touch swipe can leave Chromium's kinetic scroll in progress. Wait
+  // for it to settle before testing a separate tap on the enquiry button.
+  await page.evaluate(() => new Promise<void>(resolve => {
+    let previous = scrollY;
+    let stableFrames = 0;
+    const check = () => {
+      stableFrames = scrollY === previous ? stableFrames + 1 : 0;
+      previous = scrollY;
+      if (stableFrames >= 10) resolve();
+      else requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  }));
+  const trigger = page.getByRole("button", { name: "Lock in a free exact quote" });
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.tap();
+  await expect(page.getByRole("dialog")).toBeVisible();
 });
