@@ -119,6 +119,10 @@ The Vitest suite in `test/` covers auth and session expiry, CSRF boundaries, adm
 └── docker-compose.yml
 ```
 
+## Documentation and current work
+
+Start with [the documentation index](docs/README.md), [current plan](docs/ROADMAP.md) and [operations boundaries](docs/OPERATIONS.md). GitHub issue #91 owns the active program; historical root documents now link to preserved originals. Main pushes can trigger production deployment: do not merge documentation cleanup without the appropriate release decision.
+
 ## License
 
 [MIT](LICENSE)
