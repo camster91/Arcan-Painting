@@ -12,7 +12,7 @@ import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { paymentLimiter, generalLimiter } from "@/app/api/utils/rate-limit";
 import { auditLog } from "@/app/api/utils/audit";
-import { recalcInvoiceTotals } from "@/app/api/utils/invoice-totals";
+import { recalcInvoiceTotals, lockInvoiceForPayment, lockPaymentForMutation } from "@/app/api/utils/invoice-totals";
 import { validateBody, schemas } from "@/app/api/utils/validate";
 
 // GET /api/payments - List payments with filtering or get single payment
@@ -219,14 +219,7 @@ export async function POST(request) {
     const paymentAmount = parseFloat(amount);
     const payment_number = generatePaymentNumber();
 
-    // Verify invoice and contract exist if provided
-    if (invoice_id) {
-      const invoiceExists = await sql`SELECT id FROM invoices WHERE id = ${invoice_id}`;
-      if (invoiceExists.length === 0) {
-        return Response.json({ error: "Invoice not found" }, { status: 400 });
-      }
-    }
-
+    // The invoice existence check runs under its write lock below.
     if (contract_id) {
       const contractExists = await sql`SELECT id FROM contracts WHERE id = ${contract_id}`;
       if (contractExists.length === 0) {
@@ -234,8 +227,8 @@ export async function POST(request) {
       }
     }
 
-    // Real PostgreSQL transaction
-    const { payment, updatedInvoice } = await sql.transaction(async (txSql) => {
+    const result = await sql.transaction(async (txSql) => {
+      if (invoice_id && !await lockInvoiceForPayment(txSql, invoice_id)) return null;
       const [payment] = await txSql`
         INSERT INTO payments (
           payment_number, invoice_id, contract_id, payment_method, payment_reference,
@@ -251,6 +244,8 @@ export async function POST(request) {
 
       return { payment, updatedInvoice };
     });
+    if (!result) return Response.json({ error: "Invoice not found" }, { status: 400 });
+    const { payment, updatedInvoice } = result;
 
     await auditLog({
       request,
@@ -286,12 +281,6 @@ export async function PUT(request) {
 
     const { id, payment_method, payment_reference, amount, payment_date, status, notes, processed_by } = body;
 
-    // Check if payment exists
-    const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
-    if (existingPayment.length === 0) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
-    }
-
     // Build update query dynamically
     const updateFields = [];
     const updateValues = [];
@@ -309,12 +298,15 @@ export async function PUT(request) {
     updateValues.push(id);
 
     const updateQuery = `UPDATE payments SET ${updateFields.join(", ")} WHERE id = $${paramCount} RETURNING *`;
-    const [payment] = await sql(updateQuery, updateValues);
-
-    // If payment amount or status changed and it's linked to an invoice, update invoice totals
-    if ((amount !== undefined || status !== undefined) && payment.invoice_id) {
-      await recalcInvoiceTotals(sql, payment.invoice_id);
-    }
+    const payment = await sql.transaction(async (txSql) => {
+      if (!await lockPaymentForMutation(txSql, id)) return null;
+      const [updated] = await txSql(updateQuery, updateValues);
+      if ((amount !== undefined || status !== undefined) && updated.invoice_id) {
+        await recalcInvoiceTotals(txSql, updated.invoice_id);
+      }
+      return updated;
+    });
+    if (!payment) return Response.json({ error: "Payment not found" }, { status: 404 });
 
     await auditLog({
       request,
@@ -352,21 +344,17 @@ export async function DELETE(request) {
       return Response.json({ error: "Payment ID is required" }, { status: 400 });
     }
 
-    const existingPayment = await sql`SELECT * FROM payments WHERE id = ${id}`;
-    if (existingPayment.length === 0) {
-      return Response.json({ error: "Payment not found" }, { status: 404 });
-    }
-
-    const payment = existingPayment[0];
-
-    // Real transaction: delete payment + recalculate invoice
-    await sql.transaction(async (txSql) => {
+    const payment = await sql.transaction(async (txSql) => {
+      const current = await lockPaymentForMutation(txSql, id);
+      if (!current) return null;
       await txSql`DELETE FROM payments WHERE id = ${id}`;
 
-      if (payment.invoice_id) {
-        await recalcInvoiceTotals(txSql, payment.invoice_id);
+      if (current.invoice_id) {
+        await recalcInvoiceTotals(txSql, current.invoice_id);
       }
+      return current;
     });
+    if (!payment) return Response.json({ error: "Payment not found" }, { status: 404 });
 
     await auditLog({
       request,

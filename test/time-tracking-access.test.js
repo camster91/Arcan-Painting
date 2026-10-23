@@ -1,6 +1,10 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { GET, POST, PUT, DELETE } from "@/app/api/time-tracking/route";
-const mocks = vi.hoisted(() => ({ db: vi.fn(), user: vi.fn() }));
+const mocks = vi.hoisted(() => {
+  const db = vi.fn();
+  db.transaction = vi.fn(fn => fn(db));
+  return { db, user: vi.fn() };
+});
 vi.mock("@/app/api/utils/sql", () => ({ default: mocks.db }));
 vi.mock("@/app/api/utils/auth", () => ({ getCurrentUser: mocks.user, parseCookies: (value) => Object.fromEntries((value || "").split(";").filter(Boolean).map((part) => part.trim().split("="))) }));
 const user = { role: "painter", username: "painter@example.test" };
@@ -47,7 +51,7 @@ it("preserves the Today screen's me timer-start payload", async () => {
   expect(await response.json()).toEqual({ timeEntry: { id: 2, status: "active" } });
 });
 it("preserves own clock-out while hiding server-calculated cost", async () => {
-  mocks.db.mockResolvedValueOnce([{ id: 7 }]).mockResolvedValueOnce([{ id: 2 }]).mockResolvedValueOnce([{ id: 2, clock_in_time: "2026-10-05T12:00:00Z", hourly_rate: 50 }]).mockResolvedValueOnce([{ id: 2, status: "completed", total_hours: 1, total_cost: 50, hourly_rate: 50 }]);
+  mocks.db.mockResolvedValueOnce([{ id: 7 }]).mockResolvedValueOnce([{ id: 2, clock_in_time: "2026-10-05T12:00:00Z", hourly_rate: 50 }]).mockResolvedValueOnce([{ id: 2, status: "completed", total_hours: 1, total_cost: 50, hourly_rate: 50 }]);
   const response = await PUT(request("PUT", { id: 2, clock_out_time: "2026-10-05T13:00:00Z" }));
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({ timeEntry: { id: 2, status: "completed", total_hours: 1 } });
