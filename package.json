@@ -13,7 +13,11 @@
     "typecheck": "react-router typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "npm run build && playwright test"
+    "test:e2e": "npm run build && playwright test",
+    "build:workers": "npm run build && node scripts/build-workers-assets.mjs",
+    "preview:workers": "wrangler dev",
+    "check:workers": "wrangler deploy --dry-run",
+    "types:workers": "wrangler types workers/worker-configuration.d.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "2.10.10",
@@ -72,7 +76,8 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "wrangler": "^4.152.0"
   },
   "overrides": {
     "next-themes": "^0.3.0",
