@@ -1,3 +1,4 @@
+import { projects } from '../data/premiumSite';
 const SITE_URL = "https://arcanpainting.ca";
 
 export const SERVICE_FAQS = {
@@ -9,8 +10,12 @@ export const SERVICE_FAQS = {
 };
 
 const PUBLIC_PAGES = {
+  ...Object.fromEntries(projects.map(project => [`/projects/${project.slug}`, {title: `${project.title} | Arcan Painting`, description: project.description}])),
+  "/projects": {title: "Selected Work | Arcan Painting", description: "Explore painting and wallcovering details in Arcan interiors."},
+  "/about": {title: "Our Approach | Arcan Painting", description: "A considered approach to painting, wallpaper and luxury finishes."},
+  "/design-system": {title: "Design System | Arcan Painting", description: "Internal design reference.", indexable: false},
   "/": {
-    title: "Arcan Painting | Painting Project Inquiries",
+    title: "Arcan Painting | Premium Painting, Wallpaper & Luxury Finishes",
     description: "Explore Arcan Painting services and discuss an interior, exterior, commercial, wallpaper, or specialty-finish project.",
   },
   "/interior-painting": {
@@ -57,7 +62,7 @@ export function getPublicSeo(pathname = "/") {
   const page = PUBLIC_PAGES[path];
   const isPrivate = path.startsWith("/admin") || path.startsWith("/account") || path.startsWith("/crew") || path.startsWith("/e/") || path.startsWith("/i/") || path === "/thank-you";
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
-  const indexable = Boolean(page) && !isPrivate && !isGeneratedLocation;
+  const indexable = Boolean(page) && page.indexable !== false && !isPrivate && !isGeneratedLocation;
 
   if (page) return { ...page, path, canonical: `${SITE_URL}${path === "/" ? "/" : path}`, indexable };
 

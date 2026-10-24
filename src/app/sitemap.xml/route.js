@@ -1,4 +1,8 @@
+import { projects } from '../../data/premiumSite';
 const PUBLIC_ROUTES = [
+  ["/projects", "0.8", "monthly"],
+  ["/about", "0.6", "monthly"],
+  ...projects.map(project => [`/projects/${project.slug}`, "0.7", "monthly"]),
   ["/", "1.0", "weekly"],
   ["/interior-painting", "0.9", "monthly"],
   ["/exterior-painting", "0.9", "monthly"],

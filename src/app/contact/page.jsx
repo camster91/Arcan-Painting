@@ -1,26 +1,37 @@
-"use client";
-
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ContactSection from "@/components/ContactSection";
-
-export default function ContactPage() {
-  // Removed the page-level `mounted` gate (was: const [mounted, setMounted] =
-  // useState(false); useEffect(() => setMounted(true), []); {mounted &&
-  // <ContactSection />}). That gate was breaking SSR — `mounted` is always
-  // false during streaming SSR, so the page rendered an empty <main>.
-  // ContactSection is SSR-safe on its own (v55's defensive useTheme).
+import PremiumShell from "@/components/premium/PremiumShell";
+import { Section, SectionHeading } from "@/components/premium/primitives";
+import PremiumInquiry from "@/components/premium/PremiumInquiry";
+export default function Contact() {
   return (
-    <div className="min-h-screen bg-white transition-colors duration-300">
-      <Header />
-      <main id="main" tabIndex={-1} className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Arcan Painting</h1>
-        <p className="text-gray-600 mb-8">
-          Tell us about your project and a team member can review the details with you.
-        </p>
-        <ContactSection />
-      </main>
-      <Footer />
-    </div>
+    <PremiumShell>
+      <Section tone="ink">
+        <SectionHeading
+          as="h1"
+          eyebrow="Project enquiries"
+          title="Tell us what you have in mind."
+        >
+          Premium painting, wallpaper and luxury finishes for spaces with a
+          point of view.
+        </SectionHeading>
+      </Section>
+      <Section className="p-two-column">
+        <div>
+          <SectionHeading title="Start with a conversation.">
+            Share your contact details and preferred timing for an estimate. We
+            will follow up to discuss the scope and arrange a suitable time.
+          </SectionHeading>
+          <p>
+            Estimates are complimentary. Your requested date is a preference; an
+            appointment is confirmed directly with our team.
+          </p>
+          <p>
+            <a href="tel:+14167272148">416 727 2148</a>
+            <br />
+            <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
+          </p>
+        </div>
+        <PremiumInquiry />
+      </Section>
+    </PremiumShell>
   );
 }

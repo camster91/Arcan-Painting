@@ -1,18 +1,27 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("public conversion and account routes", () => {
-  test("visitors can open and dismiss the estimate dialog", async ({ page }) => {
+  test("visitors can reach the enquiry form through the responsive navigation", async ({ page }) => {
     const pageErrors: string[] = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
 
     const response = await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(response?.status()).toBe(200);
 
-    await page.locator("header").getByRole("button", { name: /^(discuss your project|contact)$/i }).click();
-    const dialog = page.getByRole("dialog", { name: /discuss your project/i });
-    await expect(dialog).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
+    const menu = page.locator("header").getByRole("button", { name: "Menu", exact: true });
+    if (await menu.isVisible()) {
+      await menu.click();
+      await expect(menu).toHaveAttribute("aria-expanded", "true");
+      await page.keyboard.press("Escape");
+      await expect(menu).toHaveAttribute("aria-expanded", "false");
+      await expect(menu).toBeFocused();
+      await menu.click();
+    }
+    await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Enquire", exact: true }).click();
+    await expect(page).toHaveURL(/\/contact$/);
+    await expect(page.getByRole("heading", { name: "Tell us what you have in mind." })).toBeVisible();
+    await expect(page.getByLabel("Your name", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send project enquiry" })).toBeEnabled();
     expect(pageErrors).toEqual([]);
   });
 

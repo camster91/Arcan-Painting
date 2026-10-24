@@ -27,3 +27,7 @@ bun.lockb
 
 # Local uploaded files (UPLOAD_ROOT default)
 /uploads/
+
+# Cloudflare local state and secrets
+.wrangler/
+.dev.vars*
