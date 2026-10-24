@@ -72,6 +72,7 @@ export default {
     if (production && env.LEGACY_ORIGIN === 'enabled' && response.status === 404 && url.pathname.startsWith('/assets/')) return fetch(request);
     const outgoing = new Response(response.body, response);
     if (!production || url.pathname === '/design-system' || url.pathname === '/thank-you' || response.status >= 400) outgoing.headers.set('X-Robots-Tag','noindex, nofollow');
+    if (url.pathname === '/sw.js') outgoing.headers.set('Cache-Control','no-store');
     outgoing.headers.set('Referrer-Policy','strict-origin');
     outgoing.headers.set('X-Content-Type-Options','nosniff');
     outgoing.headers.set('Permissions-Policy','camera=(), microphone=(), geolocation=()');

@@ -91,3 +91,7 @@ it('rejects a same-origin submission on an alternate production hostname',async(
  const r=await worker.fetch(new Request(url,{method:'POST',headers:{Origin:new URL(url).origin,'cf-connecting-ip':'192.0.2.1'},body:'{}'}),{SITE_MODE:'production',ENQUIRIES_ENABLED:'true',LEADS_API:{fetch:backend}});
  expect(r.status).toBe(503);expect(backend).not.toHaveBeenCalled();
 });
+it('prevents caching the legacy service-worker neutralizer',async()=>{
+ const r=await worker.fetch(new Request('https://arcanpainting.ca/sw.js'),{SITE_MODE:'production',ASSETS:{fetch:async()=>new Response('/* neutralizer */',{headers:{'Cache-Control':'public, max-age=86400'}})}});
+ expect(r.headers.get('cache-control')).toBe('no-store');
+});

@@ -50,3 +50,5 @@ Cameron must finish secure Cloudflare sign-in so sender availability, onboarding
 No production route or DNS proxy change has been made. Original apex IP, www CNAME, mail records and hosting remain preserved. The DNS snapshot and rollback sequence are in the runbook. Remove only newly added Arcan Worker Routes to return traffic to the retained origin; restore proxy flags from the snapshot if needed. Never delete pending real enquiries during recovery.
 
 Destination review confirmed the Instagram profile title and Arcan domain, and the Google Maps place title, domain and phone. Facebook rendered unavailable content despite HTTP 200; LinkedIn could not be verified. Only Instagram and Google reviews are published in the premium shell; no social ratings or claims were copied.
+
+A final migration review identified the historical root CRM service worker. A follow-up neutralizer and proactive registration update retire only that worker and its three named cache copies; unrelated browser storage and backend data are preserved. The browser lifecycle check verifies a real installed worker is retired and an unrelated cache survives.
