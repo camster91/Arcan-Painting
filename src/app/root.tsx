@@ -80,6 +80,7 @@ import { Toaster } from 'sonner';
 import type { Route } from './+types/root';
 import { buildStructuredData, getPublicSeo } from '../utils/publicSeo.js';
 import { initializeAnalytics, trackPageView } from '../utils/analytics.js';
+import { retireLegacyWorker } from '../utils/retireLegacyWorker.js';
 import { ThemeProvider } from '../utils/useTheme.jsx';
 
 export const links = () => [];
@@ -217,6 +218,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const pathname = location?.pathname;
   const seo = getPublicSeo(pathname || "/");
   const isStaging = loaderData && 'siteMode' in loaderData && loaderData.siteMode === 'staging';
+
+  useEffect(() => {
+    void retireLegacyWorker();
+  }, []);
 
   useEffect(() => {
     initializeAnalytics();

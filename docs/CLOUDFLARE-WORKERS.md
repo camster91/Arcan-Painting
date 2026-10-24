@@ -103,6 +103,10 @@ WHERE status='pending' AND next_attempt_at < (unixepoch()-900)*1000 AND lease_un
 
 Inspect individual records only through authenticated D1/operator access. Correct the sender/recipient/provider cause before resetting the attempts and next-attempt time for an identified retained row. Review provider acceptance first to avoid unnecessary repeats. Do not purge real enquiries or invent a retention period; agree retention and operator access with Arcan as part of handoff. Email and the D1 record remain separate from legacy CRM sync; this migration does not claim CRM lead synchronization.
 
+## Returning browsers and legacy service-worker retirement
+
+Historical CRM releases registered `/sw.js` at the root scope. The migration serves a network-only neutralizer at that path with `Cache-Control: no-store`, and the shared app proactively asks only the matching same-origin root registration to update. The neutralizer claims existing clients, removes only `arcan-crm-v1`, `arcan-static-v1` and `arcan-dynamic-v1`, then unregisters itself. It does not clear unrelated caches, IndexedDB, cookies, files, backend records or unsaved form fields. No forced navigation is performed. An isolated browser lifecycle test installs an old worker, seeds the three named caches plus an unrelated cache, then verifies retirement and preservation of the unrelated cache. Offline returning browsers require a network connection to receive the update.
+
 ## Production cutover and rollback
 
 The checked-in DNS snapshot `docs/release/arcan-dns-before-2026-10-24.json` records the original apex A `82.180.129.200` (unproxied), `www` CNAME to apex (unproxied), mail records, and empty Worker routes. Existing SSL mode is full; account security and mail settings were not changed. Before cutover, recheck for intervening changes and preserve any unrelated update.
