@@ -1,3 +1,4 @@
+import { deliverNotifications } from './notifications.js';
 const MAX_BODY = 16_384;
 const SERVICES = new Set(['interior', 'exterior', 'wallpaper', 'specialty', 'commercial', 'other']);
 const reply = (status, error) => Response.json({ success: false, lead_saved: false, error }, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -50,6 +51,10 @@ export function validateEnquiry(body) {
 
 // Private service-binding target: no workers.dev URL or public route.
 export default {
+  async scheduled(_event, env) {
+    const result = await deliverNotifications(env);
+    console.log(JSON.stringify({ event: "enquiry_notification_batch", ...result }));
+  },
   async fetch(request, env) {
     if (new URL(request.url).pathname !== '/api/contact') return reply(404, 'Not found.');
     if (request.method !== 'POST') return reply(405, 'Method not allowed.');

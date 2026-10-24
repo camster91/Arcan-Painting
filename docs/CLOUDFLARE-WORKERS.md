@@ -53,3 +53,19 @@ Before connecting it:
 Validation added: real SQLite execution of the migration and parameterized insert, transaction rollback when the outbox write fails, phone-only enquiries, invalid fields, payload limits, origin checks, rate limiting, missing configuration, unacknowledged writes and spoofed forwarding headers. Tests use in-memory databases and fake contact data; no client notification was sent.
 
 API references: https://developers.cloudflare.com/d1/worker-api/d1-database/ and https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/.
+
+### Notification delivery implementation
+
+`workers/leads/notifications.js` now implements the pending-outbox sender using Cloudflare Email Service. The intake Worker's scheduled handler awaits it. Each invocation processes at most ten due rows, atomically claims a five-minute lease, sends to the configured operator, and records the provider message ID only after acknowledgement. Failures remain pending with exponential backoff from one minute to one hour. Expired leases are recoverable. Only aggregate counts are logged; the HTML version escapes submitted content.
+
+This replaces the earlier requirement to implement basic notification delivery; **configuration and live verification are still outstanding**. No mail has been sent. To activate after domain onboarding and recipient approval:
+
+- Enable Email Sending for the actual sender domain and verify plan availability. It requires the Workers paid plan; no plan change is performed by this PR.
+- Set `NOTIFY_FROM` to an onboarded sender and `NOTIFY_TO` to the verified Arcan operator address. These are deployment settings; the sender and destination are never taken from form input.
+- Configure a restricted `send_email` binding named `EMAIL` with the approved `allowed_sender_addresses` and `allowed_destination_addresses`, then regenerate binding types.
+- Apply both migrations, including `0002_notification_delivery.sql`, before enabling the scheduled handler. Configure `triggers.crons: ["*/5 * * * *"]` only in the intended environment after a controlled delivery test. The committed config intentionally has no active schedule or email binding.
+- Verify the acknowledgement, inbox receipt and pending-outbox monitoring using an approved test recipient. `status = 'sent'` means the provider accepted the message, not proof of inbox delivery. Pending rows must remain visible to the operator for configuration errors and persistent bounces.
+
+Delivery is at least once: a crash after provider acceptance but before D1 acknowledgement can cause a repeat email after the lease expires. The stable enquiry ID in the subject allows the operator to recognize duplicates. A lease prevents ordinary overlapping batches from selecting the same row; extremely slow sends exceeding five minutes can also repeat. No request-time mail send or public retry endpoint is added.
+
+Reference: https://developers.cloudflare.com/email-service/api/send-emails/workers-api/.
