@@ -5,7 +5,26 @@
   "compatibility_date": "2026-10-24",
   "workers_dev": false,
   "preview_urls": false,
-  "observability": { "enabled": true, "head_sampling_rate": 0.1 }
-  // Add LEADS_DB and ENQUIRY_LIMITER bindings for the selected environment.
-  // No database IDs or account-wide limiter namespace IDs are guessed here.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "d1_databases": [
+    {
+      "binding": "LEADS_DB",
+      "database_name": "arcan-enquiries",
+      "database_id": "a894afcd-504a-4d3a-a498-905296f0bdc8",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "ENQUIRY_LIMITER",
+      "namespace_id": "18420261024",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    }
+  ]
 }

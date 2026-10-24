@@ -69,3 +69,13 @@ This replaces the earlier requirement to implement basic notification delivery; 
 Delivery is at least once: a crash after provider acceptance but before D1 acknowledgement can cause a repeat email after the lease expires. The stable enquiry ID in the subject allows the operator to recognize duplicates. A lease prevents ordinary overlapping batches from selecting the same row; extremely slow sends exceeding five minutes can also repeat. No request-time mail send or public retry endpoint is added.
 
 Reference: https://developers.cloudflare.com/email-service/api/send-emails/workers-api/.
+
+## Provisioning status — latest
+
+The earlier no-resource/no-deployment notes describe preparation only. Following authorization to finish deployment, the Ashbi account now contains:
+
+- D1 `arcan-enquiries`, ID `a894afcd-504a-4d3a-a498-905296f0bdc8`, Eastern North America. Both schema migrations were applied through the D1 API; table inspection confirmed `enquiries` and `enquiry_outbox` exist and contain zero enquiries.
+- Private Worker `arcan-enquiry-intake`, deployment `3a1959e966ed4a689350b9fee69733ea`, with the real D1 binding and rate limiter (5/60 seconds, namespace `18420261024`). No public route, workers.dev URL, preview URL or notification cron is enabled.
+- Public website build regenerated successfully for all 15 routes. The public Worker/custom domain has not been switched over.
+
+Blocking activation: Cloudflare Email Sending `/accounts/.../email/sending/limits` rejects the connected credentials with HTTP 401 / code 2036 and asks for reconnection. Workers and D1 access work. Email Routing has no verified destinations in the account. A verified Arcan notification recipient is also needed; no destination was guessed and no email was sent. Reconnect/authorize Email Sending, confirm the recipient and onboard the sender, then configure/test the sender, bind the public site, and release it. The existing public site remains in place until lead delivery works.
