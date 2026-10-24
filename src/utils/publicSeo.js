@@ -87,7 +87,6 @@ export function buildStructuredData(seo) {
     logo: `${SITE_URL}/logo.png`,
     image: `${SITE_URL}/og-image.png`,
     sameAs: [
-      "https://www.facebook.com/arcanpainting",
       "https://www.instagram.com/arcanpaint",
     ],
   };

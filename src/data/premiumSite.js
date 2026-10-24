@@ -122,12 +122,6 @@ export const socialLinks = [
     icon: "instagram",
   },
   {
-    name: "Facebook",
-    label: "Arcan Painting on Facebook",
-    href: "https://www.facebook.com/arcanpainting",
-    icon: "facebook",
-  },
-  {
     name: "Google reviews",
     label: "Read Arcan Painting reviews on Google",
     href: "https://maps.app.goo.gl/WY8Rh5myeWX6JJhR6",

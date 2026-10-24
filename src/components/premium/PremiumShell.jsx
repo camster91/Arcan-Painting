@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Instagram, Facebook, Linkedin, Star, Menu, X } from "lucide-react";
+import { Instagram, Star, Menu, X } from "lucide-react";
 import { socialLinks } from "@/data/premiumSite";
 import { ButtonLink } from "./primitives";
 import "@/styles/premium.css";
 
 const icons = {
   instagram: Instagram,
-  facebook: Facebook,
-  linkedin: Linkedin,
   google: Star,
 };
 export function SocialLinks() {
