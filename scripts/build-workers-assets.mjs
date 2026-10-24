@@ -1,16 +1,18 @@
-import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, rm, writeFile, readdir, readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import { projects, services } from '../src/data/premiumSite.js';
 
 const target = 'build/workers-assets';
+const siteMode = process.env.WORKERS_SITE_MODE === 'production' ? 'production' : 'staging';
 const port = 4397;
 const base = `http://127.0.0.1:${port}`;
 const routes = ['/', ...services.map(({ path }) => path), '/projects', ...projects.map(({ slug }) => `/projects/${slug}`), '/about', '/contact', '/quote', '/privacy', '/thank-you', '/design-system'];
 // Build-time rendering only: never inherit a production database or run migrations.
 const server = spawn(process.execPath, ['build/server/index.js'], {
-  env: { PATH: process.env.PATH, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', PUBLIC_SITE_MODE: 'staging' },
+  env: { PATH: process.env.PATH, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', PUBLIC_SITE_MODE: siteMode },
   stdio: ['ignore', 'ignore', 'pipe'],
 });
 let stderr = '';
@@ -38,9 +40,27 @@ try {
     const data = await fetch(`${base}${dataPath}`);
     if (data.ok) await writeFile(`${target}${dataPath}`, await data.text());
   }
-  await writeFile(`${target}/robots.txt`, 'User-agent: *\nDisallow: /\n');
+  for (const path of ['/robots.txt', '/sitemap.xml']) {
+    const response = await fetch(`${base}${path}`);
+    if (!response.ok) throw new Error(`Cannot export ${path}: ${response.status}`);
+    await writeFile(`${target}${path}`, await response.text());
+  }
   await writeFile(`${target}/404.html`, '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Page not found | Arcan Painting</title><h1>Page not found</h1><p><a href="/">Return to Arcan Painting</a></p></html>');
-  console.log(`Prepared ${routes.length} public pages in ${target}. Preview only: contact service binding is required before release.`);
+  const files = {};
+  async function fingerprint(directory) {
+    for (const entry of (await readdir(directory, { withFileTypes: true })).sort((a,b) => a.name.localeCompare(b.name))) {
+      const path = `${directory}/${entry.name}`;
+      if (entry.isDirectory()) await fingerprint(path);
+      else files[path.slice(target.length + 1)] = createHash('sha256').update(await readFile(path)).digest('hex');
+    }
+  }
+  await fingerprint(target);
+  await writeFile('build/workers-release.json', JSON.stringify({
+    siteMode, sourceCommit: process.env.SOURCE_COMMIT || 'local-uncommitted', routes,
+    workerSha256: createHash('sha256').update(await readFile('workers/public-site.js')).digest('hex'),
+    artifactSha256: createHash('sha256').update(JSON.stringify(files)).digest('hex'), files,
+  }, null, 2));
+  console.log(`Prepared ${routes.length} public pages in ${target}. Mode: ${siteMode}.`);
 } finally {
   if (server.exitCode === null) { server.kill('SIGTERM'); await once(server, 'exit'); }
 }

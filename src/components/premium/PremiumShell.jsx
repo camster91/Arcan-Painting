@@ -106,7 +106,7 @@ export default function PremiumShell({ children }) {
           <a href="/privacy">Privacy</a>
         </div>
         <div className="p-footer-bottom">
-          <span>Arcan Painting · Simcoe County, York Region & GTA</span>
+          <span>Arcan Painting · Project enquiries</span>
           <a href="tel:+14167272148">416 727 2148</a>
           <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
         </div>

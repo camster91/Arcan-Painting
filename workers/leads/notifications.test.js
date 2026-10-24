@@ -31,3 +31,27 @@ describe('durable enquiry notifications',()=>{
  it('fails closed without a configured recipient',async()=>{const{db,env}=setup();try{env.NOTIFY_TO='';expect(await deliverNotifications(env)).toMatchObject({configured:false});expect(env.EMAIL.send).not.toHaveBeenCalled();}finally{db.close();}});
  it('claims each row once when batches overlap',async()=>{const{db,env}=setup();try{const results=await Promise.all([deliverNotifications(env,1000),deliverNotifications(env,1000)]);expect(results.reduce((n,r)=>n+r.accepted,0)).toBe(1);expect(env.EMAIL.send).toHaveBeenCalledTimes(1);}finally{db.close();}});
 });
+
+it('retains exhausted notifications for operator review without sending again', async () => {
+ const {db,env}=setup(); try {
+  db.exec('UPDATE enquiry_outbox SET attempts=12');
+  expect(await deliverNotifications(env,1000)).toMatchObject({accepted:0,retained:1});
+  expect(env.EMAIL.send).not.toHaveBeenCalled();
+  expect(db.prepare('SELECT status FROM enquiry_outbox').get().status).toBe('pending');
+ } finally {db.close();}
+});
+it('retries after provider acceptance when D1 acknowledgement fails, exposing the documented duplicate risk', async () => {
+ const {db,env}=setup(); try {
+  const prepare=env.LEADS_DB.prepare;
+  let failAck=true;
+  env.LEADS_DB.prepare=sql=> sql.includes("status = 'sent'") && failAck ? {bind:()=>({run:async()=>({success:false,meta:{changes:0}})})} : prepare(sql);
+  expect(await deliverNotifications(env,1000)).toMatchObject({accepted:0,retrying:1});
+  expect(db.prepare('SELECT status FROM enquiry_outbox').get().status).toBe('pending');
+  failAck=false;
+  expect(await deliverNotifications(env,61000)).toMatchObject({accepted:1});
+  expect(env.EMAIL.send).toHaveBeenCalledTimes(2);
+ } finally {db.close();}
+});
+it.each(['team@example.test,other@example.test','team@example.test;other@example.test','team@example.test\n'])('rejects recipient delimiters before sending: %s',async recipient=>{
+ const {db,env}=setup();try{env.NOTIFY_TO=recipient;expect(await deliverNotifications(env,1000)).toMatchObject({configured:false});expect(env.EMAIL.send).not.toHaveBeenCalled();}finally{db.close();}
+});

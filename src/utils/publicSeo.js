@@ -1,5 +1,6 @@
 import { projects } from '../data/premiumSite';
 const SITE_URL = "https://arcanpainting.ca";
+const SERVICE_NAMES = {"Interior Painting":"Premium Painting","Wallpaper Services":"High-end Wallpaper","Specialty Finishes":"Luxury Finishes"};
 
 export const SERVICE_FAQS = {
   "Interior Painting": [["What should I include in an interior painting inquiry?", "Share the rooms and surfaces involved, their current condition, colour or finish ideas, access constraints, and your preferred timing. Photos can help the team understand what needs review."], ["How are colours and finishes confirmed?", "Bring any samples or reference images you have. Product, colour, and sheen choices should be confirmed for the actual surfaces and use of each room before work begins."]],
@@ -19,7 +20,7 @@ const PUBLIC_PAGES = {
     description: "Explore Arcan Painting services and discuss an interior, exterior, commercial, wallpaper, or specialty-finish project.",
   },
   "/interior-painting": {
-    title: "Interior Painting | Arcan Painting",
+    title: "Premium Painting | Arcan Painting",
     description: "Plan an interior painting project, from surface preparation and room access to colours, finishes, and timing.",
     service: "Interior Painting",
   },
@@ -34,12 +35,12 @@ const PUBLIC_PAGES = {
     service: "Commercial Painting",
   },
   "/wallpaper-services": {
-    title: "Wallpaper Services | Arcan Painting",
+    title: "High-end Wallpaper | Arcan Painting",
     description: "Plan wallpaper installation or removal by sharing wall condition, material details, room dimensions, and timing.",
     service: "Wallpaper Services",
   },
   "/specialty-finishes": {
-    title: "Specialty Finishes | Arcan Painting",
+    title: "Luxury Finishes | Arcan Painting",
     description: "Discuss a specialty-finish project, including the desired appearance, sample references, surfaces, and room conditions.",
     service: "Specialty Finishes",
   },
@@ -88,7 +89,6 @@ export function buildStructuredData(seo) {
     sameAs: [
       "https://www.facebook.com/arcanpainting",
       "https://www.instagram.com/arcanpaint",
-      "https://www.linkedin.com/company/arcan-painting",
     ],
   };
 
@@ -118,7 +118,7 @@ export function buildStructuredData(seo) {
     graph.push({
       "@type": "Service",
       "@id": `${seo.canonical}#service`,
-      name: seo.service,
+      name: SERVICE_NAMES[seo.service] || seo.service,
       url: seo.canonical,
       provider: { "@id": `${SITE_URL}/#business` },
       mainEntityOfPage: { "@id": `${seo.canonical}#webpage` },
@@ -128,7 +128,7 @@ export function buildStructuredData(seo) {
       "@id": `${seo.canonical}#breadcrumb`,
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-        { "@type": "ListItem", position: 2, name: seo.service, item: seo.canonical },
+        { "@type": "ListItem", position: 2, name: SERVICE_NAMES[seo.service] || seo.service, item: seo.canonical },
       ],
     });
     graph.push({

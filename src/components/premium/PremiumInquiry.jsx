@@ -10,6 +10,18 @@ const SERVICES = [
   ["other", "A combination / To be discussed"],
 ];
 
+function createSubmissionId() {
+  const cryptoApi = globalThis.crypto;
+  if (typeof cryptoApi?.randomUUID === "function") return cryptoApi.randomUUID();
+  if (typeof cryptoApi?.getRandomValues !== "function") return "";
+  const bytes = new Uint8Array(16);
+  cryptoApi.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 export default function PremiumInquiry({ initialService = "interior" }) {
   const id = useId();
   const [service, setService] = useState(initialService);
@@ -18,6 +30,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const submitting = useRef(false);
+  const submissionId = useRef("");
   const errorRef = useRef(null);
   useEffect(() => setReady(true), []);
   useEffect(() => {
@@ -32,7 +45,9 @@ export default function PremiumInquiry({ initialService = "interior" }) {
     setError("");
     const data = new FormData(event.currentTarget);
     const text = (key) => String(data.get(key) || "").trim();
+    if (!submissionId.current) submissionId.current = createSubmissionId();
     const payload = {
+      ...(submissionId.current ? { submissionId: submissionId.current } : {}),
       name: text("name"),
       email: text("email"),
       phone: text("phone"),
@@ -48,21 +63,25 @@ export default function PremiumInquiry({ initialService = "interior" }) {
       ].join("\n"),
       attribution: getAttribution(),
     };
+    let response;
+    let result;
     try {
-      const response = await fetch("/api/contact", {
+      response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json().catch(() => null);
+      result = await response.json().catch(() => null);
       if (
         !response.ok ||
         result?.success !== true ||
         result?.lead_saved !== true
       ) {
-        throw new Error(
-          "We couldn’t save your enquiry. Please try again or contact us directly.",
-        );
+        if (response.status === 409) submissionId.current = "";
+        const message = response.status === 503
+          ? "We couldn’t confirm whether your enquiry was saved. Please wait a moment before trying again, or contact us directly."
+          : result?.error || "We couldn’t save your enquiry. Please check the details and try again.";
+        throw new Error(message);
       }
       // Analytics contains categories only; contact details never enter events or URLs.
       try {
@@ -75,7 +94,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
         /* Analytics must not interrupt a saved enquiry. */
       }
       globalThis.location.assign("/thank-you");
-    } catch {
+    } catch (submissionError) {
       try {
         trackEvent("lead_submit_error", {
           source: "premium_inquiry",
@@ -84,9 +103,9 @@ export default function PremiumInquiry({ initialService = "interior" }) {
       } catch {
         /* Optional analytics. */
       }
-      setError(
-        "We couldn’t save your enquiry. Your details are still here. Please try again or call 416 727 2148.",
-      );
+      setError(submissionError instanceof Error
+        ? submissionError.message
+        : "We couldn’t confirm whether your enquiry was saved. Please wait a moment before trying again, or contact us directly.");
     } finally {
       submitting.current = false;
       setPending(false);
@@ -197,7 +216,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
             id={`${id}-timing`}
             name="timing"
             maxLength={120}
-            placeholder="Your preferred start or completion date"
+            placeholder="When would you prefer an estimate?"
           />
         </label>
       </div>
@@ -226,6 +245,9 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           {error}
         </p>
       )}
+      <p className="p-form-fallback">
+        Prefer to reach us directly? <a href="mailto:info@arcanpainting.ca">Email info@arcanpainting.ca</a> or <a href="tel:+14167272148">call 416 727 2148</a>.
+      </p>
       <p>
         By submitting, you agree that Arcan may contact you about this enquiry.{" "}
         <a href="/privacy">Privacy policy</a>.

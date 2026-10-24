@@ -12,8 +12,7 @@ export default function ContactBlock() {
           </>
         }
       >
-        Share your plans, materials and preferred timing. Estimates are
-        complimentary.
+        Share your plans, materials and preferred timing.
       </SectionHeading>
       <ButtonLink href="/contact">Discuss your project</ButtonLink>
     </Section>

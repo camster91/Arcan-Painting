@@ -46,7 +46,7 @@ export const services = [
     eyebrow: "Depth & character",
     summary: "Explore specialist surfaces and a more expressive finish.",
     description:
-      "Discuss the texture, movement and depth you want to bring to your interior. Bring your Venetian plaster or limewash references to a conversation about materials, surface suitability and the finish you want to achieve.",
+      "Discuss the texture, movement and depth you want to bring to your interior. Bring your finish references to a conversation about available materials, surface suitability and the finish you want to achieve.",
     image: null,
     imageAlt: "",
     details: [
@@ -126,12 +126,6 @@ export const socialLinks = [
     label: "Arcan Painting on Facebook",
     href: "https://www.facebook.com/arcanpainting",
     icon: "facebook",
-  },
-  {
-    name: "LinkedIn",
-    label: "Arcan Painting on LinkedIn",
-    href: "https://www.linkedin.com/company/arcan-painting",
-    icon: "linkedin",
   },
   {
     name: "Google reviews",

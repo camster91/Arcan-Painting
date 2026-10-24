@@ -8,7 +8,7 @@ test.describe("public conversion and account routes", () => {
     const response = await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(response?.status()).toBe(200);
 
-    const menu = page.locator("header").getByRole("button", { name: "Menu", exact: true });
+    const menu = page.locator('header button[aria-controls="premium-navigation"]');
     if (await menu.isVisible()) {
       await menu.click();
       await expect(menu).toHaveAttribute("aria-expanded", "true");

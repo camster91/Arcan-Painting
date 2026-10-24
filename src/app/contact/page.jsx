@@ -21,7 +21,7 @@ export default function Contact() {
             will follow up to discuss the scope and arrange a suitable time.
           </SectionHeading>
           <p>
-            Estimates are complimentary. Your requested date is a preference; an
+            Your requested date is a preference; an
             appointment is confirmed directly with our team.
           </p>
           <p>

@@ -1,3 +1,4 @@
+import { publicPath, safeAttribution } from "./attribution";
 const ATTRIBUTION_KEY = "arcan_attribution";
 let initialized = false;
 
@@ -8,38 +9,38 @@ function clean(value, max = 200) {
 export function getAttribution() {
   if (typeof window === "undefined") return {};
   try {
-    return JSON.parse(window.sessionStorage.getItem(ATTRIBUTION_KEY) || "{}");
+    return safeAttribution(JSON.parse(window.sessionStorage.getItem(ATTRIBUTION_KEY) || "{}"));
   } catch {
     return {};
   }
 }
 
 export function initializeAnalytics() {
-  if (typeof window === "undefined" || initialized) return;
+  if (typeof window === "undefined" || publicPath(window.location.pathname) === "/other" || initialized) return;
   initialized = true;
   window.dataLayer = window.dataLayer || [];
 
   const params = new URLSearchParams(window.location.search);
   const existing = getAttribution();
-  const attribution = {
-    landingPage: existing.landingPage || clean(`${window.location.pathname}${window.location.search}`, 500),
+  const attribution = safeAttribution({
+    landingPage: existing.landingPage || publicPath(window.location.pathname),
     referrer: existing.referrer || clean(document.referrer, 500),
     utmSource: existing.utmSource || clean(params.get("utm_source")),
     utmMedium: existing.utmMedium || clean(params.get("utm_medium")),
     utmCampaign: existing.utmCampaign || clean(params.get("utm_campaign")),
     utmContent: existing.utmContent || clean(params.get("utm_content")),
     utmTerm: existing.utmTerm || clean(params.get("utm_term")),
-  };
-  window.sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+  });
+  try { window.sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution)); } catch { /* Storage may be disabled. */ }
 
   document.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target.closest("a,button") : null;
     if (!target) return;
     const href = target instanceof HTMLAnchorElement ? target.getAttribute("href") || "" : "";
-    if (href.startsWith("tel:")) trackEvent("click_to_call", { location: clean(window.location.pathname), destination: clean(href, 100) });
-    else if (href.startsWith("mailto:")) trackEvent("click_to_email", { location: clean(window.location.pathname), destination: clean(href, 200) });
+    if (href.startsWith("tel:")) trackEvent("click_to_call", { location: publicPath(window.location.pathname), destination: clean(href, 100) });
+    else if (href.startsWith("mailto:")) trackEvent("click_to_email", { location: publicPath(window.location.pathname), destination: clean(href, 200) });
     else if (target instanceof HTMLButtonElement && /discuss your project|contact|get quote|project review/i.test(target.textContent || "")) {
-      trackEvent("cta_click", { location: clean(window.location.pathname), label: clean((target.textContent || "").trim()) });
+      trackEvent("cta_click", { location: publicPath(window.location.pathname), label: clean((target.textContent || "").trim()) });
     }
   });
 
@@ -58,12 +59,12 @@ export function initializeAnalytics() {
     document.head.appendChild(script);
     window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
-    window.gtag("config", measurementId, { send_page_view: false, anonymize_ip: true });
+    window.gtag("config", measurementId, { send_page_view: false, anonymize_ip: true, page_location: `${window.location.origin}${publicPath(window.location.pathname)}`, page_referrer: attribution.referrer || "", allow_google_signals: false });
   }
 }
 
 export function trackEvent(eventName, properties = {}) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || publicPath(window.location.pathname) === "/other") return;
   initializeAnalytics();
   const event = { event: eventName, ...properties };
   window.dataLayer.push(event);
@@ -71,5 +72,7 @@ export function trackEvent(eventName, properties = {}) {
 }
 
 export function trackPageView(path) {
-  trackEvent("page_view", { page_path: path, page_title: document.title });
+  const page = publicPath(path);
+  if (page === "/other") return;
+  trackEvent("page_view", { page_path: page, page_location: `${window.location.origin}${page}`, page_referrer: getAttribution().referrer || "", page_title: document.title });
 }

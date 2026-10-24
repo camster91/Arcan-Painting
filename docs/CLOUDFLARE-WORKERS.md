@@ -1,81 +1,118 @@
-# Cloudflare Workers target
+# Arcan Cloudflare hosting and enquiries
 
-The public website has a separate **preview** target for Workers Static Assets. `npm run build:workers` builds the existing application, starts an isolated local renderer without database credentials, and exports the allowlisted public routes with their server-rendered HTML and hydration payloads. The Node server, CRM and filesystem uploads are not included in the Worker runtime. Existing `npm run build` and Node hosting remain available.
+## Current release state — 24 October 2026
 
-Commands:
+The redesign is deployed to **staging**, at https://arcan-public-site-staging.ashbi-design-preview.workers.dev. This is not the production launch. General staging enquiry submissions are disabled. Production remains on Hostinger, at https://arcanpainting.ca, pending verified notification delivery. No DNS cutover, mail-record changes, hosting deletion, paid upgrade or client communication has been performed.
 
-- `npm ci`
-- `npm run build:workers`
-- `npm run types:workers` after changing bindings
-- `npm run preview:workers` for local Workers runtime testing
-- `npm run check:workers` for a dry-run bundle check, without publishing
+The source is React Router/React with a Node/Hono backend. Workers serves a static public export; it does not migrate the Node CRM, authentication, database or uploads. The production Worker uses **Worker Routes over the existing DNS origin**, preserving private routes and missing older `/assets/*` bundles on Hostinger. Do not replace the origin with a Workers Custom Domain: that would invalidate the origin fallback.
 
-This is **not yet a complete production migration**. The existing Hono server depends on Node startup migrations, database connections, native Argon2 and persistent filesystem uploads. Migrating that backend requires deciding database/auth/storage architecture (for example Hyperdrive for the existing database and R2 for uploads), implementing the runtime changes and testing existing CRM/auth workflows. Merely enabling `nodejs_compat` does not migrate it.
+The original preparation document remains recoverable at Git tag `backup/arcan-before-cloudflare-release-2026-10-24` (commit `56d307f`). Earlier provisioning assumed that the zone belonged to Ashbi; live inspection corrected that assumption.
 
-## Enquiries
+## Accounts and resources
 
-`POST /api/contact` returns an explicit 503 until a compatible backend is configured. The form retains its details, shows a retry message and provides direct telephone/email contact. It never pretends that an enquiry was saved.
+| Environment | Account | Public Worker | Private intake | D1 |
+| --- | --- | --- | --- | --- |
+| Staging | `1f5acce966c81fbe36ae06521414d0b8` | `arcan-public-site-staging` | `arcan-enquiry-intake` | `arcan-enquiries`, `a894afcd-504a-4d3a-a498-905296f0bdc8` |
+| Production candidate | `1b2e351cbb39ab6b80efe36ca3577fe5` | `arcan-public-site` | `arcan-enquiry-intake` | `arcan-enquiries-production`, `d85b0cf8-2574-48b0-86f5-2ee5f8c891d0` |
 
-When a compatible contact Worker is ready, add a `LEADS_API` service binding to `wrangler.jsonc` using that Worker's actual name. Re-run `npm run types:workers`. Only the contact POST is forwarded; session cookies, authorization and CSRF headers are removed. The target must implement the current `/api/contact` JSON contract, input validation, abuse protection, persistence and lead notifications. A Node HTTP origin cannot be used as a Workers service binding; migrate the endpoint or introduce a separately reviewed bridge before enabling it. No unverified origin, database IDs or service names are preconfigured.
+The domain's actual zone is `ff60934cbc192f2442be7f2dd6515b36`, in the **production account**. Service bindings and zone routes must stay within the appropriate account. The existing Ashbi resources are retained as isolated staging; they cannot be bound across accounts. Production resources were created only after confirming that no Arcan resources existed in the zone-owning account. No existing database or Worker was deleted.
 
-Other API, CRM and upload routes deliberately return 404. Public page navigation uses document links; the successful enquiry redirects with a document navigation to `/thank-you` without personal data in the URL. HTML includes React Router hydration data for project loaders. New public routes must be added to the export list; project and service routes are derived from `src/data/premiumSite.js`.
+Both intake Workers have `workers_dev: false`, `preview_urls: false`, no public routes, no active mail binding and no notification cron. Both use `LEADS_DB`, and `ENQUIRY_LIMITER` at 5 requests per 60 seconds with namespace `18420261024` (account scoped). This is a per-Cloudflare-location limit, not a global bot guarantee.
 
-## Before release
+All three migrations are applied in both environments. On staging, the first two had previously been applied through the API without a migration ledger. The table definitions and columns were inspected before recording those names in the standard `d1_migrations` table; their ALTER statements were not rerun. Migration 0003 adds a unique submission ID and payload hash. Production began empty and received migrations 0001–0003 once. Inspect `d1_migrations` and `PRAGMA table_info(...)` before further migration operations.
 
-The target sends `X-Robots-Tag: noindex, nofollow`, exports a blocking robots.txt and prerenders in staging mode. Keep those settings for previews. Once content and backend are approved, remove the preview-only header, prerender with production site mode, export the canonical sitemap/robots and verify crawling again. Confirm social/review destinations, image rights, finish scope and contact submissions in the real Workers environment before enabling a custom domain. Deployment and DNS have not been changed.
+## Build, test and deployment
 
-References consulted:
+```sh
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run types:workers
+npx wrangler types workers/leads/worker-configuration.d.ts --config workers/leads/wrangler.jsonc --include-runtime=false
+SOURCE_COMMIT=$(git rev-parse HEAD) npm run build:workers
+npm run check:workers
+npx wrangler deploy --dry-run --config workers/leads/wrangler.jsonc
+```
 
-- https://developers.cloudflare.com/workers/best-practices/workers-best-practices/
-- https://developers.cloudflare.com/workers/static-assets/routing/advanced/html-handling/
-- https://developers.cloudflare.com/workers/framework-guides/web-apps/react-router/
+`npm run build:workers` starts a credential-free isolated Node renderer and exports 15 routes, hydration data, assets, robots.txt and sitemap.xml. The default mode is staging. A production build requires `WORKERS_SITE_MODE=production`; production indexing is permitted only on canonical production hosts with `SITE_MODE=production`. `/design-system`, `/thank-you`, errors and all previews stay noindex. The design reference is excluded from navigation and sitemap. `/release.json` is blocked; internal provenance is saved outside public assets as `build/workers-release.json`.
 
-## Validation in this change
+`WORKERS_BASE_URL=<actual-staging-url> npm run test:workers:e2e` exercises all exported pages at 320, 390, 768, 1024 and 1440 pixels, project loader hydration, real image loading, console/page errors, mobile keyboard navigation, missing-route status and noindex. The ordinary Node browser suite also exercises account routes and CRM layout behavior.
 
-The public export and Wrangler dry-run bundle check passed. Focused Worker boundary and enquiry form tests passed (11 tests). Local `wrangler dev` could not start in this workspace because the runtime reported `uv_interface_addresses` system error 1; a real Workers runtime smoke test remains required. No deployment was performed.
+Deploy commands, when CLI authentication is available:
 
-The managed browser preview injected an `aria-hidden` overlay DIV directly before the document HEAD, confirmed against a script-free SSR snapshot. React 18 consequently reported a document hydration mismatch in that instrumented preview. That node is absent from the exported HTML. No application suppression or hydration workaround was added; repeat browser hydration verification on the actual Workers staging URL without that instrumentation.
+```sh
+npx wrangler deploy --config workers/leads/wrangler.jsonc
+npx wrangler deploy
+# Intended production account is selected by the production environment:
+npx wrangler deploy --config workers/leads/wrangler.jsonc --env production
+WORKERS_SITE_MODE=production SOURCE_COMMIT=$(git rev-parse HEAD) npm run build:workers
+npx wrangler deploy --env production
+```
 
-## Native enquiry intake implementation
+No automatic production deployment is enabled. The legacy Hostinger/Coolify/container publication workflows remain disabled. The connected Cloudflare API can deploy the same bundled code and static assets if Wrangler is not signed in; use the documented direct-asset-upload API and keep its short-lived credentials out of logs, committed files and URLs. Do not interpret a dry run as deployment proof.
 
-`workers/leads/index.js` now supplies a private, service-binding-only intake Worker. It uses D1 prepared statements and a transactional batch to save the enquiry and a pending notification record together. It preserves the public form's JSON contract and returns `lead_saved: true` only after both writes are acknowledged. Requests have a 16 KiB streamed size limit, strict field validation, same-origin checks and a required Cloudflare rate-limit binding. The public Worker overwrites the private client-IP header using Cloudflare's original request IP; browser-supplied values are discarded. Contact data and database exceptions are not logged.
+## Durable enquiry contract
 
-This implementation is **not enabled or deployed**. A read-only check found no Arcan Workers or D1 databases in the Ashbi Cloudflare account. No resources, bindings, DNS or production configuration were changed.
+The form sends JSON to same-origin `/api/contact`. It supplies a UUID retained through retries, contact preference, scope, requested estimate timing and optional budget. Timing is a request; appointments are confirmed directly. Telephone and email fallbacks remain visible. The intake validates bounded fields, a streamed 16 KiB maximum body, origin and the required rate limiter. Only the Cloudflare edge's IP is forwarded; the public proxy builds an allowlisted header set and discards browser-supplied internal IP, cookies, authorization and CSRF credentials.
 
-Before connecting it:
+A D1 transactional batch saves the enquiry and pending notification together. Success requires database acknowledgements for both records. A retry with the same UUID and normalized payload returns the existing durable record. UUID reuse with different details returns 409; the UI asks the visitor to review before submitting changed details with a new ID. Legacy callers without a UUID remain supported but do not receive the same retry protection. A lost acknowledgement produces an honest uncertainty message, not a fabricated success. The redirect is plain `/thank-you`, including when old thank-you links contain queries.
 
-1. Create a dedicated Arcan staging D1 database. Add its returned ID to `workers/leads/wrangler.jsonc` under `d1_databases`, binding `LEADS_DB`, with `migrations_dir: "migrations"`. Do not repoint the existing CRM database.
-2. Add a `ratelimits` binding named `ENQUIRY_LIMITER`, using an unused namespace ID in the selected Cloudflare account and `simple: { limit: 5, period: 60 }`. These limits are per Cloudflare location, not a strict global anti-abuse guarantee. Add Turnstile before public launch if stronger bot protection is required.
-3. Run `wrangler d1 migrations apply <actual-database-name> --remote --config workers/leads/wrangler.jsonc`, then regenerate binding types with `wrangler types workers/leads/worker-configuration.d.ts --config workers/leads/wrangler.jsonc --include-runtime=false`.
-4. Finish notification delivery and operator access before enabling public submissions. `enquiry_outbox` stores pending follow-up work; it does **not** yet send email/Telegram or sync records into the legacy CRM. Select the verified delivery destination, implement retries and mark `sent` only after acknowledgement. Keep pending rows visible to the operator. Define retention and deletion procedures for both tables.
-5. Deploy the private intake Worker (`workers_dev` and preview URLs remain false), then add a `LEADS_API` service binding on the public Worker pointing to its actual deployed name. Test a synthetic submission through the staging public origin and verify both D1 records and the notification. Clean up only those identified test records.
+Attribution strips arbitrary queries and fragments, private route IDs, referrer paths and suspicious campaign values. Public analytics sends allowlisted public paths, not arbitrary URL searches or private customer URLs. Neither request bodies, contact details nor provider/database exception content are logged. Worker invocation logs are disabled and query-string redaction is enabled.
 
-Validation added: real SQLite execution of the migration and parameterized insert, transaction rollback when the outbox write fails, phone-only enquiries, invalid fields, payload limits, origin checks, rate limiting, missing configuration, unacknowledged writes and spoofed forwarding headers. Tests use in-memory databases and fake contact data; no client notification was sent.
+### Controlled staging storage test
 
-API references: https://developers.cloudflare.com/d1/worker-api/d1-database/ and https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/.
+General preview intake is disabled. An operator can temporarily set staging `ENQUIRIES_ENABLED=test`, a secret `STAGING_TEST_KEY`, and a `STAGING_TEST_UNTIL` timestamp no more than one hour ahead. Only a matching `x-arcan-staging-test` header can use that path. Do not commit the key, put it in a URL, forward it to another host, or enable traces containing it. The test compares the supplied secret through Web Crypto. It is not a public retry or email endpoint.
 
-### Notification delivery implementation
+The opt-in `e2e-workers/enquiry-storage.spec.ts` submits fabricated data, checks the saved response and plain success URL, then replays the same payload. Verify both D1 records and exactly one row for the submission UUID. Delete only the identified synthetic enquiry and its outbox row, then remove the temporary secret and reset intake to false. Never activate delivery with leftover synthetic or unreviewed outbox rows.
 
-`workers/leads/notifications.js` now implements the pending-outbox sender using Cloudflare Email Service. The intake Worker's scheduled handler awaits it. Each invocation processes at most ten due rows, atomically claims a five-minute lease, sends to the configured operator, and records the provider message ID only after acknowledgement. Failures remain pending with exponential backoff from one minute to one hour. Expired leases are recoverable. Only aggregate counts are logged; the HTML version escapes submitted content.
+On 24 October the actual staging form reached the private deployed Worker and D1. Submission `3b2df5c9-9454-4b79-97b4-357f8d5b0d5b` returned 200, redirected to plain `/thank-you`, and its retry returned 200 with exactly one enquiry/outbox pair. The two identified test enquiries (including an earlier browser-test assertion failure after a successful save) were removed; both staging tables were verified empty. **This proves storage and retry behavior, not email delivery.**
 
-This replaces the earlier requirement to implement basic notification delivery; **configuration and live verification are still outstanding**. No mail has been sent. To activate after domain onboarding and recipient approval:
+## Notifications: remaining activation gate
 
-- Enable Email Sending for the actual sender domain and verify plan availability. It requires the Workers paid plan; no plan change is performed by this PR.
-- Set `NOTIFY_FROM` to an onboarded sender and `NOTIFY_TO` to the verified Arcan operator address. These are deployment settings; the sender and destination are never taken from form input.
-- Configure a restricted `send_email` binding named `EMAIL` with the approved `allowed_sender_addresses` and `allowed_destination_addresses`, then regenerate binding types.
-- Apply both migrations, including `0002_notification_delivery.sql`, before enabling the scheduled handler. Configure `triggers.crons: ["*/5 * * * *"]` only in the intended environment after a controlled delivery test. The committed config intentionally has no active schedule or email binding.
-- Verify the acknowledgement, inbox receipt and pending-outbox monitoring using an approved test recipient. `status = 'sent'` means the provider accepted the message, not proof of inbox delivery. Pending rows must remain visible to the operator for configuration errors and persistent bounces.
+The existing Node contact handler, appointment notification configuration and client correspondence identify `info@arcanpainting.ca` as the intended Arcan destination. It is not replaced with Cameron's personal email. That destination is not currently verified in Cloudflare Email Routing.
 
-Delivery is at least once: a crash after provider acceptance but before D1 acknowledgement can cause a repeat email after the lease expires. The stable enquiry ID in the subject allows the operator to recognize duplicates. A lease prevents ordinary overlapping batches from selecting the same row; extremely slow sends exceeding five minutes can also repeat. No request-time mail send or public retry endpoint is added.
+Email Sending read endpoints return HTTP 401/code 2036 with the connector in both accounts, while Workers, D1 and Email Routing calls succeed. The connection is authenticated generally but rejected by Email Sending; the failure does not establish that a paid upgrade or sender-DNS change is needed. The dashboard is signed out. Cameron must sign in through the secure browser handoff so product entitlement and sender onboarding can be inspected. Do not repeatedly retry the unchanged connector call, request pasted credentials, create a new token, purchase a plan, or change security settings to bypass this.
 
-Reference: https://developers.cloudflare.com/email-service/api/send-emails/workers-api/.
+After authenticated inspection:
 
-## Provisioning status — latest
+1. Confirm Email Sending is already available within the existing plan. If a paid upgrade is required, stop for the specific cost authorization.
+2. Onboard an Arcan sender, preferably a dedicated notification subdomain, preserving root Google Workspace MX/SPF/DKIM and existing Mailgun records. Preview and review DNS changes first.
+3. Verify the intended recipient through the supported Cloudflare workflow. If the verification requires Cameron or the client, use secure handoff; do not send an unsolicited client message.
+4. Configure `NOTIFY_FROM`, `NOTIFY_TO`, and a restricted `send_email` binding `EMAIL` with exact allowed sender and destination addresses. Keep recipient selection entirely out of user input.
+5. With an approved test recipient and fabricated data, test provider acknowledgement and actual inbox receipt separately. Inspect queued/bounced/provider states; a provider message ID is not inbox delivery.
+6. Only then enable `triggers.crons: ["*/5 * * * *"]` in the intended intake environment, and `ENQUIRIES_ENABLED=true` on the public Worker. Regenerate binding types and verify settings.
 
-The earlier no-resource/no-deployment notes describe preparation only. Following authorization to finish deployment, the Ashbi account now contains:
+The outbox processor processes at most ten due rows, atomically claims five-minute leases, uses the current clock for each claim, escapes HTML, and records provider IDs only after acknowledgement. Retries back off from one minute to one hour. After 12 attempts, a row remains pending and is retained for operator review rather than automatically resending forever. No failed enquiry is discarded.
 
-- D1 `arcan-enquiries`, ID `a894afcd-504a-4d3a-a498-905296f0bdc8`, Eastern North America. Both schema migrations were applied through the D1 API; table inspection confirmed `enquiries` and `enquiry_outbox` exist and contain zero enquiries.
-- Private Worker `arcan-enquiry-intake`, deployment `3a1959e966ed4a689350b9fee69733ea`, with the real D1 binding and rate limiter (5/60 seconds, namespace `18420261024`). No public route, workers.dev URL, preview URL or notification cron is enabled.
-- Public website build regenerated successfully for all 15 routes. The public Worker/custom domain has not been switched over.
+Delivery is at least once. A crash or D1 failure after provider acceptance can produce a repeated email; a send lasting beyond the lease can also repeat. The stable enquiry ID in the subject helps the operator identify duplicates. Tests cover overlapping batches, expired leases, empty acknowledgements, retry timing, retained failures, and failure after provider acceptance.
 
-Blocking activation: Cloudflare Email Sending `/accounts/.../email/sending/limits` rejects the connected credentials with HTTP 401 / code 2036 and asks for reconnection. Workers and D1 access work. Email Routing has no verified destinations in the account. A verified Arcan notification recipient is also needed; no destination was guessed and no email was sent. Reconnect/authorize Email Sending, confirm the recipient and onboard the sender, then configure/test the sender, bind the public site, and release it. The existing public site remains in place until lead delivery works.
+### Monitoring and retained failures
+
+Cameron owns deployment and operational follow-up until handoff. Review the scheduled Worker aggregate event `enquiry_notification_batch`: `configured=false`, nonzero `retrying`, nonzero `retained`, or invocation failures require investigation. No contact details belong in alerts or logs. During the first production day, inspect the outbox after the synthetic acceptance test and periodically during working hours; arrange an ongoing accountable operator before treating delivery as unattended.
+
+Use account-specific D1 access to inspect counts:
+
+```sql
+SELECT status, COUNT(*) AS count FROM enquiry_outbox GROUP BY status;
+SELECT COUNT(*) AS retained FROM enquiry_outbox WHERE status='pending' AND attempts>=12;
+SELECT COUNT(*) AS overdue FROM enquiry_outbox
+WHERE status='pending' AND next_attempt_at < (unixepoch()-900)*1000 AND lease_until < unixepoch()*1000;
+```
+
+Inspect individual records only through authenticated D1/operator access. Correct the sender/recipient/provider cause before resetting the attempts and next-attempt time for an identified retained row. Review provider acceptance first to avoid unnecessary repeats. Do not purge real enquiries or invent a retention period; agree retention and operator access with Arcan as part of handoff. Email and the D1 record remain separate from legacy CRM sync; this migration does not claim CRM lead synchronization.
+
+## Production cutover and rollback
+
+The checked-in DNS snapshot `docs/release/arcan-dns-before-2026-10-24.json` records the original apex A `82.180.129.200` (unproxied), `www` CNAME to apex (unproxied), mail records, and empty Worker routes. Existing SSL mode is full; account security and mail settings were not changed. Before cutover, recheck for intervening changes and preserve any unrelated update.
+
+After staging delivery and all release checks pass:
+
+- Deploy the tested production build and bind `LEADS_API` to the **same-account** private production intake.
+- Preserve the existing apex A/origin and www CNAME values, enable their proxy, and add only `arcanpainting.ca/*` and `www.arcanpainting.ca/*` Worker Routes targeting `arcan-public-site` in the zone-owning account.
+- Keep the old hosting, database, uploads and credentials. Confirm origin health, sign-in and admin redirects before and after cutover. `/api/health` and `/account/signin` returned 200 before cutover; `/admin` redirected to sign-in as expected.
+- Legacy service-area URLs redirect to the corresponding verified service root, avoiding publication of unsupported local claims. Public service URLs remain unchanged. The www public site redirects to apex; thank-you queries are stripped before canonicalization. Production GET/HEAD requests use HTTPS.
+- Verify all routes, assets, sitemap, robots, canonical hosts, SSL, browser console/network, and a synthetic enquiry through the actual production hostname. Confirm storage, provider acceptance and inbox delivery separately. Clean only the identified test records.
+
+Rollback owner: Cameron. Remove the two newly added Arcan Worker Routes first to restore direct origin handling through Cloudflare. If needed, restore the two DNS proxy flags and TTL values from the snapshot; preserve all MX/TXT and unrelated records. Because the original IP/CNAME and Hostinger deployment remain available, no site restoration or database reversal is required. Disable new enquiry intake/cron before rolling back a broken intake deployment; retain pending enquiries for recovery. The earlier Ashbi intake version is `3a1959e9-66ed-4a68-9350-b9fee69733ea`; additive migration 0003 is compatible with that version. Do not roll back data or delete existing hosting as part of recovery.

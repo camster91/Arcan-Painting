@@ -142,7 +142,7 @@
 }
 .p-button--line:hover {
   background: transparent;
-  color: #866d37 !important;
+  color: #785f30 !important;
 }
 .p-hero {
   display: grid;
@@ -751,3 +751,12 @@
     max-width: 650px;
   }
 }
+
+/* Keep navigation touch targets usable on every breakpoint. */
+.p-header nav > a { min-height: 44px; display: inline-flex; align-items: center; }
+.p-privacy { max-width: 1050px; margin-inline: auto; }
+.p-privacy h2 { font-size: clamp(29px, 3vw, 40px); }
+.p-privacy a { text-decoration: underline; }
+
+.p-hero .p-button--line:hover,
+.p-section--ink .p-button--line:hover { color: var(--p-gold) !important; }

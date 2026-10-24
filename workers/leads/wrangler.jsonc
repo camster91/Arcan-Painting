@@ -7,7 +7,12 @@
   "preview_urls": false,
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 0.1
+    "head_sampling_rate": 0.1,
+    "redact_query_string": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
   },
   "d1_databases": [
     {
@@ -26,5 +31,30 @@
         "period": 60
       }
     }
-  ]
+  ],
+  "account_id": "1f5acce966c81fbe36ae06521414d0b8",
+  "env": {
+    "production": {
+      "account_id": "1b2e351cbb39ab6b80efe36ca3577fe5",
+      "name": "arcan-enquiry-intake",
+      "d1_databases": [
+        {
+          "binding": "LEADS_DB",
+          "database_name": "arcan-enquiries-production",
+          "database_id": "d85b0cf8-2574-48b0-86f5-2ee5f8c891d0",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "ratelimits": [
+        {
+          "name": "ENQUIRY_LIMITER",
+          "namespace_id": "18420261024",
+          "simple": {
+            "limit": 5,
+            "period": 60
+          }
+        }
+      ]
+    }
+  }
 }

@@ -58,6 +58,7 @@ describe("PremiumInquiry", () => {
     expect(url).toBe("/api/contact");
     expect(options.method).toBe("POST");
     expect(JSON.parse(options.body)).toMatchObject({
+      submissionId: expect.stringMatching(/^[0-9a-f-]{36}$/),
       name: "Test Client",
       email: "client@example.test",
       serviceType: "wallpaper",
@@ -77,6 +78,7 @@ describe("PremiumInquiry", () => {
   it("retains details and exposes an accessible retry error when persistence fails", async () => {
     fetch.mockResolvedValue({
       ok: false,
+      status: 503,
       json: async () => ({ error: "Database unavailable" }),
     });
     render(<PremiumInquiry />);
@@ -85,12 +87,37 @@ describe("PremiumInquiry", () => {
       screen.getByRole("button", { name: "Send project enquiry" }),
     );
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Your details are still here");
+    expect(alert).toHaveTextContent("couldn’t confirm whether your enquiry was saved");
+    expect(screen.getByRole("link", { name: /email info@arcanpainting\.ca/i })).toHaveAttribute("href", "mailto:info@arcanpainting.ca");
+    expect(screen.getByRole("link", { name: /call 416 727 2148/i })).toHaveAttribute("href", "tel:+14167272148");
     expect(screen.getByLabelText("Your name")).toHaveValue("Test Client");
     expect(navigate).not.toHaveBeenCalled();
     expect(
       screen.getByRole("button", { name: "Send project enquiry" }),
     ).toBeEnabled();
+  });
+
+  it("retains the caller submission ID across an ambiguous-save retry", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        json: async () => ({ error: "Could not confirm" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true, lead_saved: true }),
+      });
+    render(<PremiumInquiry />);
+    complete();
+    fireEvent.click(screen.getByRole("button", { name: "Send project enquiry" }));
+    await screen.findByRole("alert");
+    fireEvent.click(screen.getByRole("button", { name: "Send project enquiry" }));
+    await waitFor(() => expect(navigate).toHaveBeenCalledWith("/thank-you"));
+    const first = JSON.parse(fetch.mock.calls[0][1].body);
+    const second = JSON.parse(fetch.mock.calls[1][1].body);
+    expect(second.submissionId).toBe(first.submissionId);
   });
 
   it.each([
