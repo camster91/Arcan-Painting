@@ -58,7 +58,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
       if (
         !response.ok ||
         result?.success !== true ||
-        result?.lead_saved === false
+        result?.lead_saved !== true
       ) {
         throw new Error(
           "We couldn’t save your enquiry. Please try again or contact us directly.",

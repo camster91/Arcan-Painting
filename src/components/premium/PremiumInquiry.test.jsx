@@ -93,6 +93,21 @@ describe("PremiumInquiry", () => {
     ).toBeEnabled();
   });
 
+  it.each([
+    { success: true },
+    { success: true, lead_saved: false },
+    { success: true, lead_saved: "true" },
+  ])("rejects an unconfirmed saved-enquiry response: %j", async (result) => {
+    fetch.mockResolvedValue({ ok: true, json: async () => result });
+    render(<PremiumInquiry />);
+    complete();
+    fireEvent.click(screen.getByRole("button", { name: "Send project enquiry" }));
+    await screen.findByRole("alert");
+    expect(navigate).not.toHaveBeenCalled();
+    expect(trackEvent).not.toHaveBeenCalledWith("lead_submit_success", expect.anything());
+    expect(screen.getByLabelText("Your name")).toHaveValue("Test Client");
+  });
+
   it("requires the selected contact method and prevents duplicate requests while pending", async () => {
     let resolveRequest;
     fetch.mockReturnValue(
