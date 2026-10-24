@@ -64,3 +64,29 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
+
+      - name: Build public Workers export
+        run: npm run build:workers
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+
+      - name: Check Workers bundles
+        run: |
+          npm run check:workers
+          npx wrangler deploy --dry-run --config workers/leads/wrangler.jsonc
+          npx wrangler deploy --dry-run --config workers/leads/wrangler.jsonc --env production
+
+      - name: Start local Workers runtime
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          npx wrangler dev --port 8787 > workers-preview.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8787/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat workers-preview.log
+          exit 1
+
+      - name: Public Workers browser checks
+        if: github.actor != 'dependabot[bot]'
+        run: npm run test:workers:e2e

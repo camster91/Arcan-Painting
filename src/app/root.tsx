@@ -220,7 +220,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     initializeAnalytics();
-    trackPageView(`${location.pathname}${location.search}`);
+    trackPageView(location.pathname);
   }, [location.pathname, location.search]);
 
   return (
@@ -265,7 +265,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="robots" content={!isStaging && seo.indexable ? "index, follow" : "noindex, nofollow"} />
         <Links />
       </head>
-      <body suppressHydrationWarning>
+      <body>
         <ErrorBoundaryWrapper>
           {children}
         </ErrorBoundaryWrapper>

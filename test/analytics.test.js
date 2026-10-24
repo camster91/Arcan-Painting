@@ -10,7 +10,7 @@ describe("public analytics event layer", () => {
 
   it("stores first-touch attribution and emits vendor-neutral events", () => {
     initializeAnalytics();
-    expect(getAttribution()).toMatchObject({ landingPage: "/interior-painting?utm_source=search&utm_campaign=summer", utmSource: "search", utmCampaign: "summer" });
+    expect(getAttribution()).toMatchObject({ landingPage: "/interior-painting", utmSource: "search", utmCampaign: "summer" });
     trackEvent("lead_submit_success", { service_type: "interior" });
     expect(window.dataLayer).toContainEqual({ event: "lead_submit_success", service_type: "interior" });
   });
@@ -26,4 +26,13 @@ describe("public analytics event layer", () => {
     const names = window.dataLayer.map((item) => item.event);
     expect(names).toEqual(expect.arrayContaining(["click_to_call", "click_to_email", "cta_click", "form_validation_error"]));
   });
+});
+
+it('never emits page views or events for private customer URLs', async () => {
+  const { trackPageView } = await import('@/utils/analytics');
+  window.dataLayer=[];
+  window.history.replaceState({},'', '/i/private-invoice?token=private');
+  trackPageView(window.location.pathname+window.location.search);
+  trackEvent('form_validation_error',{field:'private-customer-field'});
+  expect(window.dataLayer).toEqual([]);
 });

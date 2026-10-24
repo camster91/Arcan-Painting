@@ -13,7 +13,7 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
   },
   test: {
-    exclude: ["e2e/**", "node_modules/**", "dist/**", "build/**"],
+    exclude: ["e2e/**", "e2e-workers/**", "node_modules/**", "dist/**", "build/**"],
     globals: true,
     environment: "jsdom",
     setupFiles: ["./test/setupTests.ts"],

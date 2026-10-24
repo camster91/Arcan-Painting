@@ -1,11 +1,4 @@
-import ServiceInquiryPage from "../../components/ServiceInquiryPage";
-
-export const metadata = {
-  title: "Interior Painting | Arcan Painting",
-  description: "Contact Arcan Painting to discuss your interior painting project.",
-  alternates: { canonical: "https://arcanpainting.ca/interior-painting" },
-};
-
+import ServicePage from "@/components/premium/ServicePage";
 export default function Page() {
-  return <ServiceInquiryPage serviceName="Interior Painting" />;
+  return <ServicePage path="/interior-painting" />;
 }

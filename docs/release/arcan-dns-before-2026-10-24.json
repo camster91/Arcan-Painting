@@ -1,0 +1,101 @@
+{
+  "zone": "ff60934cbc192f2442be7f2dd6515b36",
+  "account": "1b2e351cbb39ab6b80efe36ca3577fe5",
+  "captured_at": "2026-10-24",
+  "records": [
+    {
+      "id": "0a1119275a972d9f3ebb2bbbc9df567a",
+      "name": "arcanpainting.ca",
+      "type": "A",
+      "content": "82.180.129.200",
+      "ttl": 3600,
+      "proxied": false
+    },
+    {
+      "id": "120a74c51c5e72cfb198b16d7a2ebda4",
+      "name": "email.arcanpainting.ca",
+      "type": "CNAME",
+      "content": "mailgun.org",
+      "ttl": 3600,
+      "proxied": false
+    },
+    {
+      "id": "4d017cc869a20a1b7efacbda8afd9096",
+      "name": "www.arcanpainting.ca",
+      "type": "CNAME",
+      "content": "arcanpainting.ca",
+      "ttl": 1,
+      "proxied": false
+    },
+    {
+      "id": "e086e7171b00403873f0c081f9f76181",
+      "name": "arcanpainting.ca",
+      "type": "MX",
+      "content": "alt4.aspmx.l.google.com",
+      "ttl": 3600,
+      "proxied": false,
+      "priority": 10
+    },
+    {
+      "id": "f3cece0e120ef9f9759e522d484dbd6a",
+      "name": "arcanpainting.ca",
+      "type": "MX",
+      "content": "alt2.aspmx.l.google.com",
+      "ttl": 3600,
+      "proxied": false,
+      "priority": 5
+    },
+    {
+      "id": "2f087fd14df4fbc55b4cf9bc50a54505",
+      "name": "arcanpainting.ca",
+      "type": "MX",
+      "content": "alt3.aspmx.l.google.com",
+      "ttl": 3600,
+      "proxied": false,
+      "priority": 10
+    },
+    {
+      "id": "17952a05474d7577ae7ff96c1f50b3f3",
+      "name": "arcanpainting.ca",
+      "type": "MX",
+      "content": "alt1.aspmx.l.google.com",
+      "ttl": 3600,
+      "proxied": false,
+      "priority": 5
+    },
+    {
+      "id": "900b8cdc89f23eb1713a1d901c680004",
+      "name": "arcanpainting.ca",
+      "type": "MX",
+      "content": "aspmx.l.google.com",
+      "ttl": 3600,
+      "proxied": false,
+      "priority": 1
+    },
+    {
+      "id": "fc36d7db7ecccf3f1328788c617d0ed7",
+      "name": "arcanpainting.ca",
+      "type": "TXT",
+      "content": "\"v=spf1 include:_spf.google.com include:mailgun.org ~all\"",
+      "ttl": 3600,
+      "proxied": false
+    },
+    {
+      "id": "0b5ba3a360c3e371e62ee261f1be96f1",
+      "name": "_dmarc.arcanpainting.ca",
+      "type": "TXT",
+      "content": "\"v=DMARC1; p=none; rua=mailto:5eab0df9f3064c5188156efe22f6df42@dmarc-reports.cloudflare.net\"",
+      "ttl": 1,
+      "proxied": false
+    },
+    {
+      "id": "37c1a47e1829f8ff2977220fdfb554e8",
+      "name": "google._domainkey.arcanpainting.ca",
+      "type": "TXT",
+      "content": "\"v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtjyC49hJFO9o7f2EFVsumcI+f+FoYNOfzuzw82Gz0ZmZ4wjQxg3CfLxENP+ghXlzQ9raxExwoCRhtbL/QeflJGo0t/Ct1G0T0vZCK+zYflO2L4kJgTOY7FmZR6b/Ha/7e176AzmOeJNHHLKXvcNeS4ZZrSR5XYs3X86K0rp0rhBJPFvr6Km10p5mbzAiwfbMWvW\" \"w+IGy+g67fxJIIvhINqWNSfizxvf61aqmzgPEiNTdsthfDvbabnVg3/g+XcgD40JetzZkHlyRx8hR6V8ZAw+i3fQhqQwtSdpi\" \"Gp+bRi0K9LpnK9rGaNdTAxjEKagiGpHfA/M9Vo1vUBACq9fXdwIDAQAB\"",
+      "ttl": 60,
+      "proxied": false
+    }
+  ],
+  "routes": []
+}

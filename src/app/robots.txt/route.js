@@ -9,24 +9,14 @@ export async function GET() {
   const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /admin/*
-Disallow: /api/*
+Disallow: /api/
 Disallow: /account/
-Disallow: /account/*
+Disallow: /crew/
+Disallow: /e/
+Disallow: /i/
+Disallow: /uploads/
 Disallow: /thank-you
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-# OpenAI search discovery is allowed independently of model-training crawl.
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
+Disallow: /design-system
 
 User-agent: GPTBot
 Disallow: /

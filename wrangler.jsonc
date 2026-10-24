@@ -1,0 +1,59 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "account_id": "1f5acce966c81fbe36ae06521414d0b8",
+  "name": "arcan-public-site-staging",
+  "main": "workers/public-site.js",
+  "compatibility_date": "2026-10-24",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "SITE_MODE": "staging",
+    "ENQUIRIES_ENABLED": "false",
+    "STAGING_TEST_UNTIL": "0",
+    "STAGING_TEST_KEY": ""
+  },
+  "services": [
+    {
+      "binding": "LEADS_API",
+      "service": "arcan-enquiry-intake"
+    }
+  ],
+  "assets": {
+    "directory": "./build/workers-assets",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "redact_query_string": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
+  },
+  "env": {
+    "production": {
+      "name": "arcan-public-site",
+      "workers_dev": false,
+      "preview_urls": false,
+      "vars": {
+        "SITE_MODE": "production",
+        "ENQUIRIES_ENABLED": "false",
+        "LEGACY_ORIGIN": "enabled"
+      },
+      "services": [
+        {
+          "binding": "LEADS_API",
+          "service": "arcan-enquiry-intake"
+        }
+      ],
+      "account_id": "1b2e351cbb39ab6b80efe36ca3577fe5"
+    }
+  }
+}
