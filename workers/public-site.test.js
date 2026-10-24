@@ -14,10 +14,11 @@ describe('public Workers boundary', () => {
     const backend = vi.fn(async request => {
       expect(request.headers.has('cookie')).toBe(false);
       expect(request.headers.has('authorization')).toBe(false);
+      expect(request.headers.get('x-arcan-client-ip')).toBe('192.0.2.1');
       expect(await request.json()).toEqual({ name: 'Test' });
       return Response.json({ success: true, lead_saved: true });
     });
-    const response = await worker.fetch(new Request('https://example.test/api/contact', { method: 'POST', headers: { cookie: 'session=private', authorization: 'Bearer private', 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Test' }) }), { LEADS_API: { fetch: backend } });
+    const response = await worker.fetch(new Request('https://example.test/api/contact', { method: 'POST', headers: { cookie: 'session=private', 'cf-connecting-ip': '192.0.2.1', 'x-arcan-client-ip': 'spoofed', authorization: 'Bearer private', 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Test' }) }), { LEADS_API: { fetch: backend } });
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(backend).toHaveBeenCalledOnce();

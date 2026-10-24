@@ -1,0 +1,11 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "arcan-enquiry-intake",
+  "main": "index.js",
+  "compatibility_date": "2026-10-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true, "head_sampling_rate": 0.1 }
+  // Add LEADS_DB and ENQUIRY_LIMITER bindings for the selected environment.
+  // No database IDs or account-wide limiter namespace IDs are guessed here.
+}

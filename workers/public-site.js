@@ -10,6 +10,9 @@ export default {
         headers.delete('cookie');
         headers.delete('authorization');
         headers.delete('x-csrf-token');
+        headers.delete('x-arcan-client-ip');
+        const clientIp = request.headers.get('cf-connecting-ip');
+        if (clientIp) headers.set('x-arcan-client-ip', clientIp);
         try {
           const response = await env.LEADS_API.fetch(new Request(request, { headers }));
           const outgoing = new Response(response.body, response);
