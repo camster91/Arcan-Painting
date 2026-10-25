@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Instagram, Star, Menu, X } from "lucide-react";
 import { socialLinks } from "@/data/premiumSite";
 import { ButtonLink } from "./primitives";
@@ -32,26 +32,59 @@ export function SocialLinks() {
 }
 export default function PremiumShell({ children }) {
   const [open, setOpen] = useState(false);
+  const headerRef = useRef(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 901px)");
+    const closeDesktopMenu = () => {
+      if (headerRef.current?.querySelector("nav")?.contains(document.activeElement) ||
+          (desktop.matches && document.activeElement === menuRef.current)) {
+        (desktop.matches ? headerRef.current.querySelector(".p-logo") : menuRef.current)?.focus();
+      }
+      setOpen(false);
+    };
+    desktop.addEventListener("change", closeDesktopMenu);
+    return () => desktop.removeEventListener("change", closeDesktopMenu);
+  }, []);
   useEffect(() => {
     const escape = (e) => {
       if (e.key === "Escape") {
         setOpen(false);
-        document.querySelector(".p-menu")?.focus();
+        menuRef.current?.focus();
       }
     };
-    if (open) document.addEventListener("keydown", escape);
-    return () => document.removeEventListener("keydown", escape);
+    const outside = (event) => {
+      if (headerRef.current?.contains(event.target)) return;
+      if (event.type === "pointerdown" &&
+          headerRef.current?.querySelector("nav")?.contains(document.activeElement) &&
+          !event.target.closest("a, button, input, select, textarea, [tabindex], [contenteditable]")) {
+        event.preventDefault();
+        menuRef.current?.focus();
+      }
+      setOpen(false);
+    };
+    if (open) {
+      document.addEventListener("keydown", escape);
+      document.addEventListener("pointerdown", outside);
+      document.addEventListener("focusin", outside);
+    }
+    return () => {
+      document.removeEventListener("keydown", escape);
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("focusin", outside);
+    };
   }, [open]);
   return (
     <div className="premium-site">
       <a className="p-skip" href="#main">
         Skip to content
       </a>
-      <header className="p-header">
+      <header className="p-header" ref={headerRef}>
         <a className="p-logo" href="/" aria-label="Arcan Painting home">
           <img src="/logo.png" width="400" height="119" alt="Arcan Painting" />
         </a>
         <button
+          ref={menuRef}
           className="p-menu"
           onClick={() => setOpen(!open)}
           aria-expanded={open}

@@ -175,6 +175,8 @@ export default function ProjectGallery({ items = defaultItems }) {
   const returnFocusRef = useRef(null);
   const dialogRef = useRef(null);
   const closeRef = useRef(null);
+  const gridRef = useRef(null);
+  const nextFocusIndex = useRef(null);
   const dialogWasOpenRef = useRef(false);
 
   const galleryItems = useMemo(() => (Array.isArray(items) ? items : []), [items]);
@@ -190,6 +192,12 @@ export default function ProjectGallery({ items = defaultItems }) {
     ? filteredItems.findIndex((item) => item.file === activeFile)
     : -1;
   const activeItem = activeIndex >= 0 ? filteredItems[activeIndex] : null;
+
+  useEffect(() => {
+    if (nextFocusIndex.current === null) return;
+    gridRef.current?.querySelectorAll('.p-project-gallery__card')[nextFocusIndex.current]?.focus();
+    nextFocusIndex.current = null;
+  }, [visibleCount]);
 
   const closeLightbox = useCallback(() => {
     const returnFocus = returnFocusRef.current;
@@ -276,7 +284,7 @@ export default function ProjectGallery({ items = defaultItems }) {
         {activeCategory !== "All" ? ` · ${activeCategory}` : ""}
       </p>
 
-      <div className="p-project-gallery__grid" id="project-gallery-grid">
+      <div className="p-project-gallery__grid" id="project-gallery-grid" ref={gridRef}>
         {visibleItems.map((item, index) => (
           <GalleryCard key={item.file} item={item} index={index} onOpen={openLightbox} />
         ))}
@@ -286,7 +294,11 @@ export default function ProjectGallery({ items = defaultItems }) {
         <button
           className="p-project-gallery__load-more"
           type="button"
-          onClick={() => setVisibleCount((count) => count + LOAD_INCREMENT)}
+          aria-controls="project-gallery-grid"
+          onClick={() => {
+            nextFocusIndex.current = visibleItems.length;
+            setVisibleCount((count) => count + LOAD_INCREMENT);
+          }}
         >
           Show more images
         </button>
