@@ -401,6 +401,91 @@
 .p-form {
   min-width: 0;
 }
+.p-google-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px !important;
+}
+.p-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 34px 0;
+}
+.p-review-card {
+  margin: 0;
+  padding: 26px 0;
+  border-top: 1px solid var(--p-line);
+}
+.p-review-stars {
+  display: flex;
+  gap: 4px;
+  color: #785f30;
+  margin-bottom: 22px;
+}
+.p-review-card blockquote {
+  margin: 0;
+  font: 400 27px/1.25 var(--p-serif);
+}
+.p-review-card figcaption {
+  color: var(--p-muted);
+  font-size: 12px;
+}
+.p-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+  margin-bottom: 24px;
+}
+.p-map-dialog {
+  overflow: auto;
+  width: min(900px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: var(--p-paper);
+  color: var(--p-ink);
+}
+.p-map-dialog::backdrop {
+  background: rgb(10 24 33 / 75%);
+}
+.p-map-panel {
+  padding: clamp(20px, 4vw, 36px);
+}
+.p-map-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.p-map-header h2 {
+  font-size: clamp(28px, 4vw, 40px);
+}
+.p-map-close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  min-height: 44px;
+  background: transparent;
+  border: 1px solid var(--p-line);
+  color: inherit;
+}
+.p-map-dialog iframe {
+  display: block;
+  width: 100%;
+  height: clamp(250px, 50dvh, 450px);
+  border: 0;
+  margin-bottom: 16px;
+}
+@media (max-width: 650px) {
+  .p-review-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
 .p-contact-options {
   display: flex;
   flex-direction: column;

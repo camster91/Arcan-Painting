@@ -1,0 +1,13 @@
+# Callback preferences and Google listing — 25 October 2026
+
+Cameron requested restoration of lead enquiries with call-back/text-back choices, real Google reviews, and a map listing popup. The form defaults to a call back, also supports text back and email, and requires the chosen contact details. It records a preference for human follow-up; no automated SMS or appointment is promised. Success still requires acknowledged durable D1 storage and a plain `/thank-you` redirect.
+
+Migration 0004 adds nullable `response_method` without rebuilding or deleting tables. SMS preserves legacy `preferred_contact='phone'` and records `response_method='sms'`; notifications use the exact requested response method. Both target schemas and migration ledgers were checked before the additive migration was applied. Existing records remain valid.
+
+Google Maps was checked directly in Chrome on 25 October 2026. The linked business is Arcan Painting, phone 416 727 2148, website arcanpainting.ca, place identity `0x84d4173d241cb251:0xff6aa62e3bdca78`. Google displayed 5.0 stars and 21 reviews. The three selected short excerpts are attributed to Bohem Dreme, Reg Langen and Gord Dahonick, each shown as five stars on Google. The displayed count/rating/excerpts are a dated snapshot, not a live feed; there is no new review structured data. The source is https://maps.app.goo.gl/WY8Rh5myeWX6JJhR6 . The iframe URL was copied from Google's own Share → Embed a map interface. No fabricated address or service-area claim is added.
+
+The native map dialog is available from the homepage reviews and contact page. It loads Google's iframe only on request, traps focus using the browser's modal behavior, closes with Escape/close/backdrop, restores focus and scrolls on short viewports. Privacy copy explains the third-party connection. Existing external Google review links remain available.
+
+The public API and export remain feature-gated. At implementation time Cloudflare still reported `info@arcanpainting.ca` as an unverified destination. Form activation and notification scheduling require verified delivery; an operator-only staging storage test is separate from notification/inbox evidence. The Google reviews/map feature can ship independently while the callback form is staged. Final deployment and test evidence belongs in the release PR comment.
+
+The public Worker never forwards `/api/contact` to legacy Node hosting: unavailable or disabled service bindings fail closed. The retained Node contact route's pre-existing lack of UUID idempotency is not used as a public fallback and its hosting is not redeployed here.

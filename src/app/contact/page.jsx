@@ -1,6 +1,7 @@
 import PremiumShell from "@/components/premium/PremiumShell";
 import { Section, SectionHeading } from "@/components/premium/primitives";
 import ProjectContact from "@/components/premium/ProjectContact";
+import GoogleListing from "@/components/premium/GoogleListing";
 import { useRouteLoaderData } from "react-router";
 export default function Contact() {
   const rootData = useRouteLoaderData("root");
@@ -34,6 +35,7 @@ export default function Contact() {
               <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
             </p>
           )}
+          <GoogleListing />
         </div>
         <ProjectContact />
       </Section>

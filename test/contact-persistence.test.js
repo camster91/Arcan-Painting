@@ -101,4 +101,57 @@ describe("POST /api/contact", () => {
       attribution: { utmSource: "search", landingPage: "/?utm_source=search" },
     }));
   });
+
+  it("accepts an SMS response preference and preserves it in CRM metadata", async () => {
+    insertLead.mockResolvedValue(44);
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        phone: "+1 416 555 0100",
+        serviceType: "interior",
+        preferredContact: "sms",
+      }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(insertLead).toHaveBeenCalledWith(expect.objectContaining({
+      preferredContact: "sms",
+      phone: "+1 416 555 0100",
+    }));
+  });
+
+  it("requires a phone number for an SMS response preference", async () => {
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        email: "customer@example.test",
+        serviceType: "interior",
+        preferredContact: "sms",
+      }),
+    }));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "Phone is required when preferred contact is sms" });
+    expect(insertLead).not.toHaveBeenCalled();
+  });
+
+  it("rejects unknown response preferences", async () => {
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        email: "customer@example.test",
+        serviceType: "interior",
+        preferredContact: "text",
+      }),
+    }));
+
+    expect(response.status).toBe(400);
+    expect(insertLead).not.toHaveBeenCalled();
+  });
 });

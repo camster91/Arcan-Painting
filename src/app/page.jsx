@@ -1,4 +1,4 @@
-import PremiumShell, { SocialLinks } from "@/components/premium/PremiumShell";
+import PremiumShell from "@/components/premium/PremiumShell";
 import {
   ButtonLink,
   Section,
@@ -6,11 +6,10 @@ import {
 } from "@/components/premium/primitives";
 import ProjectGrid from "@/components/premium/ProjectGrid";
 import ContactBlock from "@/components/premium/ContactBlock";
-import { services, socialLinks } from "@/data/premiumSite";
-import { Star } from "lucide-react";
+import { services } from "@/data/premiumSite";
+import GoogleReviews from "@/components/premium/GoogleReviews";
 
 export default function HomePage() {
-  const google = socialLinks.find((link) => link.icon === "google");
   return (
     <PremiumShell>
       <section className="p-hero">
@@ -152,29 +151,7 @@ export default function HomePage() {
           ))}
         </ol>
       </Section>
-      <Section className="p-review-section">
-        <SectionHeading
-          eyebrow="More about Arcan"
-          title="See the work. Read the reviews."
-        >
-          Explore our social profiles and read customer feedback directly on
-          Google.
-        </SectionHeading>
-        {google && (
-          <a
-            className="p-review-link"
-            href={google.href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Star aria-hidden="true" size={23} />
-            <span>Read our Google reviews</span>
-            <span aria-hidden="true">↗</span>
-            <span className="p-visually-hidden"> (opens in a new tab)</span>
-          </a>
-        )}
-        <SocialLinks />
-      </Section>
+      <GoogleReviews />
       <ContactBlock />
     </PremiumShell>
   );

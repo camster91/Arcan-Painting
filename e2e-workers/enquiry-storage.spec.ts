@@ -15,7 +15,8 @@ test('controlled synthetic enquiry reaches private intake and saves before redir
  });
  await page.goto('/contact');
  await page.getByLabel('Your name',{exact:true}).fill('ARCAN SYNTHETIC STORAGE TEST');
- await page.getByLabel('Email address',{exact:true}).fill('synthetic@example.test');
+ await page.getByLabel('How would you prefer us to respond?').selectOption('sms');
+ await page.getByLabel('Phone number',{exact:true}).fill('416 555 0100');
  await page.getByLabel('Project location',{exact:true}).fill('Synthetic test location');
  await page.getByLabel('Preferred estimate date / timing (optional)',{exact:true}).fill('Synthetic preference only');
  await page.getByLabel('Tell us about your project',{exact:true}).fill('Clearly identified deployment test. Fabricated data. Do not contact.');

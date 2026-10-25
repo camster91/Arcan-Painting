@@ -51,6 +51,17 @@ export default function PrivacyPage() {
           </section>
 
           <section>
+            <h2>Google Maps and reviews</h2>
+            <p className="mt-3">
+              Selected Google review excerpts and ratings are a dated snapshot.
+              The embedded Google map loads only when you open the listing popup.
+              At that point Google receives connection information, such as your
+              IP address and browser details, under its own privacy policy.
+              You can contact us without opening the map.
+            </p>
+          </section>
+
+          <section>
             <h2 >Your choices</h2>
             <p className="mt-3">
               Please avoid sending sensitive financial information {enquiriesEnabled ? "through website forms" : "in an initial enquiry"}. For questions about an
