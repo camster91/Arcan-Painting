@@ -14,6 +14,8 @@ for (const width of [320, 390, 768, 1024, 1440]) {
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('form'),route).toHaveCount(0);
       expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth), route).toBe(true);
+      expect(await page.locator('.premium-site').evaluate(el => el.getBoundingClientRect().height >= innerHeight),route).toBe(true);
+      expect(await page.locator('.p-footer-links a, .p-footer-bottom a').evaluateAll(links => links.every(link => link.getBoundingClientRect().height >= 44)),route).toBe(true);
       for (const image of await page.locator('img').all()) {
         await image.scrollIntoViewIfNeeded();
         await expect.poll(()=>image.evaluate(img=>img.complete && img.naturalWidth > 0)).toBe(true);
@@ -47,9 +49,12 @@ test('mobile menu keyboard, project loader, and direct contact links',async({pag
     await expect(page.getByRole('link',{name:'Email Arcan',exact:true})).toHaveAttribute('href','mailto:info@arcanpainting.ca');
     await expect(page.getByRole('link',{name:'Call 416 727 2148',exact:true})).toHaveAttribute('href','tel:+14167272148');
     await expect(page.getByRole('button',{name:'Send project enquiry'})).toHaveCount(0);
+    await expect(page.getByRole('heading',{name:'Let’s discuss your project.',exact:true})).toHaveCount(0);
   }
   await page.goto('/thank-you?synthetic=discard');
   await expect(page).toHaveURL(/\/thank-you$/);
+  await expect(page.getByRole('heading',{name:'Start a conversation with Arcan.',exact:true})).toBeVisible();
+  await expect(page.getByText('Our team will review your enquiry',{exact:false})).toHaveCount(0);
 });
 test('unknown routes fail and indexing matches the deployment',async({request})=>{
   expect((await request.get('/unknown-arcan-test-page')).status()).toBe(404);

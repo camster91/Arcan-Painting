@@ -1,5 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap");
 .premium-site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   --p-ink: #152b38;
   --p-ink-soft: #203946;
   --p-paper: #f2efe7;
@@ -16,6 +19,9 @@
   color: var(--p-text);
   font: 14px/1.85 var(--p-sans);
   overflow-wrap: break-word;
+}
+.premium-site > main {
+  flex: 1;
 }
 .premium-site * {
   box-sizing: border-box;
@@ -384,6 +390,13 @@
   justify-content: space-between;
   gap: 20px;
   font-size: 11px;
+  align-items: center;
+}
+.p-footer-links a,
+.p-footer-bottom a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .p-form {
   min-width: 0;
@@ -691,6 +704,7 @@
   .p-footer-bottom,
   .p-footer-top {
     flex-direction: column;
+    align-items: flex-start;
   }
   .p-footer-top {
     gap: 20px;
