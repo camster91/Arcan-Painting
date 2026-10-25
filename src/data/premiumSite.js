@@ -12,14 +12,15 @@ export const services = [
     eyebrow: "Interior painting",
     summary: "Considered colour and a precise finish for complete interiors.",
     description:
-      "Interior painting for complete residences, substantial renovations and commercial spaces. Start with the architecture, the surfaces and the finish you want to achieve.",
+      "An interior project starts with a clear picture of the existing surfaces and the result you want. Include the rooms involved, approximate dimensions, current colours, preferred colours or references, and any visible damage or repairs you want reviewed.",
     image: "/hero/IMG-20260212-WA0016-1400.webp",
     imageAlt:
       "Arcan residential staircase with dark treads, white risers and painted railings",
     details: [
-      "Discuss walls, ceilings, trim and architectural details as one coordinated scope.",
-      "Share room plans, surface conditions and your colour references.",
-      "Confirm preparation, access and timing before work begins.",
+      "Walls, ceilings, trim, doors, cabinetry, or other surfaces",
+      "Furniture access, occupied rooms, and preferred work sequence",
+      "Existing coatings, stains, cracks, peeling, or water marks",
+      "Colour references, sheen preferences, and target timing"
     ],
   },
   {
@@ -29,14 +30,15 @@ export const services = [
     eyebrow: "Pattern & texture",
     summary: "Distinctive wallcoverings, thoughtfully installed.",
     description:
-      "From an expressive feature wall to a fully layered interior, wallpaper gives a room its character. Bring your selected wallcovering, material references or plans to discuss the installation.",
+      "Wallpaper scope varies with the wall surface and the product being removed or installed. Share the manufacturer and pattern details when available, plus room dimensions and photos of corners, openings, and any surface damage.",
     image: "/hero/PXL_20251018_142500065-1400.webp",
     imageAlt:
       "Arcan hospitality interior with patterned wallcoverings, pink seating and a set dining table",
     details: [
-      "Review the wallcovering, pattern repeat and surfaces involved.",
-      "Consider seams, corners, openings and the room's architectural details.",
-      "Coordinate installation requirements with the wider project schedule.",
+      "Installation, removal, or both",
+      "Wall dimensions, ceiling height, openings, corners, and obstacles",
+      "Wallpaper manufacturer, pattern, roll dimensions, and repeat",
+      "Existing wall covering, wall condition, repairs, and access"
     ],
   },
   {
@@ -46,13 +48,14 @@ export const services = [
     eyebrow: "Depth & character",
     summary: "Explore specialist surfaces and a more expressive finish.",
     description:
-      "Discuss the texture, movement and depth you want to bring to your interior. Bring your finish references to a conversation about available materials, surface suitability and the finish you want to achieve.",
+      "Specialty finishes are best defined visually. Include reference images, colours, texture preferences, sheen, the surfaces involved, and the viewing conditions. A sample or test area may be useful to align on appearance before a larger scope is confirmed.",
     image: null,
     imageAlt: "",
     details: [
-      "Share finish references and the surfaces you are considering.",
-      "Discuss suitability, preparation and the desired appearance with the team.",
-      "Confirm the available finish system and project scope before proceeding.",
+      "Reference images and the visual qualities you want to reproduce",
+      "Surface type, dimensions, condition, and existing coating",
+      "Colour, texture, sheen, lighting, and viewing distance",
+      "Sample expectations, adjacent finishes, and project timing"
     ],
   },
   {
@@ -62,14 +65,15 @@ export const services = [
     eyebrow: "Spaces with presence",
     summary: "Painting and wallcoverings for distinctive commercial spaces.",
     description:
-      "A considered finish is part of the experience of a restaurant, workplace or commercial interior. Discuss painting and wallcoverings in the context of your design, access requirements and project schedule.",
-    image: "/hero/PXL_20251018_142500065-1400.webp",
+      "Commercial inquiries are easier to review when the site type, areas involved, operating hours, access rules, desired sequence, and target dates are included. Note whether drawings, specifications, building contacts, or site procedures are available.",
+    image: "/hero/IMG-20260217-WA0021-900.webp",
     imageAlt:
-      "Patterned wallpaper and painted ceiling in an Arcan hospitality project",
+      "Bar counter and arched ceiling from Arcan's original commercial project collection",
     details: [
-      "Share design drawings, material selections and the areas involved.",
-      "Identify access, occupancy and sequencing requirements early.",
-      "Agree the scope and schedule with the project team.",
+      "Site type, occupied areas, public access, and operating hours",
+      "Drawings, finish schedules, specifications, or brand colour references",
+      "Phasing, floor or room sequence, and target completion window",
+      "Site access, parking, loading, security, and contact requirements"
     ],
   },
   {
@@ -79,13 +83,14 @@ export const services = [
     eyebrow: "Beyond the interior",
     summary: "A considered approach to exterior colour and surfaces.",
     description:
-      "Discuss exterior painting as part of your property project. Share the surfaces, their current condition and the finish you have in mind so the team can assess the requirements.",
-    image: null,
-    imageAlt: "",
+      "Exterior scope depends on what is being coated and what condition it is in. Photos of each elevation and close-ups of peeling, cracking, staining, gaps, or damaged areas help identify what needs an in-person review.",
+    image: "/hero/20251012_165336-900.webp",
+    imageAlt: "Garage doors and entrance columns from Arcan's original exterior project collection",
     details: [
-      "Provide photographs of the surfaces and any visible deterioration.",
-      "Discuss preparation, access and material suitability.",
-      "Confirm scope and weather-dependent scheduling with the team.",
+      "Siding, trim, doors, railings, decks, fences, or other surfaces",
+      "Surface material and any known previous coating",
+      "Height, landscaping, neighbouring property, and access constraints",
+      "Visible deterioration, moisture concerns, and preferred timing"
     ],
   },
 ];

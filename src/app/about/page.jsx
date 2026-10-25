@@ -30,6 +30,17 @@ export default function About() {
           </p>
         </div>
       </Section>
+      <Section tone="stone" className="p-two-column">
+        <SectionHeading eyebrow="The process" title="From preparation to final review." />
+        <div className="p-copy">
+          <p>Begin with the scope, colour references, materials and access. Discuss
+            surface repairs and how furniture, floors and nearby finishes will be
+            protected before work begins.</p>
+          <p>Preparation and application are planned around the surfaces and the
+            agreed finish. Review the work with the team at the end and discuss
+            final details and care of the finished surfaces.</p>
+        </div>
+      </Section>
       <ContactBlock />
     </PremiumShell>
   );

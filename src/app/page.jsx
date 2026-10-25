@@ -8,6 +8,7 @@ import ProjectGrid from "@/components/premium/ProjectGrid";
 import ContactBlock from "@/components/premium/ContactBlock";
 import { services } from "@/data/premiumSite";
 import GoogleReviews from "@/components/premium/GoogleReviews";
+import { generalFaqs } from "@/data/publicContent";
 
 export default function HomePage() {
   return (
@@ -97,6 +98,7 @@ export default function HomePage() {
         </div>
       </Section>
       <Section id="work">
+        <span id="portfolio" aria-hidden="true" />
         <div className="p-section-top">
           <SectionHeading
             eyebrow="The Arcan collection"
@@ -112,7 +114,7 @@ export default function HomePage() {
         </div>
         <ProjectGrid />
       </Section>
-      <Section tone="stone" className="p-two-column">
+      <Section tone="stone" className="p-two-column" id="process">
         <SectionHeading
           eyebrow="From the first conversation"
           title={
@@ -137,8 +139,12 @@ export default function HomePage() {
               "Review preparation, access, finish choices and project requirements.",
             ],
             [
-              "Plan the next step",
-              "Confirm scope and timing with the team before work begins.",
+              "Prepare and apply",
+              "Review protection, preparation and the application plan with the team.",
+            ],
+            [
+              "Review the finish",
+              "Walk through the work with the team and discuss any final details.",
             ],
           ].map(([title, body], i) => (
             <li key={title}>
@@ -150,6 +156,17 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
+      </Section>
+      <Section id="faq">
+        <SectionHeading eyebrow="Before your project" title="A few practical questions." />
+        <div className="p-faq">
+          {generalFaqs.map(({question,answer}) => (
+            <details key={question}>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
+        </div>
       </Section>
       <GoogleReviews />
       <ContactBlock />

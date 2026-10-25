@@ -68,7 +68,9 @@ A useful expanded homepage sequence is hero, positioning, service overview, sele
 
 These are portrait photographs. Compose and crop them deliberately, with mobile and desktop framing checked independently. Do not label wallcovering imagery as Venetian plaster.
 
-The Luxury Finishes and Exterior Painting records intentionally have `image: null`. Their page templates must render a graceful text-first layout, not a broken image or invented work photograph. Venetian plaster remains proposed service positioning pending scope confirmation and authentic imagery.
+The Luxury Finishes record intentionally has `image: null`; render a graceful text-first layout, not a broken image or invented work photograph. The original exterior and bar photographs were reconciled and added to Exterior Painting and Commercial Interiors on 25 October 2026. Venetian plaster remains proposed service positioning pending scope confirmation and authentic imagery.
+
+The `/projects` archive exposes all 70 original gallery images through filters and a progressive grid, preserving original full-size and thumbnail URLs. `projectGallery.js` contains visually reviewed captions rather than the legacy AI-generated tags. Preparation/progress images, video stills and the archive gathering are labelled separately from project photographs. CSS corrects source image rotation without changing the original raster files.
 
 Social destinations are sourced from existing `Footer.jsx` and `publicSeo.js`; the Google Maps review destination is sourced from `GoogleReviewsSection.jsx`. Repository presence establishes continuity, not a fresh external verification. Validate destinations before production release. Use accessible labels and `rel="noopener noreferrer"` for links opening a new tab.
 
