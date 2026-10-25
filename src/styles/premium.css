@@ -1,4 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap");
+/* Keep the underlying page in place while a public modal is open. */
+html:has(.premium-site) {
+  scrollbar-gutter: stable;
+}
+html:has(.premium-site dialog[open]) {
+  overflow: hidden;
+}
+
 .premium-site {
   min-height: 100vh;
   display: flex;
