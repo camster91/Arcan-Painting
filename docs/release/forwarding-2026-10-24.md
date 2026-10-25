@@ -1,5 +1,7 @@
 # Email forwarding preparation — 24 October 2026
 
+Later authorization: Cameron deferred email setup and approved a contact-only website launch. Notification activation and inbox verification below are deferred work, not blockers for that release. Keep public form intake and notification cron disabled; render phone/email links throughout the public site. Do not resume email activation without carrying this latest direction forward.
+
 Cameron selected email forwarding instead of arbitrary-recipient Email Sending. Cloudflare documents free Worker sends to verified account destination addresses even when only Email Routing is configured. Actual delivery remains unverified; the website has not been cut over.
 
 The zone and production resources are in account `1b2e351cbb39ab6b80efe36ca3577fe5`. Email Routing's DNS onboarding targeted only `enquiries.arcanpainting.ca`, which returned `enabled=true`, `status=ready`. Zone-level routing is now enabled; the root domain reports `misconfigured` because its Google MX/SPF are deliberately preserved. Do not add Cloudflare root MX/SPF to clear that status. All 11 original DNS records were compared after setup and remain unchanged. Google Workspace remains responsible for `@arcanpainting.ca` mail. The before snapshot is `arcan-dns-before-forwarding-2026-10-24.json`.

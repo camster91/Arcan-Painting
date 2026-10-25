@@ -7,12 +7,13 @@ import { projects, services } from '../src/data/premiumSite.js';
 
 const target = 'build/workers-assets';
 const siteMode = process.env.WORKERS_SITE_MODE === 'production' ? 'production' : 'staging';
+const enquiriesEnabled = process.env.WORKERS_ENQUIRIES_ENABLED === 'true';
 const port = 4397;
 const base = `http://127.0.0.1:${port}`;
 const routes = ['/', ...services.map(({ path }) => path), '/projects', ...projects.map(({ slug }) => `/projects/${slug}`), '/about', '/contact', '/quote', '/privacy', '/thank-you', '/design-system'];
 // Build-time rendering only: never inherit a production database or run migrations.
 const server = spawn(process.execPath, ['build/server/index.js'], {
-  env: { PATH: process.env.PATH, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', PUBLIC_SITE_MODE: siteMode },
+  env: { PATH: process.env.PATH, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', PUBLIC_SITE_MODE: siteMode, PUBLIC_ENQUIRIES_ENABLED: String(enquiriesEnabled) },
   stdio: ['ignore', 'ignore', 'pipe'],
 });
 let stderr = '';
@@ -56,7 +57,7 @@ try {
   }
   await fingerprint(target);
   await writeFile('build/workers-release.json', JSON.stringify({
-    siteMode, sourceCommit: process.env.SOURCE_COMMIT || 'local-uncommitted', routes,
+    siteMode, enquiriesEnabled, sourceCommit: process.env.SOURCE_COMMIT || 'local-uncommitted', routes,
     workerSha256: createHash('sha256').update(await readFile('workers/public-site.js')).digest('hex'),
     artifactSha256: createHash('sha256').update(JSON.stringify(files)).digest('hex'), files,
   }, null, 2));
