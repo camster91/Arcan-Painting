@@ -1,7 +1,7 @@
 import { Section, SectionHeading, ButtonLink } from "./primitives";
 export default function ContactBlock() {
   return (
-    <Section tone="ink" className="p-contact-banner">
+    <Section tone="ink" className="p-contact-banner" id="contact">
       <SectionHeading
         eyebrow="Your next project"
         title={

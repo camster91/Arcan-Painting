@@ -63,9 +63,9 @@ export const services = [
     summary: "Painting and wallcoverings for distinctive commercial spaces.",
     description:
       "A considered finish is part of the experience of a restaurant, workplace or commercial interior. Discuss painting and wallcoverings in the context of your design, access requirements and project schedule.",
-    image: "/hero/PXL_20251018_142500065-1400.webp",
+    image: "/hero/IMG-20260217-WA0021-900.webp",
     imageAlt:
-      "Patterned wallpaper and painted ceiling in an Arcan hospitality project",
+      "Bar counter and arched ceiling from Arcan's original commercial project collection",
     details: [
       "Share design drawings, material selections and the areas involved.",
       "Identify access, occupancy and sequencing requirements early.",
@@ -80,8 +80,8 @@ export const services = [
     summary: "A considered approach to exterior colour and surfaces.",
     description:
       "Discuss exterior painting as part of your property project. Share the surfaces, their current condition and the finish you have in mind so the team can assess the requirements.",
-    image: null,
-    imageAlt: "",
+    image: "/hero/20251012_165336-900.webp",
+    imageAlt: "Garage doors and entrance columns from Arcan's original exterior project collection",
     details: [
       "Provide photographs of the surfaces and any visible deterioration.",
       "Discuss preparation, access and material suitability.",

@@ -1,0 +1,372 @@
+.p-project-gallery {
+  --gallery-ink: var(--p-ink, #102033);
+  --gallery-muted: var(--p-muted, #66717b);
+  --gallery-line: var(--p-line, rgba(16, 32, 51, 0.18));
+  --gallery-paper: var(--p-paper, #f3f0e9);
+  --gallery-brass: var(--p-gold, #9c744b);
+  color: var(--gallery-ink);
+}
+
+.p-project-gallery__header {
+  display: flex;
+  align-items: end;
+  justify-content: flex-start;
+  gap: clamp(2rem, 5vw, 6rem);
+  margin-bottom: 1.75rem;
+}
+
+.p-project-gallery__filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  max-width: 34rem;
+}
+
+.p-project-gallery__filter,
+.p-project-gallery__load-more,
+.p-project-gallery__dialog-close,
+.p-project-gallery__dialog-prev,
+.p-project-gallery__dialog-next {
+  appearance: none;
+  min-height: 44px;
+  border: 1px solid var(--gallery-line);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.p-project-gallery__filter {
+  padding: 0.7rem 0.95rem;
+  color: var(--gallery-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.p-project-gallery__filter:hover,
+.p-project-gallery__filter[aria-pressed="true"] {
+  border-color: var(--gallery-ink);
+  background: var(--gallery-ink);
+  color: #fff;
+}
+
+.p-project-gallery__filter:focus-visible,
+.p-project-gallery__load-more:focus-visible,
+.p-project-gallery__card:focus-visible,
+.p-project-gallery__dialog button:focus-visible {
+  outline: 3px solid var(--gallery-brass);
+  outline-offset: 4px;
+}
+
+.p-project-gallery__counter {
+  margin: 0 0 1rem;
+  color: var(--gallery-muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.p-project-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.p-project-gallery__card {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.p-project-gallery__thumbnail-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--gallery-paper);
+}
+
+.premium-site .p-project-gallery__thumbnail {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform: rotate(var(--gallery-rotation));
+  transition: transform 320ms ease, opacity 180ms ease;
+}
+
+.p-project-gallery__card:hover .p-project-gallery__thumbnail,
+.p-project-gallery__card:focus-visible .p-project-gallery__thumbnail {
+  opacity: 0.84;
+  transform: rotate(var(--gallery-rotation)) scale(1.025);
+}
+
+.p-project-gallery__video-label {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.7rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(16, 32, 51, 0.88);
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.p-project-gallery__card-copy {
+  display: block;
+  padding: 0.9rem 0.1rem 0;
+}
+
+.p-project-gallery__card-title {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  line-height: 1.25;
+}
+
+.p-project-gallery__card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  color: var(--gallery-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.p-project-gallery__load-more {
+  display: block;
+  margin: clamp(2rem, 4vw, 3.5rem) auto 0;
+  padding: 0.9rem 1.35rem;
+  border-color: var(--gallery-ink);
+  background: var(--gallery-ink);
+  color: #fff;
+  font-size: 0.8rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.p-project-gallery__load-more:hover {
+  border-color: var(--gallery-brass);
+  background: var(--gallery-brass);
+}
+
+.p-project-gallery__noscript {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.p-project-gallery__noscript a {
+  color: inherit;
+}
+
+.p-project-gallery__noscript img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.p-project-gallery__dialog {
+  width: min(94vw, 1260px);
+  max-width: 1260px;
+  height: min(94dvh, 980px);
+  max-height: 94dvh;
+  margin: auto;
+  padding: clamp(1rem, 2vw, 1.8rem);
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #102033;
+  color: #fff;
+}
+
+.p-project-gallery__dialog::backdrop {
+  background: rgba(6, 14, 24, 0.88);
+}
+
+.p-project-gallery__dialog-topline,
+.p-project-gallery__dialog-bottomline {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.p-project-gallery__dialog-topline {
+  min-height: 4rem;
+}
+
+.p-project-gallery__dialog .p-eyebrow {
+  margin: 0;
+  color: #c2a17b;
+}
+
+.premium-site .p-project-gallery__dialog h2 {
+  max-width: 32ch;
+  margin: 0.35rem 0 0;
+  color: #fff;
+  font-size: clamp(1.2rem, 2.3vw, 1.9rem);
+}
+
+.p-project-gallery__dialog-close,
+.p-project-gallery__dialog-prev,
+.p-project-gallery__dialog-next {
+  flex: 0 0 auto;
+  padding: 0.7rem 0.95rem;
+  border-color: rgba(255, 255, 255, 0.38);
+  color: #fff;
+  font-size: 0.76rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.p-project-gallery__dialog-close:hover,
+.p-project-gallery__dialog-prev:hover,
+.p-project-gallery__dialog-next:hover {
+  border-color: #fff;
+  background: #fff;
+  color: var(--gallery-ink);
+}
+
+.p-project-gallery__dialog button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.p-project-gallery__dialog-frame {
+  display: grid;
+  width: 100%;
+  height: calc(100% - 9rem);
+  min-height: 12rem;
+  place-items: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.premium-site .p-project-gallery__dialog-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform: rotate(var(--gallery-rotation));
+  transform-origin: center;
+}
+
+.premium-site .p-project-gallery__dialog-image.is-sized {
+  max-width: none;
+  max-height: none;
+}
+
+.p-project-gallery__dialog-bottomline {
+  align-items: center;
+  min-height: 4rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+}
+
+.p-project-gallery__dialog-bottomline p {
+  margin: 0;
+}
+
+.p-project-gallery__dialog-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.p-project-gallery__dialog-controls > span {
+  min-width: 4.5rem;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .p-project-gallery__header {
+    display: block;
+  }
+
+  .p-project-gallery__filters {
+    justify-content: flex-start;
+    margin-top: 1.5rem;
+  }
+
+  .p-project-gallery__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .p-project-gallery__grid,
+  .p-project-gallery__noscript {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-project-gallery__filters {
+    gap: 0.4rem;
+  }
+
+  .p-project-gallery__filter {
+    min-height: 44px;
+    padding: 0.6rem 0.7rem;
+    font-size: 0.7rem;
+  }
+
+  .p-project-gallery__dialog {
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 0.8rem;
+  }
+
+  .p-project-gallery__dialog-topline {
+    min-height: 5.5rem;
+  }
+
+  .p-project-gallery__dialog-topline,
+  .p-project-gallery__dialog-bottomline {
+    gap: 0.8rem;
+  }
+
+  .p-project-gallery__dialog-topline h2 {
+    font-size: 1.15rem;
+  }
+
+  .p-project-gallery__dialog-frame {
+    height: calc(100% - 11rem);
+    min-height: 10rem;
+  }
+
+  .p-project-gallery__dialog-bottomline {
+    display: block;
+    min-height: 5rem;
+    padding-top: 0.65rem;
+  }
+
+  .p-project-gallery__dialog-controls {
+    justify-content: space-between;
+    margin-top: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-project-gallery__filter,
+  .p-project-gallery__load-more,
+  .p-project-gallery__dialog-close,
+  .p-project-gallery__dialog-prev,
+  .p-project-gallery__dialog-next,
+  .p-project-gallery__thumbnail {
+    transition: none;
+  }
+}
