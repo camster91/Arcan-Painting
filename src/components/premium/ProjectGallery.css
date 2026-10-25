@@ -244,6 +244,7 @@
 }
 
 .p-project-gallery__dialog-frame {
+  position: relative;
   display: grid;
   width: 100%;
   height: calc(100% - 9rem);
@@ -255,13 +256,16 @@
 }
 
 .premium-site .p-project-gallery__dialog-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: block;
   width: auto;
   height: auto;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  transform: rotate(var(--gallery-rotation));
+  transform: translate(-50%, -50%) rotate(var(--gallery-rotation));
   transform-origin: center;
 }
 

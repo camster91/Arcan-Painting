@@ -304,7 +304,7 @@ export const projectGallery = [
     "alt": "Black and white staircase details",
     "category": "Interior",
     "stage": "Project photograph",
-    "rotation": 90,
+    "rotation": -90,
     "isVideoStill": false
   },
   {
@@ -349,7 +349,7 @@ export const projectGallery = [
     "alt": "Blue brick ceiling detail",
     "category": "Commercial",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -358,7 +358,7 @@ export const projectGallery = [
     "alt": "Panelled foyer and staircase",
     "category": "Interior",
     "stage": "Work in progress",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -367,7 +367,7 @@ export const projectGallery = [
     "alt": "Stair railings and contrasting treads",
     "category": "Interior",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -457,7 +457,7 @@ export const projectGallery = [
     "alt": "White panelling with surfaces protected",
     "category": "Interior",
     "stage": "Work in progress",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -502,7 +502,7 @@ export const projectGallery = [
     "alt": "White exterior window trim",
     "category": "Exterior",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -511,7 +511,7 @@ export const projectGallery = [
     "alt": "Two-tone staircase and railings",
     "category": "Interior",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -565,7 +565,7 @@ export const projectGallery = [
     "alt": "Grey walls in a washroom",
     "category": "Commercial",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -574,7 +574,7 @@ export const projectGallery = [
     "alt": "Bedroom windows and white trim",
     "category": "Interior",
     "stage": "Project photograph",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {
@@ -592,7 +592,7 @@ export const projectGallery = [
     "alt": "Red ceiling and patterned corridor",
     "category": "Commercial",
     "stage": "From the collection",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": true
   },
   {
@@ -601,7 +601,7 @@ export const projectGallery = [
     "alt": "Interior panelling and staircase",
     "category": "Interior",
     "stage": "Work in progress",
-    "rotation": -90,
+    "rotation": 90,
     "isVideoStill": false
   },
   {

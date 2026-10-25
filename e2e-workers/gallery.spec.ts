@@ -27,7 +27,7 @@ test('original rotated photo fits the viewer, with keyboard navigation and focus
   await expect(page.getByRole('button',{name:'Close image viewer'})).toBeFocused();
   const image=dialog.locator('img');
   await expect.poll(()=>image.evaluate(img=>img.complete&&img.naturalWidth>0&&img.style.width!=='')).toBe(true);
-  await expect.poll(()=>image.evaluate(img=>{const i=img.getBoundingClientRect(),f=img.parentElement.getBoundingClientRect();return i.width<=f.width+2&&i.height<=f.height+2;})).toBe(true);
+  await expect.poll(()=>image.evaluate(img=>{const i=img.getBoundingClientRect(),f=img.parentElement.getBoundingClientRect();return i.width<=f.width+2&&i.height<=f.height+2&&i.left>=f.left-2&&i.right<=f.right+2&&i.top>=f.top-2&&i.bottom<=f.bottom+2;})).toBe(true);
   expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await page.getByRole('button',{name:'Next image',exact:true}).click();
   await expect(page.getByRole('button',{name:'Next image',exact:true})).toBeFocused();
