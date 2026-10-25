@@ -18,9 +18,9 @@
 .p-project-gallery__filters {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.5rem;
-  max-width: 34rem;
+  max-width: 100%;
 }
 
 .p-project-gallery__filter,
