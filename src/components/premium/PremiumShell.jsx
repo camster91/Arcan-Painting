@@ -37,7 +37,8 @@ export default function PremiumShell({ children }) {
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 901px)");
     const closeDesktopMenu = () => {
-      if (headerRef.current?.querySelector("nav")?.contains(document.activeElement)) {
+      if (headerRef.current?.querySelector("nav")?.contains(document.activeElement) ||
+          (desktop.matches && document.activeElement === menuRef.current)) {
         (desktop.matches ? headerRef.current.querySelector(".p-logo") : menuRef.current)?.focus();
       }
       setOpen(false);
