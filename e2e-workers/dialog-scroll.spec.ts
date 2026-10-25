@@ -8,11 +8,12 @@ test('public dialogs keep background scroll position and release it after closin
       const trigger = kind === 'map'
         ? page.getByRole('button', {name:'View Arcan on Google Maps',exact:true})
         : page.locator('.p-project-gallery__card').first();
+      const left = await page.locator('header .p-logo').evaluate(el => el.getBoundingClientRect().left);
       await trigger.click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
       const position = await page.evaluate(() => scrollY);
-      const left = await page.locator('header .p-logo').evaluate(el => el.getBoundingClientRect().left);
+      expect(await page.locator('header .p-logo').evaluate(el => el.getBoundingClientRect().left)).toBe(left);
       await page.mouse.move(2, viewport.height / 2);
       await page.mouse.wheel(0, 650);
       await page.waitForTimeout(300);
