@@ -37,6 +37,17 @@
     "production": {
       "account_id": "1b2e351cbb39ab6b80efe36ca3577fe5",
       "name": "arcan-enquiry-intake",
+      "vars": {
+        "NOTIFY_FROM": "notifications@enquiries.arcanpainting.ca",
+        "NOTIFY_TO": "info@arcanpainting.ca"
+      },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "destination_address": "info@arcanpainting.ca",
+          "allowed_sender_addresses": ["notifications@enquiries.arcanpainting.ca"]
+        }
+      ],
       "d1_databases": [
         {
           "binding": "LEADS_DB",
