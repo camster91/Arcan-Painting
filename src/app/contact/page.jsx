@@ -27,11 +27,13 @@ export default function Contact() {
           <p>
             Estimate appointments are confirmed directly with our team.
           </p>
-          <p>
-            <a href="tel:+14167272148">416 727 2148</a>
-            <br />
-            <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
-          </p>
+          {enquiriesEnabled && (
+            <p>
+              <a href="tel:+14167272148">416 727 2148</a>
+              <br />
+              <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
+            </p>
+          )}
         </div>
         <ProjectContact />
       </Section>
