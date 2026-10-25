@@ -25,7 +25,7 @@ export async function deliverNotifications(env, now = Date.now) {
       const text = [
         `Arcan project enquiry — ${row.id}`, `Received: ${row.created_at}`,
         `Name: ${row.name}`, `Email: ${row.email || 'Not provided'}`, `Phone: ${row.phone || 'Not provided'}`,
-        `Preferred contact: ${row.preferred_contact}`, `Service: ${row.service_type}`, `Location: ${row.location}`, '', row.project_description,
+        `Preferred contact: ${{email:'Email',phone:'Call back',sms:'Text back'}[row.response_method || row.preferred_contact] || row.preferred_contact}`, `Service: ${row.service_type}`, `Location: ${row.location}`, '', row.project_description,
       ].join('\n');
       const result = await env.EMAIL.send({
         from: { email: env.NOTIFY_FROM, name: 'Arcan Painting' }, to: env.NOTIFY_TO,

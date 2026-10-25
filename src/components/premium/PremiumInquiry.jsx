@@ -25,7 +25,7 @@ function createSubmissionId() {
 export default function PremiumInquiry({ initialService = "interior" }) {
   const id = useId();
   const [service, setService] = useState(initialService);
-  const [preferredContact, setPreferredContact] = useState("email");
+  const [preferredContact, setPreferredContact] = useState("phone");
   const [pending, setPending] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
@@ -156,8 +156,9 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           value={preferredContact}
           onChange={(event) => setPreferredContact(event.target.value)}
         >
-          <option value="email">Email</option>
-          <option value="phone">Phone call</option>
+          <option value="phone">Call me back</option>
+          <option value="sms">Text me back</option>
+          <option value="email">Email me</option>
         </select>
       </label>
       <div className="p-fields">
@@ -175,7 +176,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           />
         </label>
         <label className="p-field" htmlFor={`${id}-phone`}>
-          Phone number{preferredContact !== "phone" && " (optional)"}
+          Phone number{preferredContact === "email" && " (optional)"}
           <input
             id={`${id}-phone`}
             name="phone"
@@ -184,7 +185,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
             minLength={7}
             maxLength={50}
             pattern={"[0-9\\s\\(\\)\\+\\-]+"}
-            required={preferredContact === "phone"}
+            required={preferredContact !== "email"}
           />
         </label>
       </div>
@@ -249,7 +250,9 @@ export default function PremiumInquiry({ initialService = "interior" }) {
         Prefer to reach us directly? <a href="mailto:info@arcanpainting.ca">Email info@arcanpainting.ca</a> or <a href="tel:+14167272148">call 416 727 2148</a>.
       </p>
       <p>
-        By submitting, you agree that Arcan may contact you about this enquiry.{" "}
+        By submitting, you ask Arcan’s team to respond about this enquiry by your
+        chosen method, including a text message if selected. Your preferred timing
+        is a request; appointments are confirmed directly with our team.{" "}
         <a href="/privacy">Privacy policy</a>.
       </p>
       <button className="p-button" type="submit" disabled={!ready || pending}>

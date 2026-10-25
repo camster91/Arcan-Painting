@@ -46,10 +46,11 @@ export function validateEnquiry(body) {
     serviceType: value('serviceType', 40, true), preferredContact: value('preferredContact', 10, true),
     address: value('address', 255, true), projectDescription: value('projectDescription', 4000, true),
   };
-  if (!SERVICES.has(lead.serviceType) || !['email', 'phone'].includes(lead.preferredContact)) throw { status: 400, message: 'Check your service and contact preference.' };
+  if (!SERVICES.has(lead.serviceType) || !['email', 'phone', 'sms'].includes(lead.preferredContact)) throw { status: 400, message: 'Check your service and contact preference.' };
   if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) throw { status: 400, message: 'Check your email address.' };
   if (lead.phone && (!/^[\d\s()+-]+$/.test(lead.phone) || lead.phone.replace(/\D/g, '').length < 7)) throw { status: 400, message: 'Check your phone number.' };
-  if (!lead[lead.preferredContact]) throw { status: 400, message: 'Add your preferred contact details.' };
+  const requiredContact = lead.preferredContact === 'email' ? lead.email : lead.phone;
+  if (!requiredContact) throw { status: 400, message: 'Add your preferred contact details.' };
   lead.submissionId = rawSubmissionId.trim().toLowerCase() || null;
   lead.attribution = JSON.stringify(safeAttribution(body.attribution));
   return lead;
@@ -114,8 +115,9 @@ export default {
       const id = crypto.randomUUID();
       const timestamp = new Date().toISOString();
       // Both the lead and follow-up work must be durable before acknowledging it.
+      const legacyPreferredContact = lead.preferredContact === 'sms' ? 'phone' : lead.preferredContact;
       const results = await env.LEADS_DB.batch([
-        env.LEADS_DB.prepare('INSERT INTO enquiries (id, submission_id, payload_hash, created_at, name, email, phone, service_type, preferred_contact, location, project_description, attribution) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, submissionId, payloadHash, timestamp, lead.name, lead.email, lead.phone, lead.serviceType, lead.preferredContact, lead.address, lead.projectDescription, lead.attribution),
+        env.LEADS_DB.prepare('INSERT INTO enquiries (id, submission_id, payload_hash, created_at, name, email, phone, service_type, preferred_contact, response_method, location, project_description, attribution) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, submissionId, payloadHash, timestamp, lead.name, lead.email, lead.phone, lead.serviceType, legacyPreferredContact, lead.preferredContact, lead.address, lead.projectDescription, lead.attribution),
         env.LEADS_DB.prepare('INSERT INTO enquiry_outbox (enquiry_id, created_at, status) VALUES (?, ?, ?)').bind(id, timestamp, 'pending'),
       ]);
       if (results.length !== 2 || results.some(result => !result.success || result.meta?.changes !== 1)) {

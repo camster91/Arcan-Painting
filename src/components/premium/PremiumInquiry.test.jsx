@@ -16,6 +16,9 @@ const { navigate, trackEvent, getAttribution } = vi.hoisted(() => ({
 vi.mock("@/utils/analytics", () => ({ getAttribution, trackEvent }));
 
 function complete() {
+  fireEvent.change(screen.getByLabelText("How would you prefer us to respond?"), {
+    target: { value: "email" },
+  });
   fireEvent.change(screen.getByLabelText("Your name"), {
     target: { value: "Test Client" },
   });
@@ -40,6 +43,19 @@ afterEach(() => {
 });
 
 describe("PremiumInquiry", () => {
+  it("defaults to a call back and accepts a text-back request without email", async () => {
+    fetch.mockResolvedValue({ok:true,json:async()=>({success:true,lead_saved:true})});
+    render(<PremiumInquiry />);
+    expect(screen.getByLabelText("How would you prefer us to respond?")).toHaveValue("phone");
+    complete();
+    fireEvent.change(screen.getByLabelText("How would you prefer us to respond?"),{target:{value:"sms"}});
+    fireEvent.change(screen.getByLabelText("Email address (optional)"),{target:{value:""}});
+    expect(screen.getByLabelText("Phone number")).toBeRequired();
+    fireEvent.change(screen.getByLabelText("Phone number"),{target:{value:"416 555 0100"}});
+    fireEvent.click(screen.getByRole("button",{name:"Send project enquiry"}));
+    await waitFor(()=>expect(navigate).toHaveBeenCalledWith("/thank-you"));
+    expect(JSON.parse(fetch.mock.calls[0][1].body)).toMatchObject({preferredContact:"sms",phone:"416 555 0100",email:""});
+  });
   it("submits the existing API contract and attribution, then navigates without personal data", async () => {
     fetch.mockResolvedValue({
       ok: true,

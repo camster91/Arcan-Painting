@@ -99,15 +99,21 @@ export async function POST(request) {
     // If preferredContact provided, ensure that method exists
     const preferredContact =
       body.preferredContact || (hasEmail ? "email" : "phone");
+    if (!["email", "phone", "sms"].includes(preferredContact)) {
+      return Response.json(
+        { error: "Preferred contact must be email, phone, or sms" },
+        { status: 400 },
+      );
+    }
     if (preferredContact === "email" && !hasEmail) {
       return Response.json(
         { error: "Email is required when preferred contact is email" },
         { status: 400 },
       );
     }
-    if (preferredContact === "phone" && !hasPhone) {
+    if (["phone", "sms"].includes(preferredContact) && !hasPhone) {
       return Response.json(
-        { error: "Phone is required when preferred contact is phone" },
+        { error: `Phone is required when preferred contact is ${preferredContact}` },
         { status: 400 },
       );
     }
