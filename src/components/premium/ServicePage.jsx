@@ -1,6 +1,6 @@
 import { SERVICE_FAQS } from "@/utils/publicSeo";
 import PremiumShell from "./PremiumShell";
-import PremiumInquiry from "./PremiumInquiry";
+import ProjectContact from "./ProjectContact";
 import { Section, SectionHeading, ButtonLink } from "./primitives";
 import { services } from "@/data/premiumSite";
 export default function ServicePage({ path }) {
@@ -74,7 +74,7 @@ export default function ServicePage({ path }) {
           Share the property, surfaces, finish references and the dates you have
           in mind.
         </SectionHeading>
-        <PremiumInquiry initialService={key} />
+        <ProjectContact initialService={key} />
       </Section>
     </PremiumShell>
   );

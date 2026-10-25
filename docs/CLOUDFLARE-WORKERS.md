@@ -1,6 +1,10 @@
 # Arcan Cloudflare hosting and enquiries
 
-## Current release state — 24 October 2026
+## Approved contact-only release — 24 October 2026
+
+Cameron subsequently deferred email verification/notifications and explicitly authorized launching with telephone and email contact links. This supersedes the original notification-delivery gate for this release only. Workers exports default to `WORKERS_ENQUIRIES_ENABLED=false`: all five service pages, `/contact` and `/quote` render direct contact links and no enquiry form. The API remains `ENQUIRIES_ENABLED=false`; no scheduled notification delivery is enabled. The retained Node app defaults to its existing form behavior. The privacy notice follows the rendered contact mode. Notification acceptance and inbox delivery remain unverified and deferred; no success/storage claim is made for this contact-only journey.
+
+The original staging and notification preparation history follows. Current release evidence and production verification are recorded in the contact-only release PR and its final deployment comment. The pre-cutover snapshot is `docs/release/arcan-before-contact-launch-2026-10-24.json`, including all 16 DNS records, no Worker routes, active Universal TLS and the prior public-URL settings. Restore only the two website proxy flags/routes when rolling back; preserve all mail records and retained hosting.
 
 The redesign is deployed to **staging**, at https://arcan-public-site-staging.ashbi-design-preview.workers.dev. This is not the production launch. General staging enquiry submissions are disabled. Production remains on Hostinger, at https://arcanpainting.ca, pending verified notification delivery. No website DNS cutover, hosting deletion or paid upgrade has been performed. At Cameron's request, Email Routing was enabled on `enquiries.arcanpainting.ca`; every pre-existing DNS record, including the Google Workspace MX and SPF, was verified unchanged. Cloudflare sent its destination-verification email to `info@arcanpainting.ca`.
 
@@ -36,7 +40,7 @@ npm run check:workers
 npx wrangler deploy --dry-run --config workers/leads/wrangler.jsonc
 ```
 
-`npm run build:workers` starts a credential-free isolated Node renderer and exports 15 routes, hydration data, assets, robots.txt and sitemap.xml. The default mode is staging. A production build requires `WORKERS_SITE_MODE=production`; production indexing is permitted only on canonical production hosts with `SITE_MODE=production`. `/design-system`, `/thank-you`, errors and all previews stay noindex. The design reference is excluded from navigation and sitemap. `/release.json` is blocked; internal provenance is saved outside public assets as `build/workers-release.json`.
+`npm run build:workers` starts a credential-free isolated Node renderer and exports 15 routes, hydration data, assets, robots.txt and sitemap.xml. The default mode is staging with contact links only. A production build requires `WORKERS_SITE_MODE=production`; production indexing is permitted only on canonical production hosts with `SITE_MODE=production`. A future form release requires explicit `WORKERS_ENQUIRIES_ENABLED=true` at build time as well as verified delivery and backend enablement; record `enquiriesEnabled` in the internal manifest. `/design-system`, `/thank-you`, errors and all previews stay noindex. The design reference is excluded from navigation and sitemap. `/release.json` is blocked; internal provenance is saved outside public assets as `build/workers-release.json`.
 
 `WORKERS_BASE_URL=<actual-staging-url> npm run test:workers:e2e` exercises all exported pages at 320, 390, 768, 1024 and 1440 pixels, project loader hydration, real image loading, console/page errors, mobile keyboard navigation, missing-route status and noindex. The ordinary Node browser suite also exercises account routes and CRM layout behavior.
 
@@ -111,7 +115,7 @@ Historical CRM releases registered `/sw.js` at the root scope. The migration ser
 
 The checked-in DNS snapshot `docs/release/arcan-dns-before-2026-10-24.json` records the original apex A `82.180.129.200` (unproxied), `www` CNAME to apex (unproxied), mail records, and empty Worker routes. Existing SSL mode is full; account security and mail settings were not changed. Before cutover, recheck for intervening changes and preserve any unrelated update.
 
-After staging delivery and all release checks pass:
+For a future form-enabled release, staging delivery must pass. The approved contact-only release instead requires verified phone/email link destinations, no rendered submission forms on any public route, an intentionally disabled `/api/contact`, and no notification cron. After the applicable release checks pass:
 
 - Deploy the tested production build and bind `LEADS_API` to the **same-account** private production intake.
 - Preserve the existing apex A/origin and www CNAME values, enable their proxy, and add only `arcanpainting.ca/*` and `www.arcanpainting.ca/*` Worker Routes targeting `arcan-public-site` in the zone-owning account.

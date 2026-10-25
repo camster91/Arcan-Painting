@@ -94,7 +94,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   if (!url.pathname.startsWith('/admin')) {
-    return { siteMode: process.env.PUBLIC_SITE_MODE || 'production' };
+    return {
+      siteMode: process.env.PUBLIC_SITE_MODE || 'production',
+      enquiriesEnabled: process.env.PUBLIC_ENQUIRIES_ENABLED !== 'false',
+    };
   }
 
   // Routes are generated directly from page modules, so admin/layout.jsx is

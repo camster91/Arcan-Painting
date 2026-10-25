@@ -1,7 +1,10 @@
 import PremiumShell from "@/components/premium/PremiumShell";
 import { Section, SectionHeading } from "@/components/premium/primitives";
-import PremiumInquiry from "@/components/premium/PremiumInquiry";
+import ProjectContact from "@/components/premium/ProjectContact";
+import { useRouteLoaderData } from "react-router";
 export default function Contact() {
+  const rootData = useRouteLoaderData("root");
+  const enquiriesEnabled = rootData?.enquiriesEnabled !== false;
   return (
     <PremiumShell>
       <Section tone="ink">
@@ -17,12 +20,12 @@ export default function Contact() {
       <Section className="p-two-column">
         <div>
           <SectionHeading title="Start with a conversation.">
-            Share your contact details and preferred timing for an estimate. We
-            will follow up to discuss the scope and arrange a suitable time.
+            {enquiriesEnabled
+              ? "Share your contact details and preferred timing for an estimate. We will follow up to discuss the scope and arrange a suitable time."
+              : "Email or call our team to discuss your project, materials and preferred timing for an estimate."}
           </SectionHeading>
           <p>
-            Your requested date is a preference; an
-            appointment is confirmed directly with our team.
+            Estimate appointments are confirmed directly with our team.
           </p>
           <p>
             <a href="tel:+14167272148">416 727 2148</a>
@@ -30,7 +33,7 @@ export default function Contact() {
             <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
           </p>
         </div>
-        <PremiumInquiry />
+        <ProjectContact />
       </Section>
     </PremiumShell>
   );

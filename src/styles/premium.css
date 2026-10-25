@@ -388,6 +388,12 @@
 .p-form {
   min-width: 0;
 }
+.p-contact-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
 .p-field {
   display: block;
   margin-bottom: 20px;
