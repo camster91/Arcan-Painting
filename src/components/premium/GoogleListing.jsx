@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { MapPin, X } from "lucide-react";
 import { googleListing } from "@/data/googleListing";
 
@@ -7,15 +7,22 @@ export default function GoogleListing() {
   const trigger = useRef(null);
   const titleId = useId();
   const [open, setOpen] = useState(false);
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   function show() {
     dialog.current.showModal();
     setOpen(true);
   }
   return (
     <div className="p-map-listing">
-      <button ref={trigger} className="p-button p-button--line" type="button" onClick={show} aria-haspopup="dialog">
+      <button ref={trigger} className="p-button p-button--line" type="button" disabled={!ready} onClick={show} aria-haspopup="dialog">
         View Arcan on Google Maps <MapPin size={18} aria-hidden="true" />
       </button>
+      <noscript>
+        <a className="p-button p-button--line" href={googleListing.url} target="_blank" rel="noopener noreferrer">
+          Open Arcan on Google Maps<span className="p-visually-hidden"> (opens in a new tab)</span>
+        </a>
+      </noscript>
       <dialog ref={dialog} className="p-map-dialog" aria-labelledby={titleId}
         onClose={() => { setOpen(false); trigger.current?.focus(); }}
         onClick={event => { if (event.target === dialog.current) dialog.current.close(); }}>

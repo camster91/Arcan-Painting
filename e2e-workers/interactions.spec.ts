@@ -73,3 +73,12 @@ test('transparent brand artwork stays clear and home-linked in both shell locati
     await expect(page).toHaveURL(/\/$/);
   }
 });
+
+test('map control waits for hydration and has a no-JavaScript listing link', async ({browser,baseURL}) => {
+  const context = await browser.newContext({javaScriptEnabled:false});
+  const page = await context.newPage();
+  await page.goto(baseURL + '/contact');
+  await expect(page.getByRole('button',{name:'View Arcan on Google Maps',exact:true})).toBeDisabled();
+  await expect(page.getByRole('link',{name:'Open Arcan on Google Maps (opens in a new tab)',exact:true})).toHaveAttribute('href','https://maps.app.goo.gl/WY8Rh5myeWX6JJhR6');
+  await context.close();
+});
