@@ -1,20 +1,31 @@
 # Arcan Painting
 
-Marketing website and in-house CRM for Arcan Painting, a Toronto painting company, built as one full-stack React Router 7 + Hono app.
+Public marketing website and retained in-house CRM for Arcan Painting, built in one React Router 7 / React 18 / Node-Hono codebase.
+
+## Current deployment
+
+The public website at https://arcanpainting.ca runs as a static export on Cloudflare Workers. Existing CRM, authentication, database and uploads remain on the retained Node origin, reached through the production Worker’s legacy-route passthrough. The public export does not migrate or redeploy that Node application.
+
+The public release currently offers telephone/email contact links. Callback/text-back form code and a private D1-backed intake/outbox are implemented, but public submissions and notification scheduling remain disabled pending destination verification and delivery acceptance. D1 enquiries are not automatically synchronized into the legacy CRM.
+
+Use [the Cloudflare runbook](docs/CLOUDFLARE-WORKERS.md) for current accounts, release gates, deployment evidence and rollback. Historical release records describe their stated dates; they do not establish the current live state. Automatic legacy deployments remain disabled.
 
 ## What it does
 
-The public side is a fast, SEO-focused site that turns visitors into leads: service pages, city-specific landing pages, a project gallery, and quote and contact forms. Every submission lands in the admin CRM, where the team runs the rest of the job: following up on leads, building estimates, sending contracts and invoices, recording payments, scheduling crews and tracking project progress. Both halves share one codebase, one server and one database.
+The public site presents painting, wallpaper and decorative-finish services, Arcan’s original photography, project pages and direct enquiry paths. The retained Node application contains the team’s lead, estimate, contract, invoice, scheduling and project workflows. Its runtime/database and the Workers D1 intake are separate deployment targets.
 
 ## Key features
 
 **Public site**
-- Service pages for interior, exterior and commercial painting, wallpaper and specialty finishes
-- Service + city landing pages (`/[service]/[city]`) with a generated `sitemap.xml` and `robots.txt`
-- Quote and contact forms that write leads straight to the database, plus a Meta lead-ads webhook
-- Portfolio gallery with an accessible lightbox
+
+- Premium Painting, High-end Wallpaper and Luxury Finishes, plus Commercial Painting and Exterior Painting pages
+- Project collection with all 70 original gallery images, progressive loading, filtering and an accessible viewer
+- Verified Google review excerpts and an on-request Maps popup
+- Server-rendered public metadata, canonical sitemap and robots policy; unsupported service/city URLs redirect to the service root
+- Contact-only production mode; enquiry forms require verified storage and notification delivery before activation
 
 **Admin CRM (`/admin`)**
+
 - Leads, clients, follow-ups and a "today" view for daily work
 - Estimate builder, contract templates, invoices and payments
 - Projects with progress tracking, calendar, appointments and team availability
@@ -35,8 +46,8 @@ The public side is a fast, SEO-focused site that turns visitors into leads: serv
 - **Database:** PostgreSQL via `pg` (a MariaDB adapter via `mysql2` is also supported, selected by the `DATABASE_URL` scheme)
 - **Auth:** argon2 with Postgres-backed sessions
 - **Monitoring:** Sentry (optional, off when no DSN is set)
-- **Tooling:** Vite 6, TypeScript, ESLint, Vitest, Testing Library, Playwright
-- **Delivery:** Docker (multi-stage, non-root image), Docker Compose for local dev, GitHub Actions CI
+- **Tooling:** Vite 7, TypeScript, ESLint, Vitest, Testing Library, Playwright
+- **Delivery:** Cloudflare Workers for public assets/private D1 intake; retained Node hosting; Docker Compose for local development and GitHub Actions CI
 
 ## Getting started
 

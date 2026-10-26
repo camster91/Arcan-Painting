@@ -188,30 +188,22 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
         });
 
         const result = await response.json();
-        if (!response.ok) {
+        if (!response.ok || result?.success !== true || result?.lead_saved !== true) {
           trackEvent("lead_submit_error", { source, service_type: serviceType });
-          throw new Error(result?.error || "Failed to submit");
+          throw new Error("We couldn't send your request. Please try again or call us directly.");
         }
 
         trackEvent("lead_submit_success", { source, service_type: serviceType, preferred_contact: preferredContact });
 
-        // Redirect to thank-you page with params (match ContactSection behavior)
-        const params = new URLSearchParams({
-          name: fullName || "",
-          email: preferredContact === "email" ? email : "",
-          phone: preferredContact === "phone" ? phone : "",
-          serviceType: serviceType || "",
-        });
         if (typeof window !== "undefined") {
-          window.location.href = `/thank-you?${params.toString()}`;
+          window.location.href = "/thank-you";
           return; // stop further UI state updates after navigation
         }
 
         // Fallback success state (non-browser environments)
         setIsSuccess(true);
-      } catch (e) {
-        console.error(e);
-        setError(e?.message || "Something went wrong. Please try again.");
+      } catch {
+        setError("We couldn't send your request. Please try again or call us directly.");
       } finally {
         setIsSubmitting(false);
       }

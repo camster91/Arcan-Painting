@@ -1,6 +1,6 @@
 name: Coolify preview deployment disabled
 
-# Retired by Cameron's 2026-10-22 shared-hosting-only direction.
+# Retired before the Cloudflare public launch; Hostinger retains legacy origin functionality.
 # No deployment API calls or secrets are used by this workflow.
 on:
   workflow_dispatch:
@@ -13,4 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Explain disabled deployment
-        run: echo "VPS deployment is disabled. Arcan production is managed on Hostinger shared hosting."
+        run: echo "VPS deployment is disabled. Public marketing uses Cloudflare; the legacy origin remains on Hostinger."

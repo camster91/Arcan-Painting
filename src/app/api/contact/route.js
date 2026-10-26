@@ -3,6 +3,7 @@ import { notifyGerardo, formatLeadNotification } from "../utils/telegram.js";
 import { generalLimiter } from "../utils/rate-limit.js";
 import { sendLeadEvent } from "../utils/meta-capi.js";
 import { insertLead, validateLeadInput } from "../utils/insert-lead.js";
+import { safeAttribution } from "@/utils/attribution";
 
 function escapeHtml(value) {
   return String(value)
@@ -19,8 +20,7 @@ function toEmailHeaderValue(value) {
 
 function sanitizeAttribution(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const allowed = ["landingPage", "referrer", "utmSource", "utmMedium", "utmCampaign", "utmContent", "utmTerm"];
-  const sanitized = Object.fromEntries(allowed.flatMap((key) => typeof value[key] === "string" && value[key] ? [[key, value[key].slice(0, 500)]] : []));
+  const sanitized = safeAttribution(value);
   return Object.keys(sanitized).length ? sanitized : null;
 }
 
@@ -64,11 +64,13 @@ export async function POST(request) {
         { status: 415 },
       );
     }
-  } catch (parseError) {
-    console.error("[contact] failed to parse body:", parseError?.message);
+  } catch {
+    console.error("[contact] failed to parse body");
     return Response.json(
       {
-        error: `Could not parse request body as ${contentType || "JSON"}. ${parseError?.message || ""}`.trim(),
+        success: false,
+        lead_saved: false,
+        error: "Could not parse the request. Please submit a valid form.",
       },
       { status: 400 },
     );
@@ -165,20 +167,31 @@ export async function POST(request) {
       });
       leadSaved = leadId != null;
 
-      if (leadSaved) {
-        // Fire-and-forget: Meta CAPI server-side Lead event for attribution
-        sendLeadEvent({
-          leadId,
-          email: body.email,
-          phone: body.phone,
-          name: body.name,
-          source: "website_contact",
-          serviceType: body.serviceType,
-          request,
-        });
+      // Do not acknowledge, notify, or emit attribution events when the
+      // persistence adapter returned no durable lead identifier.
+      if (!leadSaved) {
+        return Response.json(
+          {
+            success: false,
+            lead_saved: false,
+            error: "We couldn't save your request. Please try again or call us directly.",
+          },
+          { status: 503 },
+        );
       }
-    } catch (dbError) {
-      console.error("Database error while saving lead:", dbError);
+
+      // Fire-and-forget: Meta CAPI server-side Lead event for attribution
+      sendLeadEvent({
+        leadId,
+        email: body.email,
+        phone: body.phone,
+        name: body.name,
+        source: "website_contact",
+        serviceType: body.serviceType,
+        request,
+      });
+    } catch {
+      console.error("Database error while saving lead");
       return Response.json(
         { error: "We couldn't save your request. Please try again or call us directly." },
         { status: 503 },
@@ -222,16 +235,16 @@ ${lead.projectDescription ? `<p><strong>Description:</strong> ${lead.projectDesc
 <p>Best regards,<br>The Arcan Painting Team</p>`,
         });
       }
-    } catch (emailError) {
-      console.error("Failed to send Gmail emails:", emailError);
+    } catch {
+      console.error("Failed to send Gmail emails");
       // Don't fail the request if emails fail
     }
 
     // Notify Gerardo via Telegram
     try {
       await notifyGerardo(formatLeadNotification(body));
-    } catch (tgError) {
-      console.error("Telegram notification failed:", tgError.message);
+    } catch {
+      console.error("Telegram notification failed");
     }
 
     return Response.json({

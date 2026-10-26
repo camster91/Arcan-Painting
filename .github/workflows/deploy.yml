@@ -1,6 +1,6 @@
 name: Deployment disabled - Hostinger shared hosting
 
-# Arcan production is managed on Hostinger shared hosting.
+# Public marketing runs on Cloudflare; the retained legacy origin is on Hostinger.
 # Automatic GitHub-to-Coolify deployment is retired. Keep CI in ci.yml.
 # This workflow deliberately has no push trigger and no deployment credentials.
 on:
@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Explain manual release policy
-        run: echo "Deployment is disabled in GitHub Actions. Use the reviewed Hostinger shared-hosting release procedure."
+        run: echo "Deployment is disabled in GitHub Actions. Use the reviewed Cloudflare release runbook in docs/CLOUDFLARE-WORKERS.md."
