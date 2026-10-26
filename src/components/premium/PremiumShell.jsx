@@ -81,7 +81,7 @@ export default function PremiumShell({ children }) {
       </a>
       <header className="p-header" ref={headerRef}>
         <a className="p-logo" href="/" aria-label="Arcan Painting home">
-          <img src="/logo.png" width="400" height="119" alt="Arcan Painting" />
+          <img src="/brand/arcan-painting-logo.png" width="800" height="235" alt="Arcan Painting" />
         </a>
         <button
           ref={menuRef}
@@ -115,9 +115,9 @@ export default function PremiumShell({ children }) {
         <div className="p-footer-top">
           <a className="p-logo" href="/" aria-label="Arcan Painting home">
             <img
-              src="/logo.png"
-              width="400"
-              height="119"
+              src="/brand/arcan-painting-logo.png"
+              width="800"
+              height="235"
               alt="Arcan Painting"
             />
           </a>
