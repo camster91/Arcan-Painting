@@ -1,6 +1,6 @@
 name: Container image publication disabled
 
-# Production runs on Hostinger shared hosting. Keep build/test validation in ci.yml.
+# Public marketing runs on Cloudflare; Hostinger retains the legacy origin. Keep validation in ci.yml.
 on:
   workflow_dispatch:
 

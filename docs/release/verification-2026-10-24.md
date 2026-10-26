@@ -1,5 +1,7 @@
 # Arcan release verification — 24 October 2026
 
+> Historical pre-cutover record. Use [the current Cloudflare runbook](../CLOUDFLARE-WORKERS.md) for live routing and the remaining notification acceptance sequence.
+
 Production launch is blocked on notification authentication/setup and inbox delivery verification. The public production domain remains on the original Hostinger site. This record distinguishes completed source work, deployed staging evidence and unverified release gates.
 
 Later direction: Cameron selected email forwarding. A dedicated `enquiries.arcanpainting.ca` routing subdomain is now enabled and ready; the 11 original DNS records remain unchanged. The intended destination was added once and Cloudflare sent its verification email. Recipient verification and actual notification delivery remain pending. This removes arbitrary-recipient Email Sending onboarding from the intended path; see [forwarding preparation](forwarding-2026-10-24.md) for current state, exact changes and remaining gates. The earlier authentication evidence below is retained as history.

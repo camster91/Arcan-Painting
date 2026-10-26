@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const insertLead = vi.fn();
 const sendGmailEmail = vi.fn();
 const notifyGerardo = vi.fn();
+const sendLeadEvent = vi.fn();
 
 vi.mock("@/app/api/utils/insert-lead", () => ({
   insertLead,
@@ -15,7 +16,7 @@ vi.mock("@/app/api/utils/telegram", () => ({
 }));
 vi.mock("@/app/api/utils/rate-limit", () => ({ generalLimiter: vi.fn(() => null) }));
 vi.mock("@/app/api/utils/audit", () => ({ auditLog: vi.fn() }));
-vi.mock("@/app/api/utils/meta-capi", () => ({ sendLeadEvent: vi.fn() }));
+vi.mock("@/app/api/utils/meta-capi", () => ({ sendLeadEvent }));
 
 const { POST } = await import("@/app/api/contact/route");
 
@@ -24,6 +25,7 @@ describe("POST /api/contact", () => {
     insertLead.mockReset();
     sendGmailEmail.mockReset();
     notifyGerardo.mockReset();
+    sendLeadEvent.mockReset();
   });
 
   it("does not confirm a lead when the CRM write fails", async () => {
@@ -41,6 +43,27 @@ describe("POST /api/contact", () => {
     }));
 
     expect(response.status).toBe(503);
+    expect(sendGmailEmail).not.toHaveBeenCalled();
+    expect(notifyGerardo).not.toHaveBeenCalled();
+  });
+
+  it("does not notify or acknowledge when the CRM returns no lead id", async () => {
+    insertLead.mockResolvedValue(null);
+
+    const response = await POST(new Request("https://example.test/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test Customer",
+        email: "customer@example.test",
+        serviceType: "interior",
+        preferredContact: "email",
+      }),
+    }));
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ success: false, lead_saved: false });
+    expect(sendLeadEvent).not.toHaveBeenCalled();
     expect(sendGmailEmail).not.toHaveBeenCalled();
     expect(notifyGerardo).not.toHaveBeenCalled();
   });
@@ -98,7 +121,7 @@ describe("POST /api/contact", () => {
 
     expect(response.status).toBe(200);
     expect(insertLead).toHaveBeenCalledWith(expect.objectContaining({
-      attribution: { utmSource: "search", landingPage: "/?utm_source=search" },
+      attribution: { utmSource: "search", landingPage: "/" },
     }));
   });
 
@@ -154,4 +177,49 @@ describe("POST /api/contact", () => {
     expect(response.status).toBe(400);
     expect(insertLead).not.toHaveBeenCalled();
   });
+});
+
+it('does not leak storage exception details into contact-route logs', async () => {
+  const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    insertLead.mockRejectedValue(new Error('fixture-private@example.test query details'));
+    const response = await POST(new Request('https://example.test/api/contact', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:'Privacy Fixture',email:'fixture@example.test',serviceType:'interior',preferredContact:'email'}),
+    }));
+    expect(response.status).toBe(503);
+    expect(errorLog).toHaveBeenCalled();
+    expect(JSON.stringify(errorLog.mock.calls)).not.toContain('fixture-private@example.test');
+  } finally {errorLog.mockRestore();}
+});
+
+it('keeps malformed request content out of response and parser logs', async () => {
+  const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+  insertLead.mockReset();
+  try {
+    const response = await POST(new Request('https://example.test/api/contact', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:'{"email":"fixture-private@example.test"',
+    }));
+    expect(response.status).toBe(400);
+    expect(await response.text()).not.toContain('fixture-private@example.test');
+    expect(JSON.stringify(errorLog.mock.calls)).not.toContain('fixture-private@example.test');
+    expect(insertLead).not.toHaveBeenCalled();
+  } finally {errorLog.mockRestore();}
+});
+
+it('normalizes private URLs and drops personal campaign values at the server boundary', async () => {
+  insertLead.mockReset();insertLead.mockResolvedValue(47);
+  const response = await POST(new Request('https://example.test/api/contact', {
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:'Privacy Fixture',email:'fixture@example.test',serviceType:'interior',preferredContact:'email',attribution:{
+      landingPage:'/i/private-invoice?email=fixture-private@example.test',
+      referrer:'https://referrer.example/private-customer?email=fixture-private@example.test',
+      utmSource:'search',utmCampaign:'fixture-private@example.test',utmMedium:'+1 416 555 0100',privateId:'secret',
+    }}),
+  }));
+  expect(response.status).toBe(200);
+  expect(insertLead).toHaveBeenCalledWith(expect.objectContaining({attribution:{
+    landingPage:'/other',referrer:'https://referrer.example',utmSource:'search',
+  }}));
 });

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "@/utils/useTheme";
+import { getAttribution } from "@/utils/analytics";
 
 export default function ContactSection() {
   useTheme();
@@ -93,6 +94,7 @@ export default function ContactSection() {
         serviceType,
         projectDescription,
         preferredContact,
+        attribution: getAttribution(),
       };
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -100,25 +102,18 @@ export default function ContactSection() {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result?.error || "Failed to submit");
+      if (!response.ok || result?.success !== true || result?.lead_saved !== true) {
+        throw new Error("We couldn't send your request. Please try again or call us directly.");
       }
       return { result, payload };
     },
-    onSuccess: ({ payload }) => {
-      const params = new URLSearchParams({
-        name: payload.name || "",
-        email: payload.email || "",
-        phone: payload.phone || "",
-        serviceType: payload.serviceType || "",
-      });
+    onSuccess: () => {
       if (typeof window !== "undefined") {
-        window.location.href = `/thank-you?${params.toString()}`;
+        window.location.href = "/thank-you";
       }
     },
-    onError: (e) => {
-      console.error(e);
-      setError(e?.message || "Something went wrong. Please try again.");
+    onError: () => {
+      setError("We couldn't send your request. Please try again or call us directly.");
     },
   });
 
