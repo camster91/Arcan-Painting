@@ -1,13 +1,13 @@
 # Arcan Painting
 
-> Arcan Painting accepts inquiries about interior, exterior, and commercial painting, wallpaper services, and specialty finishes. Project scope and availability are confirmed directly with the team.
+> Arcan Painting reviews enquiries for Premium Painting, High-end Wallpaper, and Luxury Finishes. Project scope, materials, timing, and availability are confirmed directly with the team.
 
 ## Services
-- [Interior painting](https://arcanpainting.ca/interior-painting)
+- [Premium Painting](https://arcanpainting.ca/interior-painting)
+- [High-end Wallpaper](https://arcanpainting.ca/wallpaper-services)
+- [Luxury Finishes](https://arcanpainting.ca/specialty-finishes)
 - [Exterior painting](https://arcanpainting.ca/exterior-painting)
 - [Commercial painting](https://arcanpainting.ca/commercial-painting)
-- [Wallpaper services](https://arcanpainting.ca/wallpaper-services)
-- [Specialty finishes](https://arcanpainting.ca/specialty-finishes)
 
 ## Service Area
 Contact Arcan Painting to discuss availability for your project location.

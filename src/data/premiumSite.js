@@ -12,7 +12,7 @@ export const services = [
     eyebrow: "Interior painting",
     summary: "Considered colour and a precise finish for complete interiors.",
     description:
-      "An interior project starts with a clear picture of the existing surfaces and the result you want. Include the rooms involved, approximate dimensions, current colours, preferred colours or references, and any visible damage or repairs you want reviewed.",
+      "Premium Painting is Arcan’s interior painting service. Share the rooms, surfaces, approximate dimensions, existing condition, colour references, access, and preferred timing so the team can review preparation and scope.",
     image: "/hero/IMG-20260212-WA0016-1400.webp",
     imageAlt:
       "Arcan residential staircase with dark treads, white risers and painted railings",
@@ -30,7 +30,7 @@ export const services = [
     eyebrow: "Pattern & texture",
     summary: "Distinctive wallcoverings, thoughtfully installed.",
     description:
-      "Wallpaper scope varies with the wall surface and the product being removed or installed. Share the manufacturer and pattern details when available, plus room dimensions and photos of corners, openings, and any surface damage.",
+      "High-end Wallpaper covers installation or removal subject to the wallcovering, adhesive, substrate, and room conditions. Share manufacturer or pattern details, wall dimensions, openings, corners, photos, and any surface damage for review.",
     image: "/hero/PXL_20251018_142500065-1400.webp",
     imageAlt:
       "Arcan hospitality interior with patterned wallcoverings, pink seating and a set dining table",
@@ -46,9 +46,9 @@ export const services = [
     path: "/specialty-finishes",
     title: "Luxury Finishes",
     eyebrow: "Depth & character",
-    summary: "Explore specialist surfaces and a more expressive finish.",
+    summary: "Decorative surfaces shaped by colour, texture, sheen, and light.",
     description:
-      "Specialty finishes are best defined visually. Include reference images, colours, texture preferences, sheen, the surfaces involved, and the viewing conditions. A sample or test area may be useful to align on appearance before a larger scope is confirmed.",
+      "Luxury Finishes are planned around the surface and the colour, texture, and sheen you want. Reference images and lighting conditions help the team discuss a suitable finish; samples and project scope are confirmed directly.",
     image: null,
     imageAlt: "",
     details: [
@@ -61,11 +61,11 @@ export const services = [
   {
     slug: "commercial-painting",
     path: "/commercial-painting",
-    title: "Commercial Interiors",
+    title: "Commercial Painting",
     eyebrow: "Spaces with presence",
     summary: "Painting and wallcoverings for distinctive commercial spaces.",
     description:
-      "Commercial inquiries are easier to review when the site type, areas involved, operating hours, access rules, desired sequence, and target dates are included. Note whether drawings, specifications, building contacts, or site procedures are available.",
+      "Commercial Painting scope is reviewed around site type, occupied areas, surfaces, operating hours, access, sequence, and target dates. Share drawings, specifications, site procedures, or brand colour references when available.",
     image: "/hero/IMG-20260217-WA0021-900.webp",
     imageAlt:
       "Bar counter and arched ceiling from Arcan's original commercial project collection",
@@ -83,7 +83,7 @@ export const services = [
     eyebrow: "Beyond the interior",
     summary: "A considered approach to exterior colour and surfaces.",
     description:
-      "Exterior scope depends on what is being coated and what condition it is in. Photos of each elevation and close-ups of peeling, cracking, staining, gaps, or damaged areas help identify what needs an in-person review.",
+      "Exterior Painting scope depends on the material, surface condition, height, access, and weather affecting the work. Share elevations, close-ups of peeling, cracking, staining, or damaged areas, and preferred timing for review.",
     image: "/hero/20251012_165336-900.webp",
     imageAlt: "Garage doors and entrance columns from Arcan's original exterior project collection",
     details: [

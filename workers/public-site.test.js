@@ -95,3 +95,20 @@ it('prevents caching the legacy service-worker neutralizer',async()=>{
  const r=await worker.fetch(new Request('https://arcanpainting.ca/sw.js'),{SITE_MODE:'production',ASSETS:{fetch:async()=>new Response('/* neutralizer */',{headers:{'Cache-Control':'public, max-age=86400'}})}});
  expect(r.headers.get('cache-control')).toBe('no-store');
 });
+
+it('caches only successful content-hashed public bundles immutably', async () => {
+  for (const [path,status,immutable] of [
+    ['/assets/page-Ab12Cd34.js',200,true],
+    ['/assets/site-Ab12Cd34.css',200,true],
+    ['/assets/font-Ab12Cd34.woff2',200,true],
+    ['/assets/page-Ab12Cd34.js',404,false],
+    ['/assets/manifest.js',200,false],
+    ['/brand/arcan-painting-logo.png',200,false],
+    ['/contact',200,false],
+  ]) {
+    const response = await worker.fetch(new Request('https://arcanpainting.ca'+path), {
+      SITE_MODE:'production', ASSETS:{fetch:async()=>new Response('asset',{status,headers:{'Cache-Control':'public, max-age=0, must-revalidate'}})},
+    });
+    expect(response.headers.get('cache-control').includes('immutable'),path+' '+status).toBe(immutable);
+  }
+});

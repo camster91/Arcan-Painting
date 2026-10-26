@@ -17,9 +17,6 @@ export default function Project() {
   return (
     <PremiumShell>
       <Section>
-        <ButtonLink href="/projects" subtle>
-          All selected work
-        </ButtonLink>
         <SectionHeading
           as="h1"
           eyebrow={project.category}
@@ -27,6 +24,12 @@ export default function Project() {
         >
           {project.description}
         </SectionHeading>
+        <div className="p-project-actions">
+          <ButtonLink href="/contact">Discuss your project</ButtonLink>
+          <ButtonLink href="/projects" subtle>
+            All selected work
+          </ButtonLink>
+        </div>
         <img
           className="p-project-detail"
           src={project.image}

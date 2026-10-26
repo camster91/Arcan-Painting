@@ -1,4 +1,5 @@
 import { projects } from '../data/premiumSite';
+import { googleListing } from '../data/googleListing';
 const SITE_URL = "https://arcanpainting.ca";
 const SERVICE_NAMES = {"Interior Painting":"Premium Painting","Wallpaper Services":"High-end Wallpaper","Specialty Finishes":"Luxury Finishes"};
 
@@ -12,12 +13,12 @@ export const SERVICE_FAQS = {
 
 const PUBLIC_PAGES = {
   ...Object.fromEntries(projects.map(project => [`/projects/${project.slug}`, {title: `${project.title} | Arcan Painting`, description: project.description}])),
-  "/projects": {title: "Selected Work | Arcan Painting", description: "Explore painting and wallcovering details in Arcan interiors."},
-  "/about": {title: "Our Approach | Arcan Painting", description: "A considered approach to painting, wallpaper and luxury finishes."},
+  "/projects": {title: "Selected Work | Arcan Painting", description: "Explore selected Arcan Painting project photographs and notes across painting, wallpaper, and finish work. Scope and materials vary by project."},
+  "/about": {title: "Our Approach | Arcan Painting", description: "Learn how Arcan Painting approaches project conversations, surface preparation, painting, wallpaper, and luxury finishes."},
   "/design-system": {title: "Design System | Arcan Painting", description: "Internal design reference.", indexable: false},
   "/": {
     title: "Arcan Painting | Premium Painting, Wallpaper & Luxury Finishes",
-    description: "Explore Arcan Painting services and discuss an interior, exterior, commercial, wallpaper, or specialty-finish project.",
+    description: "Premium Painting, High-end Wallpaper and Luxury Finishes for homes and commercial interiors. Explore Arcan’s work and discuss your project with the team.",
   },
   "/interior-painting": {
     title: "Premium Painting | Arcan Painting",
@@ -46,11 +47,12 @@ const PUBLIC_PAGES = {
   },
   "/contact": {
     title: "Contact Arcan Painting",
-    description: "Share your project details and questions with Arcan Painting for review.",
+    description: "Share your project scope, surfaces, access details, and timing with Arcan Painting so the team can review the information and discuss next steps.",
   },
   "/quote": {
     title: "Project Inquiry | Arcan Painting",
     description: "Tell Arcan Painting about your project so the team can review its scope, surfaces, timing, and next steps.",
+    canonicalPath: "/contact",
   },
   "/privacy": {
     title: "Privacy Notice | Arcan Painting",
@@ -65,7 +67,7 @@ export function getPublicSeo(pathname = "/") {
   const isGeneratedLocation = /^\/(interior-painting|exterior-painting|commercial-painting|wallpaper-services|specialty-finishes)\/[^/]+$/.test(path);
   const indexable = Boolean(page) && page.indexable !== false && !isPrivate && !isGeneratedLocation;
 
-  if (page) return { ...page, path, canonical: `${SITE_URL}${path === "/" ? "/" : path}`, indexable };
+  if (page) return { ...page, path, canonical: `${SITE_URL}${page.canonicalPath || (path === "/" ? "/" : path)}`, indexable };
 
   return {
     title: isPrivate ? "Arcan Painting" : "Page Not Found | Arcan Painting",
@@ -84,10 +86,11 @@ export function buildStructuredData(seo) {
     url: `${SITE_URL}/`,
     email: "info@arcanpainting.ca",
     telephone: "+1-416-727-2148",
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/brand/arcan-painting-logo.png`,
     image: `${SITE_URL}/og-image.png`,
     sameAs: [
       "https://www.instagram.com/arcanpaint",
+      googleListing.url,
     ],
   };
 

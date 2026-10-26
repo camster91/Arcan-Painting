@@ -14,8 +14,8 @@ export default function Contact() {
           eyebrow="Project enquiries"
           title="Tell us what you have in mind."
         >
-          Premium painting, wallpaper and luxury finishes for spaces with a
-          point of view.
+          Premium Painting, High-end Wallpaper and Luxury Finishes for spaces
+          with a point of view.
         </SectionHeading>
       </Section>
       <Section className="p-two-column">
@@ -35,9 +35,11 @@ export default function Contact() {
               <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
             </p>
           )}
+        </div>
+        <div className="p-contact-actions">
+          <ProjectContact />
           <GoogleListing />
         </div>
-        <ProjectContact />
       </Section>
     </PremiumShell>
   );

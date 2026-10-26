@@ -1,30 +1,17 @@
+import { services as publicServices } from "../data/premiumSite";
 // Comprehensive SEO utilities for Arcan Painting
 
 export const seoConfig = {
   siteName: "Arcan Painting",
-  defaultTitle: "Arcan Painting",
-  defaultDescription: "Contact Arcan Painting to discuss a project.",
+  defaultTitle: "Arcan Painting | Premium Painting, Wallpaper & Luxury Finishes",
+  defaultDescription: "Premium Painting, High-end Wallpaper and Luxury Finishes for homes and commercial interiors. Explore Arcan’s work and discuss your project with the team.",
   siteUrl: "https://arcanpainting.ca",
-  logoUrl: "https://arcanpainting.ca/logo.png",
-  socialImageUrl: "https://arcanpainting.ca/logo.png",
-  twitterHandle: "@arcanpainting",
+  logoUrl: "https://arcanpainting.ca/brand/arcan-painting-logo.png",
+  socialImageUrl: "https://arcanpainting.ca/og-image.png",
   businessEmail: "info@arcanpainting.ca",
-  businessPhone: "", // Add when available
-  businessAddress: {},
-  coordinates: {},
-  serviceAreas: [],
-  services: [
-    "Interior Painting",
-    "Exterior Painting",
-    "Commercial Painting",
-    "Residential Painting",
-    "Color Consultation",
-    "Specialty Finishes",
-    "Pressure Washing",
-    "Surface Preparation",
-    "Wallpaper Removal",
-    "High-End Wallpaper Installation",
-  ],
+  businessPhone: "+1-416-727-2148",
+  googleListingUrl: "https://maps.app.goo.gl/WY8Rh5myeWX6JJhR6",
+  services: publicServices.map(service => service.title),
 };
 
 // Generate page-specific metadata
@@ -49,8 +36,8 @@ export function generatePageMetadata({
             url: seoConfig.socialImageUrl,
             width: 1200,
             height: 630,
-            alt: "Arcan Painting Professional Toronto Painting Services",
-            type: "image/jpeg",
+            alt: "Arcan Painting brand mark",
+            type: "image/png",
           },
         ];
 
@@ -79,8 +66,6 @@ export function generatePageMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      site: seoConfig.twitterHandle,
-      creator: seoConfig.twitterHandle,
       title: fullTitle,
       description: fullDescription,
       images: defaultImages,
@@ -92,7 +77,7 @@ export function generatePageMetadata({
 export function generateLocalBusinessSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "PaintingContractor",
+    "@type": "ProfessionalService",
     name: seoConfig.siteName,
     alternateName: "Arcan Painting",
     description: seoConfig.defaultDescription,
@@ -100,6 +85,11 @@ export function generateLocalBusinessSchema() {
     logo: seoConfig.logoUrl,
     image: seoConfig.socialImageUrl,
     email: seoConfig.businessEmail,
+    telephone: seoConfig.businessPhone,
+    sameAs: [
+      "https://www.instagram.com/arcanpaint",
+      seoConfig.googleListingUrl,
+    ],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Painting Services",
@@ -109,7 +99,7 @@ export function generateLocalBusinessSchema() {
           "@type": "Service",
           name: service,
           provider: {
-            "@type": "PaintingContractor",
+            "@type": "ProfessionalService",
             name: seoConfig.siteName,
           },
         },
@@ -126,21 +116,17 @@ export function generateServiceSchema(serviceName, description, price) {
     name: serviceName,
     description: description,
     provider: {
-      "@type": "PaintingContractor",
+      "@type": "ProfessionalService",
       name: seoConfig.siteName,
       url: seoConfig.siteUrl,
-      address: {
-        "@type": "PostalAddress",
-        ...seoConfig.businessAddress,
+    },
+    ...(price !== undefined && price !== null && price !== "" ? {
+      offers: {
+        "@type": "Offer",
+        price,
+        priceCurrency: "CAD",
       },
-    },
-    areaServed: seoConfig.serviceAreas,
-    offers: {
-      "@type": "Offer",
-      price: price,
-      priceCurrency: "CAD",
-      availability: "https://schema.org/InStock",
-    },
+    } : {}),
   };
 }
 
@@ -190,25 +176,18 @@ export const seoChecklist = {
     "✅ Favicons optimized",
     "✅ Social sharing images (1200x630)",
     "⚠️ Google Search Console verification needed",
-    "⚠️ Google My Business profile optimization needed",
   ],
   content: [
-    "✅ Location-based keywords (Toronto, GTA)",
-    "✅ Service-based keywords (painting, interior, exterior)",
-    "✅ FAQ section with structured data",
+    "✅ Approved service names used consistently",
+    "✅ Service details describe scope, surfaces, access, and timing",
     "✅ Clear call-to-action buttons",
-    "✅ Local area served mentions",
-    "⚠️ Customer testimonials/reviews needed",
-    "⚠️ Portfolio/gallery images with alt text",
+    "✅ Portfolio and gallery images include descriptive alt text",
     "⚠️ Blog content for SEO boost",
   ],
   local: [
-    "✅ Business name, address, phone (NAP) consistency",
-    "✅ Local service areas defined",
-    "✅ Geographic coordinates set",
-    "⚠️ Google My Business listing needed",
-    "⚠️ Local directory listings needed",
-    "⚠️ Customer reviews collection strategy",
+    "✅ Business name, phone, and email are consistent",
+    "✅ Google listing link is provided for current business details",
+    "⚠️ Service availability is confirmed for each project inquiry",
   ],
 };
 

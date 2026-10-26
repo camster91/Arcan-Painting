@@ -124,7 +124,9 @@ export default function PremiumShell({ children }) {
           <p>
             Premium Painting.
             <br />
-            Luxury Finishes & Wallpaper.
+            High-end Wallpaper.
+            <br />
+            Luxury Finishes.
           </p>
           <SocialLinks />
         </div>
