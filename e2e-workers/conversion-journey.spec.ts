@@ -34,14 +34,13 @@ test('mobile contact actions remain ahead of the optional Google Maps dialog', a
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/contact');
 
-  await expect(page.getByRole('link', { name: 'Email Arcan', exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Call 416 727 2148', exact: true })).toBeVisible();
+  await expect(page.locator('main a[href="mailto:info@arcanpainting.ca"]').first()).toBeVisible();
+  await expect(page.locator('main a[href="tel:+14167272148"]').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'View Arcan on Google Maps', exact: true })).toBeVisible();
   expect(await page.locator('main').evaluate((main) => {
-    const contact = main.querySelector('.p-contact-actions');
-    const email = contact?.querySelector('a[href^="mailto:"]');
-    const phone = contact?.querySelector('a[href^="tel:"]');
-    const map = contact?.querySelector('.p-map-listing');
+    const email = main.querySelector('a[href="mailto:info@arcanpainting.ca"]');
+    const phone = main.querySelector('a[href="tel:+14167272148"]');
+    const map = main.querySelector('.p-map-listing');
     return Boolean(
       email && phone && map &&
       (email.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING) &&

@@ -18,7 +18,7 @@ PRs #132 and #136 contain obsolete redesign directions; they must not be merged 
 
 ## External acceptance limits
 
-Cloudflare still lists info@arcanpainting.ca as unverified. The inbox owner must complete the existing verification before provider acceptance, actual inbox receipt and retry acceptance can be tested and the callback/text-back form activated. No new verification email, client message or test lead was sent in this pass.
+The original handoff found the destination unverified. A later explicit client reminder was sent, and Cloudflare now confirms verification at `2026-10-26T11:43:18.318173Z`. Notification acceptance is being tested separately in an isolated same-account preflight; see the dated acceptance record in `docs/CLOUDFLARE-WORKERS.md`. Verification alone does not establish provider acceptance or actual inbox delivery, and the live form remains gated until those checks pass.
 
 The connected Ahrefs project-inventory call returned “Insufficient plan”; no upgrade or purchase was made. Chrome's signed-in Google account has no accessible Arcan Search Console property, including in its property selector. No ownership verification, access invitation or account-security change was attempted. Search Console indexing/performance measurement requires an account that already has owner-granted access; this is separate from the live website's indexing configuration.
 
