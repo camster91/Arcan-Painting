@@ -45,7 +45,9 @@
         {
           "name": "EMAIL",
           "destination_address": "info@arcanpainting.ca",
-          "allowed_sender_addresses": ["notifications@enquiries.arcanpainting.ca"]
+          "allowed_sender_addresses": [
+            "notifications@enquiries.arcanpainting.ca"
+          ]
         }
       ],
       "d1_databases": [
@@ -65,7 +67,12 @@
             "period": 60
           }
         }
-      ]
+      ],
+      "triggers": {
+        "crons": [
+          "*/5 * * * *"
+        ]
+      }
     }
   }
 }
