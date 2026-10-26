@@ -72,6 +72,10 @@ export default {
     if (production && env.LEGACY_ORIGIN === 'enabled' && response.status === 404 && url.pathname.startsWith('/assets/')) return fetch(request);
     const outgoing = new Response(response.body, response);
     if (!production || url.pathname === '/design-system' || url.pathname === '/thank-you' || response.status >= 400) outgoing.headers.set('X-Robots-Tag','noindex, nofollow');
+    // Vite hashes change with content; stable URLs and HTML must revalidate.
+    if (response.status === 200 && /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css|woff2?)$/.test(url.pathname)) {
+      outgoing.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    }
     if (url.pathname === '/sw.js') outgoing.headers.set('Cache-Control','no-store');
     outgoing.headers.set('Referrer-Policy','strict-origin');
     outgoing.headers.set('X-Content-Type-Options','nosniff');

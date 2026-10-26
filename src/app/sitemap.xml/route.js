@@ -1,5 +1,5 @@
 import { projects } from '../../data/premiumSite';
-const PUBLIC_ROUTES = [
+export const PUBLIC_ROUTES = [
   ["/projects", "0.8", "monthly"],
   ["/about", "0.6", "monthly"],
   ...projects.map(project => [`/projects/${project.slug}`, "0.7", "monthly"]),
@@ -10,7 +10,6 @@ const PUBLIC_ROUTES = [
   ["/wallpaper-services", "0.9", "monthly"],
   ["/specialty-finishes", "0.9", "monthly"],
   ["/contact", "0.7", "yearly"],
-  ["/quote", "0.7", "yearly"],
   ["/privacy", "0.3", "yearly"],
 ];
 

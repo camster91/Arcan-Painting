@@ -6,7 +6,7 @@ const SERVICES = [
   ["exterior", "Exterior Painting"],
   ["wallpaper", "High-end Wallpaper"],
   ["specialty", "Luxury Finishes"],
-  ["commercial", "Commercial Interiors"],
+  ["commercial", "Commercial Painting"],
   ["other", "A combination / To be discussed"],
 ];
 

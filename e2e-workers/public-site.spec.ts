@@ -27,7 +27,10 @@ for (const width of [320, 390, 768, 1024, 1440]) {
       if (!production || ['/design-system','/thank-you'].includes(route)) expect(robots,route).toContain('noindex');
       else {
         expect(robots,route).not.toContain('noindex');
-        expect(await page.locator('link[rel="canonical"]').getAttribute('href'),route).toBe(`https://arcanpainting.ca${route === '/' ? '/' : route}`);
+        const expectedCanonical = route === '/quote'
+          ? 'https://arcanpainting.ca/contact'
+          : `https://arcanpainting.ca${route === '/' ? '/' : route}`;
+        expect(await page.locator('link[rel="canonical"]').getAttribute('href'),route).toBe(expectedCanonical);
       }
       expect(await page.locator('header a[aria-label="Arcan Painting home"]').getAttribute('href')).toBe('/');
       await expect(page.locator('nav a[href="/design-system"]')).toHaveCount(0);

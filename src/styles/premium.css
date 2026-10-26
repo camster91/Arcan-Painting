@@ -180,6 +180,28 @@ html:has(.premium-site dialog[open]) {
 .p-hero .p-button--line {
   margin-top: 12px;
 }
+.p-hero-actions,
+.p-project-actions {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.p-service-secondary-links {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  font-size: 12px;
+}
+.p-service-secondary-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid currentColor;
+  padding: 10px 0;
+}
 .p-eyebrow {
   font: 600 11px/1.7 var(--p-sans) !important;
   letter-spacing: 0.15em !important;
@@ -498,6 +520,15 @@ html:has(.premium-site dialog[open]) {
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
+}
+.p-contact-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+.p-contact-actions .p-form {
+  width: 100%;
 }
 .p-field {
   display: block;
@@ -834,6 +865,12 @@ html:has(.premium-site dialog[open]) {
   max-height: 1100px;
   object-fit: contain;
   margin: 3rem auto 0;
+}
+.premium-site .p-project-actions {
+  margin-top: 28px;
+}
+.premium-site .p-project-actions + .p-project-detail {
+  margin-top: 32px;
 }
 .premium-site .p-component-actions {
   display: flex;

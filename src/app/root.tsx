@@ -236,12 +236,11 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* SEO: Title & Description (per-page) */}
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
-        <meta name="geo.region" content="CA-ON" />
-        <meta name="geo.position" content="43.6532;-79.3832" />
-        <meta name="ICBM" content="43.6532, -79.3832" />
         {/* SEO: Canonical tag */}
         <link rel="canonical" href={seo.canonical} />
         <link rel="icon" href="/favicon.png" type="image/png" />

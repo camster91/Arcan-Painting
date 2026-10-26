@@ -1,6 +1,15 @@
 import { publicPath, safeAttribution } from "./attribution";
+import { getPublicCtaForHref, isPublicCta } from "./publicCtas";
 const ATTRIBUTION_KEY = "arcan_attribution";
 let initialized = false;
+
+// These are the only direct-contact destinations published by Arcan. Events
+// carry a category rather than the address so personal data and query strings
+// can never enter analytics payloads.
+const VERIFIED_BUSINESS_DESTINATIONS = Object.freeze({
+  "tel:+14167272148": { event: "click_to_call", destination: "phone" },
+  "mailto:info@arcanpainting.ca": { event: "click_to_email", destination: "email" },
+});
 
 function clean(value, max = 200) {
   return typeof value === "string" ? value.slice(0, max) : "";
@@ -37,10 +46,19 @@ export function initializeAnalytics() {
     const target = event.target instanceof Element ? event.target.closest("a,button") : null;
     if (!target) return;
     const href = target instanceof HTMLAnchorElement ? target.getAttribute("href") || "" : "";
-    if (href.startsWith("tel:")) trackEvent("click_to_call", { location: publicPath(window.location.pathname), destination: clean(href, 100) });
-    else if (href.startsWith("mailto:")) trackEvent("click_to_email", { location: publicPath(window.location.pathname), destination: clean(href, 200) });
-    else if (target instanceof HTMLButtonElement && /discuss your project|contact|get quote|project review/i.test(target.textContent || "")) {
-      trackEvent("cta_click", { location: publicPath(window.location.pathname), label: clean((target.textContent || "").trim()) });
+    const contactDestination = getVerifiedBusinessDestination(href);
+    if (contactDestination) {
+      trackEvent(contactDestination.event, { location: publicPath(window.location.pathname), destination: contactDestination.destination });
+      return;
+    }
+
+    const label = target.getAttribute("data-cta") || "";
+    const declaredDestination = target.getAttribute("data-cta-destination") || "";
+    const publicHref = target instanceof HTMLAnchorElement ? target.getAttribute("href") || "" : "";
+    const destination = declaredDestination || publicHref;
+    if (isPublicCta(label, destination, publicHref)) {
+      const cta = getPublicCtaForHref(destination);
+      trackEvent("cta_click", { location: publicPath(window.location.pathname), label, destination: cta.destination });
     }
   });
 
@@ -61,6 +79,11 @@ export function initializeAnalytics() {
     window.gtag("js", new Date());
     window.gtag("config", measurementId, { send_page_view: false, anonymize_ip: true, page_location: `${window.location.origin}${publicPath(window.location.pathname)}`, page_referrer: attribution.referrer || "", allow_google_signals: false });
   }
+}
+
+function getVerifiedBusinessDestination(href) {
+  if (typeof href !== "string" || /[?#]/.test(href)) return null;
+  return VERIFIED_BUSINESS_DESTINATIONS[href.trim().toLowerCase()] || null;
 }
 
 export function trackEvent(eventName, properties = {}) {

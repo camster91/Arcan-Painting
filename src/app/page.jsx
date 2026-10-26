@@ -26,9 +26,14 @@ export default function HomePage() {
             <br />
             and specialist decorative surfaces.
           </p>
-          <ButtonLink href="#work" subtle>
-            View selected work
-          </ButtonLink>
+          <div className="p-hero-actions">
+            <ButtonLink href="#work" subtle>
+              View selected work
+            </ButtonLink>
+            <ButtonLink href="/contact" subtle>
+              Discuss your project
+            </ButtonLink>
+          </div>
         </div>
         <img
           src="/hero/PXL_20251018_142500065-1400.webp"
@@ -49,8 +54,9 @@ export default function HomePage() {
             </>
           }
         >
-          Premium Painting, Luxury Finishes and Wallpaper for complete
-          residences, substantial renovations and commercial interiors.
+          Premium Painting, High-end Wallpaper and Luxury Finishes for
+          complete residences, substantial renovations and commercial
+          interiors.
         </SectionHeading>
       </Section>
       <Section className="p-services-section" id="services">
@@ -67,6 +73,14 @@ export default function HomePage() {
               </span>
             </a>
           ))}
+        </div>
+        <div className="p-service-secondary-links" role="group" aria-label="Additional services">
+          <a href="/commercial-painting">
+            Commercial Painting <span aria-hidden="true">↗</span>
+          </a>
+          <a href="/exterior-painting">
+            Exterior Painting <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </Section>
       <Section tone="ink" className="p-feature">

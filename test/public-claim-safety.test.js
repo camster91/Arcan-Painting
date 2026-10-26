@@ -63,5 +63,10 @@ describe("public claim safety", () => {
     expect(homepage).not.toContain("PricingSection");
     expect(cityServiceRoute).toContain('content: "noindex, follow"');
     expect(sitemap).not.toContain("cityServiceUrls");
+    expect(sitemap).not.toContain('"/quote"');
+    expect(root).not.toMatch(/geo\.region|geo\.position|ICBM/);
+    expect(llms).toContain("Premium Painting");
+    expect(llms).toContain("High-end Wallpaper");
+    expect(llms).toContain("Luxury Finishes");
   });
 });
