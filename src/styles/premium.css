@@ -116,7 +116,6 @@ html:has(.premium-site dialog[open]) {
   display: block;
   flex-shrink: 0;
   width: 180px;
-  background: #fff;
   padding: 7px 10px;
 }
 .p-logo img {

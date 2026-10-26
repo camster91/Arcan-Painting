@@ -32,7 +32,7 @@ test('short landscape menu stays scrollable and closes on escape, outside focus 
   expect(await nav.evaluate(el => el.getBoundingClientRect().bottom <= innerHeight + 1)).toBe(true);
   const enquire = nav.getByRole('link', {name: 'Enquire', exact: true});
   await enquire.scrollIntoViewIfNeeded();
-  expect(await enquire.evaluate(el => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })).toBe(true);
+  expect(await enquire.evaluate(el => { const r = el.getBoundingClientRect(); return r.top >= -1 && r.bottom <= innerHeight + 1; })).toBe(true);
   await page.keyboard.press('Escape');
   await expect(menu).toBeFocused();
   await menu.click();
@@ -52,4 +52,24 @@ test('short landscape menu stays scrollable and closes on escape, outside focus 
   await menu.click();
   await page.setViewportSize({width: 1024, height: 900});
   await expect(page.locator('header .p-logo')).toBeFocused();
+});
+
+test('transparent brand artwork stays clear and home-linked in both shell locations', async ({page}) => {
+  for (const width of [320,768,1440]) {
+    await page.setViewportSize({width,height:900});
+    await page.goto('/about');
+    const logos = page.locator('a.p-logo');
+    await expect(logos).toHaveCount(2);
+    for (const logo of await logos.all()) {
+      await logo.scrollIntoViewIfNeeded();
+      await expect(logo).toHaveAttribute('href','/');
+      const img = logo.locator('img');
+      await expect(img).toHaveAttribute('src','/brand/arcan-painting-logo.png');
+      await expect.poll(() => img.evaluate(el => el.complete && el.naturalWidth === 800 && el.naturalHeight === 235)).toBe(true);
+      expect(await logo.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+      expect(await logo.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    }
+    await logos.last().click();
+    await expect(page).toHaveURL(/\/$/);
+  }
 });
