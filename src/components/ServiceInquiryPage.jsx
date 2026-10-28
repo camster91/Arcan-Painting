@@ -52,6 +52,6 @@ export default function ServiceInquiryPage({ serviceName }) {
       <section className="py-16 lg:py-20 bg-amber-400"><div className="max-w-3xl mx-auto px-6 text-center"><h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Start a project conversation</h2><p className="text-slate-800 text-xl mb-8">Share the scope you know today. The team can review it before confirming next steps.</p><button onClick={() => setIsLeadFormOpen(true)} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-10 py-4 rounded-xl text-xl transition-all">Contact the Team</button></div></section>
     </main>
     <Footer />
-    {isLeadFormOpen && <LeadFormPopup onClose={() => setIsLeadFormOpen(false)} />}
+    {isLeadFormOpen && <LeadFormPopup isOpen={isLeadFormOpen} onClose={() => setIsLeadFormOpen(false)} source="service_page" />}
   </div>;
 }

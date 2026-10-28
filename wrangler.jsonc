@@ -44,7 +44,7 @@
       "preview_urls": false,
       "vars": {
         "SITE_MODE": "production",
-        "ENQUIRIES_ENABLED": "true",
+        "ENQUIRIES_ENABLED": "false",
         "LEGACY_ORIGIN": "enabled"
       },
       "services": [

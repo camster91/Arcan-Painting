@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { lazy, Suspense, useMemo, useState, useRef, useEffect } from "react";
 import {
   Calculator,
   Paintbrush,
@@ -9,6 +9,8 @@ import {
   AlertCircle,
   Move,
 } from "lucide-react";
+
+const LeadFormPopup = lazy(() => import("./LeadFormPopup"));
 
 export default function QuoteCalculatorSection() {
   const [type, setType] = useState("interior");
@@ -19,6 +21,7 @@ export default function QuoteCalculatorSection() {
   const [trim, setTrim] = useState(true);
   const [coats, setCoats] = useState(2);
   const [error, setError] = useState(null);
+  const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -424,10 +427,7 @@ export default function QuoteCalculatorSection() {
               </div>
               <button
                 className="w-full md:w-auto px-8 py-4 rounded-xl font-bold text-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-                onClick={() => {
-                  const el = document.getElementById("contact");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => setIsLeadFormOpen(true)}
               >
                 Lock in a free exact quote
               </button>
@@ -449,6 +449,15 @@ export default function QuoteCalculatorSection() {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+      {isLeadFormOpen && (
+        <Suspense fallback={null}>
+          <LeadFormPopup
+            isOpen={isLeadFormOpen}
+            onClose={() => setIsLeadFormOpen(false)}
+            source="quote_calculator"
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

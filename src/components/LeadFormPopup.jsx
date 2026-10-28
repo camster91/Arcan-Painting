@@ -230,6 +230,7 @@ export default function LeadFormPopup({ isOpen, onClose, source = "site_cta" }) 
       { key: "interior", label: "Interior" },
       { key: "exterior", label: "Exterior" },
       { key: "commercial", label: "Commercial" },
+      { key: "wallpaper", label: "Wallpaper" },
       { key: "specialty", label: "Specialty Finishes" },
       { key: "consultation", label: "Color Consultation" },
       { key: "other", label: "Other" },
