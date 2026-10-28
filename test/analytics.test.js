@@ -1,6 +1,6 @@
 import { createElement } from "react";
 import { render } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ButtonLink } from "@/components/premium/primitives";
 import { getAttribution, initializeAnalytics, trackEvent } from "@/utils/analytics";
 
@@ -77,4 +77,19 @@ it('never emits page views or events for private customer URLs', async () => {
   trackPageView(window.location.pathname+window.location.search);
   trackEvent('form_validation_error',{field:'private-customer-field'});
   expect(window.dataLayer).toEqual([]);
+});
+
+describe("GA4 loader", () => {
+  it("loads gtag from NEXT_PUBLIC_GA_MEASUREMENT_ID, the only prefix the build exposes", async () => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_GA_MEASUREMENT_ID", "G-TEST123");
+    document.head.innerHTML = "";
+    window.history.replaceState({}, "", "/");
+    delete window.gtag;
+    window.dataLayer = [];
+    const mod = await import("@/utils/analytics");
+    mod.initializeAnalytics();
+    expect(document.head.querySelector('script[src*="googletagmanager.com/gtag/js?id=G-TEST123"]')).not.toBeNull();
+    vi.unstubAllEnvs();
+  });
 });

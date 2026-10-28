@@ -69,7 +69,7 @@ export function initializeAnalytics() {
     }
   }, true);
 
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const measurementId = import.meta.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   if (measurementId && /^G-[A-Z0-9]+$/.test(measurementId)) {
     const script = document.createElement("script");
     script.async = true;
