@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { recalcInvoiceTotals } from "@/app/api/utils/invoice-totals";
+import { recalcInvoiceTotals, lockInvoiceForPayment } from "./invoice-totals.js";
 
 let client = null;
 export function stripeClient() {
@@ -20,7 +20,7 @@ export async function recordCheckoutPayment(db, session) {
   const intent = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? null;
 
   return db.transaction(async (tx) => {
-    const [invoice] = await tx`SELECT id FROM invoices WHERE id = ${invoiceId}`;
+    const invoice = await lockInvoiceForPayment(tx, invoiceId);
     if (!invoice) return { recorded: false, reason: "invoice not found" };
     const inserted = await tx`
       INSERT INTO payments (payment_number, invoice_id, payment_method, payment_reference, amount, payment_date,

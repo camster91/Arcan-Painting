@@ -1,6 +1,7 @@
 import sql from "@/app/api/utils/sql";
 import { getCurrentUser } from "@/app/api/utils/auth";
 import { requireCsrf, shouldRequireCsrf } from "@/app/api/utils/csrf";
+import { timeEntryTotals } from "@/app/api/utils/time-entry-totals";
 
 const staffRoles = new Set(["owner", "admin", "painter", "crew"]);
 const positiveId = (value) => /^[1-9]\d*$/.test(String(value)) && Number.isSafeInteger(Number(value));
@@ -151,20 +152,9 @@ export async function POST(request) {
       );
     }
 
-    // Calculate totals if clock_out_time is provided
-    let total_hours = null;
-    let total_cost = null;
-
-    if (clock_out_time) {
-      const clockIn = new Date(clock_in_time);
-      const clockOut = new Date(clock_out_time);
-      const totalMinutes =
-        (clockOut - clockIn) / (1000 * 60) - (break_duration_minutes || 0);
-      total_hours = Math.max(0, totalMinutes / 60);
-      if (hourly_rate) {
-        total_cost = total_hours * parseFloat(hourly_rate);
-      }
-    }
+    const totals = timeEntryTotals({ clock_in_time, clock_out_time, break_duration_minutes, hourly_rate });
+    if (totals.error) return Response.json({ error: totals.error }, { status: 400 });
+    const { total_hours, total_cost } = totals;
 
     const result = await sql`
       INSERT INTO time_tracking (
@@ -210,7 +200,9 @@ export async function PUT(request) {
 
     if (user.role !== "owner" && ["hourly_rate", "total_cost", "total_hours"].some((field) => field in updateFields)) return Response.json({ error: "Internal cost fields require owner access" }, { status: 403 });
 
-    // If non-owner, ensure the entry belongs to the current painter
+    // Resolve membership before taking the entry lock; verify ownership again
+    // in the locking read used by the actual correction.
+    let memberId = null;
     if (user.role !== "owner") {
       const tm =
         await sql`SELECT id FROM team_members WHERE email = ${user.username} LIMIT 1`;
@@ -219,13 +211,7 @@ export async function PUT(request) {
           { error: "Team member not found" },
           { status: 404 },
         );
-      const entry =
-        await sql`SELECT id FROM time_tracking WHERE id = ${id} AND team_member_id = ${tm[0].id}`;
-      if (!entry.length)
-        return Response.json(
-          { error: "Not found or access denied" },
-          { status: 404 },
-        );
+      memberId = tm[0].id;
     }
 
     const allowedFields = [
@@ -238,73 +224,71 @@ export async function PUT(request) {
       "hourly_rate",
     ];
 
-    const setClause = [];
-    const values = [];
-    let paramCount = 0;
-
-    // Handle clock out and recalc
-    if ("clock_out_time" in updateFields) {
-      const currentRecord =
-        await sql`SELECT * FROM time_tracking WHERE id = ${id}`;
+    return await sql.transaction(async (tx) => {
+      // Read UTC wall-clock text for calculation: pg otherwise interprets these
+      // timezone-less columns using the Node host timezone; mysql uses UTC.
+      const currentRecord = user.role === "owner"
+        ? await tx`SELECT *, clock_in_time::text AS calculation_clock_in_time, clock_out_time::text AS calculation_clock_out_time FROM time_tracking WHERE id = ${id} FOR UPDATE`
+        : await tx`SELECT *, clock_in_time::text AS calculation_clock_in_time, clock_out_time::text AS calculation_clock_out_time FROM time_tracking WHERE id = ${id} AND team_member_id = ${memberId} FOR UPDATE`;
       if (!currentRecord.length) {
         return Response.json(
-          { error: "Time entry not found" },
+          { error: "Time entry not found or access denied" },
           { status: 404 },
         );
       }
       const record = currentRecord[0];
-      const clockIn = new Date(record.clock_in_time);
-      const clockOut = new Date(updateFields.clock_out_time);
-      const breakMinutes =
-        updateFields.break_duration_minutes ||
-        record.break_duration_minutes ||
-        0;
-      const totalMinutes = (clockOut - clockIn) / (1000 * 60) - breakMinutes;
-      const totalHours = Math.max(0, totalMinutes / 60);
-      const rate = updateFields.hourly_rate || record.hourly_rate;
-      const totalCost = rate ? totalHours * parseFloat(rate) : null;
-      updateFields.total_hours = totalHours;
-      updateFields.total_cost = totalCost;
-      updateFields.status = "completed";
-    }
-
-    Object.entries(updateFields).forEach(([field, value]) => {
-      if (
-        allowedFields.includes(field) ||
-        field === "total_hours" ||
-        field === "total_cost"
-      ) {
-        setClause.push(`${field} = $${++paramCount}`);
-        values.push(value);
+      if (["clock_out_time", "break_duration_minutes", "hourly_rate"].some(field => field in updateFields)) {
+        const clockOut = "clock_out_time" in updateFields ? updateFields.clock_out_time : record.calculation_clock_out_time ?? record.clock_out_time;
+        const totals = timeEntryTotals({
+          clock_in_time: record.calculation_clock_in_time ?? record.clock_in_time,
+          clock_out_time: clockOut,
+          break_duration_minutes: "break_duration_minutes" in updateFields ? updateFields.break_duration_minutes : record.break_duration_minutes,
+          hourly_rate: "hourly_rate" in updateFields ? updateFields.hourly_rate : record.hourly_rate,
+        });
+        if (totals.error) return Response.json({ error: totals.error }, { status: 400 });
+        Object.assign(updateFields, totals);
+        updateFields.status = clockOut ? "completed" : "active";
       }
+
+      const setClause = [];
+      const values = [];
+      let paramCount = 0;
+
+      Object.entries(updateFields).forEach(([field, value]) => {
+        if (
+          allowedFields.includes(field) ||
+          field === "total_hours" ||
+          field === "total_cost"
+        ) {
+          setClause.push(`${field} = $${++paramCount}`);
+          values.push(value);
+        }
+      });
+
+      if (setClause.length === 0) {
+        return Response.json(
+          { error: "No valid fields to update" },
+          { status: 400 },
+        );
+      }
+
+      setClause.push(`updated_at = $${++paramCount}`);
+      values.push(new Date().toISOString());
+      values.push(id);
+
+      const query = `
+        UPDATE time_tracking
+        SET ${setClause.join(", ")}
+        WHERE id = $${++paramCount}
+        RETURNING *
+      `;
+      const result = await tx(query, values);
+      if (!result.length) {
+        return Response.json({ error: "Time entry not found" }, { status: 404 });
+      }
+
+      return Response.json({ timeEntry: visibleEntry(result[0], user) }, { headers: { "Cache-Control": "private, no-store" } });
     });
-
-    if (setClause.length === 0) {
-      return Response.json(
-        { error: "No valid fields to update" },
-        { status: 400 },
-      );
-    }
-
-    setClause.push(`updated_at = $${++paramCount}`);
-    values.push(new Date().toISOString());
-
-    values.push(id);
-
-    const query = `
-      UPDATE time_tracking 
-      SET ${setClause.join(", ")}
-      WHERE id = $${++paramCount}
-      RETURNING *
-    `;
-
-    const result = await sql(query, values);
-
-    if (!result.length) {
-      return Response.json({ error: "Time entry not found" }, { status: 404 });
-    }
-
-    return Response.json({ timeEntry: visibleEntry(result[0], user) }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Error updating time entry:", error);
     return Response.json(

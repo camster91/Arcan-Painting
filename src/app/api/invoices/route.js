@@ -42,14 +42,20 @@ export async function GET(request) {
         l.phone as client_phone,
         c.contract_number,
         p.project_name,
-        COUNT(ili.id) as line_items_count,
-        COALESCE(SUM(payments.amount), 0) as total_paid
+        COALESCE(items.line_items_count, 0) as line_items_count,
+        COALESCE(paid.total_paid, 0) as total_paid
       FROM invoices i
       LEFT JOIN leads l ON i.lead_id = l.id
       LEFT JOIN contracts c ON i.contract_id = c.id
       LEFT JOIN projects p ON i.project_id = p.id
-      LEFT JOIN invoice_line_items ili ON i.id = ili.invoice_id
-      LEFT JOIN payments ON i.id = payments.invoice_id AND payments.status = 'cleared'
+      LEFT JOIN (
+        SELECT invoice_id, COUNT(*) AS line_items_count
+        FROM invoice_line_items GROUP BY invoice_id
+      ) items ON i.id = items.invoice_id
+      LEFT JOIN (
+        SELECT invoice_id, SUM(amount) AS total_paid
+        FROM payments WHERE status = 'cleared' GROUP BY invoice_id
+      ) paid ON i.id = paid.invoice_id
       WHERE 1=1
     `;
 
@@ -91,7 +97,6 @@ export async function GET(request) {
     }
 
     query += ` 
-      GROUP BY i.id, l.name, l.email, l.phone, c.contract_number, p.project_name
       ORDER BY i.created_at DESC 
       LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
     `;
