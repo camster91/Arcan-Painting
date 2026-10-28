@@ -25,7 +25,7 @@ export default function Contact() {
               ? "Share your contact details and preferred timing for an estimate. We will follow up to discuss the scope and arrange a suitable time."
               : "Email or call our team to discuss your project, materials and preferred timing for an estimate."}
           </SectionHeading>
-          <p>
+          <p className="p-copy">
             Estimate appointments are confirmed directly with our team.
           </p>
           {enquiriesEnabled && (

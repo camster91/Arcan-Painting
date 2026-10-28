@@ -131,9 +131,12 @@ export default function PremiumShell({ children }) {
           <SocialLinks />
         </div>
         <div className="p-footer-links">
-          <a href="/interior-painting">Premium Painting</a>
+          <a href="/interior-painting">Painting</a>
+          <a href="/wallpaper-services">Wallpaper</a>
+          <a href="/specialty-finishes">Luxury finishes</a>
           <a href="/commercial-painting">Commercial</a>
           <a href="/exterior-painting">Exterior</a>
+          <a href="/projects">Selected work</a>
           <a href="/about">Our approach</a>
           <a href="/contact">Contact</a>
           <a href="/privacy">Privacy</a>
