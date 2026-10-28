@@ -15,7 +15,7 @@ export default function HomePage() {
     <PremiumShell>
       <section className="p-hero">
         <div className="p-hero-copy">
-          <p className="p-eyebrow">Arcan Painting</p>
+          <p className="p-eyebrow">Arcan Painting · Greater Toronto Area</p>
           <h1>
             Exceptional painting.
             <br />
@@ -24,7 +24,7 @@ export default function HomePage() {
           <p>
             Fine interior painting, high-end wallpaper
             <br />
-            and specialist decorative surfaces.
+            and specialist decorative surfaces across the GTA.
           </p>
           <div className="p-hero-actions">
             <ButtonLink href="#work" subtle>
