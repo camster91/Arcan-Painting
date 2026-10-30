@@ -1,5 +1,5 @@
 import PremiumShell from "@/components/premium/PremiumShell";
-import { Section, SectionHeading } from "@/components/premium/primitives";
+import { ButtonLink, Section, SectionHeading } from "@/components/premium/primitives";
 import ContactBlock from "@/components/premium/ContactBlock";
 import ProjectGallery from "@/components/premium/ProjectGallery";
 export default function Projects() {
@@ -14,6 +14,10 @@ export default function Projects() {
           Finished interiors, wallcoverings and exterior details, with a
           curated cover for each scene and more finished views in the image viewer.
         </SectionHeading>
+        <nav className="p-hero-actions" aria-label="Project stories">
+          <ButtonLink href="/projects/pattern-and-atmosphere" subtle>Pattern &amp; atmosphere</ButtonLink>
+          <ButtonLink href="/projects/a-study-in-contrast" subtle>A study in contrast</ButtonLink>
+        </nav>
       </Section>
       <Section tone="stone" id="gallery">
         <SectionHeading eyebrow="Finished projects" title="Work in detail.">
