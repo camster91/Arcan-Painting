@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { projectGallery as defaultItems } from "@/data/projectGallery";
 import "./ProjectGallery.css";
 
-const CATEGORIES = ["Interior", "Wallpaper", "Exterior", "Commercial", "Archive"];
+const CATEGORIES = ["Interior", "Wallpaper", "Exterior", "Commercial"];
 const INITIAL_VISIBLE = 12;
 const LOAD_INCREMENT = 12;
 
@@ -250,7 +250,7 @@ export default function ProjectGallery({ items = defaultItems }) {
   };
 
   return (
-    <div className="p-project-gallery" aria-label="Original photo gallery">
+    <div className="p-project-gallery" aria-label="Finished project photo gallery">
       <div className="p-project-gallery__header">
         <div
           className="p-project-gallery__filters"

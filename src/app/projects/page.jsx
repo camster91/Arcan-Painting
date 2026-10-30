@@ -1,7 +1,6 @@
 import PremiumShell from "@/components/premium/PremiumShell";
 import { Section, SectionHeading } from "@/components/premium/primitives";
 import ContactBlock from "@/components/premium/ContactBlock";
-import ProjectGrid from "@/components/premium/ProjectGrid";
 import ProjectGallery from "@/components/premium/ProjectGallery";
 export default function Projects() {
   return (
@@ -12,15 +11,13 @@ export default function Projects() {
           eyebrow="The Arcan collection"
           title="Selected work."
         >
-          An intimate look at colour, pattern and architectural detail in Arcan
-          interiors.
+          Finished interiors, wallcoverings and exterior details, with a
+          different view of the work in every photograph.
         </SectionHeading>
-        <ProjectGrid />
       </Section>
       <Section tone="stone" id="gallery">
-        <SectionHeading eyebrow="The Arcan archive" title="Work in detail.">
-          A closer look at interiors, wallcoverings and exterior details,
-          alongside preparation and work in progress.
+        <SectionHeading eyebrow="Finished projects" title="Work in detail.">
+          A curated collection of completed work. Select a photograph for a closer look.
         </SectionHeading>
         <ProjectGallery />
       </Section>
