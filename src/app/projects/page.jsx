@@ -12,12 +12,12 @@ export default function Projects() {
           title="Selected work."
         >
           Finished interiors, wallcoverings and exterior details, with a
-          different view of the work in every photograph.
+          curated cover for each scene and more finished views in the image viewer.
         </SectionHeading>
       </Section>
       <Section tone="stone" id="gallery">
         <SectionHeading eyebrow="Finished projects" title="Work in detail.">
-          A curated collection of completed work. Select a photograph for a closer look.
+          Select a photograph to explore all finished views of that scene.
         </SectionHeading>
         <ProjectGallery />
       </Section>

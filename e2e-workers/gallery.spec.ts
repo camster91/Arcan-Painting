@@ -1,23 +1,25 @@
 import { expect, test } from '@playwright/test';
 import { projectGallery } from '../src/data/projectGallery';
+import { getGalleryCovers } from '../src/data/gallerySelection';
+const covers = getGalleryCovers(projectGallery);
 async function showAll(page){
  while(await page.getByRole('button',{name:'Show more images',exact:true}).count()) await page.getByRole('button',{name:'Show more images',exact:true}).click();
 }
 test('finished photos appear once with working filters and thumbnails',async({page})=>{
  await page.goto('/projects');
- await expect(page.locator('.p-project-gallery__card')).toHaveCount(Math.min(12, projectGallery.length));
+ await expect(page.locator('.p-project-gallery__card')).toHaveCount(Math.min(12, covers.length));
  await showAll(page);
- await expect(page.locator('.p-project-gallery__card')).toHaveCount(projectGallery.length);
+ await expect(page.locator('.p-project-gallery__card')).toHaveCount(covers.length);
  await expect(page.locator('[data-gallery-stage="Work in progress"]')).toHaveCount(0);
  await expect(page.locator('[data-gallery-file="IMG-20260210-WA0003.webp"]')).toHaveCount(0);
- expect((await page.locator('.p-project-gallery__card').evaluateAll(cards=>cards.map(c=>c.getAttribute('data-gallery-file')).sort()))).toEqual(projectGallery.map(p=>p.file).sort());
+ expect((await page.locator('.p-project-gallery__card').evaluateAll(cards=>cards.map(c=>c.getAttribute('data-gallery-file')).sort()))).toEqual(covers.map(p=>p.file).sort());
  for(const img of await page.locator('.p-project-gallery__card img').all()){
   await img.scrollIntoViewIfNeeded(); await expect.poll(()=>img.evaluate(i=>i.complete && i.naturalWidth>0)).toBe(true);
  }
  for(const category of ['Interior','Wallpaper','Exterior','Commercial']){
   await page.getByRole('button',{name:category,exact:true}).click();
   await showAll(page);
-  await expect(page.locator('.p-project-gallery__card')).toHaveCount(projectGallery.filter(p=>p.category===category).length);
+  await expect(page.locator('.p-project-gallery__card')).toHaveCount(getGalleryCovers(projectGallery.filter(p=>p.category===category)).length);
   await expect(page.getByRole('button',{name:category,exact:true})).toHaveAttribute('aria-pressed','true');
  }
 });

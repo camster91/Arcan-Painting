@@ -2,9 +2,10 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import LeadFormPopup from "./LeadFormPopup";
 import { projectGallery } from "@/data/projectGallery";
+import { getGalleryCovers, orderGalleryItems } from "@/data/gallerySelection";
 
 // Share the visually reviewed selection with the premium gallery.
-const GALLERY_ITEMS = projectGallery.map((item, i) => ({
+const GALLERY_ITEMS = orderGalleryItems(projectGallery).map((item, i) => ({
   ...item,
   id: i + 1,
   altText: item.alt,
@@ -17,8 +18,8 @@ function GalleryCard({ item, onClick }) {
     <button
       type="button"
       onClick={(event) => onClick(event)}
-      className="flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
-      aria-label={`Open project photo: ${item.title}`}
+      className="relative flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
+      aria-label={`Open project photo: ${item.title}${item.photoCount > 1 ? ` (${item.photoCount} photos)` : ""}`}
       style={{
         width: "100%",
         aspectRatio: "1",
@@ -32,6 +33,11 @@ function GalleryCard({ item, onClick }) {
         className="gallery-img w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover/card:scale-105"
         style={{ imageOrientation: "from-image", transform: `rotate(${item.rotation}deg)` }}
       />
+      {item.photoCount > 1 ? (
+        <span className="absolute bottom-2 right-2 rounded-full bg-black/75 px-3 py-1 text-xs text-white">
+          {item.photoCount} photos
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -54,6 +60,8 @@ export default function PortfolioSection() {
       : GALLERY_ITEMS.filter(item => item.category === activeFilter),
     [activeFilter]
   );
+
+  const coverItems = useMemo(() => getGalleryCovers(filtered), [filtered]);
 
   const categoryCounts = useMemo(() => {
     const counts = {};
@@ -206,11 +214,11 @@ export default function PortfolioSection() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {filtered.map((item, index) => (
+        {coverItems.map((item) => (
           <GalleryCard
             key={item.file}
             item={item}
-            onClick={(event) => openLightbox(index, event.currentTarget)}
+            onClick={(event) => openLightbox(filtered.findIndex((photo) => photo.file === item.file), event.currentTarget)}
           />
         ))}
       </div>

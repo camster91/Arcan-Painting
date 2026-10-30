@@ -2,13 +2,14 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { projectGallery } from './projectGallery';
+import { getGalleryCovers, orderGalleryItems } from './gallerySelection';
 import { GET } from '../app/api/gallery/route';
 
 describe('finished project selection', () => {
-  it('publishes reviewed finished views with one photo per scene and valid assets', () => {
+  it('publishes reviewed finished views with valid assets', () => {
     expect(projectGallery.length).toBeGreaterThan(0);
     expect(new Set(projectGallery.map(item => item.file)).size).toBe(projectGallery.length);
-    expect(new Set(projectGallery.map(item => item.scene)).size).toBe(projectGallery.length);
+    expect(projectGallery.every(item => item.scene)).toBe(true);
     expect(new Set(projectGallery.map(item => item.category))).toEqual(new Set(['Interior', 'Wallpaper', 'Exterior', 'Commercial']));
     for (const item of projectGallery) {
       expect(item.stage).toBe('Finished project');
@@ -17,6 +18,19 @@ describe('finished project selection', () => {
       expect(existsSync(new URL(`../../public/gallery/images/${item.file}`, import.meta.url))).toBe(true);
       expect(existsSync(new URL(`../../public/gallery/thumbnails/${item.file.replace('.webp', '_thumb.webp')}`, import.meta.url))).toBe(true);
     }
+  });
+
+  it('shows one cover per scene while preserving additional finished views in the viewer', () => {
+    const photos = orderGalleryItems(projectGallery);
+    const covers = getGalleryCovers(photos);
+    expect(covers.length).toBeLessThan(photos.length);
+    expect(new Set(covers.map(item => item.scene)).size).toBe(covers.length);
+    expect(covers.reduce((sum, item) => sum + item.photoCount, 0)).toBe(projectGallery.length);
+    const floral = photos.filter(item => item.scene === 'floral-window-room');
+    const start = photos.findIndex(item => item.scene === 'floral-window-room');
+    expect(photos.slice(start, start + floral.length)).toEqual(floral);
+    expect(covers.find(item => item.scene === 'floral-window-room').photoCount).toBe(7);
+    expect(new Set(photos.map(item => item.file))).toEqual(new Set(projectGallery.map(item => item.file)));
   });
 
   it('keeps unfinished and duplicate views out of the public API, including filtered pages', async () => {
