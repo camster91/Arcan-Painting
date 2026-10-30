@@ -36,10 +36,10 @@ export default function HomePage() {
           </div>
         </div>
         <img
-          src="/hero/PXL_20251018_142500065-1400.webp"
-          alt="Arcan dining interior with patterned wallpaper, pink seating and a set table"
-          width="1400"
-          height="1859"
+          src="/hero/PXL_20250217_224338011_MP-900.webp"
+          alt="Finished neutral interior with white trim and dark wood flooring"
+          width="900"
+          height="1195"
           fetchPriority="high"
         />
       </section>
@@ -85,11 +85,11 @@ export default function HomePage() {
       </Section>
       <Section tone="ink" className="p-feature">
         <img
-          src="/hero/PXL_20260213_210915996-900.webp"
-          alt="Floral wallpaper and softly painted walls in an Arcan residential project"
+          src="/hero/floral-feature-wall-900.webp"
+          alt="Completed floral wallpaper feature wall with sage trim and wood flooring"
           loading="lazy"
           width="900"
-          height="1200"
+          height="675"
         />
         <div>
           <SectionHeading

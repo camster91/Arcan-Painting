@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { projectGallery as defaultItems } from "@/data/projectGallery";
 import "./ProjectGallery.css";
+import { getGalleryCovers, orderGalleryItems } from "@/data/gallerySelection";
 
-const CATEGORIES = ["Interior", "Wallpaper", "Exterior", "Commercial", "Archive"];
+const CATEGORIES = ["Interior", "Wallpaper", "Exterior", "Commercial"];
 const INITIAL_VISIBLE = 12;
 const LOAD_INCREMENT = 12;
 
@@ -135,6 +136,7 @@ function GalleryCard({ item, index, onOpen }) {
       href={imagePath(item.file)}
       data-gallery-file={item.file}
       data-gallery-stage={item.stage}
+      aria-label={`${item.title}: view ${item.photoCount || 1} ${(item.photoCount || 1) === 1 ? "photo" : "photos"}`}
       onClick={(event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
         event.preventDefault();
@@ -161,7 +163,7 @@ function GalleryCard({ item, index, onOpen }) {
         <span className="p-project-gallery__card-meta">
           {displayLabel(item.category)}
           <span aria-hidden="true">·</span>
-          {displayLabel(item.stage)}
+          {item.photoCount > 1 ? `${item.photoCount} photos` : displayLabel(item.stage)}
         </span>
       </span>
     </a>
@@ -179,7 +181,7 @@ export default function ProjectGallery({ items = defaultItems }) {
   const nextFocusIndex = useRef(null);
   const dialogWasOpenRef = useRef(false);
 
-  const galleryItems = useMemo(() => (Array.isArray(items) ? items : []), [items]);
+  const galleryItems = useMemo(() => orderGalleryItems(Array.isArray(items) ? items : []), [items]);
   const filteredItems = useMemo(
     () =>
       activeCategory === "All"
@@ -187,7 +189,8 @@ export default function ProjectGallery({ items = defaultItems }) {
         : galleryItems.filter((item) => item.category === activeCategory),
     [activeCategory, galleryItems],
   );
-  const visibleItems = filteredItems.slice(0, visibleCount);
+  const coverItems = useMemo(() => getGalleryCovers(filteredItems), [filteredItems]);
+  const visibleItems = coverItems.slice(0, visibleCount);
   const activeIndex = activeFile
     ? filteredItems.findIndex((item) => item.file === activeFile)
     : -1;
@@ -250,7 +253,7 @@ export default function ProjectGallery({ items = defaultItems }) {
   };
 
   return (
-    <div className="p-project-gallery" aria-label="Original photo gallery">
+    <div className="p-project-gallery" aria-label="Finished project photo gallery">
       <div className="p-project-gallery__header">
         <div
           className="p-project-gallery__filters"
@@ -280,7 +283,7 @@ export default function ProjectGallery({ items = defaultItems }) {
       </div>
 
       <p className="p-project-gallery__counter" aria-live="polite">
-        Showing {visibleItems.length} of {filteredItems.length} images
+        Showing {visibleItems.length} of {coverItems.length} selections · {filteredItems.length} photos
         {activeCategory !== "All" ? ` · ${activeCategory}` : ""}
       </p>
 
@@ -290,7 +293,7 @@ export default function ProjectGallery({ items = defaultItems }) {
         ))}
       </div>
 
-      {visibleItems.length < filteredItems.length ? (
+      {visibleItems.length < coverItems.length ? (
         <button
           className="p-project-gallery__load-more"
           type="button"

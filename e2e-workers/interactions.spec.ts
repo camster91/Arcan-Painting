@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { projectGallery } from '../src/data/projectGallery';
+import { getGalleryCovers } from '../src/data/gallerySelection';
 
 test('gallery filters fit desktop and newly revealed photos receive keyboard focus', async ({page}) => {
   for (const width of [1024, 1440]) {
@@ -18,7 +20,7 @@ test('gallery filters fit desktop and newly revealed photos receive keyboard foc
     await expect(cards.nth(previous + 1)).toBeFocused();
     previous = await cards.count();
   }
-  expect(previous).toBe(70);
+  expect(previous).toBe(getGalleryCovers(projectGallery).length);
 });
 
 test('short landscape menu stays scrollable and closes on escape, outside focus and desktop resize', async ({page}) => {

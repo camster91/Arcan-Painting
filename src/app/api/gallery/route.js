@@ -1,73 +1,39 @@
 import sql from "@/app/api/utils/sql";
+import { projectGallery } from "@/data/projectGallery";
 
-// Static fallback — import at build time
-let staticTags = null;
-async function getStaticTags() {
-  if (staticTags) return staticTags;
-  try {
-    const mod = await import("@/data/gallery-tags.json");
-    staticTags = mod.default || mod;
-  } catch {
-    staticTags = {};
-  }
-  return staticTags;
-}
-
-// GET /api/gallery — Public gallery items with tags
+// The public endpoint shares the reviewed finished-photo selection with both
+// gallery components. Raw AI tags and admin uploads are not publication approval.
 export async function GET(request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = Math.min(parseInt(searchParams.get("limit") || "50", 10), 100);
-    const offset = (page - 1) * limit;
-
-    // Try DB first
-    let items = [];
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get("category");
+  const parsedPage = Number.parseInt(searchParams.get("page") || "1", 10);
+  const parsedLimit = Number.parseInt(searchParams.get("limit") || "50", 10);
+  const page = Number.isFinite(parsedPage) ? Math.max(1, parsedPage) : 1;
+  const limit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(parsedLimit, 100)) : 50;
+  // A configured origin database retains admin visibility control. Never
+  // republish hidden photographs by falling back after a database outage.
+  const hidden = new Set();
+  if (process.env.DATABASE_URL) {
     try {
-      let query = `SELECT * FROM gallery_media WHERE visible = true`;
-      const params = [];
-      let paramIdx = 1;
-
-      if (category && category !== "All") {
-        query += ` AND category = $${paramIdx++}`;
-        params.push(category);
+      const rows = await sql("SELECT filename, visible FROM gallery_media");
+      for (const row of rows) {
+        if (row.visible === false || row.visible === 0) hidden.add(row.filename);
       }
-
-      query += ` ORDER BY sort_order ASC, (quality_score IS NULL) ASC, quality_score DESC`;
-      query += ` LIMIT $${paramIdx++} OFFSET $${paramIdx++}`;
-      params.push(limit, offset);
-
-      items = await sql(query, params);
     } catch {
-      // DB table may not exist yet — fall through to static
+      return Response.json({ error: "Gallery temporarily unavailable" }, { status: 503 });
     }
-
-    if (items.length > 0) {
-      return Response.json({ items, source: "database" });
-    }
-
-    // Fallback to static JSON tags
-    const tags = await getStaticTags();
-    let staticItems = Object.entries(tags).map(([filename, tag], i) => ({
-      id: i + 1,
-      filename,
-      ...tag,
+  }
+  const items = projectGallery
+    .filter((item) => !hidden.has(item.file))
+    .filter((item) => !category || category.toLowerCase() === "all" || item.category.toLowerCase() === category.toLowerCase())
+    .map((item) => ({
+      ...item,
+      id: item.file,
+      filename: item.file,
+      alt_text: item.alt,
+      phase: "after",
       visible: true,
     }));
-
-    if (category && category !== "All") {
-      staticItems = staticItems.filter(
-        (item) => item.category?.toLowerCase() === category.toLowerCase()
-      );
-    }
-
-    staticItems.sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0));
-    const paged = staticItems.slice(offset, offset + limit);
-
-    return Response.json({ items: paged, source: "static", total: staticItems.length });
-  } catch (err) {
-    console.error("Gallery API error:", err);
-    return Response.json({ error: "Failed to load gallery" }, { status: 500 });
-  }
+  const offset = (page - 1) * limit;
+  return Response.json({ items: items.slice(offset, offset + limit), source: "curated", total: items.length });
 }
