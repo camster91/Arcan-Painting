@@ -85,11 +85,11 @@ export default function HomePage() {
       </Section>
       <Section tone="ink" className="p-feature">
         <img
-          src="/hero/PXL_20260213_210915996-900.webp"
-          alt="Floral wallpaper and softly painted walls in an Arcan residential project"
+          src="/hero/floral-feature-wall-900.webp"
+          alt="Completed floral wallpaper feature wall with sage trim and wood flooring"
           loading="lazy"
           width="900"
-          height="1200"
+          height="675"
         />
         <div>
           <SectionHeading

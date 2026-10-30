@@ -3,6 +3,16 @@
 // New images require visual review: automated phase tags alone are not approval.
 export const projectGallery = [
   {
+    "file": "floral-feature-wall.webp",
+    "title": "Floral feature wall and sage trim",
+    "alt": "Completed floral wallpaper feature wall around a window, with sage-coloured trim and clean wood flooring",
+    "category": "Wallpaper",
+    "stage": "Finished project",
+    "rotation": 0,
+    "isVideoStill": false,
+    "scene": "floral-window-room"
+  },
+  {
     "file": "PXL_20250217_224338011_MP.webp",
     "title": "Neutral interior and wood flooring",
     "alt": "Neutral interior and wood flooring",
@@ -31,6 +41,16 @@ export const projectGallery = [
     "rotation": 0,
     "isVideoStill": false,
     "scene": "patterned-dining-room"
+  },
+  {
+    "file": "painted-commercial-corridor.webp",
+    "title": "Two-tone commercial hallway",
+    "alt": "Finished commercial hallway with grey walls, dark door frames, carpeted flooring and ceiling lighting",
+    "category": "Commercial",
+    "stage": "Finished project",
+    "rotation": 0,
+    "isVideoStill": false,
+    "scene": "two-tone-commercial-hallway"
   },
   {
     "file": "20251012_165336.webp",

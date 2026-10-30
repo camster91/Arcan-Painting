@@ -66,9 +66,9 @@ export const services = [
     summary: "Painting and wallcoverings for distinctive commercial spaces.",
     description:
       "Commercial Painting scope is reviewed around site type, occupied areas, surfaces, operating hours, access, sequence, and target dates. Share drawings, specifications, site procedures, or brand colour references when available.",
-    image: "/hero/IMG-20260217-WA0021-900.webp",
+    image: "/hero/painted-commercial-corridor-900.webp",
     imageAlt:
-      "Bar counter and arched ceiling from Arcan's original commercial project collection",
+      "Finished commercial corridor with two-tone grey walls and dark door frames",
     details: [
       "Site type, occupied areas, public access, and operating hours",
       "Drawings, finish schedules, specifications, or brand colour references",
