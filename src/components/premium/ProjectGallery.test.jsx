@@ -25,7 +25,7 @@ describe('finished gallery scene covers and additional views', () => {
 
   it('opens the cover and includes every reviewed additional view in sequence', () => {
     const { container } = render(<ProjectGallery />);
-    const cover = screen.getByRole('link', { name: 'Floral feature wall and sage trim: view 7 photos', exact: true });
+    const cover = screen.getByRole('link', { name: 'Floral feature wall and sage trim: view 6 photos', exact: true });
     fireEvent.click(cover);
     const photos = orderGalleryItems(projectGallery);
     for (const item of photos) {

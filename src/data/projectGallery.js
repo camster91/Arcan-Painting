@@ -163,16 +163,6 @@ export const projectGallery = [
     "scene": "two-tone-staircase"
   },
   {
-    "file": "IMG-20260217-WA0020.webp",
-    "title": "Bar counter and arched ceiling",
-    "alt": "Bar counter and arched ceiling",
-    "category": "Commercial",
-    "stage": "Finished project",
-    "rotation": 0,
-    "isVideoStill": false,
-    "scene": "arched-bar"
-  },
-  {
     "file": "IMG-20260217-WA0022.webp",
     "title": "Bar interior and arched wall",
     "alt": "Bar interior and arched wall",
@@ -256,16 +246,6 @@ export const projectGallery = [
     "file": "floral-room-view-8.webp",
     "title": "Floral feature wall in warm lighting",
     "alt": "Floral feature wall in warm lighting in a completed room with wood flooring",
-    "category": "Wallpaper",
-    "stage": "Finished project",
-    "rotation": 0,
-    "isVideoStill": false,
-    "scene": "floral-window-room"
-  },
-  {
-    "file": "floral-room-view-35.webp",
-    "title": "Floral wallcovering and painted skirting",
-    "alt": "Floral wallcovering and painted skirting in a completed room with wood flooring",
     "category": "Wallpaper",
     "stage": "Finished project",
     "rotation": 0,
