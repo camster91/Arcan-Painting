@@ -1015,7 +1015,8 @@ html:has(.premium-site dialog[open]) {
   --p-slide-width: max-content;
   margin-top: 32px;
 }
-.premium-site .p-photo-slider .p-project-detail {
+.premium-site .p-photo-slider img {
+  display: block;
   margin: 0;
   width: auto;
   max-width: 88vw;
@@ -1037,7 +1038,7 @@ html:has(.premium-site dialog[open]) {
   .premium-site .p-review-slider {
     --p-slide-width: 84%;
   }
-  .premium-site .p-photo-slider .p-project-detail {
+  .premium-site .p-photo-slider img {
     height: min(70vh, 560px);
   }
 }

@@ -46,7 +46,7 @@ export default function Project() {
           ].map((photo, i) => (
             <img
               key={photo.key}
-              className="p-project-detail"
+              className={i === 0 ? "p-project-detail" : "p-project-photo"}
               src={photo.src}
               alt={photo.alt}
               width="1400"
