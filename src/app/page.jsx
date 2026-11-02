@@ -4,11 +4,21 @@ import {
   Section,
   SectionHeading,
 } from "@/components/premium/primitives";
-import ProjectGrid from "@/components/premium/ProjectGrid";
+import WorkSlider from "@/components/premium/WorkSlider";
 import ContactBlock from "@/components/premium/ContactBlock";
-import { services } from "@/data/premiumSite";
+import { projects, services } from "@/data/premiumSite";
+import { projectGallery } from "@/data/projectGallery";
+import { getUprightCovers } from "@/data/gallerySelection";
 import GoogleReviews from "@/components/premium/GoogleReviews";
 import { generalFaqs } from "@/data/publicContent";
+
+const projectStories = projects.map((project) => ({
+  ...project,
+  href: `/projects/${project.slug}`,
+}));
+const moreWork = getUprightCovers(projectGallery, {
+  excludeScenes: projects.map((project) => project.scene),
+});
 
 export default function HomePage() {
   return (
@@ -126,7 +136,7 @@ export default function HomePage() {
             View the collection
           </ButtonLink>
         </div>
-        <ProjectGrid />
+        <WorkSlider label="Selected work" stories={projectStories} covers={moreWork} />
       </Section>
       <Section tone="stone" className="p-two-column" id="process">
         <SectionHeading

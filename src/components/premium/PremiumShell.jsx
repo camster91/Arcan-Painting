@@ -30,10 +30,51 @@ export function SocialLinks() {
     </div>
   );
 }
+/**
+ * Fade sections in as they scroll into view. Content is fully visible in the
+ * server HTML and without JavaScript; the effect is skipped entirely for
+ * visitors who ask for reduced motion.
+ */
+function useScrollReveal(rootRef) {
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof IntersectionObserver !== "function") return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const sections = [...root.querySelectorAll("main > .p-section")];
+    const pending = sections.filter(
+      (el) => el.getBoundingClientRect().top > window.innerHeight * 0.9,
+    );
+    if (!pending.length) return undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.remove("p-reveal");
+          observer.unobserve(entry.target);
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px" },
+    );
+    for (const el of pending) {
+      el.classList.add("p-reveal");
+      observer.observe(el);
+    }
+    const revealAll = () => pending.forEach((el) => el.classList.remove("p-reveal"));
+    window.addEventListener("beforeprint", revealAll);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("beforeprint", revealAll);
+      revealAll();
+    };
+  }, [rootRef]);
+}
+
 export default function PremiumShell({ children }) {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
   const headerRef = useRef(null);
   const menuRef = useRef(null);
+  useScrollReveal(rootRef);
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 901px)");
     const closeDesktopMenu = () => {
@@ -75,7 +116,7 @@ export default function PremiumShell({ children }) {
     };
   }, [open]);
   return (
-    <div className="premium-site">
+    <div className="premium-site" ref={rootRef}>
       <a className="p-skip" href="#main">
         Skip to content
       </a>

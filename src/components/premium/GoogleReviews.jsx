@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { googleListing } from "@/data/googleListing";
 import { Section, SectionHeading } from "./primitives";
 import GoogleListing from "./GoogleListing";
+import Slider from "./Slider";
 
 export default function GoogleReviews() {
   return (
@@ -13,7 +14,7 @@ export default function GoogleReviews() {
         <Star size={20} aria-hidden="true" />
         <strong>{googleListing.rating} out of 5</strong> · {googleListing.reviewCount} Google reviews
       </p>
-      <div className="p-review-grid">
+      <Slider label="Google review excerpts" className="p-review-slider">
         {googleListing.reviews.map(review => (
           <figure className="p-review-card" key={review.author}>
             <div className="p-review-stars" role="img" aria-label={`${review.rating} out of 5 stars`}>
@@ -23,7 +24,7 @@ export default function GoogleReviews() {
             <figcaption>{review.author} · Google review excerpt</figcaption>
           </figure>
         ))}
-      </div>
+      </Slider>
       <div className="p-review-actions">
         <GoogleListing />
         <a className="p-button p-button--line" href={googleListing.url} target="_blank" rel="noopener noreferrer">

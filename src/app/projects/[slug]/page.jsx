@@ -7,6 +7,9 @@ import {
 import ContactBlock from "@/components/premium/ContactBlock";
 import { useLoaderData } from "react-router";
 import { projects } from "@/data/premiumSite";
+import { projectGallery } from "@/data/projectGallery";
+import { getScenePhotos } from "@/data/gallerySelection";
+import Slider from "@/components/premium/Slider";
 export function loader({ params }) {
   const project = projects.find((item) => item.slug === params.slug);
   if (!project) throw new Response("Not found", { status: 404 });
@@ -30,14 +33,30 @@ export default function Project() {
             All selected work
           </ButtonLink>
         </div>
-        <img
-          className="p-project-detail"
-          src={project.image}
-          alt={project.imageAlt}
-          width="1400"
-          height="1860"
-          fetchPriority="high"
-        />
+        <Slider label={`${project.title} photos`} className="p-photo-slider">
+          {[
+            { src: project.image, alt: project.imageAlt, key: project.image },
+            ...getScenePhotos(projectGallery, project.scene)
+              .filter((photo) => !project.image.includes(photo.file.replace(/\.webp$/i, "")))
+              .map((photo) => ({
+                src: `/gallery/images/${encodeURIComponent(photo.file)}`,
+                alt: photo.alt,
+                key: photo.file,
+              })),
+          ].map((photo, i) => (
+            <img
+              key={photo.key}
+              className="p-project-detail"
+              src={photo.src}
+              alt={photo.alt}
+              width="1400"
+              height="1860"
+              fetchPriority={i === 0 ? "high" : undefined}
+              loading={i === 0 ? undefined : "lazy"}
+              decoding="async"
+            />
+          ))}
+        </Slider>
       </Section>
       <ContactBlock />
     </PremiumShell>
