@@ -1134,3 +1134,27 @@ html:has(.premium-site dialog[open]) {
     transition-delay: 0.36s;
   }
 }
+
+/* ---------- Service areas ---------- */
+.premium-site .p-areas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.premium-site .p-areas li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--p-line);
+  font: 400 21px/1.2 var(--p-serif);
+}
+@media (max-width: 650px) {
+  .premium-site .p-areas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+  .premium-site .p-areas li {
+    font-size: 19px;
+  }
+}

@@ -6,7 +6,7 @@ import {
 } from "@/components/premium/primitives";
 import WorkSlider from "@/components/premium/WorkSlider";
 import ContactBlock from "@/components/premium/ContactBlock";
-import { projects, services } from "@/data/premiumSite";
+import { projects, serviceAreas, services } from "@/data/premiumSite";
 import { projectGallery } from "@/data/projectGallery";
 import { getUprightCovers } from "@/data/gallerySelection";
 import GoogleReviews from "@/components/premium/GoogleReviews";
@@ -180,6 +180,26 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
+      </Section>
+      <Section className="p-two-column" id="areas">
+        <SectionHeading
+          eyebrow="Where we work"
+          title={
+            <>
+              The Greater Toronto Area
+              <br />
+              <em>and beyond.</em>
+            </>
+          }
+        >
+          From Toronto, Peel and Halton to York, Durham and Simcoe County. Not sure
+          if we cover your area? Ask us.
+        </SectionHeading>
+        <ul className="p-areas" aria-label="Service areas">
+          {serviceAreas.map((area) => (
+            <li key={area}>{area}</li>
+          ))}
+        </ul>
       </Section>
       <Section id="faq">
         <SectionHeading eyebrow="Before your project" title="A few practical questions." />

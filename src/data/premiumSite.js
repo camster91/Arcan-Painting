@@ -135,3 +135,16 @@ export const socialLinks = [
     icon: "google",
   },
 ];
+
+/**
+ * Service areas confirmed by the client on 3 November 2026. Kept in the same
+ * order as the CITIES map in src/app/[service]/[city]/page.jsx; those legacy
+ * city pages stay noindexed until their local content is reviewed.
+ */
+export const serviceAreas = [
+  "Toronto", "Mississauga", "Brampton", "Oakville", "Burlington", "Milton",
+  "Pickering", "Ajax", "Whitby", "Oshawa", "Newmarket", "Aurora",
+  "Richmond Hill", "Markham", "Vaughan", "King City", "Stouffville", "Georgina",
+  "East Gwillimbury", "Barrie", "Orillia", "Innisfil", "Bradford", "Alliston",
+  "Collingwood", "Wasaga Beach", "Midland", "Penetanguishene",
+];

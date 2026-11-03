@@ -35,3 +35,11 @@ describe('premium sliders', () => {
     expect(getScenePhotos(projectGallery, undefined)).toEqual([]);
   });
 });
+
+describe('service areas', () => {
+  it('lists exactly the confirmed city route names, in order', async () => {
+    const { serviceAreas } = await import('@/data/premiumSite');
+    const { CITIES } = await import('@/app/[service]/[city]/page.jsx');
+    expect(serviceAreas).toEqual(Object.values(CITIES).map((city) => city.name));
+  });
+});
