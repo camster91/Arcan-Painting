@@ -99,6 +99,7 @@ export const projects = [
   {
     slug: "pattern-and-atmosphere",
     title: "Pattern & atmosphere",
+    scene: "patterned-dining-room",
     category: "Wallcoverings / Hospitality",
     image: "/hero/PXL_20251018_142500065-1400.webp",
     imageAlt:
@@ -109,6 +110,7 @@ export const projects = [
   {
     slug: "a-study-in-contrast",
     title: "A study in contrast",
+    scene: "two-tone-staircase",
     category: "Painted details / Residential",
     image: "/hero/IMG-20260212-WA0016-1400.webp",
     imageAlt:
@@ -132,4 +134,17 @@ export const socialLinks = [
     href: "https://maps.app.goo.gl/WY8Rh5myeWX6JJhR6",
     icon: "google",
   },
+];
+
+/**
+ * Service areas confirmed by the client on 3 November 2026. Kept in the same
+ * order as the CITIES map in src/app/[service]/[city]/page.jsx; those legacy
+ * city pages stay noindexed until their local content is reviewed.
+ */
+export const serviceAreas = [
+  "Toronto", "Mississauga", "Brampton", "Oakville", "Burlington", "Milton",
+  "Pickering", "Ajax", "Whitby", "Oshawa", "Newmarket", "Aurora",
+  "Richmond Hill", "Markham", "Vaughan", "King City", "Stouffville", "Georgina",
+  "East Gwillimbury", "Barrie", "Orillia", "Innisfil", "Bradford", "Alliston",
+  "Collingwood", "Wasaga Beach", "Midland", "Penetanguishene",
 ];

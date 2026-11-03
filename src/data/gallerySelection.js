@@ -19,3 +19,20 @@ export function getGalleryCovers(items = []) {
     photoCount: photos.length,
   }));
 }
+
+// Slider helpers. Rotated photos are left to the full gallery, which handles
+// their rotation; sliders only show photos that display upright as stored.
+export function getUprightCovers(items = [], { category, excludeScenes = [] } = {}) {
+  const upright = items.filter(
+    (item) =>
+      !item.rotation &&
+      (!category || item.category === category) &&
+      !excludeScenes.includes(item.scene),
+  );
+  return getGalleryCovers(upright);
+}
+
+export function getScenePhotos(items = [], scene) {
+  if (!scene) return [];
+  return items.filter((item) => item.scene === scene && !item.rotation);
+}

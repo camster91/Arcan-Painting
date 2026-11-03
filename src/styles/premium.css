@@ -912,3 +912,249 @@ html:has(.premium-site dialog[open]) {
 
 .p-hero .p-button--line:hover,
 .p-section--ink .p-button--line:hover { color: var(--p-gold) !important; }
+
+/* ---------- Sliders (native scroll-snap, no library) ---------- */
+.premium-site .p-slider {
+  position: relative;
+}
+.premium-site .p-slider__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--p-slide-width, calc((100% - 2 * 28px) / 3));
+  gap: 28px;
+  margin: 0;
+  padding: 0 0 6px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.premium-site .p-slider__track::-webkit-scrollbar {
+  display: none;
+}
+.premium-site .p-slider__slide {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+.premium-site .p-slider__controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+.premium-site .p-slider__button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+}
+.premium-site .p-slider__button:hover:not(:disabled),
+.premium-site .p-slider__button:focus-visible {
+  background: var(--p-ink);
+  color: var(--p-paper);
+}
+.premium-site .p-slider__button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Work cards */
+.premium-site .p-work-slider {
+  --p-slide-width: calc((100% - 2 * 28px) / 3);
+}
+.premium-site .p-work-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.premium-site .p-work-card .p-image-frame {
+  display: block;
+  aspect-ratio: 4 / 5;
+}
+.premium-site .p-work-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.3s;
+}
+.premium-site .p-work-card:hover img,
+.premium-site .p-work-card:focus-visible img {
+  transform: scale(1.045);
+  filter: brightness(1.05);
+}
+.premium-site .p-work-card .p-project-meta svg {
+  transition: transform 0.3s;
+}
+.premium-site .p-work-card:hover .p-project-meta svg {
+  transform: translate(3px, -3px);
+}
+.premium-site .p-work-card__title {
+  display: block;
+  font: 400 27px/1.15 var(--p-serif);
+}
+
+/* Reviews */
+.premium-site .p-review-slider {
+  --p-slide-width: calc((100% - 2 * 28px) / 3);
+  margin: 34px 0;
+}
+.premium-site .p-review-slider .p-review-card {
+  height: 100%;
+}
+
+/* Project photo slider */
+.premium-site .p-photo-slider {
+  --p-slide-width: max-content;
+  margin-top: 32px;
+}
+.premium-site .p-photo-slider img {
+  display: block;
+  margin: 0;
+  width: auto;
+  max-width: 88vw;
+  height: min(78vh, 860px);
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .premium-site .p-work-slider,
+  .premium-site .p-review-slider {
+    --p-slide-width: 46%;
+  }
+}
+@media (max-width: 650px) {
+  .premium-site .p-slider__track {
+    gap: 18px;
+  }
+  .premium-site .p-work-slider,
+  .premium-site .p-review-slider {
+    --p-slide-width: 84%;
+  }
+  .premium-site .p-photo-slider img {
+    height: min(70vh, 560px);
+  }
+}
+
+/* Small hover cue on service cards */
+.premium-site .p-services > a .p-service-link span {
+  display: inline-block;
+  transition: transform 0.3s;
+}
+.premium-site .p-services > a:hover .p-service-link span {
+  transform: translate(3px, -3px);
+}
+
+/* ---------- Motion (only when the visitor allows it) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .premium-site .p-section {
+    transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .premium-site .p-section.p-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  /* A brush-stroke style wipe on the large opening photos. */
+  .premium-site .p-hero > img,
+  .premium-site .p-service-hero > img {
+    animation: p-wipe 1s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes p-wipe {
+    from {
+      clip-path: inset(0 0 0 55%);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+}
+
+/* ---------- FAQ: clear +/− marker and a smooth open where supported ---------- */
+.premium-site .p-faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+}
+.premium-site .p-faq summary::-webkit-details-marker {
+  display: none;
+}
+.premium-site .p-faq summary::after {
+  content: "+";
+  flex: none;
+  font: 300 26px/1 var(--p-sans);
+  color: var(--p-muted);
+  transition: transform 0.3s ease;
+}
+.premium-site .p-faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) {
+    .premium-site .p-faq {
+      interpolate-size: allow-keywords;
+    }
+    .premium-site .p-faq details::details-content {
+      height: 0;
+      overflow: clip;
+      transition: height 0.35s ease, content-visibility 0.35s allow-discrete;
+    }
+    .premium-site .p-faq details[open]::details-content {
+      height: auto;
+    }
+  }
+
+  /* Stagger the steps and service cards as their section fades in. */
+  .premium-site .p-process li,
+  .premium-site .p-services > a {
+    transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .premium-site .p-section.p-reveal .p-process li,
+  .premium-site .p-section.p-reveal .p-services > a {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .premium-site .p-process li:nth-child(2),
+  .premium-site .p-services > a:nth-child(2) {
+    transition-delay: 0.12s;
+  }
+  .premium-site .p-process li:nth-child(3),
+  .premium-site .p-services > a:nth-child(3) {
+    transition-delay: 0.24s;
+  }
+  .premium-site .p-process li:nth-child(4) {
+    transition-delay: 0.36s;
+  }
+}
+
+/* ---------- Service areas ---------- */
+.premium-site .p-areas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.premium-site .p-areas li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--p-line);
+  font: 400 21px/1.2 var(--p-serif);
+}
+@media (max-width: 650px) {
+  .premium-site .p-areas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+  .premium-site .p-areas li {
+    font-size: 19px;
+  }
+}

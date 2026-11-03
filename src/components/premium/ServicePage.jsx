@@ -3,6 +3,18 @@ import PremiumShell from "./PremiumShell";
 import ProjectContact from "./ProjectContact";
 import { Section, SectionHeading, ButtonLink } from "./primitives";
 import { services } from "@/data/premiumSite";
+import { projectGallery } from "@/data/projectGallery";
+import { getUprightCovers } from "@/data/gallerySelection";
+import WorkSlider from "./WorkSlider";
+
+// Only show photos that genuinely match the service. Luxury Finishes has no
+// reviewed photos tagged for it yet, so it shows no slider.
+const GALLERY_CATEGORY = {
+  "/interior-painting": "Interior",
+  "/wallpaper-services": "Wallpaper",
+  "/commercial-painting": "Commercial",
+  "/exterior-painting": "Exterior",
+};
 export default function ServicePage({ path }) {
   const service = services.find((s) => s.path === path);
   if (!service) return null;
@@ -20,6 +32,8 @@ export default function ServicePage({ path }) {
     "/commercial-painting": "commercial",
     "/exterior-painting": "exterior",
   }[path];
+  const category = GALLERY_CATEGORY[path];
+  const work = category ? getUprightCovers(projectGallery, { category }) : [];
   return (
     <PremiumShell>
       <section
@@ -55,6 +69,20 @@ export default function ServicePage({ path }) {
           </ul>
         </div>
       </Section>
+      {work.length > 0 && (
+        <Section tone="stone" id="work">
+          <div className="p-section-top">
+            <SectionHeading
+              eyebrow="Finished projects"
+              title={`${category} work.`}
+            />
+            <ButtonLink href="/projects#gallery" subtle>
+              View the collection
+            </ButtonLink>
+          </div>
+          <WorkSlider label={`${category} work`} covers={work} />
+        </Section>
+      )}
       <Section>
         <SectionHeading title="Before we begin." />
         <div className="p-faq">
