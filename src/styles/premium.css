@@ -167,8 +167,61 @@ html:has(.premium-site dialog[open]) {
   align-self: center;
   padding: 75px 45px 75px var(--p-gutter);
 }
-.p-hero > img {
+.p-hero > img,
+.p-hero-media {
   height: 650px;
+}
+.p-hero-media {
+  position: relative;
+  overflow: hidden;
+}
+.p-hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.p-hero-media img:first-child,
+.p-hero-media img.is-active {
+  opacity: 1;
+}
+.p-hero-media:has(img.is-active:not(:first-child)) img:first-child {
+  opacity: 0;
+}
+.p-hero-media__controls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(21, 43, 56, 0.55);
+}
+.p-hero-media__dot,
+.p-hero-media__toggle {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--p-paper);
+}
+.p-hero-media__dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--p-paper);
+  transition: background-color 0.3s;
+}
+.p-hero-media__dot[aria-current="true"]::before {
+  background: var(--p-paper);
 }
 .p-hero p:not(.p-eyebrow) {
   color: #d0d5d4;
@@ -451,7 +504,7 @@ html:has(.premium-site dialog[open]) {
 .p-review-stars {
   display: flex;
   gap: 4px;
-  color: #785f30;
+  color: #b8892f;
   margin-bottom: 22px;
 }
 .p-review-card blockquote {
@@ -723,6 +776,7 @@ html:has(.premium-site dialog[open]) {
     font-size: 44px;
   }
   .p-hero > img,
+  .p-hero-media,
   .p-service-hero > img {
     height: 560px;
   }
@@ -789,6 +843,7 @@ html:has(.premium-site dialog[open]) {
     font-size: 45px;
   }
   .p-hero > img,
+  .p-hero-media,
   .p-service-hero > img {
     height: 430px;
   }
@@ -1062,7 +1117,7 @@ html:has(.premium-site dialog[open]) {
     transform: translateY(28px);
   }
   /* A brush-stroke style wipe on the large opening photos. */
-  .premium-site .p-hero > img,
+  .premium-site .p-hero-media,
   .premium-site .p-service-hero > img {
     animation: p-wipe 1s cubic-bezier(0.65, 0, 0.35, 1) both;
   }
@@ -1156,5 +1211,14 @@ html:has(.premium-site dialog[open]) {
   }
   .premium-site .p-areas li {
     font-size: 19px;
+  }
+}
+
+.premium-site .p-google-rating__star {
+  color: #b8892f;
+}
+@media (max-width: 900px) {
+  .premium-site .p-hero-media {
+    width: 100%;
   }
 }

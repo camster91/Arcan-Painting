@@ -5,12 +5,34 @@ import {
   SectionHeading,
 } from "@/components/premium/primitives";
 import WorkSlider from "@/components/premium/WorkSlider";
+import HeroSlideshow from "@/components/premium/HeroSlideshow";
 import ContactBlock from "@/components/premium/ContactBlock";
 import { projects, serviceAreas, services } from "@/data/premiumSite";
 import { projectGallery } from "@/data/projectGallery";
 import { getUprightCovers } from "@/data/gallerySelection";
 import GoogleReviews from "@/components/premium/GoogleReviews";
 import { generalFaqs } from "@/data/publicContent";
+
+const heroSlides = [
+  {
+    src: "/hero/PXL_20251018_142500065-1400.webp",
+    alt: "Completed dining room with patterned wallpaper, pink seating and a set table",
+    width: 917,
+    height: 1218,
+  },
+  {
+    src: "/hero/floral-room-view-7-1000.webp",
+    alt: "Floral wallcovering around a window in a completed room with wood flooring",
+    width: 1012,
+    height: 1350,
+  },
+  {
+    src: "/hero/IMG-20260217-WA0022-1200.webp",
+    alt: "Finished bar interior with an arched wall, pendant lights and a dark ceiling",
+    width: 1200,
+    height: 1600,
+  },
+];
 
 const projectStories = projects.map((project) => ({
   ...project,
@@ -45,13 +67,7 @@ export default function HomePage() {
             </ButtonLink>
           </div>
         </div>
-        <img
-          src="/hero/PXL_20250217_224338011_MP-900.webp"
-          alt="Finished neutral interior with white trim and dark wood flooring"
-          width="900"
-          height="1195"
-          fetchPriority="high"
-        />
+        <HeroSlideshow slides={heroSlides} />
       </section>
       <Section className="p-two-column">
         <p className="p-eyebrow">Colour. Pattern. Texture.</p>

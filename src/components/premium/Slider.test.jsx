@@ -43,3 +43,17 @@ describe('service areas', () => {
     expect(serviceAreas).toEqual(Object.values(CITIES).map((city) => city.name));
   });
 });
+
+describe('hero slideshow', () => {
+  it('shows the first photo to everyone and hides the others from screen readers', async () => {
+    const { default: HeroSlideshow } = await import('./HeroSlideshow');
+    const slides = [1, 2, 3].map((n) => ({ src: `/hero/${n}.webp`, alt: `Photo ${n}`, width: 900, height: 1200 }));
+    const { container } = render(<HeroSlideshow slides={slides} />);
+    const imgs = container.querySelectorAll('img');
+    expect(imgs).toHaveLength(3);
+    expect(imgs[0]).toHaveAttribute('alt', 'Photo 1');
+    expect(imgs[0]).toHaveAttribute('fetchpriority', 'high');
+    expect(imgs[1]).toHaveAttribute('aria-hidden', 'true');
+    expect(imgs[2]).toHaveAttribute('loading', 'lazy');
+  });
+});

@@ -11,14 +11,14 @@ export default function GoogleReviews() {
         Selected excerpts from real Google reviews.
       </SectionHeading>
       <p className="p-google-rating">
-        <Star size={20} aria-hidden="true" />
+        <Star size={20} fill="currentColor" strokeWidth={1.5} className="p-google-rating__star" aria-hidden="true" />
         <strong>{googleListing.rating} out of 5</strong> · {googleListing.reviewCount} Google reviews
       </p>
       <Slider label="Google review excerpts" className="p-review-slider">
         {googleListing.reviews.map(review => (
           <figure className="p-review-card" key={review.author}>
             <div className="p-review-stars" role="img" aria-label={`${review.rating} out of 5 stars`}>
-              {Array.from({length:review.rating},(_,i)=><Star key={i} size={15} aria-hidden="true" />)}
+              {Array.from({length:review.rating},(_,i)=><Star key={i} size={16} fill="currentColor" strokeWidth={1.5} aria-hidden="true" />)}
             </div>
             <blockquote><p>“{review.excerpt}”</p></blockquote>
             <figcaption>{review.author} · Google review excerpt</figcaption>
