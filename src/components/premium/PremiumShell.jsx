@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Instagram, Star, Menu, X } from "lucide-react";
+import { Instagram, Star, Menu, X, Phone } from "lucide-react";
 import { socialLinks } from "@/data/premiumSite";
 import { ButtonLink } from "./primitives";
 import "@/styles/premium.css";
@@ -77,15 +77,31 @@ export default function PremiumShell({ children }) {
   useScrollReveal(rootRef);
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 901px)");
+    // The menu button is hidden at desktop width, and a hidden button can lose
+    // focus before the media query change event fires. Remember whether the
+    // keyboard was last on the button so focus can still move to the logo.
+    let menuHadFocus = false;
+    const trackFocus = (event) => {
+      menuHadFocus = event.target === menuRef.current;
+    };
+    document.addEventListener("focusin", trackFocus);
     const closeDesktopMenu = () => {
+      const lostWithMenu =
+        menuHadFocus &&
+        (document.activeElement === menuRef.current ||
+          document.activeElement === document.body ||
+          !document.activeElement);
       if (headerRef.current?.querySelector("nav")?.contains(document.activeElement) ||
-          (desktop.matches && document.activeElement === menuRef.current)) {
+          (desktop.matches && lostWithMenu)) {
         (desktop.matches ? headerRef.current.querySelector(".p-logo") : menuRef.current)?.focus();
       }
       setOpen(false);
     };
     desktop.addEventListener("change", closeDesktopMenu);
-    return () => desktop.removeEventListener("change", closeDesktopMenu);
+    return () => {
+      desktop.removeEventListener("change", closeDesktopMenu);
+      document.removeEventListener("focusin", trackFocus);
+    };
   }, []);
   useEffect(() => {
     const escape = (e) => {
@@ -144,9 +160,10 @@ export default function PremiumShell({ children }) {
           <a href="/wallpaper-services">Wallpaper</a>
           <a href="/specialty-finishes">Luxury finishes</a>
           <a href="/projects">Selected work</a>
-          <ButtonLink href="/contact" subtle>
-            Enquire
-          </ButtonLink>
+          <a className="p-header-phone" href="tel:+14167272148">
+            416 727 2148
+          </a>
+          <ButtonLink href="/contact">Request an estimate</ButtonLink>
         </nav>
       </header>
       <main id="main" tabIndex={-1}>
@@ -185,6 +202,14 @@ export default function PremiumShell({ children }) {
           <a href="mailto:info@arcanpainting.ca">info@arcanpainting.ca</a>
         </div>
       </footer>
+      <nav className="p-mobile-cta" aria-label="Quick contact">
+        <a href="tel:+14167272148">
+          <Phone size={18} aria-hidden="true" /> Call
+        </a>
+        <a href="/contact" data-cta="contact" data-cta-destination="/contact">
+          Request an estimate
+        </a>
+      </nav>
     </div>
   );
 }

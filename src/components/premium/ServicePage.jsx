@@ -43,7 +43,7 @@ export default function ServicePage({ path }) {
           <p className="p-eyebrow">{service.eyebrow}</p>
           <h1>{service.title}</h1>
           <p>{service.summary}</p>
-          <ButtonLink href="#enquire">Discuss your project</ButtonLink>
+          <ButtonLink href="#enquire" accent>Request an estimate</ButtonLink>
         </div>
         {service.image && (
           <img

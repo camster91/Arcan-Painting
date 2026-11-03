@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 import { getPublicCtaForHref } from "@/utils/publicCtas";
 
-export function ButtonLink({ href, children, subtle = false, ...props }) {
+export function ButtonLink({ href, children, subtle = false, accent = false, ...props }) {
   // Do not allow callers to smuggle arbitrary labels or destinations into the
   // analytics attributes. They are derived from the allowlist above.
   const safeProps = { ...props };
@@ -11,7 +11,7 @@ export function ButtonLink({ href, children, subtle = false, ...props }) {
 
   return (
     <a
-      className={`p-button${subtle ? " p-button--line" : ""}`}
+      className={`p-button${subtle ? " p-button--line" : ""}${accent && !subtle ? " p-button--accent" : ""}`}
       href={href}
       {...safeProps}
       { ...(cta ? { "data-cta": cta.label, "data-cta-destination": cta.destination } : {}) }
