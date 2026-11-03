@@ -28,7 +28,7 @@ export default function Project() {
           {project.description}
         </SectionHeading>
         <div className="p-project-actions">
-          <ButtonLink href="/contact">Discuss your project</ButtonLink>
+          <ButtonLink href="/contact" accent>Request an estimate</ButtonLink>
           <ButtonLink href="/projects" subtle>
             All selected work
           </ButtonLink>

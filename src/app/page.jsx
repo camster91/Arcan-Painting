@@ -12,6 +12,8 @@ import { projectGallery } from "@/data/projectGallery";
 import { getUprightCovers } from "@/data/gallerySelection";
 import GoogleReviews from "@/components/premium/GoogleReviews";
 import { generalFaqs } from "@/data/publicContent";
+import { googleListing } from "@/data/googleListing";
+import { Star } from "lucide-react";
 
 const heroSlides = [
   {
@@ -59,19 +61,29 @@ export default function HomePage() {
             and specialist decorative surfaces across the GTA.
           </p>
           <div className="p-hero-actions">
+            <ButtonLink href="/contact" accent>
+              Request an estimate
+            </ButtonLink>
             <ButtonLink href="#work" subtle>
               View selected work
             </ButtonLink>
-            <ButtonLink href="/contact" subtle>
-              Discuss your project
-            </ButtonLink>
           </div>
+          <a className="p-hero-trust" href="#reviews">
+            <span className="p-stars" aria-hidden="true">
+              {Array.from({ length: 5 }, (_, i) => (
+                <Star key={i} size={16} fill="currentColor" strokeWidth={1.5} />
+              ))}
+            </span>
+            <span>
+              {googleListing.rating} from {googleListing.reviewCount} Google reviews
+            </span>
+          </a>
         </div>
         <HeroSlideshow slides={heroSlides} />
       </section>
-      <Section className="p-two-column">
-        <p className="p-eyebrow">Colour. Pattern. Texture.</p>
+      <Section className="p-services-section" id="services">
         <SectionHeading
+          eyebrow="Painting & wall finishes"
           title={
             <>
               Distinctive interiors.
@@ -84,10 +96,6 @@ export default function HomePage() {
           complete residences, substantial renovations and commercial
           interiors.
         </SectionHeading>
-      </Section>
-      <Section className="p-services-section" id="services">
-        <p className="p-eyebrow">Painting & wall finishes</p>
-        <h2 className="p-visually-hidden">Our services</h2>
         <div className="p-services">
           {services.slice(0, 3).map((service, i) => (
             <a href={service.path} key={service.path}>
@@ -109,6 +117,24 @@ export default function HomePage() {
           </a>
         </div>
       </Section>
+      <Section id="work">
+        <span id="portfolio" aria-hidden="true" />
+        <div className="p-section-top">
+          <SectionHeading
+            eyebrow="The Arcan collection"
+            title={
+              <>
+                Selected <em>work.</em>
+              </>
+            }
+          />
+          <ButtonLink href="/projects" subtle>
+            View the collection
+          </ButtonLink>
+        </div>
+        <WorkSlider label="Selected work" stories={projectStories} covers={moreWork} />
+      </Section>
+      <GoogleReviews />
       <Section tone="ink" className="p-feature">
         <img
           src="/hero/floral-feature-wall-900.webp"
@@ -136,23 +162,6 @@ export default function HomePage() {
             Explore wallpaper
           </ButtonLink>
         </div>
-      </Section>
-      <Section id="work">
-        <span id="portfolio" aria-hidden="true" />
-        <div className="p-section-top">
-          <SectionHeading
-            eyebrow="The Arcan collection"
-            title={
-              <>
-                Selected <em>work.</em>
-              </>
-            }
-          />
-          <ButtonLink href="/projects" subtle>
-            View the collection
-          </ButtonLink>
-        </div>
-        <WorkSlider label="Selected work" stories={projectStories} covers={moreWork} />
       </Section>
       <Section tone="stone" className="p-two-column" id="process">
         <SectionHeading
@@ -197,6 +206,29 @@ export default function HomePage() {
           ))}
         </ol>
       </Section>
+      <Section tone="ink" className="p-cta-band" id="start">
+        <SectionHeading
+          eyebrow="Planning a project?"
+          title={
+            <>
+              Tell us about your space.
+              <br />
+              <em>We will take it from there.</em>
+            </>
+          }
+        >
+          Share the rooms, surfaces and timing you have in mind. The team
+          will follow up to discuss the scope and next steps.
+        </SectionHeading>
+        <div className="p-cta-actions">
+          <ButtonLink href="/contact" accent>
+            Request an estimate
+          </ButtonLink>
+          <a className="p-button p-button--line" href="tel:+14167272148">
+            Call 416 727 2148
+          </a>
+        </div>
+      </Section>
       <Section className="p-two-column" id="areas">
         <SectionHeading
           eyebrow="Where we work"
@@ -228,7 +260,6 @@ export default function HomePage() {
           ))}
         </div>
       </Section>
-      <GoogleReviews />
       <ContactBlock />
     </PremiumShell>
   );

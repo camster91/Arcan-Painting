@@ -4,7 +4,7 @@ test('homepage gives the hero a direct project enquiry path', async ({ page }) =
   await page.goto('/');
 
   const hero = page.locator('.p-hero');
-  await expect(hero.getByRole('link', { name: 'Discuss your project' })).toHaveAttribute('href', '/contact');
+  await expect(hero.getByRole('link', { name: 'Request an estimate' })).toHaveAttribute('href', '/contact');
   await expect(hero.getByRole('link', { name: 'View selected work' })).toHaveAttribute('href', '#work');
 });
 

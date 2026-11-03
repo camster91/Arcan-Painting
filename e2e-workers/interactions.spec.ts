@@ -32,7 +32,7 @@ test('short landscape menu stays scrollable and closes on escape, outside focus 
   await menu.click();
   await expect(close).toBeVisible();
   expect(await nav.evaluate(el => el.getBoundingClientRect().bottom <= innerHeight + 1)).toBe(true);
-  const enquire = nav.getByRole('link', {name: 'Enquire', exact: true});
+  const enquire = nav.getByRole('link', {name: 'Request an estimate', exact: true});
   await enquire.scrollIntoViewIfNeeded();
   expect(await enquire.evaluate(el => { const r = el.getBoundingClientRect(); return r.top >= -1 && r.bottom <= innerHeight + 1; })).toBe(true);
   await page.keyboard.press('Escape');

@@ -14,7 +14,14 @@ export default function ContactBlock() {
       >
         Share your plans, materials and preferred timing.
       </SectionHeading>
-      <ButtonLink href="/contact">Discuss your project</ButtonLink>
+      <div className="p-cta-actions">
+        <ButtonLink href="/contact" accent>
+          Request an estimate
+        </ButtonLink>
+        <a className="p-button p-button--line" href="tel:+14167272148">
+          Call 416 727 2148
+        </a>
+      </div>
     </Section>
   );
 }
