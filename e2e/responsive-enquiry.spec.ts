@@ -56,7 +56,7 @@ test('project inspiration and optional details reach the enquiry without exposin
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: 'Wallpaper', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await dialog.getByRole('link', { name: 'Enquire about a similar project' }).click();
-  await expect(page.getByLabel('Service', { exact: true })).toHaveValue('wallpaper');
+  await expect(page.getByLabel('Service')).toHaveValue('wallpaper');
   await expect(page.getByText('Inspired by: Floral feature wall and sage trim')).toBeVisible();
   await page.getByLabel('Your name', { exact: true }).fill('Preview Test');
   await page.getByLabel('How would you prefer us to respond?').selectOption('email');
