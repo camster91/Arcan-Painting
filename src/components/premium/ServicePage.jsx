@@ -35,7 +35,7 @@ export default function ServicePage({ path }) {
   const category = GALLERY_CATEGORY[path];
   const work = category ? getUprightCovers(projectGallery, { category }) : [];
   return (
-    <PremiumShell>
+    <PremiumShell enquiryHref="#enquire">
       <section
         className={`p-service-hero ${service.image ? "" : "p-service-hero--text"}`}
       >
@@ -76,7 +76,7 @@ export default function ServicePage({ path }) {
               eyebrow="Finished projects"
               title={`${category} work.`}
             />
-            <ButtonLink href="/projects#gallery" subtle>
+            <ButtonLink href={`/projects?category=${encodeURIComponent(category)}#gallery`} subtle>
               View the collection
             </ButtonLink>
           </div>

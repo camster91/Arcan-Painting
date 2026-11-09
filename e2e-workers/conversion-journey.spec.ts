@@ -19,12 +19,12 @@ test('homepage keeps the core service grid concise while exposing commercial and
 test('project detail puts a project enquiry CTA before the feature image', async ({ page }) => {
   await page.goto('/projects/pattern-and-atmosphere');
 
-  const cta = page.locator('.p-project-actions a[href="/contact"]');
+  const cta = page.locator('.p-project-actions a[href^="/contact?project="]');
   const image = page.locator('.p-project-detail');
   await expect(cta).toBeVisible();
   await expect(image).toBeVisible();
   expect(await page.locator('main').evaluate((main) => {
-    const action = main.querySelector('.p-project-actions a[href="/contact"]');
+    const action = main.querySelector('.p-project-actions a[href^="/contact?project="]');
     const detail = main.querySelector('.p-project-detail');
     return Boolean(action && detail && (action.compareDocumentPosition(detail) & Node.DOCUMENT_POSITION_FOLLOWING));
   })).toBe(true);

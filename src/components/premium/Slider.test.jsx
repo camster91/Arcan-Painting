@@ -24,7 +24,13 @@ describe('premium sliders', () => {
     );
     expect(screen.getByRole('link', { name: /X room/ })).toHaveAttribute('href', '/projects/x');
     const links = screen.getAllByRole('link');
-    expect(links.slice(1).every((link) => link.getAttribute('href') === '/projects#gallery')).toBe(true);
+    const covers = getUprightCovers(projectGallery, { category: 'Exterior' });
+    links.slice(1).forEach((link, i) => {
+      const url = new URL(link.getAttribute('href'), 'https://arcanpainting.ca');
+      expect(url.pathname).toBe('/projects');
+      expect(url.searchParams.get('photo')).toBe(covers[i].file);
+      expect(url.hash).toBe('#gallery');
+    });
   });
 
   it('only offers upright photos and filters by category and scene', () => {

@@ -12,7 +12,7 @@ export const services = [
     eyebrow: "Interior painting",
     summary: "Considered colour and a precise finish for complete interiors.",
     description:
-      "Premium Painting is Arcan’s interior painting service. Share the rooms, surfaces, approximate dimensions, existing condition, colour references, access, and preferred timing so the team can review preparation and scope.",
+      "Plan an interior finish around the way your rooms are used: colour, sheen, preparation and access all shape the scope. Discuss the surfaces to include, how furniture and floors will be protected, and the sequence for occupied rooms before work begins.",
     image: "/hero/IMG-20260212-WA0016-1400.webp",
     imageAlt:
       "Arcan residential staircase with dark treads, white risers and painted railings",

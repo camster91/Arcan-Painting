@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Slider from "./Slider";
+import { projectGalleryHref } from "@/data/projectEnquiries";
 
 function thumbnail(file) {
   return `/gallery/thumbnails/${encodeURIComponent(file.replace(/\.webp$/i, "_thumb.webp"))}`;
@@ -24,7 +25,7 @@ export default function WorkSlider({ label, stories = [], covers = [] }) {
     })),
     ...covers.map((cover) => ({
       key: cover.file,
-      href: "/projects#gallery",
+      href: projectGalleryHref(cover.file),
       src: thumbnail(cover.file),
       alt: cover.alt,
       title: cover.title,

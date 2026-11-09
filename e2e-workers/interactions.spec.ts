@@ -47,12 +47,12 @@ test('short landscape menu stays scrollable and closes on escape, outside focus 
   await expect(menu).toBeFocused();
   await menu.click();
   await nav.getByRole('link', {name: 'Painting', exact: true}).focus();
-  await page.setViewportSize({width: 1024, height: 900});
+  await page.setViewportSize({width: 1280, height: 900});
   await expect(page.locator('.p-menu')).toHaveAttribute('aria-expanded', 'false');
   await page.setViewportSize({width: 844, height: 390});
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await menu.click();
-  await page.setViewportSize({width: 1024, height: 900});
+  await page.setViewportSize({width: 1280, height: 900});
   await expect(page.locator('header .p-logo')).toBeFocused();
 });
 

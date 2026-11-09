@@ -21,12 +21,14 @@ const heroSlides = [
     alt: "Completed dining room with patterned wallpaper, pink seating and a set table",
     width: 917,
     height: 1218,
+    srcSet: "/hero/PXL_20251018_142500065-800.webp 800w, /hero/PXL_20251018_142500065-1400.webp 917w",
   },
   {
-    src: "/hero/floral-room-view-7-1000.webp",
-    alt: "Floral wallcovering around a window in a completed room with wood flooring",
-    width: 1012,
-    height: 1350,
+    src: "/hero/IMG-20260212-WA0016-1400.webp",
+    alt: "Completed residential staircase with dark treads, white risers and painted railings",
+    width: 1400,
+    height: 1867,
+    srcSet: "/hero/IMG-20260212-WA0016-800.webp 800w, /hero/IMG-20260212-WA0016-1400.webp 1400w",
   },
   {
     src: "/hero/IMG-20260217-WA0022-1200.webp",

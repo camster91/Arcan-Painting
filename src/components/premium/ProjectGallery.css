@@ -247,7 +247,7 @@
   position: relative;
   display: grid;
   width: 100%;
-  height: calc(100% - 9rem);
+  height: calc(100% - 12rem);
   min-height: 12rem;
   place-items: center;
   overflow: auto;
@@ -283,6 +283,15 @@
 
 .p-project-gallery__dialog-bottomline p {
   margin: 0;
+}
+.premium-site .p-project-gallery__enquire {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 8px;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .p-project-gallery__dialog-controls {
@@ -348,7 +357,7 @@
   }
 
   .p-project-gallery__dialog-frame {
-    height: calc(100% - 11rem);
+    height: calc(100% - 15rem);
     min-height: 10rem;
   }
 

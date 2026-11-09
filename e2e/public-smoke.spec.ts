@@ -19,7 +19,7 @@ test.describe("public conversion and account routes", () => {
     }
     await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Request an estimate", exact: true }).click();
     await expect(page).toHaveURL(/\/contact$/);
-    await expect(page.getByRole("heading", { name: "Tell us what you have in mind." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Request an estimate.", exact: true })).toBeVisible();
     await expect(page.getByLabel("Your name", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Send project enquiry" })).toBeEnabled();
     expect(pageErrors).toEqual([]);

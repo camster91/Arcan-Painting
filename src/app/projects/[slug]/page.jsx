@@ -10,6 +10,7 @@ import { projects } from "@/data/premiumSite";
 import { projectGallery } from "@/data/projectGallery";
 import { getScenePhotos } from "@/data/gallerySelection";
 import Slider from "@/components/premium/Slider";
+import { projectEnquiryHref } from "@/data/projectEnquiries";
 export function loader({ params }) {
   const project = projects.find((item) => item.slug === params.slug);
   if (!project) throw new Response("Not found", { status: 404 });
@@ -17,6 +18,8 @@ export function loader({ params }) {
 }
 export default function Project() {
   const project = useLoaderData();
+  const photos = getScenePhotos(projectGallery, project.scene);
+  const enquiryHref = photos[0] ? projectEnquiryHref(photos[0].file) : "/contact";
   return (
     <PremiumShell>
       <Section>
@@ -28,7 +31,7 @@ export default function Project() {
           {project.description}
         </SectionHeading>
         <div className="p-project-actions">
-          <ButtonLink href="/contact" accent>Request an estimate</ButtonLink>
+          <ButtonLink href={enquiryHref} accent>Request an estimate</ButtonLink>
           <ButtonLink href="/projects" subtle>
             All selected work
           </ButtonLink>
@@ -36,7 +39,7 @@ export default function Project() {
         <Slider label={`${project.title} photos`} className="p-photo-slider">
           {[
             { src: project.image, alt: project.imageAlt, key: project.image },
-            ...getScenePhotos(projectGallery, project.scene)
+            ...photos
               .filter((photo) => !project.image.includes(photo.file.replace(/\.webp$/i, "")))
               .map((photo) => ({
                 src: `/gallery/images/${encodeURIComponent(photo.file)}`,
@@ -58,7 +61,7 @@ export default function Project() {
           ))}
         </Slider>
       </Section>
-      <ContactBlock />
+      <ContactBlock enquiryHref={enquiryHref} />
     </PremiumShell>
   );
 }

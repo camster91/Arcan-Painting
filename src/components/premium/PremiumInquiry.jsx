@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { getAttribution, trackEvent } from "@/utils/analytics";
+import { getEnquiryProject, getProjectService } from "@/data/projectEnquiries";
 
 const SERVICES = [
   ["interior", "Premium Painting"],
@@ -29,10 +30,18 @@ export default function PremiumInquiry({ initialService = "interior" }) {
   const [pending, setPending] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
+  const [project, setProject] = useState(null);
   const submitting = useRef(false);
   const submissionId = useRef("");
   const errorRef = useRef(null);
-  useEffect(() => setReady(true), []);
+  useEffect(() => {
+    const selected = getEnquiryProject(new URLSearchParams(window.location.search).get("project"));
+    if (selected) {
+      setProject(selected);
+      setService(getProjectService(selected));
+    }
+    setReady(true);
+  }, []);
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
@@ -55,7 +64,8 @@ export default function PremiumInquiry({ initialService = "interior" }) {
       preferredContact,
       address: text("address"),
       projectDescription: [
-        `Project scope: ${text("scope")}`,
+        ...(project ? [`Project reference: ${project.title} (${project.file})`] : []),
+        `Project scope: ${text("scope") || "To be discussed"}`,
         `Preferred timing: ${text("timing") || "To be discussed"}`,
         `Approximate budget (CAD): ${text("budget") || "To be discussed"}`,
         "",
@@ -121,6 +131,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
       onSubmit={submit}
       aria-busy={pending}
     >
+      {project && <p className="p-project-reference">Inspired by: {project.title}</p>}
       <div className="p-fields">
         <label className="p-field" htmlFor={`${id}-name`}>
           Your name
@@ -161,8 +172,8 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           <option value="email">Email me</option>
         </select>
       </label>
-      <div className="p-fields">
-        <label className="p-field" htmlFor={`${id}-email`}>
+      <div className="p-fields p-fields--contact">
+        <label className="p-field" htmlFor={`${id}-email`} hidden={preferredContact !== "email"}>
           Email address{preferredContact !== "email" && " (optional)"}
           <input
             id={`${id}-email`}
@@ -173,9 +184,10 @@ export default function PremiumInquiry({ initialService = "interior" }) {
             autoCapitalize="none"
             maxLength={255}
             required={preferredContact === "email"}
+            disabled={preferredContact !== "email"}
           />
         </label>
-        <label className="p-field" htmlFor={`${id}-phone`}>
+        <label className="p-field" htmlFor={`${id}-phone`} hidden={preferredContact === "email"}>
           Phone number{preferredContact === "email" && " (optional)"}
           <input
             id={`${id}-phone`}
@@ -186,6 +198,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
             maxLength={50}
             pattern={"[0-9\\s\\(\\)\\+\\-]+"}
             required={preferredContact !== "email"}
+            disabled={preferredContact === "email"}
           />
         </label>
       </div>
@@ -200,10 +213,25 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           required
         />
       </label>
+      <label className="p-field" htmlFor={`${id}-description`}>
+        Tell us about your project
+        <textarea
+          id={`${id}-description`}
+          name="projectDescription"
+          rows={4}
+          maxLength={3000}
+          placeholder="Spaces, surfaces and finishes you have in mind"
+          required
+        />
+      </label>
+      <details className="p-form-details">
+        <summary>Optional project details</summary>
+        <p>Have a scope, timing or budget in mind? Add it here, or discuss it with our team.</p>
       <div className="p-fields">
         <label className="p-field" htmlFor={`${id}-scope`}>
-          Project scope
+          Project scope (optional)
           <select id={`${id}-scope`} name="scope">
+            <option value="">To be discussed</option>
             <option>Complete residence</option>
             <option>Multi-room renovation</option>
             <option>Commercial / hospitality</option>
@@ -230,17 +258,7 @@ export default function PremiumInquiry({ initialService = "interior" }) {
           placeholder="CAD — or to be discussed"
         />
       </label>
-      <label className="p-field" htmlFor={`${id}-description`}>
-        Tell us about your project
-        <textarea
-          id={`${id}-description`}
-          name="projectDescription"
-          rows={4}
-          maxLength={3000}
-          placeholder="Spaces, surfaces and finishes you have in mind"
-          required
-        />
-      </label>
+      </details>
       {error && (
         <p className="p-error" role="alert" ref={errorRef} tabIndex={-1}>
           {error}

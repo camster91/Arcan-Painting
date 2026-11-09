@@ -159,11 +159,12 @@ html:has(.premium-site dialog[open]) {
 }
 .p-hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   background: var(--p-ink);
   color: var(--p-paper);
 }
 .p-hero-copy {
+  min-width: 0;
   align-self: center;
   padding: 75px 45px 75px var(--p-gutter);
 }
@@ -189,6 +190,26 @@ html:has(.premium-site dialog[open]) {
 }
 .p-hero-media:has(img.is-active:not(:first-child)) img:first-child {
   opacity: 0;
+}
+/* Large screens show the complete portrait rather than a 650px crop.
+   Copy stays near the top so the estimate action remains easy to find. */
+@media (min-width: 901px) {
+  .premium-site .p-hero-media {
+    height: auto;
+    min-height: 650px;
+    aspect-ratio: 3 / 4;
+    align-self: stretch;
+  }
+  .premium-site .p-hero-copy {
+    align-self: start;
+    padding-top: clamp(80px, 9vw, 140px);
+  }
+}
+@media (min-width: 651px) {
+  .premium-site .p-hero-media img {
+    object-fit: contain;
+    object-position: center;
+  }
 }
 .p-hero-media__controls {
   position: absolute;
@@ -645,7 +666,7 @@ html:has(.premium-site dialog[open]) {
 }
 .p-service-hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   background: var(--p-ink);
   color: var(--p-paper);
 }
@@ -728,7 +749,7 @@ html:has(.premium-site dialog[open]) {
     font-size: clamp(43px, 4.7vw, 63px);
   }
 }
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .p-header {
     position: relative;
   }
@@ -763,9 +784,11 @@ html:has(.premium-site dialog[open]) {
   .p-header nav > a {
     padding: 13px 0;
   }
+}
+@media (max-width: 900px) {
   .p-hero,
   .p-service-hero {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .p-hero-copy,
   .p-service-copy {
@@ -1244,6 +1267,9 @@ html:has(.premium-site dialog[open]) {
   font-size: 15px;
   gap: 26px;
 }
+.premium-site .p-header nav > a {
+  white-space: nowrap;
+}
 .premium-site .p-header-phone {
   font-weight: 600;
   white-space: nowrap;
@@ -1334,6 +1360,51 @@ html:has(.premium-site dialog[open]) {
 .premium-site textarea {
   font-size: 16px;
 }
+/* Responsive enquiry layout */
+.premium-site [hidden] { display: none !important; }
+.premium-site .p-fields--contact { grid-template-columns: minmax(0, 1fr); }
+.premium-site .p-contact-layout {
+  align-items: start;
+  padding-block: 56px;
+}
+.premium-site .p-contact-layout > div { min-width: 0; }
+.premium-site .p-form-details {
+  margin: 8px 0 24px;
+  border-block: 1px solid var(--p-line);
+}
+.premium-site .p-form-details summary {
+  min-height: 48px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+.premium-site .p-form-details > p,
+.premium-site .p-form > p:not(.p-error, .p-project-reference) {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.premium-site .p-project-reference {
+  padding: 14px;
+  border-left: 3px solid var(--p-gold);
+  background: var(--p-stone);
+}
+.premium-site .p-enquiry-review {
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--p-line);
+}
+.premium-site .p-enquiry-review blockquote {
+  margin: 0 0 12px;
+  font: 28px/1.25 var(--p-serif);
+}
+.premium-site .p-enquiry-review figcaption {
+  font-size: 14px;
+  color: var(--p-muted);
+}
+.premium-site .p-enquiry-review a { text-decoration: underline; }
+@media (max-width: 1200px) {
+  .premium-site .p-header-phone { display: none; }
+}
 /* Mid-page call-to-action band */
 .premium-site .p-cta-band {
   display: grid;
@@ -1377,6 +1448,27 @@ html:has(.premium-site dialog[open]) {
   .premium-site .p-hero-actions .p-button {
     width: 100%;
   }
+  .premium-site .p-hero-copy {
+    padding-top: 30px;
+    padding-bottom: 28px;
+  }
+  .premium-site .p-hero-copy h1 {
+    margin-bottom: 18px;
+    font-size: clamp(38px, 11.5vw, 45px);
+  }
+  .premium-site .p-hero-copy > p { margin-bottom: 18px; }
+  .premium-site .p-hero-actions { gap: 4px; }
+  .premium-site .p-hero-actions .p-button--line { margin-top: 0; }
+  .premium-site .p-hero-trust {
+    flex-wrap: wrap;
+    margin-top: 16px;
+    gap: 6px 10px;
+  }
+  .premium-site .p-contact-layout {
+    padding-top: 30px;
+    gap: 20px;
+  }
+  .premium-site .p-contact-layout .p-heading > p:not(.p-eyebrow) { margin-bottom: 16px; }
   .premium-site .p-mobile-cta {
     position: fixed;
     left: 0;
@@ -1384,7 +1476,7 @@ html:has(.premium-site dialog[open]) {
     bottom: 0;
     z-index: 40;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     border-top: 1px solid rgba(242, 239, 231, 0.2);
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--p-ink);
@@ -1398,6 +1490,8 @@ html:has(.premium-site dialog[open]) {
     color: var(--p-paper);
     font-size: 16px;
     font-weight: 600;
+    padding-inline: 8px;
+    white-space: nowrap;
   }
   .premium-site .p-mobile-cta a + a {
     background: var(--p-gold);
@@ -1405,6 +1499,9 @@ html:has(.premium-site dialog[open]) {
   }
   .premium-site > .p-footer {
     padding-bottom: calc(56px + 30px + env(safe-area-inset-bottom));
+  }
+  .premium-site:has(.p-form :is(input, select, textarea):focus) .p-mobile-cta {
+    display: none;
   }
 }
 .premium-site .p-section.p-services-section {

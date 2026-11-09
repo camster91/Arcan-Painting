@@ -1,5 +1,5 @@
 import { Section, SectionHeading, ButtonLink } from "./primitives";
-export default function ContactBlock() {
+export default function ContactBlock({ enquiryHref = "/contact" }) {
   return (
     <Section tone="ink" className="p-contact-banner" id="contact">
       <SectionHeading
@@ -15,7 +15,7 @@ export default function ContactBlock() {
         Share your plans, materials and preferred timing.
       </SectionHeading>
       <div className="p-cta-actions">
-        <ButtonLink href="/contact" accent>
+        <ButtonLink href={enquiryHref} accent>
           Request an estimate
         </ButtonLink>
         <a className="p-button p-button--line" href="tel:+14167272148">
