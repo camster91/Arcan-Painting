@@ -65,6 +65,17 @@ jobs:
         env:
           CI: true
 
+      - name: Retain responsive review screenshots
+        if: always() && github.actor != 'dependabot[bot]'
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcan-responsive-screenshots
+          path: |
+            test-results/responsive-enquiry-*/home-*.jpg
+            test-results/responsive-enquiry-*/contact-*.jpg
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Build public Workers export
         run: npm run build:workers
         env:
