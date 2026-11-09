@@ -69,14 +69,14 @@ function useScrollReveal(rootRef) {
   }, [rootRef]);
 }
 
-export default function PremiumShell({ children }) {
+export default function PremiumShell({ children, enquiryHref = "/contact" }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const headerRef = useRef(null);
   const menuRef = useRef(null);
   useScrollReveal(rootRef);
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 901px)");
+    const desktop = window.matchMedia("(min-width: 1201px)");
     // The menu button is hidden at desktop width, and a hidden button can lose
     // focus before the media query change event fires. Remember whether the
     // keyboard was last on the button so focus can still move to the logo.
@@ -209,8 +209,21 @@ export default function PremiumShell({ children }) {
         <a href="tel:+14167272148">
           <Phone size={18} aria-hidden="true" /> Call
         </a>
-        <a href="/contact" data-cta="contact" data-cta-destination="/contact">
-          Request an estimate
+        <a
+          href={enquiryHref}
+          data-cta="contact"
+          data-cta-destination="/contact"
+          onClick={(event) => {
+            if (enquiryHref !== "#enquire" || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            const target = rootRef.current?.querySelector("#enquire");
+            const field = target?.querySelector("input, select, textarea, a");
+            if (!field) return;
+            event.preventDefault();
+            field.focus({ preventScroll: true });
+            field.scrollIntoView({ block: "center" });
+          }}
+        >
+          {enquiryHref === "#enquire" ? "Start enquiry" : "Get an estimate"}
         </a>
       </nav>
     </div>

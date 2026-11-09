@@ -44,6 +44,8 @@ export default function HeroSlideshow({ slides }) {
           key={slide.src}
           className={i === active ? "is-active" : ""}
           src={slide.src}
+          srcSet={slide.srcSet}
+          sizes={slide.srcSet ? "(max-width: 650px) 100vw, 50vw" : undefined}
           alt={i === active ? slide.alt : ""}
           aria-hidden={i === active ? undefined : "true"}
           width={slide.width}

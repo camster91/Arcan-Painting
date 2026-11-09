@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { projectGallery as defaultItems } from "@/data/projectGallery";
 import "./ProjectGallery.css";
 import { getGalleryCovers, orderGalleryItems } from "@/data/gallerySelection";
+import { projectEnquiryHref } from "@/data/projectEnquiries";
 
 const CATEGORIES = ["Interior", "Wallpaper", "Exterior", "Commercial"];
 const INITIAL_VISIBLE = 12;
@@ -197,6 +198,21 @@ export default function ProjectGallery({ items = defaultItems }) {
   const activeItem = activeIndex >= 0 ? filteredItems[activeIndex] : null;
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const selected = galleryItems.find((item) => item.file === params.get("photo"));
+    const category = selected?.category || params.get("category");
+    if (CATEGORIES.includes(category)) setActiveCategory(category);
+    if (selected) {
+      const matching = galleryItems.filter((item) => item.category === selected.category);
+      const covers = getGalleryCovers(matching);
+      const index = covers.findIndex((cover) =>
+        cover.file === selected.file || (selected.scene && cover.scene === selected.scene));
+      setVisibleCount(Math.max(INITIAL_VISIBLE, index + 1));
+      setActiveFile(selected.file);
+    }
+  }, [galleryItems]);
+
+  useEffect(() => {
     if (nextFocusIndex.current === null) return;
     gridRef.current?.querySelectorAll('.p-project-gallery__card')[nextFocusIndex.current]?.focus();
     nextFocusIndex.current = null;
@@ -229,8 +245,16 @@ export default function ProjectGallery({ items = defaultItems }) {
       else dialog.setAttribute("open", "");
     }
     dialogWasOpenRef.current = true;
-    if (opening) window.requestAnimationFrame(() => closeRef.current?.focus());
-  }, [activeItem]);
+    if (opening) {
+      if (!returnFocusRef.current) {
+        const cover = coverItems.find((item) => item.file === activeItem.file ||
+          (activeItem.scene && item.scene === activeItem.scene));
+        returnFocusRef.current = [...(gridRef.current?.querySelectorAll("[data-gallery-file]") || [])]
+          .find((anchor) => anchor.dataset.galleryFile === cover?.file);
+      }
+      window.requestAnimationFrame(() => closeRef.current?.focus());
+    }
+  }, [activeItem, coverItems]);
 
   const openLightbox = (file, anchor) => {
     returnFocusRef.current = anchor;
@@ -351,6 +375,9 @@ export default function ProjectGallery({ items = defaultItems }) {
               </button>
             </div>
             <LightboxImage item={activeItem} />
+            <a className="p-project-gallery__enquire" href={projectEnquiryHref(activeItem.file)}>
+              Enquire about a similar project
+            </a>
             <div className="p-project-gallery__dialog-bottomline">
               <p>
                 {displayLabel(activeItem.stage)}

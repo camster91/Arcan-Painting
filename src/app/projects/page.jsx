@@ -11,8 +11,8 @@ export default function Projects() {
           eyebrow="The Arcan collection"
           title="Selected work."
         >
-          Finished interiors, wallcoverings and exterior details, with a
-          curated cover for each scene and more finished views in the image viewer.
+          Explore recent painting, wallpaper and exterior projects.
+          Select a photograph for a closer look at the finished work.
         </SectionHeading>
         <nav className="p-hero-actions" aria-label="Project stories">
           <ButtonLink href="/projects/pattern-and-atmosphere" subtle>Pattern &amp; atmosphere</ButtonLink>
