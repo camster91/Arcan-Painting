@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.64.1",
+    "@playwright/test": "^1.65.0",
     "@react-router/dev": "^7.18.5",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.6.4",
@@ -75,10 +75,10 @@
     "postcss": "^8.5.32",
     "tailwindcss": "3",
     "typescript": "^5.8.3",
-    "vite": "^7.3.7",
+    "vite": "^7.3.8",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.12",
-    "wrangler": "^4.157.0"
+    "wrangler": "^4.162.0"
   },
   "overrides": {
     "next-themes": "^0.3.0",
